@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>使用PCI IDE Controller读写硬盘 – 2</title>
+  <meta name="description" content="">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://0cch.com/minikernel/2013/09/01/e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-2.html">
+  <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">0CCh</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">使用PCI IDE Controller读写硬盘 – 2</h1>
+    <p class="post-meta">Sep 1, 2013 • admin</p>
+  </header>
+
+  <article class="post-content">
+    <p><a href="/uploads/2013/09/20130901011808.png"><img src="/uploads/2013/09/20130901011808.png" alt="20130901011808" /></a></p>
+
+<p>上一篇文章简单介绍了用PIO的方式读写硬盘数据，那么这篇文章就来介绍另一种数据传输的方式——DMA。</p>
+
+<p>DMA全称是Direct memory access，以下依旧是wiki上的一段简短的介绍：
+“直接存储器访问（Direct Memory Access，DMA）是计算机科学中的一种内存访问技术。它允许某些电脑内部的硬件子系统（电脑外设），可以独立地直接读写系统存储器，而不需绕道中央处理器（CPU）。很多硬件的系统会使用DMA，包含硬盘控制器、绘图显卡、网卡和声卡。”</p>
+
+<p>结合以上的描述和上一篇PIO的介绍，我们就可以发现DMA的优势，他最大的优势之一就是解放了CPU，让CPU不用重复的执行IO端口的操作读写数据。使用DMA的时候，CPU可以做其他的计算，读写数据的操作完全交由CPU外部的DMA芯片进行操作。当读写操作结束后CPU收到通知，然后再来处理读写之后的工作。DMA的另一个优势，就是速度快，不过这么说也不是完全正确的。因为古老的ISA DMA的速度只有4MB/s，现代CPU跑起PIO来，传输速度应该会比这个快。幸运的是，硬盘使用的DMA并不是ISA DMA，而是PCI DMA。PCI DMA的速度通常都超过了100MB/s，所以说速度也算是DMA的一个优势了吧。这里在顺便提一点，ISA DMA也不是完全没有用处的。软盘使用的DMA就是ISA DMA，虽然说软盘在现代的PC上已经消失了，但是如果要写自己的Mini Kernel，那么支持软盘以及ISA DMA还是很有必要的。</p>
+
+<p>DMA的优势很明显，付出的代价就是编程起来相对复杂。那么下面就来介绍让IDE使用DMA传输数据的基础知识。</p>
+
+<p><strong>物理区域描述符（Physical Region Descriptor）</strong><a href="/uploads/2013/09/20130828165621.jpg"><img src="/uploads/2013/09/20130828165621.jpg" alt="20130828165621" /></a>进行数据传输的物理内存块都用物理区域描述符进行描述。当所有在物理区域描述符表中的物理区域描述符所指向的内存都被传输完成后，数据传输就会停止。每个物理区域描述符是8字节。前4个字节指定的是物理内存区域的地址。接下来的两个字节指定内存数量。最后一个字节的第7位表示此理区域描述符是该表中最后一个描述符。</p>
+
+<p><strong>物理区域描述符表（Physical Region Descriptor Table）</strong>
+这张表中包含一定数量的物理区域描述符（PRD），描述符表必须是4字节对齐且不能跨越64K边界的内存。</p>
+
+<p><strong>总线主控IDE寄存器（Bus Master IDE Register）</strong>
+<a href="/uploads/2013/09/20130829115331.png"><img src="/uploads/2013/09/20130829115331.png" alt="20130829115331" /></a></p>
+
+<p>要获得总线主控IDE寄存器的基础地址，需要读取PCI配置空间IDE区域的0x20处的DWORD。由于这篇文章不会设计到如何读取PCI配置空间，所以这里的基址就采用bochs设定（0xC000）。后面代码部分也会直接硬编码。</p>
+
+<p><strong>总线主控IDE命令寄存器（Bus Master IDE Command Register）</strong>
+<a href="/uploads/2013/09/20130829120041.png"><img src="/uploads/2013/09/20130829120041.png" alt="20130829120041" /></a></p>
+
+<p>这里读写控制位是特别要注意的，刚开始容易理解错误。这里的读写是针对的设备，而不是CPU。也就是说这里的都，是指设备读取CPU指定的内存到自己的数据空间。而写是指将自己的数据空间的数据写到CPU指定的内存。所以这里的读写和我们对硬盘要做的读写是刚好相反的。</p>
+
+<p><strong>总线主控IDE状态寄存器（Bus Master IDE Status Register）</strong>
+<a href="/uploads/2013/09/20130829120248.png"><img src="/uploads/2013/09/20130829120248.png" alt="20130829120248" /></a></p>
+
+<p><strong>描述符指针寄存器（Descriptor Table Pointer Register）</strong>
+用于设置物理区域描述符表的地址</p>
+
+<p>对于初学者理论知识不用了解的过细，最好还是在代码中边写边学习，还是一边堆代码，一边解释吧。
+（关于下面代码的补充说明：由于使用DMA必须处理中断以获得DMA处理结束的信号，而配置中断又涉及到许多理论知识和额外代码（8259A &amp;IDT），所以下面的代码就不涉及配置中断了，我这里就假设CPU已经进入保护模式，但没有开启分页并且IDE的中断已经配置完毕了。以下代码依旧为了保持最简洁，忽略了状态和结果的检查，在试验中够用即可）</p>
+
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58</pre></td><td class="code"><pre><span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">0</span><span class="n">C000h</span> <span class="p">;</span> <span class="err">设置开始停止位为</span><span class="mi">0</span><span class="err">，停止</span><span class="n">DMA</span>
+<span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>
+<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
+
+<span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">0</span><span class="n">C002h</span> <span class="p">;</span> <span class="err">清除中断位和错误位，这里清除方式比较特别，设置</span><span class="mi">1</span><span class="err">后清除</span>
+<span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">6</span><span class="n">h</span>
+<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
+
+<span class="p">;</span> <span class="err">配置描述符表，表地址为</span><span class="mi">10000</span><span class="n">h</span><span class="err">，且只有一个描述符</span>
+<span class="p">;</span> <span class="err">描述符描述的物理基址是</span><span class="mi">20000</span><span class="n">h</span><span class="err">，大小为</span><span class="mi">512</span><span class="err">字节，且设置了第</span><span class="mi">7</span><span class="err">位，</span>
+<span class="p">;</span> <span class="err">说明自己就是最后一个描述符</span>
+<span class="n">mov</span> <span class="n">dword</span> <span class="n">ptr</span> <span class="p">[</span><span class="mi">10000</span><span class="n">h</span><span class="p">],</span> <span class="mi">20000</span><span class="n">h</span>
+<span class="n">mov</span> <span class="n">dowrd</span> <span class="n">ptr</span> <span class="p">[</span><span class="mi">10004</span><span class="n">h</span><span class="p">],</span> <span class="mi">200</span><span class="n">h</span> <span class="o">|</span> <span class="mi">80000000</span><span class="n">h</span>
+<span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">0</span><span class="n">C004h</span>
+<span class="n">mov</span> <span class="n">eax</span><span class="p">,</span> <span class="mi">10000</span><span class="n">h</span>
+<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">eax</span>
+
+<span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">3</span><span class="n">f6h</span>   <span class="p">;</span> <span class="err">这里不再设置</span><span class="n">nIEN</span><span class="err">，</span><span class="n">DMA</span><span class="err">需要中断</span>
+<span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>
+<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
+
+<span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">1</span><span class="n">f1h</span>   <span class="p">;</span> <span class="err">下面代码基本上和</span><span class="n">PIO</span><span class="err">一致，</span>
+<span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">0</span>      <span class="p">;</span> <span class="err">详细注释请看上一篇文章</span>
+<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
+
+<span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">1</span><span class="n">f2h</span>
+<span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">1</span>
+<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
+
+<span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">1</span><span class="n">f3h</span>
+<span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">11</span><span class="n">h</span>
+<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
+
+<span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">1</span><span class="n">f4h</span>
+<span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">22</span><span class="n">h</span>
+<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
+
+<span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">1</span><span class="n">f5h</span>
+<span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">33</span><span class="n">h</span>
+<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
+
+<span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">1</span><span class="n">f6h</span>
+<span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">44</span><span class="n">h</span>
+<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
+
+<span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">1</span><span class="n">f7h</span>   <span class="p">;</span> <span class="err">设置读取扇区的命令</span><span class="n">C8h</span><span class="err">，不同于</span><span class="mi">20</span><span class="n">h</span><span class="err">，这个是</span><span class="n">DMA</span><span class="err">读取扇区的命令</span>
+<span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="n">C8h</span>
+<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
+
+<span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">0</span><span class="n">C000h</span> <span class="p">;</span> <span class="err">设置开始停止位为</span><span class="mi">1</span><span class="err">，开始</span><span class="n">DMA</span><span class="err">，并且指定为读取硬盘操作</span>
+<span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">9</span><span class="n">h</span>     <span class="p">;</span> <span class="err">（对硬盘而言是写出，所以设置</span><span class="n">bit3</span><span class="err">）</span>
+<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
+
+<span class="n">call</span> <span class="n">wait_int</span>  <span class="p">;</span> <span class="err">等待中断</span>
+
+<span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">0</span><span class="n">C000h</span> <span class="p">;</span> <span class="err">中断返回，设置开始停止位为</span><span class="mi">0</span><span class="err">，停止</span><span class="n">DMA</span>
+<span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>     <span class="p">;</span> <span class="err">如果一切都顺利，那么</span><span class="mi">20000</span><span class="n">h</span><span class="err">开始的</span><span class="mi">512</span><span class="err">个字节</span>
+<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>     <span class="p">;</span> <span class="err">就应该是读出的硬盘数据了</span><span class="w">
+</span></pre></td></tr></tbody></table>
+
+
+
+上面的代码主要分为以下这几步：
+1) 在系统内存中配置PRD Table。每个PRD是8个字节，其中包含着一个起始内存地址和一个内存大小
+传送，而且PRD必须是4字节对齐的。
+2) 给PRD Table指针寄存器传入配置好的PRD Table的地址，设置读写控制位，清除中断和错误位。
+3) 设置读写命令，包括读写的驱动器，逻辑地址等（这里基本上和PIO类似）。
+4) 设置总线主控IDE命令寄存器的开始/停止位为1，控制器开始执行DMA操作。
+5) 控制器DMA操作结束，IDE设备发起中断，收到中断后，设置开始/停止位为0（我们省略了读取状态寄存器来查看操作是否成功的步骤。）
+
+如果只是从IDE方面来看，代码没有复杂多少，可惜的是他还需要配合其他计算机硬件，所以实际要用上的代码要比PIO多上了不少。最后还是给大家推荐一些深入理解DMA的资料吧。
+ISA DMA：[http://wiki.osdev.org/ISA_DMA](http://wiki.osdev.org/ISA_DMA)
+PCI DMA：[http://wiki.osdev.org/ATA/ATAPI_using_DMA](http://wiki.osdev.org/ATA/ATAPI_using_DMA)
+</code></pre></div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">0CCh</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>0CCh</li>
+          <li><a href="mailto:nightxie@gmail.com">nightxie@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/0CCh">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">0CCh</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">printf("I am programmer!");
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

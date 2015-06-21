@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>一个解析INI文件的类</title>
+  <meta name="description" content="虽然微软强烈推荐用注册表代替ini来记录软件配置，但是由于写ini文件的方便性和可读性的优势，还是让很多程序员选择把配置记录到ini文件中。但是用Windows API操作ini文件有个缺点，就是每次调用如GetPrivateProfileInt，WritePrivateProfileString等函数，都会产生...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://0cch.com/tips/2015/03/17/e4b880e4b8aae8a7a3e69e90inie69687e4bbb6e79a84e7b1bb.html">
+  <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">0CCh</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">一个解析INI文件的类</h1>
+    <p class="post-meta">Mar 17, 2015 • admin</p>
+  </header>
+
+  <article class="post-content">
+    <p>虽然微软强烈推荐用注册表代替ini来记录软件配置，但是由于写ini文件的方便性和可读性的优势，还是让很多程序员选择把配置记录到ini文件中。但是用Windows API操作ini文件有个缺点，就是每次调用如GetPrivateProfileInt，WritePrivateProfileString等函数，都会产生一次文件打开关闭以及读写操作，并且对ini文件重新解析，这是非常低效的。所以如果需要大量的操作ini文件，例如需要读取很多配置信息以启动软件，那么这样的用法无疑会增加软件的冷启动时间。为了解决这个问题，我们就需要自己写一个模块，他能够一次性读取并且解析好ini文件。在需要读取的时候直接从内存读取，需要些的时候先全部写到内存里，最后在刷新到文件上。所以我写了一个ParseIni的类，来完成这个工作。代码如下：</p>
+
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456</pre></td><td class="code"><pre><span class="cp">#ifndef __PARSE_INI_H__
+#define __PARSE_INI_H__
+</span>
+<span class="cp">#include 
+#include 
+#include 
+#include 
+</span>
+<span class="cp">#define INI_KEY_LINE			1
+#define INI_SECTION_LINE		2
+#define INI_COMMENT_LINE		3
+#define INI_NC_KEY_LINE			4
+#define INI_WORNG_SYNTAX		0
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+
+<span class="k">class</span> <span class="nc">CParseIniA</span> <span class="p">{</span>
+
+<span class="k">public</span><span class="o">:</span>
+	<span class="n">CParseIniA</span><span class="p">()</span> <span class="p">{}</span>
+	<span class="o">~</span><span class="n">CParseIniA</span><span class="p">()</span> <span class="p">{}</span>
+
+	<span class="n">BOOL</span> <span class="n">Open</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">IniPath</span><span class="p">;,</span> <span class="n">BOOL</span> <span class="n">OpenAlways</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">);</span>
+	<span class="n">vector</span> <span class="n">EnumSectionNames</span><span class="p">();</span>
+	<span class="n">vector</span> <span class="n">EnumKeyNamesInSection</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">SectionName</span><span class="p">;);</span>
+	<span class="n">string</span> <span class="n">GetSectionKeyValue</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">SectionName</span><span class="p">;,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">KeyName</span><span class="p">;,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">DefaultValue</span><span class="p">;);</span>
+    <span class="kt">int</span> <span class="n">GetSectionKeyValueInt</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">SectionName</span><span class="p">;,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">KeyName</span><span class="p">;,</span> <span class="kt">int</span> <span class="n">DefaultValue</span><span class="p">);</span>
+    <span class="n">BOOL</span> <span class="n">SetSectionKeyValueInt</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">SectionName</span><span class="p">;,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">KeyName</span><span class="p">;,</span> <span class="kt">int</span> <span class="n">value</span><span class="p">,</span> <span class="n">BOOL</span> <span class="n">CreateNew</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">);</span>
+	<span class="n">BOOL</span> <span class="n">SetSectionKeyValue</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">SectionName</span><span class="p">;,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">KeyName</span><span class="p">;,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">Value</span><span class="p">;,</span> <span class="n">BOOL</span> <span class="n">CreateNew</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">);</span>
+	<span class="n">BOOL</span> <span class="n">Flush</span><span class="p">();</span>
+	<span class="n">VOID</span> <span class="n">Close</span><span class="p">();</span>
+
+<span class="k">private</span><span class="o">:</span>
+	<span class="n">ULONG</span> <span class="n">SyntaxCheck</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">KeyLine</span><span class="p">;);</span>
+	<span class="n">vector</span><span class="o">::</span><span class="n">iterator</span> <span class="n">CreateSection</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">SectionName</span><span class="p">;);</span>
+	<span class="n">VOID</span> <span class="n">CreateKeyValue</span><span class="p">(</span><span class="n">vector</span><span class="o">::</span><span class="n">iterator</span> <span class="n">it</span><span class="p">,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">KeyName</span><span class="p">;,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">Value</span><span class="p">;);</span>
+	<span class="n">BOOL</span> <span class="n">IsSection</span><span class="p">(</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">Line</span><span class="p">;);</span>
+	<span class="n">BOOL</span> <span class="n">SetKeyValue</span><span class="p">(</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">Line</span><span class="p">;,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">Value</span><span class="p">;);</span>
+	<span class="n">string</span> <span class="n">GetKeyValue</span><span class="p">(</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">Line</span><span class="p">;);</span>
+	<span class="n">string</span> <span class="n">GetSectionName</span><span class="p">(</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">Line</span><span class="p">;);</span>
+	<span class="n">string</span> <span class="n">GetKeyName</span><span class="p">(</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">Line</span><span class="p">;);</span>
+	<span class="n">string</span> <span class="n">trim</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span><span class="o">&amp;</span> <span class="n">s</span> <span class="p">,</span><span class="k">const</span> <span class="n">string</span><span class="o">&amp;</span> <span class="n">drop</span> <span class="o">=</span> <span class="s">" "</span><span class="p">);</span>
+	<span class="n">vector</span> <span class="n">m_IniContext</span><span class="p">;</span> 
+	<span class="n">string</span> <span class="n">m_IniPath</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kr">inline</span> <span class="n">BOOL</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">Open</span><span class="p">(</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">IniPath</span><span class="p">;,</span> <span class="n">BOOL</span> <span class="n">OpenAlways</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">ifstream</span> <span class="n">IniFile</span><span class="p">(</span><span class="n">IniPath</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+	<span class="n">INT</span> <span class="n">FileSize</span><span class="p">;</span>
+	<span class="n">vector</span><span class="o">::</span><span class="n">iterator</span> <span class="n">it</span><span class="p">;</span>
+	
+
+	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">IniFile</span><span class="p">.</span><span class="n">is_open</span><span class="p">())</span> <span class="p">{</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">OpenAlways</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="n">m_IniPath</span> <span class="o">=</span> <span class="n">IniPath</span><span class="p">;</span>
+
+		<span class="k">return</span> <span class="n">TRUE</span><span class="p">;</span>
+
+	<span class="p">}</span>
+
+	<span class="n">m_IniPath</span> <span class="o">=</span> <span class="n">IniPath</span><span class="p">;</span>
+
+	<span class="n">IniFile</span><span class="p">.</span><span class="n">seekg</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">ios_base</span><span class="o">::</span><span class="n">end</span><span class="p">);</span>
+	<span class="n">FileSize</span> <span class="o">=</span> <span class="n">IniFile</span><span class="p">.</span><span class="n">tellg</span><span class="p">();</span>
+	<span class="n">IniFile</span><span class="p">.</span><span class="n">seekg</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">ios_base</span><span class="o">::</span><span class="n">beg</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">FileSize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="k">return</span> <span class="n">TRUE</span><span class="p">;</span>
+	<span class="p">}</span>
+	
+
+	<span class="k">while</span> <span class="p">(</span><span class="n">IniFile</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">string</span> <span class="n">IniLine</span><span class="p">;</span>
+		<span class="n">getline</span><span class="p">(</span><span class="n">IniFile</span><span class="p">,</span> <span class="n">IniLine</span><span class="p">);</span>
+
+		<span class="n">m_IniContext</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">IniLine</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="n">it</span> <span class="o">=</span> <span class="n">m_IniContext</span><span class="p">.</span><span class="n">end</span><span class="p">();</span>
+    <span class="n">it</span><span class="o">--</span><span class="p">;</span>
+	<span class="k">while</span> <span class="p">(</span><span class="n">trim</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">).</span><span class="n">empty</span><span class="p">())</span> <span class="p">{</span>
+
+		<span class="n">m_IniContext</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span>
+		<span class="n">it</span> <span class="o">=</span> <span class="n">m_IniContext</span><span class="p">.</span><span class="n">end</span><span class="p">();</span>
+        <span class="n">it</span><span class="o">--</span><span class="p">;</span>
+	<span class="p">}</span>
+	
+	<span class="k">return</span> <span class="n">TRUE</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="n">BOOL</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">IsSection</span><span class="p">(</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">Line</span><span class="p">;</span> <span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">string</span> <span class="n">SectionLine</span> <span class="o">=</span> <span class="n">trim</span><span class="p">(</span><span class="n">Line</span><span class="p">);</span>
+	<span class="n">BOOL</span> <span class="n">Ret</span> <span class="o">=</span> <span class="n">FALSE</span><span class="p">;</span>
+	
+	<span class="k">if</span> <span class="p">(</span><span class="n">SectionLine</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="sc">'['</span> <span class="o">&amp;&amp;</span> <span class="n">SectionLine</span><span class="p">[</span><span class="n">SectionLine</span><span class="p">.</span><span class="n">length</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="sc">']'</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="n">Ret</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="n">Ret</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="n">vector</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">EnumSectionNames</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="n">vector</span> <span class="n">SectionNames</span><span class="p">;</span>
+	<span class="n">vector</span><span class="o">::</span><span class="n">iterator</span> <span class="n">it</span><span class="p">;</span>
+
+	<span class="k">for</span> <span class="p">(</span><span class="n">it</span> <span class="o">=</span> <span class="n">m_IniContext</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">m_IniContext</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="n">IsSection</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">))</span> <span class="p">{</span>
+
+			<span class="n">SectionNames</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">GetSectionName</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">));</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="n">SectionNames</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="n">vector</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">EnumKeyNamesInSection</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">SectionName</span><span class="p">;</span> <span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">vector</span><span class="o">::</span><span class="n">iterator</span> <span class="n">it</span><span class="p">;</span>
+	<span class="n">vector</span> <span class="n">KeyNames</span><span class="p">;</span>
+	<span class="n">ULONG</span> <span class="n">ScanState</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+	<span class="k">for</span> <span class="p">(</span><span class="n">it</span> <span class="o">=</span> <span class="n">m_IniContext</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">m_IniContext</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="n">ScanState</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">IsSection</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span> <span class="o">||</span> <span class="n">GetSectionName</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span> <span class="o">!=</span> <span class="n">SectionName</span><span class="p">)</span> <span class="p">{</span>
+
+				<span class="k">continue</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="n">ScanState</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ScanState</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="k">if</span> <span class="p">(</span><span class="n">IsSection</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">))</span> <span class="p">{</span>
+
+				<span class="k">break</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="n">KeyNames</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">GetKeyName</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">));</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="n">KeyNames</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="n">string</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">GetSectionName</span><span class="p">(</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">Line</span><span class="p">;</span> <span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">INT</span> <span class="n">Count</span> <span class="o">=</span> <span class="n">Line</span><span class="p">.</span><span class="n">length</span><span class="p">();</span>
+	<span class="n">INT</span> <span class="n">i</span><span class="p">;</span>
+	<span class="n">BOOL</span> <span class="n">Start</span> <span class="o">=</span> <span class="n">FALSE</span><span class="p">;</span>
+	<span class="n">string</span> <span class="n">SectionName</span><span class="p">;</span>
+
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">Count</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="n">Line</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="sc">'['</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="n">Start</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">Line</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="sc">']'</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="k">if</span> <span class="p">(</span><span class="n">Start</span><span class="p">)</span> <span class="p">{</span>
+
+				<span class="k">break</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="p">{</span>
+
+			<span class="k">if</span> <span class="p">(</span><span class="n">Start</span><span class="p">)</span> <span class="p">{</span>
+
+				<span class="n">SectionName</span> <span class="o">+=</span> <span class="n">Line</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+				<span class="k">continue</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="n">SectionName</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="n">string</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">GetKeyName</span><span class="p">(</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">Line</span><span class="p">;</span> <span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">string</span> <span class="n">KeyName</span><span class="p">;</span>
+
+	<span class="n">KeyName</span> <span class="o">=</span> <span class="n">Line</span><span class="p">.</span><span class="n">substr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Line</span><span class="p">.</span><span class="n">find_first_of</span><span class="p">(</span><span class="sc">'='</span><span class="p">));</span>
+
+	<span class="k">return</span> <span class="n">trim</span><span class="p">(</span><span class="n">KeyName</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="n">string</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">trim</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span><span class="o">&amp;</span> <span class="n">s</span><span class="p">,</span> <span class="k">const</span> <span class="n">string</span><span class="o">&amp;</span> <span class="n">drop</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">string</span> <span class="n">t</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+	<span class="n">string</span> <span class="n">r</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="n">find_last_not_of</span><span class="p">(</span><span class="n">drop</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+	<span class="k">return</span> <span class="n">r</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">r</span><span class="p">.</span><span class="n">find_first_not_of</span><span class="p">(</span><span class="n">drop</span><span class="p">));</span>
+<span class="p">}</span>
+
+
+<span class="kr">inline</span> <span class="kt">int</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">GetSectionKeyValueInt</span><span class="p">(</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">SectionName</span><span class="p">;,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">KeyName</span><span class="p">;,</span> <span class="kt">int</span> <span class="n">DefaultValue</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">char</span> <span class="n">DefaultValueString</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+    <span class="n">sprintf_s</span><span class="p">(</span><span class="n">DefaultValueString</span><span class="p">,</span> <span class="s">"%d"</span><span class="p">,</span> <span class="n">DefaultValue</span><span class="p">);</span>
+    <span class="n">string</span> <span class="n">ValueString</span> <span class="o">=</span> <span class="n">GetSectionKeyValue</span><span class="p">(</span><span class="n">SectionName</span><span class="p">,</span> <span class="n">KeyName</span><span class="p">,</span> <span class="n">DefaultValueString</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">atoi</span><span class="p">(</span><span class="n">ValueString</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="n">string</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">GetSectionKeyValue</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">SectionName</span><span class="p">;,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">KeyName</span><span class="p">;,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">DefaultValue</span><span class="p">;</span> <span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">vector</span><span class="o">::</span><span class="n">iterator</span> <span class="n">it</span><span class="p">;</span>
+	<span class="n">ULONG</span> <span class="n">ScanState</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="n">string</span> <span class="n">Value</span> <span class="o">=</span> <span class="n">DefaultValue</span><span class="p">;</span>
+
+	<span class="k">for</span> <span class="p">(</span><span class="n">it</span> <span class="o">=</span> <span class="n">m_IniContext</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">m_IniContext</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="n">ScanState</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">IsSection</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span> <span class="o">||</span> <span class="n">GetSectionName</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span> <span class="o">!=</span> <span class="n">SectionName</span><span class="p">)</span> <span class="p">{</span>
+
+				<span class="k">continue</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="n">ScanState</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ScanState</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="k">if</span> <span class="p">(</span><span class="n">IsSection</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">))</span> <span class="p">{</span>
+
+				<span class="k">break</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="k">if</span> <span class="p">(</span><span class="n">SyntaxCheck</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span> <span class="o">!=</span> <span class="n">INI_KEY_LINE</span><span class="p">)</span> <span class="p">{</span>
+
+				<span class="k">continue</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="k">if</span> <span class="p">(</span><span class="n">GetKeyName</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span> <span class="o">==</span> <span class="n">KeyName</span><span class="p">)</span> <span class="p">{</span>
+
+				<span class="n">Value</span> <span class="o">=</span> <span class="n">GetKeyValue</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="n">Value</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="n">string</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">GetKeyValue</span><span class="p">(</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">Line</span><span class="p">;</span> <span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">string</span> <span class="n">KeyName</span><span class="p">;</span>
+
+	<span class="n">KeyName</span> <span class="o">=</span> <span class="n">Line</span><span class="p">.</span><span class="n">substr</span><span class="p">(</span><span class="n">Line</span><span class="p">.</span><span class="n">find_first_of</span><span class="p">(</span><span class="sc">'='</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+ 
+	<span class="k">return</span> <span class="n">trim</span><span class="p">(</span><span class="n">KeyName</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="n">BOOL</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">SetKeyValue</span><span class="p">(</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">Line</span><span class="p">;,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">Value</span><span class="p">;</span> <span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">INT</span> <span class="n">Pos</span> <span class="o">=</span> <span class="n">Line</span><span class="p">.</span><span class="n">find_first_of</span><span class="p">(</span><span class="sc">'='</span><span class="p">);</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">Pos</span> <span class="o">==</span> <span class="n">string</span><span class="o">::</span><span class="n">npos</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">Pos</span> <span class="o">=</span> <span class="n">Line</span><span class="p">.</span><span class="n">find_first_not_of</span><span class="p">(</span><span class="sc">' '</span><span class="p">,</span> <span class="n">Pos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">Pos</span> <span class="o">==</span> <span class="n">string</span><span class="o">::</span><span class="n">npos</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="n">Pos</span> <span class="o">=</span> <span class="n">Line</span><span class="p">.</span><span class="n">find_first_of</span><span class="p">(</span><span class="sc">'='</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">Line</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">Pos</span><span class="p">);</span>
+	<span class="n">Line</span> <span class="o">+=</span> <span class="n">Value</span><span class="p">;</span>
+
+	<span class="k">return</span> <span class="n">TRUE</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="n">BOOL</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">SetSectionKeyValueInt</span><span class="p">(</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">SectionName</span><span class="p">;,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">KeyName</span><span class="p">;,</span> <span class="kt">int</span> <span class="n">Value</span><span class="p">,</span> <span class="n">BOOL</span> <span class="n">CreateNew</span> <span class="cm">/*= TRUE*/</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">char</span> <span class="n">ValueString</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+    <span class="n">sprintf_s</span><span class="p">(</span><span class="n">ValueString</span><span class="p">,</span> <span class="s">"%d"</span><span class="p">,</span> <span class="n">Value</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">SetSectionKeyValue</span><span class="p">(</span><span class="n">SectionName</span><span class="p">,</span> <span class="n">KeyName</span><span class="p">,</span> <span class="n">ValueString</span><span class="p">,</span> <span class="n">CreateNew</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="n">BOOL</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">SetSectionKeyValue</span><span class="p">(</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">SectionName</span><span class="p">;,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">KeyName</span><span class="p">;,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">Value</span><span class="p">;,</span> <span class="n">BOOL</span> <span class="n">CreateNew</span> <span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">vector</span><span class="o">::</span><span class="n">iterator</span> <span class="n">it</span><span class="p">;</span>
+	<span class="n">ULONG</span> <span class="n">ScanState</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="n">BOOL</span> <span class="n">Ret</span> <span class="o">=</span> <span class="n">FALSE</span><span class="p">;</span>
+
+	<span class="k">for</span> <span class="p">(</span><span class="n">it</span> <span class="o">=</span> <span class="n">m_IniContext</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">m_IniContext</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="n">ScanState</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">IsSection</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span> <span class="o">||</span> <span class="n">GetSectionName</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span> <span class="o">!=</span> <span class="n">SectionName</span><span class="p">)</span> <span class="p">{</span>
+
+				<span class="k">continue</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="n">ScanState</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ScanState</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="k">if</span> <span class="p">(</span><span class="n">IsSection</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">))</span> <span class="p">{</span>
+
+				<span class="k">break</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="k">if</span> <span class="p">(</span><span class="n">SyntaxCheck</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span> <span class="o">==</span> <span class="n">INI_KEY_LINE</span> <span class="o">||</span> <span class="n">SyntaxCheck</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span> <span class="o">==</span> <span class="n">INI_NC_KEY_LINE</span><span class="p">)</span> <span class="p">{</span>
+
+				<span class="k">if</span> <span class="p">(</span><span class="n">GetKeyName</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">)</span> <span class="o">==</span> <span class="n">KeyName</span><span class="p">)</span> <span class="p">{</span>
+
+					<span class="n">Ret</span> <span class="o">=</span> <span class="n">SetKeyValue</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">,</span> <span class="n">Value</span><span class="p">);</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">CreateNew</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">Ret</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="n">ScanState</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="n">it</span> <span class="o">=</span> <span class="n">CreateSection</span><span class="p">(</span><span class="n">SectionName</span><span class="p">);</span>
+			<span class="n">CreateKeyValue</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">KeyName</span><span class="p">,</span> <span class="n">Value</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ScanState</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="n">it</span><span class="o">--</span><span class="p">;</span>
+			<span class="n">CreateKeyValue</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">KeyName</span><span class="p">,</span> <span class="n">Value</span><span class="p">);</span>
+		<span class="p">}</span>
+
+		<span class="n">Ret</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="n">Ret</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="n">BOOL</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">Flush</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="n">ofstream</span> <span class="n">IniFile</span><span class="p">(</span><span class="n">m_IniPath</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+	<span class="n">vector</span><span class="o">::</span><span class="n">iterator</span> <span class="n">it</span><span class="p">;</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">IniFile</span><span class="p">.</span><span class="n">is_open</span><span class="p">())</span> <span class="p">{</span>
+
+		<span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">for</span> <span class="p">(</span><span class="n">it</span> <span class="o">=</span> <span class="n">m_IniContext</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">m_IniContext</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="n">IniFile</span> <span class="o">&lt;&lt;</span> <span class="n">it</span><span class="o">-&gt;</span><span class="n">c_str</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="n">TRUE</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="n">VOID</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">Close</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="n">vector</span><span class="o">::</span><span class="n">iterator</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">CreateSection</span><span class="p">(</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">SectionName</span><span class="p">;</span> <span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">string</span> <span class="n">FullSectionName</span><span class="p">;</span>
+	<span class="n">vector</span><span class="o">::</span><span class="n">iterator</span> <span class="n">it</span><span class="p">;</span>
+
+	<span class="n">FullSectionName</span> <span class="o">+=</span> <span class="sc">'['</span><span class="p">;</span>
+	<span class="n">FullSectionName</span> <span class="o">+=</span> <span class="n">SectionName</span><span class="p">;</span>
+	<span class="n">FullSectionName</span> <span class="o">+=</span> <span class="sc">']'</span><span class="p">;</span>
+
+	<span class="n">m_IniContext</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">FullSectionName</span><span class="p">);</span>
+	<span class="n">it</span> <span class="o">=</span> <span class="n">m_IniContext</span><span class="p">.</span><span class="n">begin</span><span class="p">()</span> <span class="o">+</span> <span class="n">m_IniContext</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+	<span class="k">return</span> <span class="n">it</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="n">VOID</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">CreateKeyValue</span><span class="p">(</span> <span class="n">vector</span><span class="o">::</span><span class="n">iterator</span> <span class="n">it</span><span class="p">,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">KeyName</span><span class="p">;,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">Value</span><span class="p">;</span> <span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">string</span> <span class="n">KeyInfo</span><span class="p">;</span>
+
+	<span class="n">KeyInfo</span> <span class="o">+=</span> <span class="n">KeyName</span><span class="p">;</span>
+	<span class="n">KeyInfo</span> <span class="o">+=</span> <span class="s">" = "</span><span class="p">;</span>
+	<span class="n">KeyInfo</span> <span class="o">+=</span> <span class="n">Value</span><span class="p">;</span>
+	<span class="k">while</span> <span class="p">(</span><span class="n">it</span> <span class="o">!=</span> <span class="n">m_IniContext</span><span class="p">.</span><span class="n">begin</span><span class="p">())</span> <span class="p">{</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">trim</span><span class="p">(</span><span class="o">*</span><span class="n">it</span><span class="p">).</span><span class="n">empty</span><span class="p">())</span> <span class="p">{</span>
+
+			<span class="k">break</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="n">it</span><span class="o">--</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">m_IniContext</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">it</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">KeyInfo</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span> <span class="n">ULONG</span> <span class="n">CParseIniA</span><span class="o">::</span><span class="n">SyntaxCheck</span><span class="p">(</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">KeyLine</span><span class="p">;</span> <span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">string</span> <span class="n">Line</span> <span class="o">=</span> <span class="n">trim</span><span class="p">(</span><span class="n">KeyLine</span><span class="p">);</span>
+	<span class="n">INT</span> <span class="n">Pos</span><span class="p">,</span> <span class="n">CommentPos1</span><span class="p">,</span> <span class="n">CommentPos2</span><span class="p">;</span>
+	<span class="n">string</span> <span class="n">KeyName</span><span class="p">;</span>
+	<span class="n">string</span> <span class="n">Value</span><span class="p">;</span>
+	
+	<span class="k">if</span> <span class="p">(</span><span class="n">IsSection</span><span class="p">(</span><span class="n">Line</span><span class="p">))</span> <span class="p">{</span>
+
+		<span class="k">return</span> <span class="n">INI_SECTION_LINE</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">Line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="sc">';'</span> <span class="o">||</span> <span class="n">Line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="sc">'#'</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="k">return</span> <span class="n">INI_COMMENT_LINE</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">else</span> <span class="p">{</span>
+
+		<span class="n">Pos</span> <span class="o">=</span> <span class="n">Line</span><span class="p">.</span><span class="n">find_first_of</span><span class="p">(</span><span class="sc">'='</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">string</span><span class="o">::</span><span class="n">npos</span> <span class="o">==</span> <span class="n">Pos</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="k">return</span> <span class="n">INI_WORNG_SYNTAX</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="n">KeyName</span> <span class="o">=</span> <span class="n">trim</span><span class="p">(</span><span class="n">Line</span><span class="p">.</span><span class="n">substr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Pos</span><span class="p">));</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">KeyName</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span> <span class="p">{</span>
+
+			<span class="k">return</span> <span class="n">INI_WORNG_SYNTAX</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="n">Value</span> <span class="o">=</span> <span class="n">trim</span><span class="p">(</span><span class="n">Line</span><span class="p">.</span><span class="n">substr</span><span class="p">(</span><span class="n">Pos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">));</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">Value</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span> <span class="p">{</span>
+
+			<span class="k">return</span> <span class="n">INI_NC_KEY_LINE</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="n">CommentPos1</span> <span class="o">=</span> <span class="n">Value</span><span class="p">.</span><span class="n">find_first_of</span><span class="p">(</span><span class="sc">';'</span><span class="p">);</span>
+		<span class="n">CommentPos2</span> <span class="o">=</span> <span class="n">Value</span><span class="p">.</span><span class="n">find_first_of</span><span class="p">(</span><span class="sc">'#'</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">CommentPos1</span> <span class="o">==</span> <span class="n">string</span><span class="o">::</span><span class="n">npos</span> <span class="o">&amp;&amp;</span> <span class="n">CommentPos2</span> <span class="o">==</span> <span class="n">string</span><span class="o">::</span><span class="n">npos</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="k">return</span> <span class="n">INI_KEY_LINE</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="n">CommentPos1</span> <span class="o">=</span> <span class="n">CommentPos1</span> <span class="o">&lt;</span> <span class="n">CommentPos2</span> <span class="o">?</span> <span class="n">CommentPos1</span> <span class="o">:</span> <span class="n">CommentPos2</span><span class="p">;</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="n">Value</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">CommentPos1</span><span class="p">).</span><span class="n">empty</span><span class="p">())</span> <span class="p">{</span>
+
+			<span class="k">return</span> <span class="n">INI_NC_KEY_LINE</span><span class="p">;</span>
+		<span class="p">}</span>
+		
+		<span class="k">return</span> <span class="n">INI_KEY_LINE</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cp">#endif</span><span class="w">
+</span></pre></td></tr></tbody></table>
+
+
+</code></pre></div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">0CCh</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>0CCh</li>
+          <li><a href="mailto:nightxie@gmail.com">nightxie@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/0CCh">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">0CCh</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">printf("I am programmer!");
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

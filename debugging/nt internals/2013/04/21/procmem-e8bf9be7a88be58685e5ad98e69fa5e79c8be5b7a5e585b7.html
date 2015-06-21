@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>ProcMem —— 进程内存查看工具</title>
+  <meta name="description" content="ProcMem是一个进程内存的查看工具，他可以显示进程中的内存分配情况，以及内存大概的用途，并且Dump指定的内存模块。工具界面如下图">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://0cch.com/debugging/nt%20internals/2013/04/21/procmem-e8bf9be7a88be58685e5ad98e69fa5e79c8be5b7a5e585b7.html">
+  <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">0CCh</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">ProcMem —— 进程内存查看工具</h1>
+    <p class="post-meta">Apr 21, 2013 • admin</p>
+  </header>
+
+  <article class="post-content">
+    <p>ProcMem是一个进程内存的查看工具，他可以显示进程中的内存分配情况，以及内存大概的用途，并且Dump指定的内存模块。工具界面如下图</p>
+
+<p><a href="/uploads/2013/04/20130421231145.png"><img src="/uploads/2013/04/20130421231145.png" alt="20130421231145" /></a>ProcMem并不是实时监控目标进程的内存情况，而是对内存情况作了一次快照和统计，并且显示出来。所以想看到进程最新的内存状态，可以点击Refresh菜单。</p>
+
+<p>工具上半部分就是显示的目标进程的内存分布情况，以及一些细节信息。这里必须要谈到一点，Windows的标准控件中没有TreeList，对我这个写100个程序99个没有界面的人来说，自绘这个东西差点没要了我的命。</p>
+
+<p>工具的下半部分用来显示TreeList选中项的内存情况，十六进制表示。值得注意的是，这里只会显示选中内存头个PAGE_SIZE大小的内存情况。如果想查看该项内存的全部情况，可以使用Dump功能，把内存Dump下来，然后用WinHex这样的工具查看，这个简单的内存显示区，只是为了提供一个预览功能而已。</p>
+
+<p>值得一提的是，菜单Find，不是用来查找下方十六进制内存显示的内容，而是用来查找TreeList中的项目。例如想找到有关ntdll的内存区域，可以在查找框中输入ntdll，这样就可以定位如图所示的项目了。</p>
+
+<p>这个工具是我花了大半周的业余时间弄的，时间比较仓促，不可避免的可能会有些bug。如果你刚好用上了这个工具，而且发现了bug，不妨通过邮件联系我（邮箱地址见<a href="http://0cch.net/wordpress/?page_id=2">About Me</a>页面）。</p>
+
+<p>下载<a href="/uploads/2013/04/ProcMem.zip">ProcMem</a>(包括32和64位版本)</p>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">0CCh</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>0CCh</li>
+          <li><a href="mailto:nightxie@gmail.com">nightxie@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/0CCh">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">0CCh</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">printf("I am programmer!");
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

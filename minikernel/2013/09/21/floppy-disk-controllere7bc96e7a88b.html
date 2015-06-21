@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Floppy Disk Controller编程</title>
+  <meta name="description" content="">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://0cch.com/minikernel/2013/09/21/floppy-disk-controllere7bc96e7a88b.html">
+  <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">0CCh</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Floppy Disk Controller编程</h1>
+    <p class="post-meta">Sep 21, 2013 • admin</p>
+  </header>
+
+  <article class="post-content">
+    <p><a href="/uploads/2013/09/N82077AA.jpg"><img src="/uploads/2013/09/N82077AA.jpg" alt="N82077AA" /></a></p>
+
+<p>看的没错，这篇文章将描述一些关于Floppy Disk Controller的编程知识。我们知道，在当今的计算机硬件体系中，软盘驱动器是一个已经完全被淘汰的设备，那么为什么还要有这样一篇文章？原因很简单，如果想构建自己的操作系统，必须有相应的存储介质，而软盘正是这样一个好的存储介质。他的容量虽然很小，但是却完全足够应付我们的内核程序，另一方面软盘驱动器的控制相对于之前我所介绍的硬盘的控制要简单的多，而且关于软盘驱动器控制的教程和文章在互联网上也非常的多（虽然绝大部分都是英文的）。基于以上几点，我认为还是有必要把自己学到的知识写下了分享。</p>
+
+<p>Floppy Disk Controller，中文称为：软盘控制器，简称：FDC，是一个用来控制软盘驱动器的芯片。在1980年代到1990年代，软盘控制器普遍使用于个人电脑以及与IBM PC兼容的机型上，如 8272A、82078、82077SL以及82077AA，其中82077AA是最先进的一款芯片（1991年开始生产）。除了软盘控制器，软驱本身也在几十年的历史中留下了许多机型，如图所示：
+<a href="/uploads/2013/09/floppy_types.png"><img src="/uploads/2013/09/floppy_types.png" alt="floppy_types" /></a>
+实际上，我从刚刚接触软盘到最后软盘被淘汰，只使用过3.5英寸1.44MB的软盘，其他型号完全没有接触过。</p>
+
+<p>对于CPU还运行在实模式下的启动引导程序和内核程序，我们可以调用BIOS提供的函数来完成软盘的访问，其中中断号是13h（INT13h），功能号为2（AH=2）是读取操作，功能号为3（AH=3）时是写入操作。实模式下通过中断读写软盘的资料很多（包括中文资料），如果想了解更多的实模式下访问软盘的知识，可以上网google一下，我这里就不做详细的介绍了。</p>
+
+<p>虽然调用中断访问软盘简单，但是我们不能让自己的内核总是跑在实模式下啊。所以我们需要写一个能跑在保护模式下的软驱驱动，要完成这样的驱动，就必须对FDC进行编程了。不过在此之前，我们需要知道，到底PC上有没有软驱。要获得这个信息，我们需要读取CMOS，然后解析读取的信息即可。</p>
+
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14</pre></td><td class="code"><pre><span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">70</span><span class="n">h</span>
+<span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">10</span><span class="n">h</span>
+<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
+
+<span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">71</span><span class="n">h</span>
+<span class="n">in</span>  <span class="n">al</span><span class="p">,</span> <span class="n">dx</span>
+
+<span class="n">mov</span> <span class="n">f_b</span><span class="p">,</span> <span class="n">al</span>
+<span class="n">and</span> <span class="n">f_b</span><span class="p">,</span> <span class="mi">0</span><span class="n">fh</span>
+<span class="n">shr</span> <span class="n">al</span><span class="p">,</span> <span class="mi">4</span>
+<span class="n">mov</span> <span class="n">f_a</span><span class="p">,</span> <span class="n">al</span>
+
+<span class="n">f_a</span> <span class="n">db</span>	<span class="mi">0</span><span class="n">h</span>
+<span class="n">f_b</span> <span class="n">db</span>	<span class="mi">0</span><span class="n">h</span><span class="w">
+</span></pre></td></tr></tbody></table>
+
+
+
+要从CMOS中获得软盘信息，我们需要先给对应的端口设置正确的索引，然后再去数据端口读取数据。具体做法是设置0x70端口为0x10，然后读取0x71端口。读取到的信息都放在一个字节中，需要把字节分为两个部分，高四位是驱动器A的类型索引号，低四位是驱动器B的类型索引号。索引号与软盘类型的对应关系如下图所示：
+[![cmos_floppytype](/uploads/2013/09/cmos_floppytype.png)](/uploads/2013/09/cmos_floppytype.png)
+
+在确认了软驱存在的情况下，接下来就可以对FDC进行编程了。先来看看FDC的几个基本知识。
+
+**寻址方式**
+软盘驱动器使用CHS寻址方式。软盘介质总是有两个头（面），但磁道数和每个磁道的扇区扇区数是不一定的。通常情况下，1.44mb的软盘，他有80个磁道和每个磁道有18个扇区。另外值得注意的是，磁道和磁头是从0开始计算，但是扇区是从1开始计数的。即，有效的磁道通常为0到79，磁头为0或1，而扇区号是1到18的。如果访问0号扇区，那么一定会引起访问错误的。
+
+**数据传输方式**
+和硬盘的数据传输方式一样，软盘也支持PIO和DMA两种数据传输方式。
+软盘使用的通常是ISA DMA方式（这和 PCI BusMastering DMA完全是两码事）。使用DMA传输的方法，简单来说就是这是DMA的通道2，如传输的字节数以及对应的物理地址。物理地址必须是以64k为边界的。当然，还需要设置IRQ6，当数据传输结束的时候，控制器将发送一个IRQ6的中断。用DMA传输数据，这个过程是不需要占用CPU时间的，对于多任务的系统是比较好的选择。缺点是ISA DMA这种古老的DMA比PIO还要慢。
+PIO数据传输既可以使用轮询，也能使用中断。使用PIO模式传输数据的速度比DMA传输快10％，但这会消耗CPU周期，是一个巨大的成本问题。然而，如果我们的操作系统或应用程序是单任务的，那么没有别的程序需要CPU，这样你就也可以使用PIO模式。使用PIO的要点是，在设置好了各种命令后，需要等待中断或者轮询状态结果，最后还需要使用IO的方式，读取数据，也就是这部分需要消耗额外的CPU周期。
+值得注意的是，bochs并不支持PIO模式，使用PIO模式的时候bochs会报错，提示没有完全实现PIO模式。所以我在实验代码中也没有写PIO的代码。毕竟我的实验环境是bochs。
+
+**ISA DMA**
+ISA DMA全称Industry Standard Architecture Direct Memory Access，是一种古老的DMA方式，速度比PIO还要慢，但是编程相对于PCI BusMastering DMA要简单一点。这里我并不打算详细介绍ISA DMA，因为说明它需要的篇幅不亚于这篇。后面的代码中，在必要的地方我会加入一些解释。
+
+**3种模式**
+这三种模式是：PC-AT模式，PS/2模式，Mode 30模式。现在最有可能看到硬件上仍然运行模式是30模式。
+
+FDC寄存器
+[![floppy_regs](/uploads/2013/09/floppy_regs.png)](/uploads/2013/09/floppy_regs.png)
+
+如上图所示，上面的寄存器我们不会都用到，一般情况下大概只会用到一半的样子，其他的我们可以暂时不去理会。另外我在这里不会列出每个寄存器的详细参数，因为这些参数很多而且复杂，不仅单调乏味，而且容易让初学者望而却步。我采取的做法是，先列出控制FDC的代码，然后在需要讲解的地方详细的说明。
+
+**实践**
+下面就是一段控制FDC读取软盘数据的代码。需要说明的是这份代码为了保持简洁易学，它没有任何的错误检测，另外代码也假设了你已经初始化了PIC，并且设置好了IRQ6。
+
+
+
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123</pre></td><td class="code"><pre><span class="p">;</span> <span class="n">MASM</span><span class="err">的宏应该不陌生吧，就不做解释了。</span>
+<span class="n">outb</span> <span class="n">macro</span> <span class="n">port</span><span class="o">:</span><span class="n">req</span><span class="p">,</span> <span class="n">b</span><span class="o">:</span><span class="n">req</span>
+    <span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="n">port</span>
+    <span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="n">b</span>
+    <span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
+<span class="n">endm</span>
+
+<span class="n">inb</span> <span class="n">macro</span> <span class="n">port</span><span class="o">:</span><span class="n">req</span>
+    <span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="n">port</span>
+    <span class="n">in</span> <span class="n">al</span><span class="p">,</span> <span class="n">dx</span>
+<span class="n">endm</span>
+
+<span class="n">wait_status</span> <span class="n">macro</span>
+    <span class="n">inb</span> <span class="mi">3</span><span class="n">f4h</span>
+<span class="err">@@</span><span class="o">:</span>
+    <span class="n">test</span> <span class="n">al</span><span class="p">,</span> <span class="mi">80</span><span class="n">h</span>
+    <span class="n">jz</span> <span class="err">@</span><span class="n">B</span>
+<span class="n">endm</span>
+
+<span class="p">;</span> <span class="n">ISA</span> <span class="n">DMA</span> <span class="err">初始化部分，</span> <span class="err">由于</span><span class="n">ISA</span> <span class="n">DMA</span><span class="err">不是这篇文章的重点</span>
+<span class="p">;</span> <span class="err">所以这里只说明大概的用途。</span>
+<span class="n">outb</span> <span class="mi">0</span><span class="n">dh</span><span class="p">,</span> <span class="mi">0</span><span class="n">ffh</span>      <span class="p">;</span> <span class="err">重置</span><span class="n">DMA</span><span class="err">控制器</span>
+<span class="n">outb</span> <span class="mi">0</span><span class="n">ah</span><span class="p">,</span> <span class="mi">6</span><span class="n">h</span>        <span class="p">;</span> <span class="err">选择设置</span><span class="mi">2</span><span class="err">号</span><span class="n">DMA</span><span class="err">通道</span>
+<span class="n">outb</span> <span class="mi">0</span><span class="n">ch</span><span class="p">,</span> <span class="mi">0</span><span class="n">ffh</span>      <span class="p">;</span> <span class="err">重置</span><span class="n">Flipflop</span><span class="err">寄存器</span>
+<span class="n">outb</span> <span class="mi">4</span><span class="n">h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>         <span class="p">;</span> <span class="err">设置</span><span class="n">DMA</span><span class="err">的物理地址，需要设置两次</span>
+<span class="n">outb</span> <span class="mi">4</span><span class="n">h</span><span class="p">,</span> <span class="mi">0</span><span class="n">f0h</span>       <span class="p">;</span> <span class="err">我这里设置的是</span><span class="mh">0xf000</span>
+<span class="n">outb</span> <span class="mi">81</span><span class="n">h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>        <span class="p">;</span> <span class="err">设置地址</span><span class="mi">24</span><span class="n">bit</span><span class="err">的高</span><span class="mi">8</span><span class="n">bit</span><span class="err">为</span><span class="mi">0</span><span class="err">，也就是</span><span class="mh">0x00f000</span>
+<span class="n">outb</span> <span class="mi">0</span><span class="n">ch</span><span class="p">,</span> <span class="mi">0</span><span class="n">ffh</span>      <span class="p">;</span> <span class="err">重置</span><span class="n">Flipflop</span><span class="err">寄存器</span>
+<span class="n">outb</span> <span class="mi">5</span><span class="n">h</span><span class="p">,</span> <span class="mi">0</span><span class="n">ffh</span>       <span class="p">;</span> <span class="err">设置物理内存大小，其大小为</span><span class="n">Length</span><span class="o">-</span><span class="mi">1</span>
+<span class="n">outb</span> <span class="mi">5</span><span class="n">h</span><span class="p">,</span> <span class="mi">0</span><span class="n">fh</span>        <span class="p">;</span> <span class="err">我这里的内存大小是</span><span class="mh">0x1000</span><span class="err">，所以设置为</span><span class="mh">0xfff</span>
+<span class="n">outb</span> <span class="mi">0</span><span class="n">ah</span><span class="p">,</span> <span class="mi">2</span><span class="n">h</span>        <span class="p">;</span> <span class="err">选择清除</span><span class="mi">2</span><span class="err">号</span><span class="n">DMA</span><span class="err">通道</span>
+
+<span class="p">;</span> <span class="n">FDC</span><span class="err">的初始化过程</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f2h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>       <span class="p">;</span> <span class="mf">1.</span><span class="err">重置数字输出寄存器</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f2h</span><span class="p">,</span> <span class="mi">0</span><span class="n">ch</span>
+<span class="n">call</span> <span class="n">WaitIrq</span>
+
+<span class="n">mov</span> <span class="n">ecx</span><span class="p">,</span> <span class="mi">4</span>
+<span class="n">check_int</span><span class="o">:</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">8</span><span class="n">h</span>       <span class="p">;</span> <span class="err">发送</span><span class="mi">8</span><span class="err">号命令，该命令清除控制器触发的中断</span>
+<span class="n">wait_status</span>         <span class="p">;</span> <span class="err">并且返回结果，这里重复</span><span class="mi">4</span><span class="err">次，是为了清除</span><span class="mi">4</span><span class="err">个软驱的状态</span>
+<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
+<span class="n">wait_status</span>
+<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
+<span class="n">wait_status</span>
+<span class="n">loop</span> <span class="n">check_int</span>
+
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f7h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>       <span class="p">;</span> <span class="mf">2.</span><span class="err">设置传输速度为</span><span class="mi">500</span><span class="n">kb</span><span class="o">/</span><span class="n">s</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">3</span><span class="n">h</span>       <span class="p">;</span> <span class="mf">3.</span><span class="err">设置</span><span class="n">FDC</span><span class="err">里面三个时钟以及</span><span class="n">DMA</span><span class="err">。</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">dfh</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">2</span><span class="n">h</span>
+
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f2h</span><span class="p">,</span> <span class="mi">1</span><span class="n">ch</span>      <span class="p">;</span> <span class="err">开启软驱电动机</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">7</span><span class="n">h</span>       <span class="p">;</span> <span class="err">发送校验命令</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>       <span class="p">;</span> <span class="err">选择</span><span class="mi">0</span><span class="err">号软驱</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">8</span><span class="n">h</span>       <span class="p">;</span> <span class="err">发送清楚中断命令，获得结果</span>
+<span class="n">wait_status</span>
+<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
+<span class="n">wait_status</span>
+<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f2h</span><span class="p">,</span> <span class="mi">4</span><span class="n">h</span>       <span class="p">;</span> <span class="err">关闭电动机</span>
+
+<span class="p">;</span> <span class="err">接下来是软盘的读取操作</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f2h</span><span class="p">,</span> <span class="mi">1</span><span class="n">ch</span>      <span class="p">;</span> <span class="err">开启电动机</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">fh</span>      <span class="p">;</span> <span class="mf">4.</span><span class="err">发送</span><span class="mi">0</span><span class="n">f</span><span class="err">寻道命令</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">8</span><span class="n">h</span>       <span class="p">;</span> <span class="err">发送清楚中断命令，获得结果</span>
+<span class="n">wait_status</span>
+<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
+<span class="n">wait_status</span>
+<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
+
+<span class="p">;</span> <span class="err">设置</span><span class="n">ISA</span> <span class="n">DMA</span><span class="err">为读取</span>
+<span class="n">outb</span> <span class="mi">0</span><span class="n">ah</span><span class="p">,</span> <span class="mi">6</span><span class="n">h</span>
+<span class="n">outb</span> <span class="mi">0</span><span class="n">bh</span><span class="p">,</span> <span class="mi">46</span><span class="n">h</span>
+<span class="n">outb</span> <span class="mi">0</span><span class="n">ah</span><span class="p">,</span> <span class="mi">2</span><span class="n">h</span>
+
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mf">0e6</span><span class="n">h</span>     <span class="p">;</span> <span class="mf">5.</span><span class="err">发送读取扇区命令</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>       <span class="p">;</span> <span class="err">设置磁头和驱动器号</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>       <span class="p">;</span> <span class="err">设置磁道</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>       <span class="p">;</span> <span class="err">设置磁头</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">1</span><span class="n">h</span>       <span class="p">;</span> <span class="err">设置扇区号</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">2</span><span class="n">h</span>       <span class="p">;</span> <span class="err">设置扇区大小</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">8</span><span class="n">h</span>       <span class="p">;</span> <span class="err">设置读取扇区数量</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">1</span><span class="n">bh</span>      <span class="p">;</span> <span class="err">设置磁盘为</span><span class="mf">3.5</span><span class="err">英寸</span>
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">ffh</span>     <span class="p">;</span> <span class="err">设置读取长度，总是</span><span class="mh">0xff</span>
+
+<span class="n">call</span> <span class="n">WaitIrq</span>
+
+<span class="n">mov</span> <span class="n">ecx</span><span class="p">,</span> <span class="mi">7</span>
+<span class="n">loop_ret</span><span class="o">:</span>
+<span class="n">wait_status</span>
+<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
+<span class="n">loop</span> <span class="n">loop_ret</span>
+
+<span class="n">wait_status</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">8</span><span class="n">h</span>       <span class="p">;</span> <span class="err">发送清楚中断命令，获得结果</span>
+<span class="n">wait_status</span>
+<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
+<span class="n">wait_status</span>
+<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
+<span class="n">outb</span> <span class="mi">3</span><span class="n">f2h</span><span class="p">,</span> <span class="mi">4</span><span class="n">h</span>       <span class="p">;</span> <span class="err">关闭电动机</span><span class="w">
+</span></pre></td></tr></tbody></table>
+
+
+
+1.重置数字输出寄存器
+这是一个只写寄存器，可以用来控制FDC，例如控制软驱电动机，重置控制器，选择目标软驱，设置数据模式，以下是他的详细参数
+Bits 0-1
+00 - 软驱 0
+01 - 软驱 1
+10 - 软驱 2
+11 - 软驱 3
+Bit 2 重置
+0 - 重置控制器
+1 - 开启控制器
+Bit 3 模式
+0 - IRQ 模式
+1 - DMA 模式
+Bits 4 - 7 电动机控制器 (软驱 0 - 3)
+0 - 停止电动机
+1 - 开启电动机
+
+我这里设置的是0Ch也就是说，选择了0号软驱，开启了控制器和DMA模式。
+
+2.设置传输速度为500kb/s
+这个寄存器只有前两位有效，下面两位不同的组合表达了不同的速度，如下表：
+00 500 Kbps
+10 250 Kbps
+01 300 Kbps
+11 1 Mbps
+
+3.设置FDC里面三个时钟以及DMA
+三个时钟分别是步进速率时钟、磁头卸载时钟和磁头装入时钟。数据格式如下：
+S S S S H H H H - S=步进速率时钟 H=磁头卸载时钟
+H H H H H H H NDMA - H=磁头装入时钟 NDMA=0 (DMA模式) 或者 1 (非DMA模式)
+实际上这个大家可以随意设置，我设置的是步进速率时钟=3ms, 磁头卸载时钟=240ms, 磁头装入时钟=16ms
+
+4.发送寻道命令进行寻道
+寻道命令的参数是两个自己，分别代表磁头、柱面和驱动器号，格式如下
+x x x x x HD DR1 DR0 - HD=磁头 DR1/DR0 = 驱动器
+C C C C C C C C - C=柱面
+
+5.发送读取扇区命令
+读取和写入命令一样，有8个参数和7个返回值！
+第1个参数字节 = (磁头号 &lt;&lt; 2) | 驱动器号 (驱动器号必须是当前选择的驱动器)
+第2个参数字节 = 柱面号
+第3个参数字节 = 磁头号 (没错，重复了 = =)
+第4个参数字节 = 开始的扇区号
+第5个参数字节 = 2 (总是2，代表软盘扇区大小总是512字节)
+第6个参数字节 = 操作扇区数
+第7个参数字节 = 0x1b (软盘大小是3.5in)
+第8个参数字节 = 0xff (总是0xff)
+这里不关心返回值，如果有兴趣可以自己查找资料。
+
+读取就是这样，如果要写入安排，只需要更改命令即可，这里就不再赘述了。最后按照国际惯例，提供一些深入学习的链接：
+[http://wiki.osdev.org/Floppy](http://wiki.osdev.org/Floppy)
+[http://en.wikipedia.org/wiki/Floppy](http://en.wikipedia.org/wiki/Floppy)
+[http://www.isdaman.com/alsos/hardware/fdc/floppy.htm](http://www.isdaman.com/alsos/hardware/fdc/floppy.htm)
+[http://www.osdever.net/documents/82077AA_FloppyControllerDatasheet.pdf](http://www.osdever.net/documents/82077AA_FloppyControllerDatasheet.pdf?the_id=41)
+</code></pre></div></code></pre></div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">0CCh</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>0CCh</li>
+          <li><a href="mailto:nightxie@gmail.com">nightxie@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/0CCh">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">0CCh</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">printf("I am programmer!");
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

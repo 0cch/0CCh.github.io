@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>R3卸载任意消息钩子</title>
+  <meta name="description" content="这是工作中遇到的一个问题。一个程序每次起来后会去挂鼠标键盘低级钩子，这类钩子恶心的地方是如果你用调试工具attach上去，鼠标键盘就会急剧的延时，就跟挂起差不多了，根本无法使用键盘鼠标。MSDN上面指明，设置LowLevelHooksTimeout可以帮助解决这个问题。但是无奈的是，似乎没起什么作用，渣英语，不知...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://0cch.com/nt%20internals/2012/12/26/r3e58db8e8bdbde4bbbbe6848fe6b688e681afe992a9e5ad90.html">
+  <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">0CCh</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">R3卸载任意消息钩子</h1>
+    <p class="post-meta">Dec 26, 2012 • admin</p>
+  </header>
+
+  <article class="post-content">
+    <p>这是工作中遇到的一个问题。一个程序每次起来后会去挂鼠标键盘低级钩子，这类钩子恶心的地方是如果你用调试工具attach上去，鼠标键盘就会急剧的延时，就跟挂起差不多了，根本无法使用键盘鼠标。MSDN上面指明，设置LowLevelHooksTimeout可以帮助解决这个问题。但是无奈的是，似乎没起什么作用，渣英语，不知道是不是我的理解有误。</p>
+
+<p>其他比较好的解决方案也有。比较好的一个就是用远程调试的方式，这种方式可以在hook存在的情况下调试程序，甚至调试hook的函数。另一个办法就是attach之前，卸载低级钩子。对于调试和钩子无关地方的时候，第二个选择也还是不错的。所以，Xuetr的卸载消息钩子的功能派上了用场。每次调试此程序之前，都先卸载钩子。但是还是有问题，我们都有这样的经验，在进行调试的时候经常需要restart程序，并且重新开始调试。这样可就恶心了，每次都要卸载一次钩子。于是，我就写了一个程序，循环查询低级鼠标键盘钩子，发现后立刻卸载，这样调试这个程序就会比较轻松了。</p>
+
+<p>虽然说用驱动写这个功能看起来比较轻松，实际上R3实现也很简单。这里用到的关键之时是Desktop Heap会在GUI进程中映射到用户态内存上，这也就给了我们可乘之机。简单介绍一些Desktop Heap是什么。我们都知道一个桌面都有个Desktop Object的对象，而实际上美国Desktop Object都会有一个对应他的Desktop Heap。Desktop Heap主要存储用户交互对象（user interface objects），这其中就包括Window，Menu，Hook等等。既然Hook存储在Desktop heap，而且Desktop heap又刚好映射到R3内存，那么我们就可以顺利的读取他了。这里，可能会有一个疑问，怎么知道Hook存储在Desktop Heap，而不是Share Heap或者其他。实际上Windows的Win32k中有一个Handle Information Table，指明了每种Object的存储类型。</p>
+
+<p>现在是已经知道了可以去读Hook对象，但是上哪去读就是要解决的问题了。这里就要提到老生常谈的Sharedinfo了。用户态的Sharedinfo获取方法很多，顺手就行。与上面问题相关的就是Sharedinfo里面会有一个Handle Entry Table，里面存储的就是包括Hook在内的User Object。Entry的结构如下（来自reactos）：</p>
+
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8</pre></td><td class="code"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">_HANDLEENTRY</span>
+<span class="p">{</span>
+<span class="n">PHEAD</span> <span class="n">pHead</span><span class="p">;</span>
+<span class="n">PVOID</span> <span class="n">pOwner</span><span class="p">;</span>
+<span class="n">BYTE</span> <span class="n">bType</span><span class="p">;</span>
+<span class="n">BYTE</span> <span class="n">bFlags</span><span class="p">;</span>
+<span class="n">WORD</span> <span class="n">wUniq</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">HANDLEENTRY</span><span class="p">,</span> <span class="o">*</span><span class="n">PHE</span><span class="p">,</span> <span class="o">*</span><span class="n">PHANDLEENTRY</span><span class="p">;</span><span class="w">
+</span></pre></td></tr></tbody></table>
+
+
+
+其中pHead指向Object，bType表示object类型。HOOK的bType是5。所以这里我们只需要在bType为5的时候继续下面的操作。
+
+pHead肯定是指向的内核内存，所以我们无法直接访问HOOK的内部情况。我们需要找到这个Object映射到R3的内存地址才行。幸运的是这种关系也比较简单明了。在Teb-&gt;Win32ClientInfo.ulClientDelta就存放了对应的关系Delta值。计算方法如下
+
+ObjectInR3 = HANDLEENTRY.pHead - Teb-&gt;Win32ClientInfo.ulClientDelta。
+
+[![20121226220202](/uploads/2012/12/20121226220202.png)](/uploads/2012/12/20121226220202.png)
+
+这样也就得到了HOOK Object。接下来的事情就好办了，HOOK Object的第一项就是HHOOK。只需要UnhookWindowsHookEx((HHOOK)Hook-&gt;head.h);就能卸载钩子了。
+
+[DEMO CODE](http://0cch.net/wordpress/?attachment_id=104)
+</code></pre></div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">0CCh</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>0CCh</li>
+          <li><a href="mailto:nightxie@gmail.com">nightxie@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/0CCh">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">0CCh</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">printf("I am programmer!");
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
