@@ -71,18 +71,7 @@ ZoneId=3</p>
 
 <p>这个ZoneId=3，就是指明这个文件是由Internet上下载的。根据MSDN，这个id有以下几种：</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12</pre></td><td class="code"><pre><span class="k">typedef</span> <span class="k">enum</span> <span class="n">tagURLZONE</span> <span class="p">{</span> 
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">typedef</span> <span class="k">enum</span> <span class="n">tagURLZONE</span> <span class="p">{</span> 
   <span class="n">URLZONE_INVALID</span>         <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
   <span class="n">URLZONE_PREDEFINED_MIN</span>  <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
   <span class="n">URLZONE_LOCAL_MACHINE</span>   <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -93,26 +82,23 @@ ZoneId=3</p>
   <span class="n">URLZONE_PREDEFINED_MAX</span>  <span class="o">=</span> <span class="mi">999</span><span class="p">,</span>
   <span class="n">URLZONE_USER_MIN</span>        <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
   <span class="n">URLZONE_USER_MAX</span>        <span class="o">=</span> <span class="mi">10000</span>
-<span class="p">}</span> <span class="n">URLZONE</span><span class="p">;</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="p">}</span> <span class="n">URLZONE</span><span class="p">;</span></code></pre></div>
 
-
-查看这个数据流的方法也很简单，用notepad就行了。
-[![20150615153805](/uploads/2015/06/20150615153805.png)](/uploads/2015/06/20150615153805.png)
+<p>查看这个数据流的方法也很简单，用notepad就行了。
+<a href="/uploads/2015/06/20150615153805.png"><img src="/uploads/2015/06/20150615153805.png" alt="20150615153805" /></a>
 另外如果想给添加或者去除这个数据流，我们这里有两种方法：
 1.直接读写数据流，其实这个跟普通文件读写没什么两样。
-2.调用微软提供的com接口，这个比较是规范的。
+2.调用微软提供的com接口，这个比较是规范的。</p>
 
-对于第一种方法，没什么可说的，无非就是文件操作的那些API。第二种方法我们需要用到以下两个接口：
+<p>对于第一种方法，没什么可说的，无非就是文件操作的那些API。第二种方法我们需要用到以下两个接口：
 IPersistFile
-IZoneIdentifier
+IZoneIdentifier</p>
 
-我们先创建IZoneIdentifier接口，然后query出IPersistFile打开文件，最后读取或者写入文件。
-代码详见：http://blogs.msdn.com/b/oldnewthing/archive/2013/11/04/10463035.aspx
+<p>我们先创建IZoneIdentifier接口，然后query出IPersistFile打开文件，最后读取或者写入文件。
+代码详见：http://blogs.msdn.com/b/oldnewthing/archive/2013/11/04/10463035.aspx</p>
 
-最后说一下，之所以能有Zone.Identifier这种功能，完全依赖于NTFS文件系统，它允许多个数据流的存在，对它而言，每个数据流无非就是一个属性而已，只不过Zone.Identifier是一个名字为Zone.Identifier的数据流，而文件本身的数据是一个没有命名的数据流而已。用ntfs_study查看，如下图，第一个Data数据没有名字是文件本身的数据，第二个就是Zone.Identifier的数据了。
-[![20150615160110](/uploads/2015/06/20150615160110.png)](/uploads/2015/06/20150615160110.png)
-</code></pre></div>
+<p>最后说一下，之所以能有Zone.Identifier这种功能，完全依赖于NTFS文件系统，它允许多个数据流的存在，对它而言，每个数据流无非就是一个属性而已，只不过Zone.Identifier是一个名字为Zone.Identifier的数据流，而文件本身的数据是一个没有命名的数据流而已。用ntfs_study查看，如下图，第一个Data数据没有名字是文件本身的数据，第二个就是Zone.Identifier的数据了。
+<a href="/uploads/2015/06/20150615160110.png"><img src="/uploads/2015/06/20150615160110.png" alt="20150615160110" /></a></p>
 
   </article>
 

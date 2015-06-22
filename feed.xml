@@ -6,8 +6,8 @@
 </description>
     <link>http://0cch.com/</link>
     <atom:link href="http://0cch.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 22 Jun 2015 09:05:30 +0800</pubDate>
-    <lastBuildDate>Mon, 22 Jun 2015 09:05:30 +0800</lastBuildDate>
+    <pubDate>Mon, 22 Jun 2015 09:23:31 +0800</pubDate>
+    <lastBuildDate>Mon, 22 Jun 2015 09:23:31 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -21,18 +21,7 @@ ZoneId=3&lt;/p&gt;
 
 &lt;p&gt;这个ZoneId=3，就是指明这个文件是由Internet上下载的。根据MSDN，这个id有以下几种：&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tagURLZONE&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tagURLZONE&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
   &lt;span class=&quot;n&quot;&gt;URLZONE_INVALID&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;URLZONE_PREDEFINED_MIN&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;URLZONE_LOCAL_MACHINE&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
@@ -43,26 +32,23 @@ ZoneId=3&lt;/p&gt;
   &lt;span class=&quot;n&quot;&gt;URLZONE_PREDEFINED_MAX&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;999&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;URLZONE_USER_MIN&lt;/span&gt;        &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;URLZONE_USER_MAX&lt;/span&gt;        &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10000&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;URLZONE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;URLZONE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
-查看这个数据流的方法也很简单，用notepad就行了。
-[![20150615153805](/uploads/2015/06/20150615153805.png)](/uploads/2015/06/20150615153805.png)
+&lt;p&gt;查看这个数据流的方法也很简单，用notepad就行了。
+&lt;a href=&quot;/uploads/2015/06/20150615153805.png&quot;&gt;&lt;img src=&quot;/uploads/2015/06/20150615153805.png&quot; alt=&quot;20150615153805&quot; /&gt;&lt;/a&gt;
 另外如果想给添加或者去除这个数据流，我们这里有两种方法：
 1.直接读写数据流，其实这个跟普通文件读写没什么两样。
-2.调用微软提供的com接口，这个比较是规范的。
+2.调用微软提供的com接口，这个比较是规范的。&lt;/p&gt;
 
-对于第一种方法，没什么可说的，无非就是文件操作的那些API。第二种方法我们需要用到以下两个接口：
+&lt;p&gt;对于第一种方法，没什么可说的，无非就是文件操作的那些API。第二种方法我们需要用到以下两个接口：
 IPersistFile
-IZoneIdentifier
+IZoneIdentifier&lt;/p&gt;
 
-我们先创建IZoneIdentifier接口，然后query出IPersistFile打开文件，最后读取或者写入文件。
-代码详见：http://blogs.msdn.com/b/oldnewthing/archive/2013/11/04/10463035.aspx
+&lt;p&gt;我们先创建IZoneIdentifier接口，然后query出IPersistFile打开文件，最后读取或者写入文件。
+代码详见：http://blogs.msdn.com/b/oldnewthing/archive/2013/11/04/10463035.aspx&lt;/p&gt;
 
-最后说一下，之所以能有Zone.Identifier这种功能，完全依赖于NTFS文件系统，它允许多个数据流的存在，对它而言，每个数据流无非就是一个属性而已，只不过Zone.Identifier是一个名字为Zone.Identifier的数据流，而文件本身的数据是一个没有命名的数据流而已。用ntfs_study查看，如下图，第一个Data数据没有名字是文件本身的数据，第二个就是Zone.Identifier的数据了。
-[![20150615160110](/uploads/2015/06/20150615160110.png)](/uploads/2015/06/20150615160110.png)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;最后说一下，之所以能有Zone.Identifier这种功能，完全依赖于NTFS文件系统，它允许多个数据流的存在，对它而言，每个数据流无非就是一个属性而已，只不过Zone.Identifier是一个名字为Zone.Identifier的数据流，而文件本身的数据是一个没有命名的数据流而已。用ntfs_study查看，如下图，第一个Data数据没有名字是文件本身的数据，第二个就是Zone.Identifier的数据了。
+&lt;a href=&quot;/uploads/2015/06/20150615160110.png&quot;&gt;&lt;img src=&quot;/uploads/2015/06/20150615160110.png&quot; alt=&quot;20150615160110&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 15 Jun 2015 16:07:03 +0800</pubDate>
         <link>http://0cch.com/ntinternals/tips/2015/06/15/e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95.html</link>
