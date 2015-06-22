@@ -6,8 +6,8 @@
 </description>
     <link>http://0cch.com/</link>
     <atom:link href="http://0cch.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 21 Jun 2015 01:09:59 +0800</pubDate>
-    <lastBuildDate>Sun, 21 Jun 2015 01:09:59 +0800</lastBuildDate>
+    <pubDate>Mon, 22 Jun 2015 09:05:30 +0800</pubDate>
+    <lastBuildDate>Mon, 22 Jun 2015 09:05:30 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -65,11 +65,11 @@ IZoneIdentifier
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 </description>
         <pubDate>Mon, 15 Jun 2015 16:07:03 +0800</pubDate>
-        <link>http://0cch.com/nt%20internals/tips/2015/06/15/e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95.html</link>
-        <guid isPermaLink="true">http://0cch.com/nt%20internals/tips/2015/06/15/e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95.html</guid>
+        <link>http://0cch.com/ntinternals/tips/2015/06/15/e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95.html</link>
+        <guid isPermaLink="true">http://0cch.com/ntinternals/tips/2015/06/15/e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95.html</guid>
         
         
-        <category>nt internals</category>
+        <category>ntinternals</category>
         
         <category>tips</category>
         
@@ -179,9 +179,9 @@ IZoneIdentifier
 //
 &lt;/span&gt;
 &lt;span class=&quot;cp&quot;&gt;#include &quot;stdafx.h&quot;
-#include 
-#include 
-#include 
+#include &amp;lt;atlbase.h&amp;gt;
+#include &amp;lt;atlstr.h&amp;gt;
+#include &amp;lt;Spellcheck.h&amp;gt;
 &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;CCoInitialize&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
 	&lt;span class=&quot;n&quot;&gt;CCoInitialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
@@ -310,13 +310,13 @@ IZoneIdentifier
 &lt;p&gt;下载：&lt;a href=&quot;/uploads/2015/04/MemMapView.zip&quot;&gt;MemMapView&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Sat, 18 Apr 2015 23:56:03 +0800</pubDate>
-        <link>http://0cch.com/debugging/nt%20internals/tips/2015/04/18/memmapview-e69fa5e79c8be585b1e4baabe58685e5ad98e698a0e5b084e79a84e5b7a5e585b7.html</link>
-        <guid isPermaLink="true">http://0cch.com/debugging/nt%20internals/tips/2015/04/18/memmapview-e69fa5e79c8be585b1e4baabe58685e5ad98e698a0e5b084e79a84e5b7a5e585b7.html</guid>
+        <link>http://0cch.com/debugging/ntinternals/tips/2015/04/18/memmapview-e69fa5e79c8be585b1e4baabe58685e5ad98e698a0e5b084e79a84e5b7a5e585b7.html</link>
+        <guid isPermaLink="true">http://0cch.com/debugging/ntinternals/tips/2015/04/18/memmapview-e69fa5e79c8be585b1e4baabe58685e5ad98e698a0e5b084e79a84e5b7a5e585b7.html</guid>
         
         
         <category>debugging</category>
         
-        <category>nt internals</category>
+        <category>ntinternals</category>
         
         <category>tips</category>
         
@@ -371,11 +371,11 @@ XP=0x42，Win7=0x41，Win8.1=0x47&lt;/p&gt;
 &lt;p&gt;OK，大功告成了。&lt;/p&gt;
 </description>
         <pubDate>Sat, 11 Apr 2015 00:56:02 +0800</pubDate>
-        <link>http://0cch.com/nt%20internals/tips/2015/04/11/e998b2e6ada2global-windows-hookse6b3a8e585a5e79a84e4b880e4b8aae696b9e6b395.html</link>
-        <guid isPermaLink="true">http://0cch.com/nt%20internals/tips/2015/04/11/e998b2e6ada2global-windows-hookse6b3a8e585a5e79a84e4b880e4b8aae696b9e6b395.html</guid>
+        <link>http://0cch.com/ntinternals/tips/2015/04/11/e998b2e6ada2global-windows-hookse6b3a8e585a5e79a84e4b880e4b8aae696b9e6b395.html</link>
+        <guid isPermaLink="true">http://0cch.com/ntinternals/tips/2015/04/11/e998b2e6ada2global-windows-hookse6b3a8e585a5e79a84e4b880e4b8aae696b9e6b395.html</guid>
         
         
-        <category>nt internals</category>
+        <category>ntinternals</category>
         
         <category>tips</category>
         
@@ -391,11 +391,11 @@ XP=0x42，Win7=0x41，Win8.1=0x47&lt;/p&gt;
 
 </description>
         <pubDate>Thu, 26 Mar 2015 16:08:33 +0800</pubDate>
-        <link>http://0cch.com/nt%20internals/tips/2015/03/26/e58f91e78eb0file-system-minifiltere79a84e4b880e5a484e997aee9a298.html</link>
-        <guid isPermaLink="true">http://0cch.com/nt%20internals/tips/2015/03/26/e58f91e78eb0file-system-minifiltere79a84e4b880e5a484e997aee9a298.html</guid>
+        <link>http://0cch.com/ntinternals/tips/2015/03/26/e58f91e78eb0file-system-minifiltere79a84e4b880e5a484e997aee9a298.html</link>
+        <guid isPermaLink="true">http://0cch.com/ntinternals/tips/2015/03/26/e58f91e78eb0file-system-minifiltere79a84e4b880e5a484e997aee9a298.html</guid>
         
         
-        <category>nt internals</category>
+        <category>ntinternals</category>
         
         <category>tips</category>
         
@@ -1470,11 +1470,11 @@ other   not defined yet -- treat as Reserved
 &lt;p&gt;说了这么多，这个有什么具体应用呢？我见过最多利用这个特性做的产品就是内存盘了。也没看到什么用的特别好的其他应用的方面，我想原因主要有三点，第一，即使获得了物理内存，最后还是映射了4GB以内的虚拟内存上，内存操作终究无法访问直接更多物理内存；第二，这部分内存没有系统统一管理，同类型的软件无法共存；第三，有4G内存赶紧快去换个64位系统吧=v=。&lt;/p&gt;
 </description>
         <pubDate>Mon, 02 Feb 2015 22:43:30 +0800</pubDate>
-        <link>http://0cch.com/nt%20internals/2015/02/02/e4bdbfe794a8windowse69caae4bdbfe794a8e58685e5ad98e58e9fe79086e5928ce5ba94e794a8.html</link>
-        <guid isPermaLink="true">http://0cch.com/nt%20internals/2015/02/02/e4bdbfe794a8windowse69caae4bdbfe794a8e58685e5ad98e58e9fe79086e5928ce5ba94e794a8.html</guid>
+        <link>http://0cch.com/ntinternals/2015/02/02/e4bdbfe794a8windowse69caae4bdbfe794a8e58685e5ad98e58e9fe79086e5928ce5ba94e794a8.html</link>
+        <guid isPermaLink="true">http://0cch.com/ntinternals/2015/02/02/e4bdbfe794a8windowse69caae4bdbfe794a8e58685e5ad98e58e9fe79086e5928ce5ba94e794a8.html</guid>
         
         
-        <category>nt internals</category>
+        <category>ntinternals</category>
         
       </item>
     

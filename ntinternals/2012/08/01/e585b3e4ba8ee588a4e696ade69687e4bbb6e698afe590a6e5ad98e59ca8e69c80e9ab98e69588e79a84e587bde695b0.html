@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>关于判断文件是否存在最高效的函数</title>
+  <meta name="description" content="判断文件存在方法有很多，例如CreateFile，FindFirstFile，GetFileAttributes，PathFileExists等等。但是哪一种更加高效呢？其实作为常识，可能都能判断出GetFileAttributes和PathFileExists会比较快（而实际上PathFileExists就是调...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://0cch.com/ntinternals/2012/08/01/e585b3e4ba8ee588a4e696ade69687e4bbb6e698afe590a6e5ad98e59ca8e69c80e9ab98e69588e79a84e587bde695b0.html">
+  <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">0CCh</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">关于判断文件是否存在最高效的函数</h1>
+    <p class="post-meta">Aug 1, 2012 • admin</p>
+  </header>
+
+  <article class="post-content">
+    <p>判断文件存在方法有很多，例如CreateFile，FindFirstFile，GetFileAttributes，PathFileExists等等。但是哪一种更加高效呢？其实作为常识，可能都能判断出GetFileAttributes和PathFileExists会比较快（而实际上PathFileExists就是调用的GetFileAttributes）。</p>
+
+<p>下面是google一份开源代码中提到的统计结果</p>
+
+<blockquote>// NOTE: This is the fastest implementation I found. The results were:
+// CreateFile 1783739 avg ticks/call
+// FindFirstFile 634148 avg ticks/call
+// GetFileAttributes 428714 avg ticks/call
+// GetFileAttributesEx 396324 avg ticks/call</blockquote>
+
+<p>为什么会这样呢？大概了看了下，原因应该是这样的。</p>
+
+<p>1.CreateFile会创建句柄，需要一个完整IO流程，所以需要的时间比如非常长。
+2.FindFirstFile回去查询文件夹的文件，虽然不会真正的打开文件句柄，并且在文件已经被缓存的情况下，走的是fastio流程，所以查询时间大幅下降，但是操作略微繁琐，导致他不是最好的选择。
+3. GetFileAttributes 和GetFileAttributesEx 也设置了QueryOnly标志，不需要获得真正的句柄，并且能够走fastio流程，也没有文件夹查询等工作，所以速度最快。</p>
+
+<p>那么为什么GetFileAttributesEx 会快那么一点点呢？因为这个函数少了一个获取BasicInformation，也就是少了一个fastio流程。所以速度更快。这样看来，自己实现一个PathFileExistsEx效率可以高过PathFileExists了。（其实没多大实际意义）</p>
+
+<p>google就是这样做的：</p>
+
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre></td><td class="code"><pre><span class="n">bool</span> <span class="n">File</span><span class="o">::</span><span class="n">Exists</span><span class="p">(</span><span class="k">const</span> <span class="n">TCHAR</span><span class="o">*</span> <span class="n">file_name</span><span class="p">)</span> <span class="p">{</span>
+<span class="n">ASSERT1</span><span class="p">(</span><span class="n">file_name</span> <span class="o">&amp;&amp;</span> <span class="o">*</span><span class="n">file_name</span><span class="p">);</span>
+<span class="n">ASSERT1</span><span class="p">(</span><span class="n">lstrlen</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">);</span>
+
+<span class="c1">// NOTE: This is the fastest implementation I found. The results were:
+// CreateFile 1783739 avg ticks/call
+// FindFirstFile 634148 avg ticks/call
+// GetFileAttributes 428714 avg ticks/call
+// GetFileAttributesEx 396324 avg ticks/call
+</span><span class="n">WIN32_FILE_ATTRIBUTE_DATA</span> <span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="k">return</span> <span class="mi">0</span> <span class="o">!=</span> <span class="o">::</span><span class="n">GetFileAttributesEx</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="o">::</span><span class="n">GetFileExInfoStandard</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attrs</span><span class="p">);</span>
+<span class="p">}</span><span class="w">
+</span></pre></td></tr></tbody></table>
+
+
+
+
+</code></pre></div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">0CCh</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>0CCh</li>
+          <li><a href="mailto:nightxie@gmail.com">nightxie@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/0CCh">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">0CCh</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">printf("I am programmer!");
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
