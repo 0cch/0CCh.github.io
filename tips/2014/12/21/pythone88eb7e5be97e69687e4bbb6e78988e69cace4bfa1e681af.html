@@ -64,43 +64,77 @@
   <article class="post-content">
     <p>Python干啥都挺方便的，出了调用win32的api。当然了，可以用pywin32这种库。但我不喜欢为了一两个api又给简单的东西加一堆依赖。比如获取文件版本，本来想在网上找个函数复制过去用得了，却发现还真没啥好用的。无奈自己就写了一个。</p>
 
-<p>[python]</p>
+<div class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34</pre></td><td class="code"><pre><span class="k">class</span> <span class="nc">VS_FIXEDFILEINFO</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+	<span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+		<span class="p">(</span><span class="s">"dwSignature"</span><span class="p">,</span> <span class="n">c_int</span><span class="p">),</span> 
+		<span class="p">(</span><span class="s">"dwStrucVersion"</span><span class="p">,</span> <span class="n">c_int</span><span class="p">),</span>
+		<span class="p">(</span><span class="s">"dwFileVersionMS"</span><span class="p">,</span> <span class="n">c_int</span><span class="p">),</span>
+		<span class="p">(</span><span class="s">"dwFileVersionLS"</span><span class="p">,</span> <span class="n">c_int</span><span class="p">),</span>
+		<span class="p">(</span><span class="s">"dwProductVersionMS"</span><span class="p">,</span> <span class="n">c_int</span><span class="p">),</span>
+		<span class="p">(</span><span class="s">"dwProductVersionLS"</span><span class="p">,</span> <span class="n">c_int</span><span class="p">),</span>
+		<span class="p">(</span><span class="s">"dwFileFlagsMask"</span><span class="p">,</span> <span class="n">c_int</span><span class="p">),</span>
+		<span class="p">(</span><span class="s">"dwFileFlags"</span><span class="p">,</span> <span class="n">c_int</span><span class="p">),</span>
+		<span class="p">(</span><span class="s">"dwFileOS"</span><span class="p">,</span> <span class="n">c_int</span><span class="p">),</span>
+		<span class="p">(</span><span class="s">"dwFileType"</span><span class="p">,</span> <span class="n">c_int</span><span class="p">),</span>
+		<span class="p">(</span><span class="s">"dwFileSubtype"</span><span class="p">,</span> <span class="n">c_int</span><span class="p">),</span>
+		<span class="p">(</span><span class="s">"dwFileDateMS"</span><span class="p">,</span> <span class="n">c_int</span><span class="p">),</span>
+		<span class="p">(</span><span class="s">"dwFileDateLS"</span><span class="p">,</span> <span class="n">c_int</span><span class="p">)</span>
+	<span class="p">]</span>
+<span class="k">def</span> <span class="nf">LOWORD</span><span class="p">(</span><span class="n">dword</span><span class="p">):</span> <span class="k">return</span> <span class="n">dword</span> <span class="o">&amp;</span> <span class="mh">0x0000ffff</span>
+<span class="k">def</span> <span class="nf">HIWORD</span><span class="p">(</span><span class="n">dword</span><span class="p">):</span> <span class="k">return</span> <span class="n">dword</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span>
+<span class="k">def</span> <span class="nf">GetFileVersion</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+	<span class="n">size</span> <span class="o">=</span> <span class="n">windll</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">GetFileVersionInfoSizeW</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">size</span><span class="p">:</span>
+		<span class="k">return</span> <span class="s">''</span>
+	<span class="n">res</span> <span class="o">=</span> <span class="n">create_string_buffer</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+	<span class="n">windll</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">GetFileVersionInfoW</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+	<span class="n">r</span> <span class="o">=</span> <span class="n">VS_FIXEDFILEINFO</span><span class="p">()</span>
+	<span class="n">l</span> <span class="o">=</span> <span class="n">c_uint</span><span class="p">()</span>
+	<span class="n">p</span> <span class="o">=</span> <span class="n">c_void_p</span><span class="p">()</span>
+	<span class="n">windll</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">VerQueryValueW</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="s">'</span><span class="se">\\</span><span class="s">'</span><span class="p">,</span> <span class="n">byref</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">byref</span><span class="p">(</span><span class="n">l</span><span class="p">));</span>
+	<span class="n">memmove</span><span class="p">(</span><span class="n">byref</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="n">p</span><span class="p">,</span> <span class="n">sizeof</span><span class="p">(</span><span class="n">VS_FIXEDFILEINFO</span><span class="p">))</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">l</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+		<span class="k">return</span> <span class="s">''</span>
+	
+	<span class="k">return</span> <span class="p">(</span><span class="s">'</span><span class="si">%</span><span class="s">d.</span><span class="si">%</span><span class="s">d.</span><span class="si">%</span><span class="s">d.</span><span class="si">%</span><span class="s">d'</span> <span class="o">%</span> <span class="p">(</span><span class="n">HIWORD</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">dwFileVersionMS</span><span class="p">),</span> <span class="n">LOWORD</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">dwFileVersionMS</span><span class="p">),</span> 
+		<span class="n">HIWORD</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">dwProductVersionLS</span><span class="p">),</span> <span class="n">LOWORD</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">dwProductVersionLS</span><span class="p">)));</span><span class="w">
+</span></pre></td></tr></tbody></table>
 
-<p>class VS_FIXEDFILEINFO(Structure):
-	<em>fields</em> = [
-		(“dwSignature”, c_int), 
-		(“dwStrucVersion”, c_int),
-		(“dwFileVersionMS”, c_int),
-		(“dwFileVersionLS”, c_int),
-		(“dwProductVersionMS”, c_int),
-		(“dwProductVersionLS”, c_int),
-		(“dwFileFlagsMask”, c_int),
-		(“dwFileFlags”, c_int),
-		(“dwFileOS”, c_int),
-		(“dwFileType”, c_int),
-		(“dwFileSubtype”, c_int),
-		(“dwFileDateMS”, c_int),
-		(“dwFileDateLS”, c_int)
-	]
-def LOWORD(dword): return dword &amp; 0x0000ffff
-def HIWORD(dword): return dword » 16
-def GetFileVersion(filename):
-	size = windll.version.GetFileVersionInfoSizeW(filename, None)
-	if not size:
-		return ‘’
-	res = create_string_buffer(size)
-	windll.version.GetFileVersionInfoW(filename, None, size, res)
-	r = VS_FIXEDFILEINFO()
-	l = c_uint()
-	p = c_void_p()
-	windll.version.VerQueryValueW(res, ‘\’, byref(p), byref(l));
-	memmove(byref(r), p, sizeof(VS_FIXEDFILEINFO))
-	if not l.value:
-		return ‘’</p>
 
-<pre><code>return ('%d.%d.%d.%d' % (HIWORD(r.dwFileVersionMS), LOWORD(r.dwFileVersionMS), 
-	HIWORD(r.dwProductVersionLS), LOWORD(r.dwProductVersionLS))); [/python]
-</code></pre>
+</code></pre></div>
 
   </article>
 
