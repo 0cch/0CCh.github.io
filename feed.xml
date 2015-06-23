@@ -6,8 +6,8 @@
 </description>
     <link>http://0cch.com/</link>
     <atom:link href="http://0cch.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 23 Jun 2015 09:46:13 +0800</pubDate>
-    <lastBuildDate>Tue, 23 Jun 2015 09:46:13 +0800</lastBuildDate>
+    <pubDate>Wed, 24 Jun 2015 00:47:29 +0800</pubDate>
+    <lastBuildDate>Wed, 24 Jun 2015 00:47:29 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -314,27 +314,27 @@ IZoneIdentifier&lt;/p&gt;
     
       <item>
         <title>防止Global Windows Hooks注入的一个方法</title>
-        <description>&lt;p&gt;我们都知道SetWindowsHookEx可以设置全局钩子，让自己的dll注入到有窗口的进程中去。注入原理就不再赘述了，网上资料很多，简单看一下调用堆栈方便我们说明怎么去防注入。
-kernel32!LoadLibraryExW
-USER32!__ClientLoadLibrary
-ntdll!KiUserCallbackDispatcher
-nt!KiCallUserMode
-nt!KeUserModeCallback
-win32k!ClientLoadLibrary
-win32k!xxxLoadHmodIndex
-win32k!xxxCallHook2
-win32k!xxxCallHook
-win32k!xxxCreateWindowEx
-win32k!NtUserCreateWindowEx
-nt!KiFastCallEntry
-ntdll!KiFastSystemCallRet
-ntdll!KiUserCallbackDispatcher
-USER32!NtUserCreateWindowEx
+        <description>&lt;p&gt;我们都知道SetWindowsHookEx可以设置全局钩子，让自己的dll注入到有窗口的进程中去。注入原理就不再赘述了，网上资料很多，简单看一下调用堆栈方便我们说明怎么去防注入。&lt;br /&gt;
+kernel32!LoadLibraryExW&lt;br /&gt;
+USER32!__ClientLoadLibrary&lt;br /&gt;
+ntdll!KiUserCallbackDispatcher&lt;br /&gt;
+nt!KiCallUserMode&lt;br /&gt;
+nt!KeUserModeCallback&lt;br /&gt;
+win32k!ClientLoadLibrary&lt;br /&gt;
+win32k!xxxLoadHmodIndex&lt;br /&gt;
+win32k!xxxCallHook2&lt;br /&gt;
+win32k!xxxCallHook&lt;br /&gt;
+win32k!xxxCreateWindowEx&lt;br /&gt;
+win32k!NtUserCreateWindowEx&lt;br /&gt;
+nt!KiFastCallEntry&lt;br /&gt;
+ntdll!KiFastSystemCallRet&lt;br /&gt;
+ntdll!KiUserCallbackDispatcher&lt;br /&gt;
+USER32!NtUserCreateWindowEx&lt;br /&gt;
 USER32!_CreateWindowEx&lt;/p&gt;
 
-&lt;p&gt;看着个堆栈，防注入的方法这里就可以大概说出三种：
-1. 被创建窗口程序了。
-2. Hook LoadLibraryExW，判断是否是自己的模块。
+&lt;p&gt;看着个堆栈，防注入的方法这里就可以大概说出三种：&lt;br /&gt;
+1. 被创建窗口程序了。&lt;br /&gt;
+2. Hook LoadLibraryExW，判断是否是自己的模块。&lt;br /&gt;
 3. Hook __ClientLoadLibrary，替换为空函数。&lt;/p&gt;
 
 &lt;p&gt;第一个方法其实也谈不上方法，也就是说控制台程序就不用担心这些了。第二个方法需要是否是判断自己的模块，这个方法也挺麻烦的，因为你得放过一些不是自己的模块，比如微软的模块。所以这里重点说第三个方法，我们去Hook __ClientLoadLibrary，这样我们就只是避免了全局钩子的注入了。这里我们不用去Inline Hook该函数，Inline Hook比较麻烦。我们的做法是修改user32!apfnDispatch这个数组，直接替换对应于__ClientLoadLibrary所在位置的值。这样摆在我们面前的稍微麻烦一点的事情有两个，一个是确定数组开始的地址，第二就是确定__ClientLoadLibrary在数组中的index。
@@ -348,14 +348,14 @@ USER32!_CreateWindowEx&lt;/p&gt;
   &lt;li&gt;
     &lt;p&gt;__ClientLoadLibrary在数组中的index
 这个就稍微繁琐点，我们需要把我们关心的系统用windbg带上符号都看一眼才能知道是多少了。
-我这里提供几个常用系统中__ClientLoadLibrary在数组中的index：
+我这里提供几个常用系统中__ClientLoadLibrary在数组中的index：&lt;br /&gt;
 XP=0x42，Win7=0x41，Win8.1=0x47&lt;/p&gt;
   &lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;好了，知道了这些，后面的就不用说太详细了，无非就是这三步：
-1. 写个空的__ClientLoadLibrary函数MyClientLoadLibrary。
-2. VirtualProtect设置KernelCallbackTable + index * sizeof(PVOID)地址内存保护属性为PAGE_READWRITE。
+&lt;p&gt;好了，知道了这些，后面的就不用说太详细了，无非就是这三步：&lt;br /&gt;
+1. 写个空的__ClientLoadLibrary函数MyClientLoadLibrary。&lt;br /&gt;
+2. VirtualProtect设置KernelCallbackTable + index * sizeof(PVOID)地址内存保护属性为PAGE_READWRITE。&lt;br /&gt;
 3. 替换__ClientLoadLibrary为MyClientLoadLibrary，再把内存属性换回原来的。&lt;/p&gt;
 
 &lt;p&gt;OK，大功告成了。&lt;/p&gt;
@@ -373,11 +373,15 @@ XP=0x42，Win7=0x41，Win8.1=0x47&lt;/p&gt;
     
       <item>
         <title>发现File System Minifilter的一处问题</title>
-        <description>&lt;p&gt;这两天有个朋友一直问我用用户普通权限连接minifilter server port的问题。给他解答的同时，也发现了这个方面的一个问题。首先说用普通用户权限连接port的方法，其实就是设置FltCreateCommunicationPort参数里ObjectAttributes的SecurityDescriptor，加入everyone的ACE就行了。那么加入everyone的ace你就要指定一个ACCESS_MASK，在MSDN里，介绍了两个可以使用的MASK
-&lt;a href=&quot;/uploads/2015/03/20150326155009.png&quot;&gt;&lt;img src=&quot;/uploads/2015/03/20150326155009.png&quot; alt=&quot;20150326155009&quot; /&gt;&lt;/a&gt;
-其中FLT_PORT_CONNECT=1，FLT_PORT_ALL_ACCESS=1F0001。看到这里，多数人都可能会认为如果只想让everyone连接上去，不给他所用权限，那么在这个ACE里加入FLT_PORT_CONNECT就可以了。然后就掉到微软的坑里了，和我那个朋友一样:)。
-&lt;a href=&quot;/uploads/2015/03/20150326154028.png&quot;&gt;&lt;img src=&quot;/uploads/2015/03/20150326154028.png&quot; alt=&quot;20150326154028&quot; /&gt;&lt;/a&gt;
-实际上指定FLT_PORT_CONNECT会让R3的程序无法连接驱动的port，原因就是FilterConnectCommunicationPort函数没有让你指定你需求的ACCESS，而是在底层打开port的时候直接请求FLT_PORT_ALL_ACCESS。这个时候如果你的ACE里面是FLT_PORT_CONNECT，那当然无法连接上去了。所以这里把ACE里的ACCESS_MASK设置为FLT_PORT_ALL_ACCESS就行了。&lt;/p&gt;
+        <description>&lt;p&gt;这两天有个朋友一直问我用用户普通权限连接minifilter server port的问题。给他解答的同时，也发现了这个方面的一个问题。首先说用普通用户权限连接port的方法，其实就是设置FltCreateCommunicationPort参数里ObjectAttributes的SecurityDescriptor，加入everyone的ACE就行了。那么加入everyone的ace你就要指定一个ACCESS_MASK，在MSDN里，介绍了两个可以使用的MASK&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/uploads/2015/03/20150326155009.png&quot;&gt;&lt;img src=&quot;/uploads/2015/03/20150326155009.png&quot; alt=&quot;20150326155009&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;其中FLT_PORT_CONNECT=1，FLT_PORT_ALL_ACCESS=1F0001。看到这里，多数人都可能会认为如果只想让everyone连接上去，不给他所用权限，那么在这个ACE里加入FLT_PORT_CONNECT就可以了。然后就掉到微软的坑里了，和我那个朋友一样:)。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/uploads/2015/03/20150326154028.png&quot;&gt;&lt;img src=&quot;/uploads/2015/03/20150326154028.png&quot; alt=&quot;20150326154028&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;实际上指定FLT_PORT_CONNECT会让R3的程序无法连接驱动的port，原因就是FilterConnectCommunicationPort函数没有让你指定你需求的ACCESS，而是在底层打开port的时候直接请求FLT_PORT_ALL_ACCESS。这个时候如果你的ACE里面是FLT_PORT_CONNECT，那当然无法连接上去了。所以这里把ACE里的ACCESS_MASK设置为FLT_PORT_ALL_ACCESS就行了。&lt;/p&gt;
 
 </description>
         <pubDate>Thu, 26 Mar 2015 16:08:33 +0800</pubDate>
@@ -908,10 +912,10 @@ XP=0x42，Win7=0x41，Win8.1=0x47&lt;/p&gt;
 456&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;cp&quot;&gt;#ifndef __PARSE_INI_H__
 #define __PARSE_INI_H__
 &lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#include 
-#include 
-#include 
-#include 
+&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;vector&amp;gt;
+#include &amp;lt;string&amp;gt;
+#include &amp;lt;fstream&amp;gt;
+#include &amp;lt;windows.h&amp;gt;
 &lt;/span&gt;
 &lt;span class=&quot;cp&quot;&gt;#define INI_KEY_LINE			1
 #define INI_SECTION_LINE		2
@@ -1393,13 +1397,13 @@ XP=0x42，Win7=0x41，Win8.1=0x47&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;/uploads/2015/02/20150202095553.png&quot;&gt;&lt;img src=&quot;/uploads/2015/02/20150202095553.png&quot; alt=&quot;20150202095553&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;1.主板支持通过Bios查询RAM内存分配情况，在这种情况下，我们可以调用中断来获得最真实的RAM分配表。
+&lt;p&gt;1.主板支持通过Bios查询RAM内存分配情况，在这种情况下，我们可以调用中断来获得最真实的RAM分配表。&lt;br /&gt;
 2.主板不支持通过Bios查询RAM内存分配情况，那么我们很无奈的必须采用一个简单粗暴的方法，Write &amp;amp; Test来获得4GB以外到底有多少RAM可用。&lt;/p&gt;
 
-&lt;p&gt;对于第二种情况，我们的做法是通过MmMapIoSpace函数，把4GB以上的物理地址逐一映射到虚拟内存中，然后写入特殊值，写入后马上读取，看是否写入成功，成功则证明RAM可用。
-对于第一种情况，这里又要分为两个分支：
-首先你的系统是NT6内核以下的情况，这时可以调用Ke386CallBios函数，调用中断接口。
-而对于NT6的内核，我们需要调用新的x86BiosCall等一套函数。
+&lt;p&gt;对于第二种情况，我们的做法是通过MmMapIoSpace函数，把4GB以上的物理地址逐一映射到虚拟内存中，然后写入特殊值，写入后马上读取，看是否写入成功，成功则证明RAM可用。&lt;br /&gt;
+对于第一种情况，这里又要分为两个分支：&lt;br /&gt;
+首先你的系统是NT6内核以下的情况，这时可以调用Ke386CallBios函数，调用中断接口。&lt;br /&gt;
+而对于NT6的内核，我们需要调用新的x86BiosCall等一套函数。&lt;br /&gt;
 需要调用的中断函数是0x15以及AX=E820，通过这个中断和功能号，我们就能获得SYSTEM MEMORY MAP&lt;/p&gt;
 
 &lt;p&gt;下面附带上这个功能的使用方法&lt;/p&gt;
@@ -1469,7 +1473,7 @@ other   not defined yet – treat as Reserved&lt;br /&gt;
     
       <item>
         <title>分享SSD TRIM代码</title>
-        <description>&lt;p&gt;14年的早些时候发布过&lt;a href=&quot;http://0cch.net/wordpress/?p=404&quot;&gt;SSD TRIM技术的文章&lt;/a&gt;，文章里面记录了关于TRIM技术的一些东西，其中就包括在Windows上如何使用TRIM。当然Windows 7及其更高版本的系统都是自带TRIM功能的，只有XP没有这个功能，当时我就写了个工具，在XP下进行TRIM。现在想想确实也没啥意思，就把代码分享说来吧。&lt;/p&gt;
+        <description>&lt;p&gt;14年的早些时候发布过&lt;a href=&quot;&amp;quot;/tips/2014/02/11/ssd-trime58a9fe883bde79a84e4b880e4ba9be8aeb0e5bd95.html&amp;quot;&quot;&gt;SSD TRIM技术的文章&lt;/a&gt;，文章里面记录了关于TRIM技术的一些东西，其中就包括在Windows上如何使用TRIM。当然Windows 7及其更高版本的系统都是自带TRIM功能的，只有XP没有这个功能，当时我就写了个工具，在XP下进行TRIM。现在想想确实也没啥意思，就把代码分享说来吧。&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/0cch/SSDTrim.git&quot;&gt;https://github.com/0cch/SSDTrim.git&lt;/a&gt;&lt;/p&gt;
 </description>

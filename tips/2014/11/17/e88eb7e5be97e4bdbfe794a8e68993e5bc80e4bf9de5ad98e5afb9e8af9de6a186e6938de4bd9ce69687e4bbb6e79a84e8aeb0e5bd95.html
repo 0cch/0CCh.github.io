@@ -62,8 +62,9 @@
   </header>
 
   <article class="post-content">
-    <p>今天无意中看到了HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU这个键值的用途，虽然感觉没啥实际用途，但是也挺有趣的，于是写了个小程序读取它。这个键值的意义非常明确，就是记录打开保存对话框的最近操作的文件的PIDL。所以我们可以通过PIDL来获得文件路径，就这么简单，确实没啥特别的实际用途吧，就当娱乐了。枚举的效果如下：
-<a href="/uploads/2014/11/20141117231005.png"><img src="/uploads/2014/11/20141117231005.png" alt="20141117231005" /></a></p>
+    <p>今天无意中看到了HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU这个键值的用途，虽然感觉没啥实际用途，但是也挺有趣的，于是写了个小程序读取它。这个键值的意义非常明确，就是记录打开保存对话框的最近操作的文件的PIDL。所以我们可以通过PIDL来获得文件路径，就这么简单，确实没啥特别的实际用途吧，就当娱乐了。枚举的效果如下：</p>
+
+<p><a href="/uploads/2014/11/20141117231005.png"><img src="/uploads/2014/11/20141117231005.png" alt="20141117231005" /></a></p>
 
 <p>代码也很简单：</p>
 
@@ -165,11 +166,11 @@
 96
 97
 98</pre></td><td class="code"><pre><span class="cp">#include "stdafx.h"
-#include 
-#include 
-#include 
-#include 
-#include 
+#include &lt;atlbase.h&gt;
+#include &lt;atlstr.h&gt;
+#include &lt;Shlobj.h&gt;
+#include &lt;locale.h&gt;
+#include &lt;vector&gt;
 </span>
 <span class="cp">#pragma comment(lib, "shell32.lib")
 </span>
