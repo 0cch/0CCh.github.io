@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>系统进程创建管理员进程的方法</title>
-  <meta name="description" content="namespace ProcessHelper {">
+  <meta name="description" content="代码如下：">
 
   <link rel="stylesheet" href="/css/main.css">
   <link rel="canonical" href="http://0cch.com/tips/2014/05/06/e7b3bbe7bb9fe8bf9be7a88be5889be5bbbae7aea1e79086e59198e8bf9be7a88be79a84e696b9e6b395.html">
@@ -62,131 +62,263 @@
   </header>
 
   <article class="post-content">
-    <p>namespace ProcessHelper {</p>
+    <p>代码如下：</p>
 
-<pre><code>typedef BOOL (__stdcall *CREATEENVIRONMENTBLOCK)(LPVOID *lpEnvironment,
-	HANDLE hToken,
-	BOOL bInherit);
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124</pre></td><td class="code"><pre><span class="k">namespace</span> <span class="n">ProcessHelper</span> <span class="p">{</span>
 
-BOOL CreateProcessAsExplorer(LPCTSTR AppName, LPTSTR CommandLine, PPROCESS_INFORMATION pi)
-{
-	ULONG ExplorerID = 0;
-	HANDLE ExplorerHandle;
-	HANDLE Snapshot;
-	ULONG CreationFlags = 0;
-	CREATEENVIRONMENTBLOCK CreateEnvironmentBlock;
-	HANDLE ExplorerToken;
-	HANDLE NewToken = 0;
-	LPVOID Environment = NULL;
-	ULONG ReturnLength = 0;
-	TOKEN_LINKED_TOKEN LinkedToken = {0};
-	STARTUPINFO si = {0};
-	PROCESSENTRY32 pe;
-	BOOL Ret;
-	HMODULE UserenvModule;
-	LUID Luid = {0};
+	<span class="k">typedef</span> <span class="n">BOOL</span> <span class="p">(</span><span class="kr">__stdcall</span> <span class="o">*</span><span class="n">CREATEENVIRONMENTBLOCK</span><span class="p">)(</span><span class="n">LPVOID</span> <span class="o">*</span><span class="n">lpEnvironment</span><span class="p">,</span>
+		<span class="n">HANDLE</span> <span class="n">hToken</span><span class="p">,</span>
+		<span class="n">BOOL</span> <span class="n">bInherit</span><span class="p">);</span>
+
+	<span class="n">BOOL</span> <span class="nf">CreateProcessAsExplorer</span><span class="p">(</span><span class="n">LPCTSTR</span> <span class="n">AppName</span><span class="p">,</span> <span class="n">LPTSTR</span> <span class="n">CommandLine</span><span class="p">,</span> <span class="n">PPROCESS_INFORMATION</span> <span class="n">pi</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="n">ULONG</span> <span class="n">ExplorerID</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="n">HANDLE</span> <span class="n">ExplorerHandle</span><span class="p">;</span>
+		<span class="n">HANDLE</span> <span class="n">Snapshot</span><span class="p">;</span>
+		<span class="n">ULONG</span> <span class="n">CreationFlags</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="n">CREATEENVIRONMENTBLOCK</span> <span class="n">CreateEnvironmentBlock</span><span class="p">;</span>
+		<span class="n">HANDLE</span> <span class="n">ExplorerToken</span><span class="p">;</span>
+		<span class="n">HANDLE</span> <span class="n">NewToken</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="n">LPVOID</span> <span class="n">Environment</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+		<span class="n">ULONG</span> <span class="n">ReturnLength</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="n">TOKEN_LINKED_TOKEN</span> <span class="n">LinkedToken</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+		<span class="n">STARTUPINFO</span> <span class="n">si</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+		<span class="n">PROCESSENTRY32</span> <span class="n">pe</span><span class="p">;</span>
+		<span class="n">BOOL</span> <span class="n">Ret</span><span class="p">;</span>
+		<span class="n">HMODULE</span> <span class="n">UserenvModule</span><span class="p">;</span>
+		<span class="n">LUID</span> <span class="n">Luid</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
 
 
-	Snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-	if (Snapshot == INVALID_HANDLE_VALUE) {
-		return FALSE;
-	}
+		<span class="n">Snapshot</span> <span class="o">=</span> <span class="n">CreateToolhelp32Snapshot</span><span class="p">(</span><span class="n">TH32CS_SNAPPROCESS</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">Snapshot</span> <span class="o">==</span> <span class="n">INVALID_HANDLE_VALUE</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
+		<span class="p">}</span>
 
-	pe.dwSize = sizeof(pe);
-	if (Process32FirstW(Snapshot, &amp;pe;)) {
+		<span class="n">pe</span><span class="p">.</span><span class="n">dwSize</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">pe</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">Process32FirstW</span><span class="p">(</span><span class="n">Snapshot</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pe</span><span class="p">;))</span> <span class="p">{</span>
 
-		for(;;) {
+			<span class="k">for</span><span class="p">(;;)</span> <span class="p">{</span>
 
-			if (_tcsicmp(pe.szExeFile, L"explorer.exe") == 0) {
-				ProcessIdToSessionId(pe.th32ProcessID, &amp;Luid.LowPart;);
-				ExplorerID = pe.th32ProcessID;
-				break;
-			}
-			if (!Process32Next(Snapshot, &amp;pe;)) {
-				break;
-			}
-		}
+				<span class="k">if</span> <span class="p">(</span><span class="n">_tcsicmp</span><span class="p">(</span><span class="n">pe</span><span class="p">.</span><span class="n">szExeFile</span><span class="p">,</span> <span class="s">L"explorer.exe"</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+					<span class="n">ProcessIdToSessionId</span><span class="p">(</span><span class="n">pe</span><span class="p">.</span><span class="n">th32ProcessID</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">Luid</span><span class="p">.</span><span class="n">LowPart</span><span class="p">;);</span>
+					<span class="n">ExplorerID</span> <span class="o">=</span> <span class="n">pe</span><span class="p">.</span><span class="n">th32ProcessID</span><span class="p">;</span>
+					<span class="k">break</span><span class="p">;</span>
+				<span class="p">}</span>
+				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">Process32Next</span><span class="p">(</span><span class="n">Snapshot</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pe</span><span class="p">;))</span> <span class="p">{</span>
+					<span class="k">break</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
 
-	}
+		<span class="p">}</span>
 
-	CloseHandle(Snapshot);
-	if (ExplorerID == 0) {
-		return FALSE;
-	}
+		<span class="n">CloseHandle</span><span class="p">(</span><span class="n">Snapshot</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">ExplorerID</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
+		<span class="p">}</span>
 
-	ExplorerHandle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, ExplorerID);
-	if (ExplorerHandle == NULL) {
-		return FALSE;
-	}
+		<span class="n">ExplorerHandle</span> <span class="o">=</span> <span class="n">OpenProcess</span><span class="p">(</span><span class="n">PROCESS_QUERY_INFORMATION</span><span class="p">,</span> <span class="n">FALSE</span><span class="p">,</span> <span class="n">ExplorerID</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">ExplorerHandle</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
+		<span class="p">}</span>
 
-	if (!OpenProcessToken(ExplorerHandle, TOKEN_ALL_ACCESS_P, &amp;ExplorerToken;)) {
-		CloseHandle(ExplorerHandle);
-		return FALSE;
-	}
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">OpenProcessToken</span><span class="p">(</span><span class="n">ExplorerHandle</span><span class="p">,</span> <span class="n">TOKEN_ALL_ACCESS_P</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ExplorerToken</span><span class="p">;))</span> <span class="p">{</span>
+			<span class="n">CloseHandle</span><span class="p">(</span><span class="n">ExplorerHandle</span><span class="p">);</span>
+			<span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
+		<span class="p">}</span>
 
-	CloseHandle(ExplorerHandle);
+		<span class="n">CloseHandle</span><span class="p">(</span><span class="n">ExplorerHandle</span><span class="p">);</span>
 
-	if (GetTokenInformation(ExplorerToken, 
-		TokenLinkedToken, 
-		&amp;LinkedToken;, 
-		sizeof(TOKEN_LINKED_TOKEN), 
-		&amp;ReturnLength;)) {
+		<span class="k">if</span> <span class="p">(</span><span class="n">GetTokenInformation</span><span class="p">(</span><span class="n">ExplorerToken</span><span class="p">,</span> 
+			<span class="n">TokenLinkedToken</span><span class="p">,</span> 
+			<span class="o">&amp;</span><span class="n">LinkedToken</span><span class="p">;,</span> 
+			<span class="k">sizeof</span><span class="p">(</span><span class="n">TOKEN_LINKED_TOKEN</span><span class="p">),</span> 
+			<span class="o">&amp;</span><span class="n">ReturnLength</span><span class="p">;))</span> <span class="p">{</span>
 
-			NewToken = LinkedToken.LinkedToken;
-	}
-	else {
+				<span class="n">NewToken</span> <span class="o">=</span> <span class="n">LinkedToken</span><span class="p">.</span><span class="n">LinkedToken</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="p">{</span>
+			
+			<span class="n">LookupPrivilegeValueW</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">L"SeDebugPrivilege"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">Luid</span><span class="p">;);</span>
+			<span class="n">DuplicateTokenEx</span><span class="p">(</span><span class="n">ExplorerToken</span><span class="p">,</span> <span class="n">MAXIMUM_ALLOWED</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">SecurityIdentification</span><span class="p">,</span> <span class="n">TokenPrimary</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">NewToken</span><span class="p">;);</span>
+		<span class="p">}</span>
+
+		<span class="n">CloseHandle</span><span class="p">(</span><span class="n">ExplorerToken</span><span class="p">);</span>
+
+		<span class="n">UserenvModule</span> <span class="o">=</span> <span class="n">LoadLibrary</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">"Userenv.dll"</span><span class="p">));</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">UserenvModule</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="n">CreateEnvironmentBlock</span> <span class="o">=</span> <span class="p">(</span><span class="n">CREATEENVIRONMENTBLOCK</span><span class="p">)</span><span class="n">GetProcAddress</span><span class="p">(</span><span class="n">UserenvModule</span><span class="p">,</span> <span class="s">"CreateEnvironmentBlock"</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">CreateEnvironmentBlock</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">FreeLibrary</span><span class="p">(</span><span class="n">UserenvModule</span><span class="p">);</span>
+			<span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
+		<span class="p">}</span>
+
+
+		<span class="k">if</span> <span class="p">(</span><span class="n">CreateEnvironmentBlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Environment</span><span class="p">;,</span> <span class="n">NewToken</span><span class="p">,</span> <span class="n">TRUE</span><span class="p">))</span> <span class="p">{</span>
+			<span class="n">CreationFlags</span> <span class="o">=</span> <span class="n">CREATE_UNICODE_ENVIRONMENT</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="n">si</span><span class="p">.</span><span class="n">cb</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">si</span><span class="p">);</span>
+		<span class="n">Ret</span> <span class="o">=</span> <span class="n">CreateProcessAsUser</span><span class="p">(</span>
+			<span class="n">NewToken</span><span class="p">,</span>
+			<span class="n">AppName</span><span class="p">,</span>
+			<span class="n">CommandLine</span><span class="p">,</span>
+			<span class="nb">NULL</span><span class="p">,</span>
+			<span class="nb">NULL</span><span class="p">,</span>
+			<span class="n">FALSE</span><span class="p">,</span>
+			<span class="n">CreationFlags</span><span class="p">,</span>
+			<span class="n">Environment</span><span class="p">,</span>
+			<span class="nb">NULL</span><span class="p">,</span>
+			<span class="o">&amp;</span><span class="n">si</span><span class="p">;,</span>
+			<span class="n">pi</span><span class="p">);</span>
+
+		<span class="n">CloseHandle</span><span class="p">(</span><span class="n">NewToken</span><span class="p">);</span>
 		
-		LookupPrivilegeValueW(0, L"SeDebugPrivilege", &amp;Luid;);
-		DuplicateTokenEx(ExplorerToken, MAXIMUM_ALLOWED, NULL, SecurityIdentification, TokenPrimary, &amp;NewToken;);
-	}
+		<span class="k">if</span> <span class="p">(</span><span class="n">Environment</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">DestroyEnvironmentBlock</span><span class="p">(</span><span class="n">Environment</span><span class="p">);</span>
+		<span class="p">}</span>
 
-	CloseHandle(ExplorerToken);
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">Ret</span><span class="p">)</span> <span class="p">{</span>
 
-	UserenvModule = LoadLibrary(TEXT("Userenv.dll"));
-	if (UserenvModule == NULL) {
-		return FALSE;
-	}
+			<span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
+		<span class="p">}</span>
 
-	CreateEnvironmentBlock = (CREATEENVIRONMENTBLOCK)GetProcAddress(UserenvModule, "CreateEnvironmentBlock");
-	if (CreateEnvironmentBlock == NULL) {
-		FreeLibrary(UserenvModule);
-		return FALSE;
-	}
+		<span class="k">return</span> <span class="n">TRUE</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">}</span><span class="w">
+</span></pre></td></tr></tbody></table>
 
 
-	if (CreateEnvironmentBlock(&amp;Environment;, NewToken, TRUE)) {
-		CreationFlags = CREATE_UNICODE_ENVIRONMENT;
-	}
-
-	si.cb = sizeof(si);
-	Ret = CreateProcessAsUser(
-		NewToken,
-		AppName,
-		CommandLine,
-		NULL,
-		NULL,
-		FALSE,
-		CreationFlags,
-		Environment,
-		NULL,
-		&amp;si;,
-		pi);
-
-	CloseHandle(NewToken);
-	
-	if (Environment != NULL) {
-		DestroyEnvironmentBlock(Environment);
-	}
-
-	if (!Ret) {
-
-		return FALSE;
-	}
-
-	return TRUE;
-} }
-</code></pre>
-
+ 
+ 
+ 
+ 
+</code></pre></div>
 
   </article>
 
