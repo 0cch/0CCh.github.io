@@ -776,16 +776,17 @@
 
 <p>下面就是他的Usage，也是目前该工具具有的功能。</p>
 
-<p>NtfsStudy v1.0 - Ntfs format study tool.
+<div class="highlight"><pre><code class="language-windbg" data-lang="windbg">NtfsStudy v1.0 - Ntfs format study tool.
 Copyright (C) 2012-2013 nightxie
-0CCh - www.0cch.net</p>
+0CCh - www.0cch.net
 
-<p>Usage : NtfsStudy.exe [options] -f file_path_name
--f file_path_name Specifies the target file path to parse.</p>
+Usage : NtfsStudy.exe [options] -f file_path_name
+-f file_path_name Specifies the target file path to parse.
 
-<p>options:</p>
+options:
 
-<p>[-r file_reference]   Specifies the target file reference.
+
+[-r file_reference]   Specifies the target file reference.
 NtfsStudy will parse the REFERENCE rather than the path which
 Specifies by -f. NtfsStudy will just use the path root.
 [-a] Show the file record information of the target file.
@@ -795,35 +796,36 @@ Specifies by -f. NtfsStudy will just use the path root.
 [-v attribute_type] Show detail attribute information specified by attribute_type.
 [-d attribute_type [start_offset range]] Show binary information specified by attribute_type.
 [-s secure_id] Show the security descriptor specified by secure_id.
-[-c] Show the attributes definition columns.</p>
+[-c] Show the attributes definition columns.
 
-<p>About attribute type:</p>
 
-<p>$STANDARD_INFORMATION         = 1
-$ATTRIBUTE_LIST                       = 2
-$FILE_NAME                                = 3
-$OBJECT_ID                                = 4
-$SECURITY_DESCRIPTOR             = 5
-$VOLUME_NAME                          = 6
-$VOLUME_INFORMATION              = 7
-$DATA                                        = 8
-$INDEX_ROOT                             = 9
-$INDEX_ALLOCATION                   = 10
-$BITMAP                                     = 11
-$REPARSE_POINT                        = 12
-$EA_INFORMATION                      = 13
-$EA                                             = 14
-$LOGGED_UTILITY_STREAM          = 16</p>
+About attribute type:
 
-<p>About secure id:</p>
 
-<p>To get the secure id of target file.
-Use ‘-v 1’ command, secure id will displayed in STANDARD_INFORMATION.</p>
+$STANDARD_INFORMATION         = 1
+$ATTRIBUTE_LIST               = 2
+$FILE_NAME                    = 3
+$OBJECT_ID                    = 4
+$SECURITY_DESCRIPTOR          = 5
+$VOLUME_NAME                  = 6
+$VOLUME_INFORMATION           = 7
+$DATA                         = 8
+$INDEX_ROOT                   = 9
+$INDEX_ALLOCATION             = 10
+$BITMAP                       = 11
+$REPARSE_POINT                = 12
+$EA_INFORMATION               = 13
+$EA                           = 14
+$LOGGED_UTILITY_STREAM        = 16
+
+About secure id:
+
+To get the secure id of target file.
+Use '-v 1' command, secure id will displayed in STANDARD_INFORMATION.</code></pre></div>
 
 <p>另外我还会继续完善这个工具。如果发现bug请与我联系。</p>
 
-<p>下载<a href="/uploads/2013/01/NtfsStudy.zip">NtfsStudy</a><a href="/uploads/2013/01/NtfsStudy.zip">
-</a></p>
+<p>下载<a href="/uploads/2013/01/NtfsStudy.zip">NtfsStudy</a></p>
 
   </article>
 

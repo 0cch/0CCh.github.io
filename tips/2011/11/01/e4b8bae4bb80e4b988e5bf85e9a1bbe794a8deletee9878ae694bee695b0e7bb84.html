@@ -797,30 +797,29 @@
 <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span></code></pre></div>
 
-<p>编译后看到代码如下
-`
-0040103D push 0Eh
-0040103F call operator new[] (403ED0h)
-`
-注意到这里传入的大小时0Eh，也就是说申请分配14个字节大小的内存。但是我们知道C++标准中空类的大小应该是1字节。那么多出的dword我们就很容易想到他的用处，应该是记录数组大小的。事实也确实如此。</p>
+<p>编译后看到代码如下</p>
 
-<p><code>mov dword ptr [eax],0Ah </code>
-这里明确交代，给分配内存的第一个dword传入10。</p>
+<div class="highlight"><pre><code class="language-asm" data-lang="asm">0040103D push 0Eh
+0040103F call operator new[] (403ED0h)</code></pre></div>
 
-<p><code>
-00401069 push offset A::~A (4011D0h)
+<p>注意到这里传入的大小时0Eh，也就是说申请分配14个字节大小的内存。但是我们知道C++标准中空类的大小应该是1字节。那么多出的dword我们就很容易想到他的用处，应该是记录数组大小的。事实也确实如此。</p>
+
+<div class="highlight"><pre><code class="language-asm" data-lang="asm">mov dword ptr [eax],0Ah</code></pre></div>
+
+<p>这里明确交代，给分配内存的第一个dword传入10。</p>
+
+<div class="highlight"><pre><code class="language-asm" data-lang="asm">00401069 push offset A::~A (4011D0h)
 0040106E push offset A::A (401120h)
 00401073 push 0Ah
 00401075 push 1
 00401077 mov ecx,dword ptr [ebp-0F8h]
 0040107D add ecx,4
 00401080 push ecx
-00401081 call </code>eh vector constructor iterator’ (40A010h)
-`
-这里是调用构造函数，注意是vector版本的构造函数。参数分别是数组的this指针，sizeof(A)，数组数量，构造和析构函数。这样，在这个函数内部循环10次调用构造函数，构造完毕。</p>
+00401081 call `eh vector constructor iterator' (40A010h)</code></pre></div>
 
-<p><code>
-004010BD mov eax,dword ptr [ebp-14h]
+<p>这里是调用构造函数，注意是vector版本的构造函数。参数分别是数组的this指针，sizeof(A)，数组数量，构造和析构函数。这样，在这个函数内部循环10次调用构造函数，构造完毕。</p>
+
+<div class="highlight"><pre><code class="language-asm" data-lang="asm">004010BD mov eax,dword ptr [ebp-14h]
 004010C0 mov dword ptr [ebp-0E0h],eax
 004010C6 mov ecx,dword ptr [ebp-0E0h]
 004010CC mov dword ptr [ebp-0ECh],ecx
@@ -828,15 +827,15 @@
 004010D9 je main+0F0h (4010F0h)
 004010DB push 3
 004010DD mov ecx,dword ptr [ebp-0ECh]
-004010E3 call A::</code>vector deleting destructor’ (401230h)
-`
-这里是析构部分传入数组的this指针，传入flag(3)，调用析构函数。</p>
+004010E3 call A::`vector deleting destructor' (401230h)</code></pre></div>
 
-<p>继续看call之后的代码
-`
-00401253 mov eax,dword ptr [ebp+8]
+<p>这里是析构部分传入数组的this指针，传入flag(3)，调用析构函数。</p>
+
+<p>继续看call之后的代码</p>
+
+<div class="highlight"><pre><code class="language-asm" data-lang="asm">00401253 mov eax,dword ptr [ebp+8]
 00401256 and eax,2
-00401259 je A::<code>vector deleting destructor'+61h (401291h)
+00401259 je A::`vector deleting destructor'+61h (401291h)
 0040125B push offset A::~A (4011D0h)
 00401260 mov eax,dword ptr [this]
 00401263 mov ecx,dword ptr [eax-4]
@@ -844,14 +843,14 @@
 00401267 push 1
 00401269 mov edx,dword ptr [this]
 0040126C push edx
-0040126D call </code>eh vector destructor iterator’ (40A920h)
-00401272 mov eax,dword ptr [ebp+8]
-`
-如果flag中位1是set，那么调用eh_vector_destructor_iterator调用每个析构函数。参数分别是this，sizeof(A)，数组个数（这里很明显是从eax-4中拿出来的）以及析构函数地址。</p>
+0040126D call `eh vector destructor iterator' (40A920h)
+00401272 mov eax,dword ptr [ebp+8]</code></pre></div>
 
-<p>OK，明白了delete[]的做法，我们看看delete为什么失败。
-`
-004010BD mov eax,dword ptr [ebp-14h]
+<p>如果flag中位1是set，那么调用eh_vector_destructor_iterator调用每个析构函数。参数分别是this，sizeof(A)，数组个数（这里很明显是从eax-4中拿出来的）以及析构函数地址。</p>
+
+<p>OK，明白了delete[]的做法，我们看看delete为什么失败。</p>
+
+<div class="highlight"><pre><code class="language-asm" data-lang="asm">004010BD mov eax,dword ptr [ebp-14h]
 004010C0 mov dword ptr [ebp-0E0h],eax
 004010C6 mov ecx,dword ptr [ebp-0E0h]
 004010CC mov dword ptr [ebp-0ECh],ecx
@@ -859,40 +858,27 @@
 004010D9 je main+0F0h (4010F0h)
 004010DB push 1
 004010DD mov ecx,dword ptr [ebp-0ECh]
-004010E3 call A::<code>scalar deleting destructor' (4012D0h)
-</code>
-这里调用的析构函数都不一样是一个scalar版本的函数。</p>
+004010E3 call A::`scalar deleting destructor' (4012D0h)</code></pre></div>
 
-<p>继续看这个函数的关键部分
-`
-004012F3 mov ecx,dword ptr [this]
+<p>这里调用的析构函数都不一样是一个scalar版本的函数。</p>
+
+<p>继续看这个函数的关键部分</p>
+
+<div class="highlight"><pre><code class="language-asm" data-lang="asm">004012F3 mov ecx,dword ptr [this]
 004012F6 call A::~A (4011D0h)
 004012FB mov eax,dword ptr [ebp+8]
 004012FE and eax,1
-00401301 je A::<code>scalar deleting destructor'+3Fh (40130Fh)
+00401301 je A::`scalar deleting destructor'+3Fh (40130Fh)
 00401303 mov eax,dword ptr [this]
 00401306 push eax
-00401307 call operator delete (40A890h)
-</code>
-这里很清楚的看到，只进行一次析构，然后就释放内存。所以我们看到的现象是只调用一次析构函数。那么为什么会崩溃呢？因为delete错了地址。看上面的对比的值，eax-4才是new返回的地址，所以delete的不应该是eax，而是eax-4。</p>
+00401307 call operator delete (40A890h)</code></pre></div>
+
+<p>这里很清楚的看到，只进行一次析构，然后就释放内存。所以我们看到的现象是只调用一次析构函数。那么为什么会崩溃呢？因为delete错了地址。看上面的对比的值，eax-4才是new返回的地址，所以delete的不应该是eax，而是eax-4。</p>
 
 <p>真相大白？NO，还有一个问题，delete[] 和delete 内建类型真的成功了么？
-看看我贴出的代码吧，这里不解释了。
-`
-;delete[] version
-0040101E push 0Ah
-00401020 call operator new[] (4014C0h)
-00401025 add esp,4
-00401028 mov dword ptr [ebp-0E0h],eax
-0040102E mov eax,dword ptr [ebp-0E0h]
-00401034 mov dword ptr [a],eax
-00401037 mov eax,dword ptr [a]
-0040103A mov dword ptr [ebp-0D4h],eax
-00401040 mov ecx,dword ptr [ebp-0D4h]
-00401046 push ecx
-00401047 call operator delete[] (401600h) `</p>
+看看我贴出的代码吧，这里不解释了。</p>
 
-<p>;delete version
+<div class="highlight"><pre><code class="language-asm" data-lang="asm">;delete[] version
 0040101E push 0Ah
 00401020 call operator new[] (4014C0h)
 00401025 add esp,4
@@ -903,7 +889,20 @@
 0040103A mov dword ptr [ebp-0D4h],eax
 00401040 mov ecx,dword ptr [ebp-0D4h]
 00401046 push ecx
-00401047 call operator delete (401600h)</p>
+00401047 call operator delete[] (401600h) `
+
+;delete version
+0040101E push 0Ah
+00401020 call operator new[] (4014C0h)
+00401025 add esp,4
+00401028 mov dword ptr [ebp-0E0h],eax
+0040102E mov eax,dword ptr [ebp-0E0h]
+00401034 mov dword ptr [a],eax
+00401037 mov eax,dword ptr [a]
+0040103A mov dword ptr [ebp-0D4h],eax
+00401040 mov ecx,dword ptr [ebp-0D4h]
+00401046 push ecx
+00401047 call operator delete (401600h)</code></pre></div>
 
 <p>就像我刚刚所说的delete[]会调用delete。所以不会出任何问题。</p>
 
@@ -911,27 +910,26 @@
 
 <div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="n">A</span><span class="o">::</span><span class="err">'</span><span class="n">scalar</span> <span class="n">deleting</span> <span class="n">destructor</span><span class="err">'</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="k">this</span><span class="o">-&gt;~</span><span class="n">A</span><span class="p">();</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-<span class="n">A</span><span class="o">::</span><span class="k">operator</span> <span class="k">delete</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-<span class="p">}</span>
+	<span class="k">this</span><span class="o">-&gt;~</span><span class="n">A</span><span class="p">();</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">A</span><span class="o">::</span><span class="k">operator</span> <span class="k">delete</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="kt">void</span> <span class="n">A</span><span class="o">::</span><span class="err">'</span><span class="n">vector</span> <span class="n">deleting</span> <span class="n">destructor</span><span class="err">'</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
-<span class="n">count</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="p">)((</span><span class="kt">int</span><span class="p">)</span><span class="k">this</span> <span class="o">-</span> <span class="mi">4</span><span class="p">);</span>
-<span class="err">'</span><span class="n">eh</span> <span class="n">vector</span> <span class="n">destructor</span> <span class="n">iterator</span><span class="err">'</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">A</span><span class="p">),</span> <span class="n">count</span><span class="p">,</span> <span class="n">A</span><span class="o">::~</span><span class="n">A</span><span class="p">);</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">flags</span><span class="o">&amp;</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-<span class="n">A</span><span class="o">::</span><span class="k">operator</span> <span class="k">delete</span><span class="p">((</span><span class="kt">void</span> <span class="o">*</span><span class="p">)((</span><span class="kt">int</span><span class="p">)</span><span class="k">this</span> <span class="o">-</span> <span class="mi">4</span><span class="p">));</span>
-<span class="p">}</span>
-<span class="p">}</span>
-<span class="k">else</span> <span class="p">{</span>
-<span class="k">this</span><span class="o">-&gt;~</span><span class="n">A</span><span class="p">();</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-<span class="n">A</span><span class="o">::</span><span class="k">operator</span> <span class="k">delete</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-<span class="p">}</span>
-<span class="p">}</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">count</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="p">)((</span><span class="kt">int</span><span class="p">)</span><span class="k">this</span> <span class="o">-</span> <span class="mi">4</span><span class="p">);</span>
+		<span class="err">'</span><span class="n">eh</span> <span class="n">vector</span> <span class="n">destructor</span> <span class="n">iterator</span><span class="err">'</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">A</span><span class="p">),</span> <span class="n">count</span><span class="p">,</span> <span class="n">A</span><span class="o">::~</span><span class="n">A</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">flags</span><span class="o">&amp;</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">A</span><span class="o">::</span><span class="k">operator</span> <span class="k">delete</span><span class="p">((</span><span class="kt">void</span> <span class="o">*</span><span class="p">)((</span><span class="kt">int</span><span class="p">)</span><span class="k">this</span> <span class="o">-</span> <span class="mi">4</span><span class="p">));</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">else</span> <span class="p">{</span>
+		<span class="k">this</span><span class="o">-&gt;~</span><span class="n">A</span><span class="p">();</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">A</span><span class="o">::</span><span class="k">operator</span> <span class="k">delete</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
 <span class="p">};</span></code></pre></div>
 
 <p>分析到这，终于明白。数组一定要用delete[]释放才安全。所以千万不要用auto_ptr作为数组的智能指针，不然会死的很惨。这里还要提一点，auto_ptr也不要用到容器里面去了，也是不允许的。非要这么做就用shared_ptr吧， C++0x已经在stl中加入的这部分。从vs2008 sp1开始支持。低版本的vs的话就去boost里面找吧。</p>

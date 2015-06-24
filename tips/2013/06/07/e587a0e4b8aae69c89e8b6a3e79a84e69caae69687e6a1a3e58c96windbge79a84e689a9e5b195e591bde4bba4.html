@@ -768,51 +768,51 @@
 
 <p>1.eflags 用更加友好的方式显示被设置的标志寄存器</p>
 
-<p>0:000&gt; r efl
-efl=00000246</p>
+<div class="highlight"><pre><code class="language-windbg" data-lang="windbg">0:000&gt; r efl
+efl=00000246
 
-<p>0:000&gt; !eflags
+0:000&gt; !eflags
 BIT_1_RESERVED
 PARITY_FLAG
 ZERO_FLAG
-INTERRUPTS_ENABLED</p>
+INTERRUPTS_ENABLED
 
-<p>0:000&gt; r zf
+0:000&gt; r zf
 zf=1
 0:000&gt; r if
-if=1</p>
+if=1</code></pre></div>
 
 <p>2.frame 用module!function的方式设置栈帧</p>
 
-<p>0:000&gt; kn L3
+<div class="highlight"><pre><code class="language-windbg" data-lang="windbg">0:000&gt; kn L3
 # ChildEBP RetAddr
 00 0018df2c 7586d7db kernel32!CreateFileW
 01 0018e024 7586d9d1 apphelp!IdentifyCandidates+0x176
-02 0018e054 7586d87b apphelp!ApphelpQueryExe+0xb8</p>
+02 0018e054 7586d87b apphelp!ApphelpQueryExe+0xb8
 
-<p>0:000&gt; .frame
-00 0018df2c 7586d7db kernel32!CreateFileW</p>
+0:000&gt; .frame
+00 0018df2c 7586d7db kernel32!CreateFileW
 
-<p>0:000&gt; !frame apphelp!ApphelpQueryExe
-Frame Set to 0x00000002</p>
+0:000&gt; !frame apphelp!ApphelpQueryExe
+Frame Set to 0x00000002
 
-<p>0:000&gt; .frame
-02 0018e054 7586d87b apphelp!ApphelpQueryExe+0xb8</p>
+0:000&gt; .frame
+02 0018e054 7586d87b apphelp!ApphelpQueryExe+0xb8</code></pre></div>
 
 <p>3.hashblob 计算指定内存的hash，hash方式包括md5和sha1</p>
 
-<p>0:000&gt; !hashblob
+<div class="highlight"><pre><code class="language-windbg" data-lang="windbg">0:000&gt; !hashblob
 Not enough parameters 0
-!hashblob <hash> <start> <end></end></start></hash></p>
-<hash>: 1 for MD5
-<hash>: 2 for SHA1
+!hashblob &lt;hash&gt; &lt;Start&gt; &lt;End&gt;
+&lt;hash&gt;: 1 for MD5
+&lt;hash&gt;: 2 for SHA1
 
 0:000&gt; !hashblob 1 001f0000 001f0100
-DCC4E0B6659F6887DEC24A9FF2D57DC8
+DCC4E0B6659F6887DEC24A9FF2D57DC8</code></pre></div>
 
-4.imports 列出指定模块的导入函数
+<p>4.imports 列出指定模块的导入函数</p>
 
-0:000&gt; !imports notepad
+<div class="highlight"><pre><code class="language-windbg" data-lang="windbg">0:000&gt; !imports notepad
 
 notepad notepad Imports from file: ADVAPI32.dll
 RegSetValueExW
@@ -826,31 +826,30 @@ GlobalLock
 GetTimeFormatW
 GetDateFormatW
 GetLocalTime
-...
+...</code></pre></div>
 
-5.inframe 找出指定地址所在的栈帧范围
+<p>5.inframe 找出指定地址所在的栈帧范围</p>
 
-ChildEBP RetAddr
+<div class="highlight"><pre><code class="language-windbg" data-lang="windbg">ChildEBP RetAddr
 0018df2c 7586d7db kernel32!CreateFileW
 0018e024 7586d9d1 apphelp!IdentifyCandidates+0x176
 
 0:000&gt; !inframe 0018df8c
 0018df8c 0 00001714 0018df34 &lt; 0018df8c &lt; 0018e02c
-Frame: 1
+Frame: 1</code></pre></div>
 
-6.inmodule 找出指定地址所在的模块
+<p>6.inmodule 找出指定地址所在的模块</p>
 
-0:000&gt; !inmodule 7586d9d1
-0x7586d9d1: apphelp!ApphelpQueryExe
+<div class="highlight"><pre><code class="language-windbg" data-lang="windbg">0:000&gt; !inmodule 7586d9d1
+0x7586d9d1: apphelp!ApphelpQueryExe</code></pre></div>
 
-7.url 用默认浏览器打开指定网页
+<p>7.url 用默认浏览器打开指定网页</p>
 
-0:000&gt; !url
+<div class="highlight"><pre><code class="language-windbg" data-lang="windbg">0:000&gt; !url
 Please provide a valid URL (http://... or https://... )
-USAGE: !url <url>
+USAGE: !url &lt;url&gt;
 
-0:000&gt; !url http://0cch.net
-</url></hash></hash>
+0:000&gt; !url http://0cch.net</code></pre></div>
 
   </article>
 

@@ -779,30 +779,31 @@
 <p>（吐槽：上面说了一堆，还是没进入正题，貌似有点太详细了。接下来才是重头戏。）</p>
 
 <p>来看看NTFS文件系统是怎么来Check权限的。
-每个文件打开的时候系统会为文件分配一个FILE_OBJECT（文件对象）。在这里我们主要关注的是以下几个域。
-nt!_FILE_OBJECT
-…
+每个文件打开的时候系统会为文件分配一个FILE_OBJECT（文件对象）。在这里我们主要关注的是以下几个域。</p>
+
+<div class="highlight"><pre><code class="language-asm" data-lang="asm">nt!_FILE_OBJECT
+...
 +0x00c FsContext        : Ptr32 Void
-…
+...
 +0x026 ReadAccess       : UChar
 +0x027 WriteAccess      : UChar
 +0x028 DeleteAccess     : UChar
 +0x029 SharedRead       : UChar
 +0x02a SharedWrite      : UChar
 +0x02b SharedDelete     : UChar
-…</p>
+...</code></pre></div>
 
 <p>熟悉NTFS文件系统的同学都知道FsContext实际上是对应着一个SCB。SCB的数据结构是未公开的，所以只有逆向或者通过其他途径获得。而这篇文章只需要关注的是SCB的SHARE_ACCESS。SHARE_ACCESS在SCB的0x60的偏移处，这个和NT的SCB有些不同。SHARE_ACCESS的数据结构是这样</p>
 
-<p>typedef struct _SHARE_ACCESS {
-ULONG OpenCount;
-ULONG Readers;
-ULONG Writers;
-ULONG Deleters;
-ULONG SharedRead;
-ULONG SharedWrite;
-ULONG SharedDelete;
-} SHARE_ACCESS, *PSHARE_ACCESS;</p>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">_SHARE_ACCESS</span> <span class="p">{</span>
+<span class="n">ULONG</span> <span class="n">OpenCount</span><span class="p">;</span>
+<span class="n">ULONG</span> <span class="n">Readers</span><span class="p">;</span>
+<span class="n">ULONG</span> <span class="n">Writers</span><span class="p">;</span>
+<span class="n">ULONG</span> <span class="n">Deleters</span><span class="p">;</span>
+<span class="n">ULONG</span> <span class="n">SharedRead</span><span class="p">;</span>
+<span class="n">ULONG</span> <span class="n">SharedWrite</span><span class="p">;</span>
+<span class="n">ULONG</span> <span class="n">SharedDelete</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">SHARE_ACCESS</span><span class="p">,</span> <span class="o">*</span><span class="n">PSHARE_ACCESS</span><span class="p">;</span></code></pre></div>
 
 <p>这个就是这篇文章的关键。</p>
 
