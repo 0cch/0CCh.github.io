@@ -768,24 +768,7 @@
 
 <p>有时候比如IE这样的程序，线程实在是非常的多，我想操作某个特殊线程就比较麻烦，需要先找到线程然后再实行命令，为了偷懒就写了这个脚本。</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18</pre></td><td class="code"><pre><span class="err">$$</span> <span class="n">If</span> <span class="n">a</span> <span class="n">frame</span> <span class="n">of</span> <span class="n">a</span> <span class="kr">thread</span> <span class="n">has</span> <span class="n">the</span> <span class="n">target</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">we</span> <span class="n">execute</span> <span class="n">the</span> <span class="n">command</span><span class="p">.</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="err">$$</span> <span class="n">If</span> <span class="n">a</span> <span class="n">frame</span> <span class="n">of</span> <span class="n">a</span> <span class="kr">thread</span> <span class="n">has</span> <span class="n">the</span> <span class="n">target</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">we</span> <span class="n">execute</span> <span class="n">the</span> <span class="n">command</span><span class="p">.</span>
 <span class="err">$$</span> <span class="n">Author</span><span class="o">:</span> <span class="n">nighxie</span> 
 <span class="err">$$</span> <span class="n">Blog</span><span class="o">:</span> <span class="mi">0</span><span class="n">cch</span><span class="p">.</span><span class="n">net</span>
 
@@ -802,14 +785,10 @@
 <span class="p">.</span><span class="k">else</span> <span class="p">{</span>
 	<span class="p">.</span><span class="n">echo</span> <span class="s">"Usage $$&gt;a&lt;${$arg0} thread_count pattern cmd"</span><span class="p">;</span>
 	<span class="p">.</span><span class="n">echo</span> <span class="s">"e.g. $$&gt;a&lt;${$arg0} 5 ntdll* ~n"</span><span class="p">;</span>
-<span class="p">}</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="p">}</span></code></pre></div>
 
-
-
-就如同上面的例子指定线程数量，要匹配的符号，最后就是要执行的命令。 
-$$&gt;a&lt;${$arg0} 5 ntdll* ~n就表示在前5个线程里寻找栈回溯有关ntdll的线程，然后执行~n命令挂起线程。
-</code></pre></div>
+<p>就如同上面的例子指定线程数量，要匹配的符号，最后就是要执行的命令。 
+$$&gt;a&lt;${$arg0} 5 ntdll* ~n就表示在前5个线程里寻找栈回溯有关ntdll的线程，然后执行~n命令挂起线程。</p>
 
   </article>
 

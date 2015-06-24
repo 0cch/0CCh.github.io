@@ -819,29 +819,20 @@ ULONG SharedDelete;
 
 <p>我想做的就是复制出这个SYSTEM文件，实际上网上已经有很多做法，什么底层磁盘解析读取数据，句柄复制大法。而我这次是修改底层SCB的ShareAccess来达到复制的目的。如果读懂了上面的原理，看下面这段代码就很轻松了。</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6</pre></td><td class="code"><pre><span class="n">kfile</span> <span class="n">File</span><span class="p">;</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">kfile</span> <span class="n">File</span><span class="p">;</span>
 <span class="n">ns</span> <span class="o">=</span> <span class="n">File</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">FILENAME</span><span class="p">,</span> <span class="n">FILE_OPEN</span><span class="p">,</span> <span class="n">FILE_READ_ATTRIBUTES</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 <span class="n">FileObj</span> <span class="o">=</span> <span class="n">File</span><span class="p">.</span><span class="n">GetObject</span><span class="p">();</span>
 <span class="n">ShareAccess</span> <span class="o">=</span> <span class="p">(</span><span class="n">SHARE_ACCESS</span> <span class="o">*</span><span class="p">)((</span><span class="n">ULONG</span><span class="p">)</span><span class="n">FileObj</span><span class="o">-&gt;</span><span class="n">FsContext</span> <span class="o">+</span> <span class="n">Offset</span><span class="p">);</span>
 <span class="n">ShareAccess</span><span class="o">-&gt;</span><span class="n">SharedRead</span> <span class="o">=</span> <span class="n">ShareAccess</span><span class="o">-&gt;</span><span class="n">Readers</span><span class="p">;</span>
-<span class="n">File</span><span class="p">.</span><span class="n">Release</span><span class="p">();</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="n">File</span><span class="p">.</span><span class="n">Release</span><span class="p">();</span></code></pre></div>
 
+<p>OK，编写好测试代码，生成一个驱动。运行即可。接下来就是见证奇迹的时刻了。还是用同样的方法复制看看，完全没有问题了。（图2）</p>
 
+<p><a href="/uploads/2011/05/Windows-XP-Professional-2011-05-23-01-53-40.png"><img src="/uploads/2011/05/Windows-XP-Professional-2011-05-23-01-53-40-300x225.png" alt="" /></a></p>
 
-OK，编写好测试代码，生成一个驱动。运行即可。接下来就是见证奇迹的时刻了。还是用同样的方法复制看看，完全没有问题了。（图2）
+<p>（图2）</p>
 
-[![](/uploads/2011/05/Windows-XP-Professional-2011-05-23-01-53-40-300x225.png)](/uploads/2011/05/Windows-XP-Professional-2011-05-23-01-53-40.png)
-
-（图2）
-
-（吐槽：好久没写这么长的文章，写的我都崩溃了。说到写文章，我发现现在我如果拿起笔去写字，经常会发生提笔忘字的情况！！！天啊！！！）
-</code></pre></div>
+<p>（吐槽：好久没写这么长的文章，写的我都崩溃了。说到写文章，我发现现在我如果拿起笔去写字，经常会发生提笔忘字的情况！！！天啊！！！）</p>
 
   </article>
 

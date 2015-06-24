@@ -767,42 +767,7 @@
     <p>用Windbg查看stl的容器实在是已经让人悲伤的事情，为了方便，所以写了这么3个脚本
 vector:</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36</pre></td><td class="code"><pre><span class="n">r</span><span class="o">?</span> <span class="err">$</span><span class="n">t0</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="err">$</span><span class="n">arg1</span><span class="p">}</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">r</span><span class="o">?</span> <span class="err">$</span><span class="n">t0</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="err">$</span><span class="n">arg1</span><span class="p">}</span>
 
 <span class="p">.</span><span class="k">if</span> <span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="o">/</span><span class="n">d</span><span class="o">:</span><span class="err">$</span><span class="n">VectorType</span><span class="p">})</span> <span class="p">{</span>
 	<span class="n">r</span><span class="o">?</span> <span class="err">$</span><span class="n">t0</span> <span class="o">=</span> <span class="err">@@</span><span class="n">C</span><span class="o">++</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="err">$</span><span class="p">{</span><span class="err">$</span><span class="n">VectorType</span><span class="p">}</span> <span class="o">*</span><span class="p">)</span><span class="err">@$</span><span class="n">t0</span><span class="p">))</span>
@@ -837,50 +802,11 @@ vector:</p>
 	<span class="n">r</span><span class="o">?</span> <span class="err">$</span><span class="n">t0</span><span class="o">=</span><span class="err">@$</span><span class="n">t0</span><span class="o">+</span><span class="mi">1</span>
 <span class="p">}</span>
 
-<span class="n">ad</span> <span class="n">command</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="n">ad</span> <span class="n">command</span></code></pre></div>
 
+<p>list:</p>
 
-
-list:
-
-
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36</pre></td><td class="code"><pre><span class="n">r</span><span class="o">?</span> <span class="err">$</span><span class="n">t0</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="err">$</span><span class="n">arg1</span><span class="p">}</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">r</span><span class="o">?</span> <span class="err">$</span><span class="n">t0</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="err">$</span><span class="n">arg1</span><span class="p">}</span>
 
 <span class="p">.</span><span class="k">if</span> <span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="o">/</span><span class="n">d</span><span class="o">:</span><span class="err">$</span><span class="n">ListType</span><span class="p">})</span> <span class="p">{</span>
 	<span class="n">r</span><span class="o">?</span> <span class="err">$</span><span class="n">t0</span> <span class="o">=</span> <span class="err">@@</span><span class="n">C</span><span class="o">++</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="err">$</span><span class="p">{</span><span class="err">$</span><span class="n">ListType</span><span class="p">}</span> <span class="o">*</span><span class="p">)</span><span class="err">@$</span><span class="n">t0</span><span class="p">))</span>
@@ -915,75 +841,11 @@ list:
 	<span class="n">r</span><span class="o">?</span> <span class="err">$</span><span class="n">t0</span> <span class="o">=</span> <span class="err">@@</span><span class="n">C</span><span class="o">++</span><span class="p">(</span><span class="err">@$</span><span class="n">t0</span><span class="o">-&gt;</span><span class="n">_Next</span><span class="p">)</span>
 <span class="p">}</span>
 
-<span class="n">ad</span> <span class="n">command</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="n">ad</span> <span class="n">command</span></code></pre></div>
 
+<p>map:</p>
 
-
-map:
-
-
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61</pre></td><td class="code"><pre><span class="p">.</span><span class="k">if</span> <span class="p">(</span><span class="err">$</span><span class="n">sicmp</span><span class="p">(</span><span class="s">"${$arg1}"</span><span class="p">,</span> <span class="s">"-n"</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> 
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="p">.</span><span class="k">if</span> <span class="p">(</span><span class="err">$</span><span class="n">sicmp</span><span class="p">(</span><span class="s">"${$arg1}"</span><span class="p">,</span> <span class="s">"-n"</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> 
 
     <span class="p">.</span><span class="k">if</span> <span class="p">(</span><span class="err">@@</span><span class="n">C</span><span class="o">++</span><span class="p">(</span><span class="err">@$</span><span class="n">t0</span><span class="o">-&gt;</span><span class="n">_Left</span><span class="p">)</span> <span class="o">!=</span> <span class="err">@@</span><span class="n">C</span><span class="o">++</span><span class="p">(</span><span class="err">@$</span><span class="n">t1</span><span class="p">))</span> <span class="p">{</span> 
         <span class="p">.</span><span class="n">push</span> <span class="o">/</span><span class="n">r</span> <span class="o">/</span><span class="n">q</span> 
@@ -1043,11 +905,8 @@ map:
     <span class="err">$$</span><span class="o">&gt;</span><span class="n">a</span><span class="o">&lt;</span> <span class="err">$</span><span class="p">{</span><span class="err">$</span><span class="n">arg0</span><span class="p">}</span> <span class="o">-</span><span class="n">n</span>
 
     <span class="n">ad</span> <span class="n">command</span> 
-<span class="p">}</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="p">}</span></code></pre></div>
 
-
-</code></pre></div></code></pre></div></code></pre></div>
 
   </article>
 

@@ -880,31 +880,24 @@ notepad.exe</blockquote>
 <p>创建%windbg_dir%\winext\manifest\Context.h
 并且写入这些内容</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5</pre></td><td class="code"><pre><span class="n">category</span> <span class="n">ActivationContext</span><span class="o">:</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">category</span> <span class="n">ActivationContext</span><span class="o">:</span>
 <span class="n">module</span> <span class="n">KERNEL32</span><span class="p">.</span><span class="n">DLL</span><span class="o">:</span>
 
 <span class="n">FailOnFalse</span> <span class="n">ActivateActCtx</span><span class="p">(</span><span class="n">HANDLE</span> <span class="n">hActCtx</span><span class="p">,</span> <span class="p">[</span><span class="n">out</span><span class="p">]</span> <span class="n">PULONG_PTR</span> <span class="n">lpCookie</span><span class="p">);</span>
-<span class="n">FailOnFalse</span> <span class="n">DeactivateActCtx</span><span class="p">(</span><span class="n">DWORD</span> <span class="n">dwFlags</span><span class="p">,</span> <span class="n">ULONG_PTR</span> <span class="n">upCookie</span><span class="p">);</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="n">FailOnFalse</span> <span class="n">DeactivateActCtx</span><span class="p">(</span><span class="n">DWORD</span> <span class="n">dwFlags</span><span class="p">,</span> <span class="n">ULONG_PTR</span> <span class="n">upCookie</span><span class="p">);</span></code></pre></div>
 
+<p>在%windbg_dir%\winext\manifest\main.h文件的最后加入一行 #include “Context.h”</p>
 
+<p>保存后，重启调试程序，输入!logexts.logc，可以看了多出了ActivationContext这一项。现在就可以选择这一项分类来监控ActivateActCtx和DeactivateActCtx了。</p>
 
-在%windbg_dir%\winext\manifest\main.h文件的最后加入一行 #include "Context.h"
+<p>最后，大家应该发现了这样一个问题，开启这个API监控还是比较麻烦的，需要输入好几条命令。为了更方便的使用这个功能，我写了一个脚本来解决这个问题，这样就可以用一行命令来开启监控。使用方法是：
+Usage <script type="math/tex">% <![CDATA[
+>a<logger.wds output_dir categories include_modules
+e.g. %]]></script>&gt;a&lt;logger.wds “d:" “15 16 19” “notepad.exe”</p>
 
-保存后，重启调试程序，输入!logexts.logc，可以看了多出了ActivationContext这一项。现在就可以选择这一项分类来监控ActivateActCtx和DeactivateActCtx了。
+<p>下载<a href="/uploads/2013/09/logger.zip">logger</a></p>
 
-最后，大家应该发现了这样一个问题，开启这个API监控还是比较麻烦的，需要输入好几条命令。为了更方便的使用这个功能，我写了一个脚本来解决这个问题，这样就可以用一行命令来开启监控。使用方法是：
-Usage $$&gt;a&lt;logger.wds output_dir categories include_modules
-e.g. $$&gt;a&lt;logger.wds "d:\" "15 16 19" "notepad.exe"
-
-下载[logger](/uploads/2013/09/logger.zip)
-
-关于Logexts的更多详细信息请参考msdn：[http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85).aspx](http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85).aspx)
-</code></pre></div>
+<p>关于Logexts的更多详细信息请参考msdn：<a href="http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85).aspx</a></p>
 
   </article>
 

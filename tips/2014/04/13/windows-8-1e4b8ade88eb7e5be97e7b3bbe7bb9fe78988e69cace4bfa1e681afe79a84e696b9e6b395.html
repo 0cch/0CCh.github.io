@@ -776,16 +776,7 @@ Applications not manifested for Windows 8.1 will return the Windows 8 OS versi
 
 <p>那么第二套方案，是我觉得比较满意的，那就是调用<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms725493(v=vs.85).aspx">VerSetConditionMask</a>和<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms725492(v=vs.85).aspx">VerifyVersionInfo</a>来完成对系统版本的判断。具体做法如下：</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10</pre></td><td class="code"><pre><span class="n">BOOL</span> <span class="nf">IsWindows8Point1</span><span class="p">()</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">BOOL</span> <span class="nf">IsWindows8Point1</span><span class="p">()</span>
 <span class="p">{</span>
 	<span class="n">OSVERSIONINFOEX</span> <span class="n">version_info</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
 	<span class="n">version_info</span><span class="p">.</span><span class="n">dwOSVersionInfoSize</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">OSVERSIONINFOEX</span><span class="p">);</span>
@@ -794,32 +785,11 @@ Applications not manifested for Windows 8.1 will return the Windows 8 OS versi
 	<span class="n">ULONGLONG</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">VerSetConditionMask</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">VER_MAJORVERSION</span><span class="p">,</span> <span class="n">VER_EQUAL</span><span class="p">);</span>
 	<span class="n">mask</span> <span class="o">=</span> <span class="n">VerSetConditionMask</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">VER_MINORVERSION</span><span class="p">,</span> <span class="n">VER_EQUAL</span><span class="p">);</span>
 	<span class="k">return</span> <span class="n">VerifyVersionInfo</span><span class="p">(</span><span class="o">&amp;</span><span class="n">version</span><span class="p">;</span><span class="n">_info</span><span class="p">,</span> <span class="n">VER_MAJORVERSION</span> <span class="o">|</span> <span class="n">VER_MINORVERSION</span><span class="p">,</span> <span class="n">mask</span><span class="p">);</span>
-<span class="p">}</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="p">}</span></code></pre></div>
 
+<p>那么，我们就可以用这个函数来判断系统是否是Windows 8.1，如果不是，我们就可以用老办法，GetVersionEx来获得系统的版本号作判断了。当然了，大家看到这估计也能看出，我们自己也能用这两个函数实现一套所谓的Version Helper functions。举个例子：</p>
 
-
-那么，我们就可以用这个函数来判断系统是否是Windows 8.1，如果不是，我们就可以用老办法，GetVersionEx来获得系统的版本号作判断了。当然了，大家看到这估计也能看出，我们自己也能用这两个函数实现一套所谓的Version Helper functions。举个例子：
-
-
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18</pre></td><td class="code"><pre><span class="n">BOOL</span> <span class="n">WINAPI</span> <span class="nf">IsWindowsVersionOrGreater</span><span class="p">(</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">BOOL</span> <span class="n">WINAPI</span> <span class="nf">IsWindowsVersionOrGreater</span><span class="p">(</span>
 	<span class="n">WORD</span> <span class="n">wMajorVersion</span><span class="p">,</span>
 	<span class="n">WORD</span> <span class="n">wMinorVersion</span><span class="p">,</span>
 	<span class="n">WORD</span> <span class="n">wServicePackMajor</span>
@@ -836,31 +806,17 @@ Applications not manifested for Windows 8.1 will return the Windows 8 OS versi
 	<span class="n">mask</span> <span class="o">=</span> <span class="n">VerSetConditionMask</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">VER_SERVICEPACKMAJOR</span><span class="p">,</span> <span class="n">VER_GREATER_EQUAL</span><span class="p">);</span>
 
 	<span class="k">return</span> <span class="n">VerifyVersionInfo</span><span class="p">(</span><span class="o">&amp;</span><span class="n">version</span><span class="p">;</span><span class="n">_info</span><span class="p">,</span> <span class="n">VER_MAJORVERSION</span> <span class="o">|</span> <span class="n">VER_MINORVERSION</span> <span class="o">|</span> <span class="n">VER_SERVICEPACKMAJOR</span><span class="p">,</span> <span class="n">mask</span><span class="p">);</span>
-<span class="p">}</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="p">}</span></code></pre></div>
 
+<p>怎么样，是不是达到了以假乱真的效果了。那么最后，咱再看看这么写出来的API的效果如何：</p>
 
-怎么样，是不是达到了以假乱真的效果了。那么最后，咱再看看这么写出来的API的效果如何：
+<p><a href="/uploads/2014/04/20140413233019.png"><img src="/uploads/2014/04/20140413233019.png" alt="20140413233019" /></a></p>
 
-[![20140413233019](/uploads/2014/04/20140413233019.png)](/uploads/2014/04/20140413233019.png)
+<p>===============想睡觉的分割线====================</p>
 
-===============想睡觉的分割线====================
+<p>更新另外一个方法，在网上看到的，感觉也还行。只不过需要引入其他DLL，可以作为备选方案。</p>
 
-更新另外一个方法，在网上看到的，感觉也还行。只不过需要引入其他DLL，可以作为备选方案。
-
-
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12</pre></td><td class="code"><pre><span class="n">ULONG</span> <span class="nf">MyGetVersion</span><span class="p">()</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">ULONG</span> <span class="nf">MyGetVersion</span><span class="p">()</span>
 <span class="p">{</span>	
 	<span class="n">LPBYTE</span> <span class="n">raw_data</span><span class="p">;</span>
 	<span class="n">ULONG</span> <span class="n">retval</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
@@ -871,11 +827,8 @@ Applications not manifested for Windows 8.1 will return the Windows 8 OS versi
 		<span class="k">return</span> <span class="n">retval</span><span class="p">;</span>
 	<span class="p">}</span>
 	<span class="k">return</span> <span class="n">retval</span><span class="p">;</span>
-<span class="p">}</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="p">}</span></code></pre></div>
 
-
-</code></pre></div></code></pre></div></code></pre></div>
 
   </article>
 

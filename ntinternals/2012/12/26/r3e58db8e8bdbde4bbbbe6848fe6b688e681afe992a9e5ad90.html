@@ -772,37 +772,26 @@
 
 <p>现在是已经知道了可以去读Hook对象，但是上哪去读就是要解决的问题了。这里就要提到老生常谈的Sharedinfo了。用户态的Sharedinfo获取方法很多，顺手就行。与上面问题相关的就是Sharedinfo里面会有一个Handle Entry Table，里面存储的就是包括Hook在内的User Object。Entry的结构如下（来自reactos）：</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8</pre></td><td class="code"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">_HANDLEENTRY</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">_HANDLEENTRY</span>
 <span class="p">{</span>
 <span class="n">PHEAD</span> <span class="n">pHead</span><span class="p">;</span>
 <span class="n">PVOID</span> <span class="n">pOwner</span><span class="p">;</span>
 <span class="n">BYTE</span> <span class="n">bType</span><span class="p">;</span>
 <span class="n">BYTE</span> <span class="n">bFlags</span><span class="p">;</span>
 <span class="n">WORD</span> <span class="n">wUniq</span><span class="p">;</span>
-<span class="p">}</span> <span class="n">HANDLEENTRY</span><span class="p">,</span> <span class="o">*</span><span class="n">PHE</span><span class="p">,</span> <span class="o">*</span><span class="n">PHANDLEENTRY</span><span class="p">;</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="p">}</span> <span class="n">HANDLEENTRY</span><span class="p">,</span> <span class="o">*</span><span class="n">PHE</span><span class="p">,</span> <span class="o">*</span><span class="n">PHANDLEENTRY</span><span class="p">;</span></code></pre></div>
 
+<p>其中pHead指向Object，bType表示object类型。HOOK的bType是5。所以这里我们只需要在bType为5的时候继续下面的操作。</p>
 
+<p>pHead肯定是指向的内核内存，所以我们无法直接访问HOOK的内部情况。我们需要找到这个Object映射到R3的内存地址才行。幸运的是这种关系也比较简单明了。在Teb-&gt;Win32ClientInfo.ulClientDelta就存放了对应的关系Delta值。计算方法如下</p>
 
-其中pHead指向Object，bType表示object类型。HOOK的bType是5。所以这里我们只需要在bType为5的时候继续下面的操作。
+<p>ObjectInR3 = HANDLEENTRY.pHead - Teb-&gt;Win32ClientInfo.ulClientDelta。</p>
 
-pHead肯定是指向的内核内存，所以我们无法直接访问HOOK的内部情况。我们需要找到这个Object映射到R3的内存地址才行。幸运的是这种关系也比较简单明了。在Teb-&gt;Win32ClientInfo.ulClientDelta就存放了对应的关系Delta值。计算方法如下
+<p><a href="/uploads/2012/12/20121226220202.png"><img src="/uploads/2012/12/20121226220202.png" alt="20121226220202" /></a></p>
 
-ObjectInR3 = HANDLEENTRY.pHead - Teb-&gt;Win32ClientInfo.ulClientDelta。
+<p>这样也就得到了HOOK Object。接下来的事情就好办了，HOOK Object的第一项就是HHOOK。只需要UnhookWindowsHookEx((HHOOK)Hook-&gt;head.h);就能卸载钩子了。</p>
 
-[![20121226220202](/uploads/2012/12/20121226220202.png)](/uploads/2012/12/20121226220202.png)
-
-这样也就得到了HOOK Object。接下来的事情就好办了，HOOK Object的第一项就是HHOOK。只需要UnhookWindowsHookEx((HHOOK)Hook-&gt;head.h);就能卸载钩子了。
-
-[DEMO CODE](http://0cch.net/wordpress/?attachment_id=104)
-</code></pre></div>
+<p><a href="http://0cch.net/wordpress/?attachment_id=104">DEMO CODE</a></p>
 
   </article>
 

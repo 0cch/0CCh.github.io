@@ -775,15 +775,7 @@
 <p>这里简单的描述下FormatEx的用法：
 函数原型是</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9</pre></td><td class="code"><pre><span class="n">VOID</span> <span class="n">WINAPI</span> <span class="n">FormatEx</span><span class="p">(</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">VOID</span> <span class="n">WINAPI</span> <span class="n">FormatEx</span><span class="p">(</span>
 	<span class="n">LPCWSTR</span> <span class="n">DriveRoot</span><span class="p">,</span>
 	<span class="n">MEDIA_TYPE</span> <span class="n">MediaType</span><span class="p">,</span>
 	<span class="n">LPCWSTR</span> <span class="n">FileSystemTypeName</span><span class="p">,</span>
@@ -791,48 +783,31 @@
 	<span class="n">BOOL</span> <span class="n">QuickFormat</span><span class="p">,</span>
 	<span class="n">ULONG</span> <span class="n">ClusterSize</span><span class="p">,</span>
 	<span class="n">FILE_SYSTEM_CALLBACK</span> <span class="n">Callback</span>
-<span class="p">);</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="p">);</span></code></pre></div>
 
+<p>参数<br />
+DriveRoot —— 盘符，如”K:"<br />
+MediaType —— 磁盘类型，如FixedMedia<br />
+FileSystemTypeName —— 要格式化的文件系统，如”NTFS”<br />
+Label —— 标签，随便写吧<br />
+QuickFormat —— 快速格式化<br />
+ClusterSize —— 簇大小<br />
+Callback —— 状态回调函数</p>
 
+<p>回调函数原型</p>
 
-参数  
-DriveRoot —— 盘符，如"K:\"  
-MediaType —— 磁盘类型，如FixedMedia  
-FileSystemTypeName —— 要格式化的文件系统，如"NTFS"  
-Label —— 标签，随便写吧  
-QuickFormat —— 快速格式化  
-ClusterSize —— 簇大小  
-Callback —— 状态回调函数  
-
-回调函数原型
-
-
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5</pre></td><td class="code"><pre><span class="k">typedef</span> <span class="n">BOOLEAN</span> <span class="p">(</span><span class="kr">__stdcall</span> <span class="o">*</span><span class="n">FILE_SYSTEM_CALLBACK</span><span class="p">)(</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">typedef</span> <span class="n">BOOLEAN</span> <span class="p">(</span><span class="kr">__stdcall</span> <span class="o">*</span><span class="n">FILE_SYSTEM_CALLBACK</span><span class="p">)(</span>
 	<span class="n">ULONG</span>                        <span class="n">Command</span><span class="p">,</span>
 	<span class="n">ULONG</span>                        <span class="n">Action</span><span class="p">,</span>
 	<span class="n">PVOID</span>                        <span class="n">pData</span>
-<span class="p">);</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="p">);</span></code></pre></div>
 
+<p>Command 表示Action和pData的意义，比如Command = 0表示pData是进度，Command = 11表示完成。还有其他的状态，例如错误等等，这些google一下就知道了。这个函数返回TRUE表示函数继续运行，FALSE表示停止格式化。</p>
 
+<p>比如，下面是格式化K盘：</p>
 
-Command 表示Action和pData的意义，比如Command = 0表示pData是进度，Command = 11表示完成。还有其他的状态，例如错误等等，这些google一下就知道了。这个函数返回TRUE表示函数继续运行，FALSE表示停止格式化。
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">FormatEx</span><span class="p">(</span><span class="s">L"K:</span><span class="se">\"</span><span class="s">, FixedMedia, L"</span><span class="n">NTFS</span><span class="s">", L"</span><span class="mi">0</span><span class="n">CCh</span><span class="s">", TRUE, 4096, FormatExCallback);</span></code></pre></div>
 
-比如，下面是格式化K盘：
-
-
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1</pre></td><td class="code"><pre><span class="n">FormatEx</span><span class="p">(</span><span class="s">L"K:</span><span class="se">\"</span><span class="s">, FixedMedia, L"</span><span class="n">NTFS</span><span class="s">", L"</span><span class="mi">0</span><span class="n">CCh</span><span class="s">", TRUE, 4096, FormatExCallback);</span><span class="w">
-</span></pre></td></tr></tbody></table>
-
-
-
-
-</code></pre></div></code></pre></div></code></pre></div>
 
   </article>
 

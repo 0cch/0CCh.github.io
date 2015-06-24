@@ -799,64 +799,7 @@
 <p>对于初学者理论知识不用了解的过细，最好还是在代码中边写边学习，还是一边堆代码，一边解释吧。
 （关于下面代码的补充说明：由于使用DMA必须处理中断以获得DMA处理结束的信号，而配置中断又涉及到许多理论知识和额外代码（8259A &amp;IDT），所以下面的代码就不涉及配置中断了，我这里就假设CPU已经进入保护模式，但没有开启分页并且IDE的中断已经配置完毕了。以下代码依旧为了保持最简洁，忽略了状态和结果的检查，在试验中够用即可）</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58</pre></td><td class="code"><pre><span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">0</span><span class="n">C000h</span> <span class="p">;</span> <span class="err">设置开始停止位为</span><span class="mi">0</span><span class="err">，停止</span><span class="n">DMA</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">0</span><span class="n">C000h</span> <span class="p">;</span> <span class="err">设置开始停止位为</span><span class="mi">0</span><span class="err">，停止</span><span class="n">DMA</span>
 <span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>
 <span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
 
@@ -913,23 +856,19 @@
 
 <span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">0</span><span class="n">C000h</span> <span class="p">;</span> <span class="err">中断返回，设置开始停止位为</span><span class="mi">0</span><span class="err">，停止</span><span class="n">DMA</span>
 <span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>     <span class="p">;</span> <span class="err">如果一切都顺利，那么</span><span class="mi">20000</span><span class="n">h</span><span class="err">开始的</span><span class="mi">512</span><span class="err">个字节</span>
-<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>     <span class="p">;</span> <span class="err">就应该是读出的硬盘数据了</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>     <span class="p">;</span> <span class="err">就应该是读出的硬盘数据了</span></code></pre></div>
 
-
-
-上面的代码主要分为以下这几步：
+<p>上面的代码主要分为以下这几步：
 1) 在系统内存中配置PRD Table。每个PRD是8个字节，其中包含着一个起始内存地址和一个内存大小
 传送，而且PRD必须是4字节对齐的。
 2) 给PRD Table指针寄存器传入配置好的PRD Table的地址，设置读写控制位，清除中断和错误位。
 3) 设置读写命令，包括读写的驱动器，逻辑地址等（这里基本上和PIO类似）。
 4) 设置总线主控IDE命令寄存器的开始/停止位为1，控制器开始执行DMA操作。
-5) 控制器DMA操作结束，IDE设备发起中断，收到中断后，设置开始/停止位为0（我们省略了读取状态寄存器来查看操作是否成功的步骤。）
+5) 控制器DMA操作结束，IDE设备发起中断，收到中断后，设置开始/停止位为0（我们省略了读取状态寄存器来查看操作是否成功的步骤。）</p>
 
-如果只是从IDE方面来看，代码没有复杂多少，可惜的是他还需要配合其他计算机硬件，所以实际要用上的代码要比PIO多上了不少。最后还是给大家推荐一些深入理解DMA的资料吧。
-ISA DMA：[http://wiki.osdev.org/ISA_DMA](http://wiki.osdev.org/ISA_DMA)
-PCI DMA：[http://wiki.osdev.org/ATA/ATAPI_using_DMA](http://wiki.osdev.org/ATA/ATAPI_using_DMA)
-</code></pre></div>
+<p>如果只是从IDE方面来看，代码没有复杂多少，可惜的是他还需要配合其他计算机硬件，所以实际要用上的代码要比PIO多上了不少。最后还是给大家推荐一些深入理解DMA的资料吧。
+ISA DMA：<a href="http://wiki.osdev.org/ISA_DMA">http://wiki.osdev.org/ISA_DMA</a>
+PCI DMA：<a href="http://wiki.osdev.org/ATA/ATAPI_using_DMA">http://wiki.osdev.org/ATA/ATAPI_using_DMA</a></p>
 
   </article>
 

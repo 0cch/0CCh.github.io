@@ -768,83 +768,7 @@
 
 <p>如上图所示，Windows7下有一个很有趣的功能，就是可以给单独的进程调节音量。出于好奇，在网上翻了下资料，原来这个功能要归功于Windows7上新的音频接口——Core Audio APIs。这套API是用COM写，各种接口也比较多。但是如果我们的目的只是控制单个进程的音量，那还是很简单的。接下来的代码就是控制进程音量的函数了。</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
-74
-75
-76
-77</pre></td><td class="code"><pre><span class="k">const</span> <span class="n">CLSID</span> <span class="n">CLSID_MMDeviceEnumerator</span> <span class="o">=</span> <span class="kr">__uuidof</span><span class="p">(</span><span class="n">MMDeviceEnumerator</span><span class="p">);</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">const</span> <span class="n">CLSID</span> <span class="n">CLSID_MMDeviceEnumerator</span> <span class="o">=</span> <span class="kr">__uuidof</span><span class="p">(</span><span class="n">MMDeviceEnumerator</span><span class="p">);</span>
 <span class="k">const</span> <span class="n">IID</span> <span class="n">IID_IMMDeviceEnumerator</span> <span class="o">=</span> <span class="kr">__uuidof</span><span class="p">(</span><span class="n">IMMDeviceEnumerator</span><span class="p">);</span>
 <span class="k">const</span> <span class="n">IID</span> <span class="n">IID_IAudioSessionManager2</span> <span class="o">=</span> <span class="kr">__uuidof</span><span class="p">(</span><span class="n">IAudioSessionManager2</span><span class="p">);</span>
 <span class="k">const</span> <span class="n">IID</span> <span class="n">IID_IAudioSessionControl2</span> <span class="o">=</span> <span class="kr">__uuidof</span><span class="p">(</span><span class="n">IAudioSessionControl2</span><span class="p">);</span>
@@ -920,11 +844,8 @@
     <span class="p">}</span>
 
     <span class="k">return</span> <span class="n">TRUE</span><span class="p">;</span>
-<span class="p">}</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="p">}</span></code></pre></div>
 
-
-</code></pre></div>
 
   </article>
 

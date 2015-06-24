@@ -783,46 +783,7 @@ LBA寻址模式从0开始编号来定位区块，第一区块LBA=0，第二区�
 
 <p>好了，介绍理论的知识不是这篇文章的目的，就让我们一边堆代码，一边讲解这些理论知识吧。下面就是一段读取硬盘数据的asm代码。</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40</pre></td><td class="code"><pre><span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">3</span><span class="n">f6h</span>    <span class="p">;</span> <span class="mf">1.</span><span class="err">设置</span><span class="n">nIEN</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">3</span><span class="n">f6h</span>    <span class="p">;</span> <span class="mf">1.</span><span class="err">设置</span><span class="n">nIEN</span>
     <span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">2</span><span class="n">h</span>
     <span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
     
@@ -861,12 +822,9 @@ LBA寻址模式从0开始编号来定位区块，第一区块LBA=0，第二区�
     <span class="n">mov</span> <span class="n">ecx</span><span class="p">,</span> <span class="mi">512</span><span class="o">/</span><span class="mi">4</span>  <span class="p">;</span> <span class="n">IO</span> <span class="mi">128</span><span class="err">次！</span>
     <span class="n">mov</span> <span class="n">edi</span><span class="p">,</span> <span class="n">offset</span> <span class="n">buffer</span>  <span class="p">;</span> <span class="err">设置</span><span class="n">buffer</span><span class="err">地址到</span><span class="n">edi</span>
     <span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">1</span><span class="n">f0h</span>
-    <span class="n">rep</span> <span class="n">insw</span>        <span class="p">;</span> <span class="mf">10.</span><span class="err">循环</span><span class="mi">128</span><span class="err">次从数据寄存器读取</span><span class="mi">1</span><span class="err">个扇区的数据</span><span class="w">
-</span></pre></td></tr></tbody></table>
+    <span class="n">rep</span> <span class="n">insw</span>        <span class="p">;</span> <span class="mf">10.</span><span class="err">循环</span><span class="mi">128</span><span class="err">次从数据寄存器读取</span><span class="mi">1</span><span class="err">个扇区的数据</span></code></pre></div>
 
-
-
-上面的代码主要分为以下这几步：
+<p>上面的代码主要分为以下这几步：
 1.我们现在不需要IRQs，所以我们这里要禁用它，以免发生不必要的问题。这里，我们设置CBR（Control Block Register）的第1位，也叫nIEN位，只要它处于设置的状态，那么IRQs就不会触发。
 2.设置FEATURES寄存器
 3.设置扇区数寄存器
@@ -876,24 +834,11 @@ LBA寻址模式从0开始编号来定位区块，第一区块LBA=0，第二区�
 7.设置LBA最高4位，以及驱动器，指明使用LBA模式
 8.设置读扇区命令
 9.轮询等待完成状态
-10.循环128次读取1个扇区的数据（128*4=512 bytes）
+10.循环128次读取1个扇区的数据（128*4=512 bytes）</p>
 
-再看看写扇区有哪些不同呢？没错，只有最后几条指令有细微的差别。
+<p>再看看写扇区有哪些不同呢？没错，只有最后几条指令有细微的差别。</p>
 
-
-
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12</pre></td><td class="code"><pre><span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">1</span><span class="n">f7h</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">1</span><span class="n">f7h</span>
     <span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">30</span><span class="n">h</span>     <span class="p">;</span> <span class="err">这里命令改为</span><span class="mi">30</span><span class="n">h</span><span class="err">，写扇区</span>
     <span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
 <span class="n">pri_stat</span><span class="o">:</span>
@@ -904,19 +849,15 @@ LBA寻址模式从0开始编号来定位区块，第一区块LBA=0，第二区�
     <span class="n">mov</span> <span class="n">ecx</span><span class="p">,</span> <span class="mi">512</span><span class="o">/</span><span class="mi">4</span>
     <span class="n">mov</span> <span class="n">esi</span><span class="p">,</span> <span class="n">offset</span> <span class="n">buffer</span> <span class="p">;</span> <span class="err">设置</span><span class="n">buffer</span><span class="err">地址到</span><span class="n">esi</span>
     <span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">1</span><span class="n">f0h</span>
-    <span class="n">rep</span> <span class="n">outsd</span>       <span class="p">;</span> <span class="err">这里指令改为</span><span class="n">outsd</span><span class="w">
-</span></pre></td></tr></tbody></table>
+    <span class="n">rep</span> <span class="n">outsd</span>       <span class="p">;</span> <span class="err">这里指令改为</span><span class="n">outsd</span></code></pre></div>
 
+<p>看起来还是很简单的吧！不过这也是当然的，因为我们没有做任何的排错和检验处理。不过这样的代码才是初学者最喜欢看到的吧，同样对于做操作系统实验也没多大问题。</p>
 
+<p>最后，如果对CHS以及LBA和CHS的转换关系感兴趣，推荐翻阅wiki：
+<a href="http://en.wikipedia.org/wiki/Cylinder-head-sector">http://en.wikipedia.org/wiki/Cylinder-head-sector</a>
+<a href="http://en.wikipedia.org/wiki/Logical_block_addressing#CHS_conversion">http://en.wikipedia.org/wiki/Logical_block_addressing#CHS_conversion</a></p>
 
-看起来还是很简单的吧！不过这也是当然的，因为我们没有做任何的排错和检验处理。不过这样的代码才是初学者最喜欢看到的吧，同样对于做操作系统实验也没多大问题。
-
-最后，如果对CHS以及LBA和CHS的转换关系感兴趣，推荐翻阅wiki：
-[http://en.wikipedia.org/wiki/Cylinder-head-sector](http://en.wikipedia.org/wiki/Cylinder-head-sector)
-[http://en.wikipedia.org/wiki/Logical_block_addressing#CHS_conversion](http://en.wikipedia.org/wiki/Logical_block_addressing#CHS_conversion)
-
-在下一篇的文章中，会介绍一些用PCI DMA的方式读写硬盘的知识。
-</code></pre></div></code></pre></div>
+<p>在下一篇的文章中，会介绍一些用PCI DMA的方式读写硬盘的知识。</p>
 
   </article>
 

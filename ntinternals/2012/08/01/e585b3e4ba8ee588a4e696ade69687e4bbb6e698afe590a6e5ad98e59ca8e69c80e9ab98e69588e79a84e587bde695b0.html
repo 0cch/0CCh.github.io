@@ -784,18 +784,7 @@
 
 <p>google就是这样做的：</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12</pre></td><td class="code"><pre><span class="n">bool</span> <span class="n">File</span><span class="o">::</span><span class="n">Exists</span><span class="p">(</span><span class="k">const</span> <span class="n">TCHAR</span><span class="o">*</span> <span class="n">file_name</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">bool</span> <span class="n">File</span><span class="o">::</span><span class="n">Exists</span><span class="p">(</span><span class="k">const</span> <span class="n">TCHAR</span><span class="o">*</span> <span class="n">file_name</span><span class="p">)</span> <span class="p">{</span>
 <span class="n">ASSERT1</span><span class="p">(</span><span class="n">file_name</span> <span class="o">&amp;&amp;</span> <span class="o">*</span><span class="n">file_name</span><span class="p">);</span>
 <span class="n">ASSERT1</span><span class="p">(</span><span class="n">lstrlen</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">);</span>
 
@@ -806,13 +795,8 @@
 // GetFileAttributesEx 396324 avg ticks/call
 </span><span class="n">WIN32_FILE_ATTRIBUTE_DATA</span> <span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
 <span class="k">return</span> <span class="mi">0</span> <span class="o">!=</span> <span class="o">::</span><span class="n">GetFileAttributesEx</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="o">::</span><span class="n">GetFileExInfoStandard</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attrs</span><span class="p">);</span>
-<span class="p">}</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="p">}</span></code></pre></div>
 
-
-
-
-</code></pre></div>
 
   </article>
 

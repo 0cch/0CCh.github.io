@@ -768,22 +768,7 @@
 
 <p>以下脚本是Windows 7 32Bit，对于64bit，稍微修改下就行。不过如果是Windows 8，DLL的加载细节已经发生变化，所以这个脚本就不适用了。希望能抛砖引玉一下，期待更多系统的脚本分享出来。</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16</pre></td><td class="code"><pre><span class="n">bp</span> <span class="n">ntdll</span><span class="o">!</span><span class="n">LdrpFindOrMapDll</span> <span class="s">"</span><span class="err">
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">bp</span> <span class="n">ntdll</span><span class="o">!</span><span class="n">LdrpFindOrMapDll</span> <span class="s">"</span><span class="err">
 </span><span class="s">.push /r /q</span><span class="err">
 </span><span class="s">r @$t0 = poi(@esp+4)</span><span class="err">
 </span><span class="s">r @$t1 = poi(@esp+8)</span><span class="err">
@@ -798,16 +783,12 @@
 
 </span><span class="s">.pop /r /q</span><span class="err">
 </span><span class="s">g</span><span class="err">
-</span><span class="s">"</span><span class="w">
-</span></pre></td></tr></tbody></table>
+</span><span class="s">"</span></code></pre></div>
 
+<p>最后看看脚本的效果吧，如果加载失败了，那么返回的状态值就不是0。
+<a href="/uploads/2014/10/20141027164220.png"><img src="/uploads/2014/10/20141027164220.png" alt="20141027164220" /></a>
+<a href="/uploads/2014/10/20141027164424.png"><img src="/uploads/2014/10/20141027164424.png" alt="20141027164424" /></a></p>
 
-
-最后看看脚本的效果吧，如果加载失败了，那么返回的状态值就不是0。
-[![20141027164220](/uploads/2014/10/20141027164220.png)](/uploads/2014/10/20141027164220.png)
-[![20141027164424](/uploads/2014/10/20141027164424.png)](/uploads/2014/10/20141027164424.png)
-
-</code></pre></div>
 
   </article>
 

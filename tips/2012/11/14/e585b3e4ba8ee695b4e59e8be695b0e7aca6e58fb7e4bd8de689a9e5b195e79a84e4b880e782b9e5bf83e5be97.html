@@ -768,56 +768,28 @@
 
 <p>这里举个例子：</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3</pre></td><td class="code"><pre><span class="c1">// case 1
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="c1">// case 1
 </span><span class="kt">long</span> <span class="n">i</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-<span class="kt">long</span> <span class="kt">long</span> <span class="n">q</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="kt">long</span> <span class="kt">long</span> <span class="n">q</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span></code></pre></div>
 
-
-
-
-
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3</pre></td><td class="code"><pre><span class="c1">// case 2
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="c1">// case 2
 </span><span class="kt">long</span> <span class="n">i</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-<span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">q</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">q</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span></code></pre></div>
 
-
-
-
-
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3</pre></td><td class="code"><pre><span class="c1">// case 3
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="c1">// case 3
 </span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0xffffffff</span><span class="p">;</span>
-<span class="kt">long</span> <span class="kt">long</span> <span class="n">q</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="kt">long</span> <span class="kt">long</span> <span class="n">q</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span></code></pre></div>
 
-
-
-
-
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3</pre></td><td class="code"><pre><span class="c1">// case 4
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="c1">// case 4
 </span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">i</span> <span class="o">=</span> <span class="mh">0xffffffff</span><span class="p">;</span>
-<span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">q</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">q</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span></code></pre></div>
 
+<p>那么这4肿情况中q都是多少呢？
+实验结果是case 1 和 2，他们的q的值（这里都表示为无符号）0xffffffff<code>ffffffff，而case 3 和 4 中q的值为0x00000000</code>ffffffff。
+看到这里，大概就能推测c++的转换策略。即以源操作数的类型为依据，对其进行扩展，然后赋值到目标操作数，他并不在乎目标的类型有无符号。</p>
 
+<p>看了相关编译完成后的汇编代码可以确认这一点，case 1和2的汇编代码完全相同，而3和4也是一样。更具体一点来说。有符号的情况下调用了cdq对符号位进行扩展，然后将edx赋值到q的高位，而无符号的情况下，简单xor了寄存器，然后赋值到q的高位。</p>
 
-那么这4肿情况中q都是多少呢？
-实验结果是case 1 和 2，他们的q的值（这里都表示为无符号）0xffffffff`ffffffff，而case 3 和 4 中q的值为0x00000000`ffffffff。
-看到这里，大概就能推测c++的转换策略。即以源操作数的类型为依据，对其进行扩展，然后赋值到目标操作数，他并不在乎目标的类型有无符号。
-
-看了相关编译完成后的汇编代码可以确认这一点，case 1和2的汇编代码完全相同，而3和4也是一样。更具体一点来说。有符号的情况下调用了cdq对符号位进行扩展，然后将edx赋值到q的高位，而无符号的情况下，简单xor了寄存器，然后赋值到q的高位。
-
-
-</code></pre></div></code></pre></div></code></pre></div></code></pre></div>
 
   </article>
 

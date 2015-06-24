@@ -766,24 +766,7 @@
   <article class="post-content">
     <p>学好Windbg，基本上可以代替很多工具，这次分享一个查看Object Hook的脚本：</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18</pre></td><td class="code"><pre><span class="n">r</span> <span class="err">@$</span><span class="n">t0</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">r</span> <span class="err">@$</span><span class="n">t0</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
 <span class="n">r</span><span class="o">?</span> <span class="err">@$</span><span class="n">t1</span> <span class="o">=</span> <span class="p">((</span><span class="n">nt</span><span class="o">!</span><span class="n">_OBJECT_TYPE</span><span class="o">**</span><span class="p">)</span><span class="err">@@</span><span class="p">(</span><span class="n">nt</span><span class="o">!</span><span class="n">ObTypeIndexTable</span><span class="p">))[</span><span class="err">@$</span><span class="n">t0</span><span class="p">];</span>
 
 <span class="p">.</span><span class="k">while</span> <span class="p">((</span><span class="err">@$</span><span class="n">t1</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
@@ -800,13 +783,9 @@
 	
 	<span class="n">r</span> <span class="err">@$</span><span class="n">t0</span> <span class="o">=</span> <span class="err">@$</span><span class="n">t0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
 	<span class="n">r</span><span class="o">?</span> <span class="err">@$</span><span class="n">t1</span> <span class="o">=</span> <span class="p">((</span><span class="n">nt</span><span class="o">!</span><span class="n">_OBJECT_TYPE</span><span class="o">**</span><span class="p">)</span><span class="err">@@</span><span class="p">(</span><span class="n">nt</span><span class="o">!</span><span class="n">ObTypeIndexTable</span><span class="p">))[</span><span class="err">@$</span><span class="n">t0</span><span class="p">];</span>
-<span class="p">};</span><span class="w">
-</span></pre></td></tr></tbody></table>
+<span class="p">};</span></code></pre></div>
 
-
-
-[![20150324095806](/uploads/2015/03/20150324095806.png)](/uploads/2015/03/20150324095806.png)
-</code></pre></div>
+<p><a href="/uploads/2015/03/20150324095806.png"><img src="/uploads/2015/03/20150324095806.png" alt="20150324095806" /></a></p>
 
   </article>
 
