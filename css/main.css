@@ -2,6 +2,7 @@
 /**
  * Reset some basic elements
  */
+@import url(http://fonts.googleapis.com/css?family=Titillium+Web);
 body, h1, h2, h3, h4, h5, h6,
 p, blockquote, pre, hr,
 dl, dd, ol, ul, figure {
@@ -65,10 +66,10 @@ h1, h2, h3, h4, h5, h6 {
  * Links
  */
 a {
-  color: #2a7ae2;
+  color: #a04a00;
   text-decoration: none; }
   a:visited {
-    color: #1756a9; }
+    color: #a04a00; }
   a:hover {
     color: #111;
     text-decoration: underline; }
@@ -175,11 +176,16 @@ pre {
   position: relative; }
 
 .site-title {
-  font-size: 26px;
+  font-family: 'Titillium Web', sans-serif;
+  font-size: 40px;
   line-height: 56px;
   letter-spacing: -1px;
   margin-bottom: 0;
-  float: left; }
+  float: left;
+  text-shadow: 1px 1px 1px #999;
+  font-style: normal;
+  font-weight: 600;
+  outline-color: #111; }
   .site-title, .site-title:visited {
     color: #424242; }
 
