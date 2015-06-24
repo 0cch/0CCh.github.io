@@ -776,20 +776,20 @@
 
 <p>虽然调用中断访问软盘简单，但是我们不能让自己的内核总是跑在实模式下啊。所以我们需要写一个能跑在保护模式下的软驱驱动，要完成这样的驱动，就必须对FDC进行编程了。不过在此之前，我们需要知道，到底PC上有没有软驱。要获得这个信息，我们需要读取CMOS，然后解析读取的信息即可。</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">70</span><span class="n">h</span>
-<span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="mi">10</span><span class="n">h</span>
-<span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
+<div class="highlight"><pre><code class="language-asm" data-lang="asm">mov dx, 70h
+mov al, 10h
+out dx, al
 
-<span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="mi">71</span><span class="n">h</span>
-<span class="n">in</span>  <span class="n">al</span><span class="p">,</span> <span class="n">dx</span>
+mov dx, 71h
+in  al, dx
 
-<span class="n">mov</span> <span class="n">f_b</span><span class="p">,</span> <span class="n">al</span>
-<span class="n">and</span> <span class="n">f_b</span><span class="p">,</span> <span class="mi">0</span><span class="n">fh</span>
-<span class="n">shr</span> <span class="n">al</span><span class="p">,</span> <span class="mi">4</span>
-<span class="n">mov</span> <span class="n">f_a</span><span class="p">,</span> <span class="n">al</span>
+mov f_b, al
+and f_b, 0fh
+shr al, 4
+mov f_a, al
 
-<span class="n">f_a</span> <span class="n">db</span>	<span class="mi">0</span><span class="n">h</span>
-<span class="n">f_b</span> <span class="n">db</span>	<span class="mi">0</span><span class="n">h</span></code></pre></div>
+f_a db	0h
+f_b db	0h</code></pre></div>
 
 <p>要从CMOS中获得软盘信息，我们需要先给对应的端口设置正确的索引，然后再去数据端口读取数据。具体做法是设置0x70端口为0x10，然后读取0x71端口。读取到的信息都放在一个字节中，需要把字节分为两个部分，高四位是驱动器A的类型索引号，低四位是驱动器B的类型索引号。索引号与软盘类型的对应关系如下图所示：
 <a href="/uploads/2013/09/cmos_floppytype.png"><img src="/uploads/2013/09/cmos_floppytype.png" alt="cmos_floppytype" /></a></p>
@@ -819,183 +819,183 @@ ISA DMA全称Industry Standard Architecture Direct Memory Access，是一种古�
 <p><strong>实践</strong>
 下面就是一段控制FDC读取软盘数据的代码。需要说明的是这份代码为了保持简洁易学，它没有任何的错误检测，另外代码也假设了你已经初始化了PIC，并且设置好了IRQ6。</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="p">;</span> <span class="n">MASM</span><span class="err">的宏应该不陌生吧，就不做解释了。</span>
-<span class="n">outb</span> <span class="n">macro</span> <span class="n">port</span><span class="o">:</span><span class="n">req</span><span class="p">,</span> <span class="n">b</span><span class="o">:</span><span class="n">req</span>
-    <span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="n">port</span>
-    <span class="n">mov</span> <span class="n">al</span><span class="p">,</span> <span class="n">b</span>
-    <span class="n">out</span> <span class="n">dx</span><span class="p">,</span> <span class="n">al</span>
-<span class="n">endm</span>
+<div class="highlight"><pre><code class="language-asm" data-lang="asm">; MASM的宏应该不陌生吧，就不做解释了。
+outb macro port:req, b:req
+    mov dx, port
+    mov al, b
+    out dx, al
+endm
 
-<span class="n">inb</span> <span class="n">macro</span> <span class="n">port</span><span class="o">:</span><span class="n">req</span>
-    <span class="n">mov</span> <span class="n">dx</span><span class="p">,</span> <span class="n">port</span>
-    <span class="n">in</span> <span class="n">al</span><span class="p">,</span> <span class="n">dx</span>
-<span class="n">endm</span>
+inb macro port:req
+    mov dx, port
+    in al, dx
+endm
 
-<span class="n">wait_status</span> <span class="n">macro</span>
-    <span class="n">inb</span> <span class="mi">3</span><span class="n">f4h</span>
-<span class="err">@@</span><span class="o">:</span>
-    <span class="n">test</span> <span class="n">al</span><span class="p">,</span> <span class="mi">80</span><span class="n">h</span>
-    <span class="n">jz</span> <span class="err">@</span><span class="n">B</span>
-<span class="n">endm</span>
+wait_status macro
+    inb 3f4h
+@@:
+    test al, 80h
+    jz @B
+endm
 
-<span class="p">;</span> <span class="n">ISA</span> <span class="n">DMA</span> <span class="err">初始化部分，</span> <span class="err">由于</span><span class="n">ISA</span> <span class="n">DMA</span><span class="err">不是这篇文章的重点</span>
-<span class="p">;</span> <span class="err">所以这里只说明大概的用途。</span>
-<span class="n">outb</span> <span class="mi">0</span><span class="n">dh</span><span class="p">,</span> <span class="mi">0</span><span class="n">ffh</span>      <span class="p">;</span> <span class="err">重置</span><span class="n">DMA</span><span class="err">控制器</span>
-<span class="n">outb</span> <span class="mi">0</span><span class="n">ah</span><span class="p">,</span> <span class="mi">6</span><span class="n">h</span>        <span class="p">;</span> <span class="err">选择设置</span><span class="mi">2</span><span class="err">号</span><span class="n">DMA</span><span class="err">通道</span>
-<span class="n">outb</span> <span class="mi">0</span><span class="n">ch</span><span class="p">,</span> <span class="mi">0</span><span class="n">ffh</span>      <span class="p">;</span> <span class="err">重置</span><span class="n">Flipflop</span><span class="err">寄存器</span>
-<span class="n">outb</span> <span class="mi">4</span><span class="n">h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>         <span class="p">;</span> <span class="err">设置</span><span class="n">DMA</span><span class="err">的物理地址，需要设置两次</span>
-<span class="n">outb</span> <span class="mi">4</span><span class="n">h</span><span class="p">,</span> <span class="mi">0</span><span class="n">f0h</span>       <span class="p">;</span> <span class="err">我这里设置的是</span><span class="mh">0xf000</span>
-<span class="n">outb</span> <span class="mi">81</span><span class="n">h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>        <span class="p">;</span> <span class="err">设置地址</span><span class="mi">24</span><span class="n">bit</span><span class="err">的高</span><span class="mi">8</span><span class="n">bit</span><span class="err">为</span><span class="mi">0</span><span class="err">，也就是</span><span class="mh">0x00f000</span>
-<span class="n">outb</span> <span class="mi">0</span><span class="n">ch</span><span class="p">,</span> <span class="mi">0</span><span class="n">ffh</span>      <span class="p">;</span> <span class="err">重置</span><span class="n">Flipflop</span><span class="err">寄存器</span>
-<span class="n">outb</span> <span class="mi">5</span><span class="n">h</span><span class="p">,</span> <span class="mi">0</span><span class="n">ffh</span>       <span class="p">;</span> <span class="err">设置物理内存大小，其大小为</span><span class="n">Length</span><span class="o">-</span><span class="mi">1</span>
-<span class="n">outb</span> <span class="mi">5</span><span class="n">h</span><span class="p">,</span> <span class="mi">0</span><span class="n">fh</span>        <span class="p">;</span> <span class="err">我这里的内存大小是</span><span class="mh">0x1000</span><span class="err">，所以设置为</span><span class="mh">0xfff</span>
-<span class="n">outb</span> <span class="mi">0</span><span class="n">ah</span><span class="p">,</span> <span class="mi">2</span><span class="n">h</span>        <span class="p">;</span> <span class="err">选择清除</span><span class="mi">2</span><span class="err">号</span><span class="n">DMA</span><span class="err">通道</span>
+; ISA DMA 初始化部分， 由于ISA DMA不是这篇文章的重点
+; 所以这里只说明大概的用途。
+outb 0dh, 0ffh      ; 重置DMA控制器
+outb 0ah, 6h        ; 选择设置2号DMA通道
+outb 0ch, 0ffh      ; 重置Flipflop寄存器
+outb 4h, 0h         ; 设置DMA的物理地址，需要设置两次
+outb 4h, 0f0h       ; 我这里设置的是0xf000
+outb 81h, 0h        ; 设置地址24bit的高8bit为0，也就是0x00f000
+outb 0ch, 0ffh      ; 重置Flipflop寄存器
+outb 5h, 0ffh       ; 设置物理内存大小，其大小为Length-1
+outb 5h, 0fh        ; 我这里的内存大小是0x1000，所以设置为0xfff
+outb 0ah, 2h        ; 选择清除2号DMA通道
 
-<span class="p">;</span> <span class="n">FDC</span><span class="err">的初始化过程</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f2h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>       <span class="p">;</span> <span class="mf">1.</span><span class="err">重置数字输出寄存器</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f2h</span><span class="p">,</span> <span class="mi">0</span><span class="n">ch</span>
-<span class="n">call</span> <span class="n">WaitIrq</span>
+; FDC的初始化过程
+outb 3f2h, 0h       ; 1.重置数字输出寄存器
+outb 3f2h, 0ch
+call WaitIrq
 
-<span class="n">mov</span> <span class="n">ecx</span><span class="p">,</span> <span class="mi">4</span>
-<span class="n">check_int</span><span class="o">:</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">8</span><span class="n">h</span>       <span class="p">;</span> <span class="err">发送</span><span class="mi">8</span><span class="err">号命令，该命令清除控制器触发的中断</span>
-<span class="n">wait_status</span>         <span class="p">;</span> <span class="err">并且返回结果，这里重复</span><span class="mi">4</span><span class="err">次，是为了清除</span><span class="mi">4</span><span class="err">个软驱的状态</span>
-<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
-<span class="n">wait_status</span>
-<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
-<span class="n">wait_status</span>
-<span class="n">loop</span> <span class="n">check_int</span>
+mov ecx, 4
+check_int:
+wait_status
+outb 3f5h, 8h       ; 发送8号命令，该命令清除控制器触发的中断
+wait_status         ; 并且返回结果，这里重复4次，是为了清除4个软驱的状态
+inb 3f5h
+wait_status
+inb 3f5h
+wait_status
+loop check_int
 
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f7h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>       <span class="p">;</span> <span class="mf">2.</span><span class="err">设置传输速度为</span><span class="mi">500</span><span class="n">kb</span><span class="o">/</span><span class="n">s</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">3</span><span class="n">h</span>       <span class="p">;</span> <span class="mf">3.</span><span class="err">设置</span><span class="n">FDC</span><span class="err">里面三个时钟以及</span><span class="n">DMA</span><span class="err">。</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">dfh</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">2</span><span class="n">h</span>
+outb 3f7h, 0h       ; 2.设置传输速度为500kb/s
+wait_status
+outb 3f5h, 3h       ; 3.设置FDC里面三个时钟以及DMA。
+wait_status
+outb 3f5h, 0dfh
+wait_status
+outb 3f5h, 2h
 
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f2h</span><span class="p">,</span> <span class="mi">1</span><span class="n">ch</span>      <span class="p">;</span> <span class="err">开启软驱电动机</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">7</span><span class="n">h</span>       <span class="p">;</span> <span class="err">发送校验命令</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>       <span class="p">;</span> <span class="err">选择</span><span class="mi">0</span><span class="err">号软驱</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">8</span><span class="n">h</span>       <span class="p">;</span> <span class="err">发送清楚中断命令，获得结果</span>
-<span class="n">wait_status</span>
-<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
-<span class="n">wait_status</span>
-<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f2h</span><span class="p">,</span> <span class="mi">4</span><span class="n">h</span>       <span class="p">;</span> <span class="err">关闭电动机</span>
+outb 3f2h, 1ch      ; 开启软驱电动机
+wait_status
+outb 3f5h, 7h       ; 发送校验命令
+wait_status
+outb 3f5h, 0h       ; 选择0号软驱
+wait_status
+outb 3f5h, 8h       ; 发送清楚中断命令，获得结果
+wait_status
+inb 3f5h
+wait_status
+inb 3f5h
+outb 3f2h, 4h       ; 关闭电动机
 
-<span class="p">;</span> <span class="err">接下来是软盘的读取操作</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f2h</span><span class="p">,</span> <span class="mi">1</span><span class="n">ch</span>      <span class="p">;</span> <span class="err">开启电动机</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">fh</span>      <span class="p">;</span> <span class="mf">4.</span><span class="err">发送</span><span class="mi">0</span><span class="n">f</span><span class="err">寻道命令</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">8</span><span class="n">h</span>       <span class="p">;</span> <span class="err">发送清楚中断命令，获得结果</span>
-<span class="n">wait_status</span>
-<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
-<span class="n">wait_status</span>
-<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
+; 接下来是软盘的读取操作
+outb 3f2h, 1ch      ; 开启电动机
+wait_status
+outb 3f5h, 0fh      ; 4.发送0f寻道命令
+wait_status
+outb 3f5h, 0h
+wait_status
+outb 3f5h, 0h
+wait_status
+outb 3f5h, 8h       ; 发送清楚中断命令，获得结果
+wait_status
+inb 3f5h
+wait_status
+inb 3f5h
 
-<span class="p">;</span> <span class="err">设置</span><span class="n">ISA</span> <span class="n">DMA</span><span class="err">为读取</span>
-<span class="n">outb</span> <span class="mi">0</span><span class="n">ah</span><span class="p">,</span> <span class="mi">6</span><span class="n">h</span>
-<span class="n">outb</span> <span class="mi">0</span><span class="n">bh</span><span class="p">,</span> <span class="mi">46</span><span class="n">h</span>
-<span class="n">outb</span> <span class="mi">0</span><span class="n">ah</span><span class="p">,</span> <span class="mi">2</span><span class="n">h</span>
+; 设置ISA DMA为读取
+outb 0ah, 6h
+outb 0bh, 46h
+outb 0ah, 2h
 
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mf">0e6</span><span class="n">h</span>     <span class="p">;</span> <span class="mf">5.</span><span class="err">发送读取扇区命令</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>       <span class="p">;</span> <span class="err">设置磁头和驱动器号</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>       <span class="p">;</span> <span class="err">设置磁道</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">h</span>       <span class="p">;</span> <span class="err">设置磁头</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">1</span><span class="n">h</span>       <span class="p">;</span> <span class="err">设置扇区号</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">2</span><span class="n">h</span>       <span class="p">;</span> <span class="err">设置扇区大小</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">8</span><span class="n">h</span>       <span class="p">;</span> <span class="err">设置读取扇区数量</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">1</span><span class="n">bh</span>      <span class="p">;</span> <span class="err">设置磁盘为</span><span class="mf">3.5</span><span class="err">英寸</span>
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">0</span><span class="n">ffh</span>     <span class="p">;</span> <span class="err">设置读取长度，总是</span><span class="mh">0xff</span>
+wait_status
+outb 3f5h, 0e6h     ; 5.发送读取扇区命令
+wait_status
+outb 3f5h, 0h       ; 设置磁头和驱动器号
+wait_status
+outb 3f5h, 0h       ; 设置磁道
+wait_status
+outb 3f5h, 0h       ; 设置磁头
+wait_status
+outb 3f5h, 1h       ; 设置扇区号
+wait_status
+outb 3f5h, 2h       ; 设置扇区大小
+wait_status
+outb 3f5h, 8h       ; 设置读取扇区数量
+wait_status
+outb 3f5h, 1bh      ; 设置磁盘为3.5英寸
+wait_status
+outb 3f5h, 0ffh     ; 设置读取长度，总是0xff
 
-<span class="n">call</span> <span class="n">WaitIrq</span>
+call WaitIrq
 
-<span class="n">mov</span> <span class="n">ecx</span><span class="p">,</span> <span class="mi">7</span>
-<span class="n">loop_ret</span><span class="o">:</span>
-<span class="n">wait_status</span>
-<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
-<span class="n">loop</span> <span class="n">loop_ret</span>
+mov ecx, 7
+loop_ret:
+wait_status
+inb 3f5h
+loop loop_ret
 
-<span class="n">wait_status</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f5h</span><span class="p">,</span> <span class="mi">8</span><span class="n">h</span>       <span class="p">;</span> <span class="err">发送清楚中断命令，获得结果</span>
-<span class="n">wait_status</span>
-<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
-<span class="n">wait_status</span>
-<span class="n">inb</span> <span class="mi">3</span><span class="n">f5h</span>
-<span class="n">outb</span> <span class="mi">3</span><span class="n">f2h</span><span class="p">,</span> <span class="mi">4</span><span class="n">h</span>       <span class="p">;</span> <span class="err">关闭电动机</span></code></pre></div>
+wait_status
+outb 3f5h, 8h       ; 发送清楚中断命令，获得结果
+wait_status
+inb 3f5h
+wait_status
+inb 3f5h
+outb 3f2h, 4h       ; 关闭电动机</code></pre></div>
 
-<p>1.重置数字输出寄存器
-这是一个只写寄存器，可以用来控制FDC，例如控制软驱电动机，重置控制器，选择目标软驱，设置数据模式，以下是他的详细参数
-Bits 0-1
-00 - 软驱 0
-01 - 软驱 1
-10 - 软驱 2
-11 - 软驱 3
-Bit 2 重置
-0 - 重置控制器
-1 - 开启控制器
-Bit 3 模式
-0 - IRQ 模式
-1 - DMA 模式
-Bits 4 - 7 电动机控制器 (软驱 0 - 3)
-0 - 停止电动机
+<p>1.重置数字输出寄存器<br />
+这是一个只写寄存器，可以用来控制FDC，例如控制软驱电动机，重置控制器，选择目标软驱，设置数据模式，以下是他的详细参数<br />
+Bits 0-1<br />
+00 - 软驱 0<br />
+01 - 软驱 1<br />
+10 - 软驱 2<br />
+11 - 软驱 3<br />
+Bit 2 重置<br />
+0 - 重置控制器<br />
+1 - 开启控制器<br />
+Bit 3 模式<br />
+0 - IRQ 模式<br />
+1 - DMA 模式<br />
+Bits 4 - 7 电动机控制器 (软驱 0 - 3)<br />
+0 - 停止电动机<br />
 1 - 开启电动机</p>
 
 <p>我这里设置的是0Ch也就是说，选择了0号软驱，开启了控制器和DMA模式。</p>
 
-<p>2.设置传输速度为500kb/s
-这个寄存器只有前两位有效，下面两位不同的组合表达了不同的速度，如下表：
-00 500 Kbps
-10 250 Kbps
-01 300 Kbps
+<p>2.设置传输速度为500kb/s<br />
+这个寄存器只有前两位有效，下面两位不同的组合表达了不同的速度，如下表：<br />
+00 500 Kbps<br />
+10 250 Kbps<br />
+01 300 Kbps<br />
 11 1 Mbps</p>
 
-<p>3.设置FDC里面三个时钟以及DMA
-三个时钟分别是步进速率时钟、磁头卸载时钟和磁头装入时钟。数据格式如下：
-S S S S H H H H - S=步进速率时钟 H=磁头卸载时钟
-H H H H H H H NDMA - H=磁头装入时钟 NDMA=0 (DMA模式) 或者 1 (非DMA模式)
+<p>3.设置FDC里面三个时钟以及DMA<br />
+三个时钟分别是步进速率时钟、磁头卸载时钟和磁头装入时钟。数据格式如下：<br />
+S S S S H H H H - S=步进速率时钟 H=磁头卸载时钟<br />
+H H H H H H H NDMA - H=磁头装入时钟 NDMA=0 (DMA模式) 或者 1 (非DMA模式)<br />
 实际上这个大家可以随意设置，我设置的是步进速率时钟=3ms, 磁头卸载时钟=240ms, 磁头装入时钟=16ms</p>
 
-<p>4.发送寻道命令进行寻道
-寻道命令的参数是两个自己，分别代表磁头、柱面和驱动器号，格式如下
-x x x x x HD DR1 DR0 - HD=磁头 DR1/DR0 = 驱动器
+<p>4.发送寻道命令进行寻道<br />
+寻道命令的参数是两个自己，分别代表磁头、柱面和驱动器号，格式如下<br />
+x x x x x HD DR1 DR0 - HD=磁头 DR1/DR0 = 驱动器<br />
 C C C C C C C C - C=柱面</p>
 
-<p>5.发送读取扇区命令
-读取和写入命令一样，有8个参数和7个返回值！
-第1个参数字节 = (磁头号 « 2) | 驱动器号 (驱动器号必须是当前选择的驱动器)
-第2个参数字节 = 柱面号
-第3个参数字节 = 磁头号 (没错，重复了 = =)
-第4个参数字节 = 开始的扇区号
-第5个参数字节 = 2 (总是2，代表软盘扇区大小总是512字节)
-第6个参数字节 = 操作扇区数
-第7个参数字节 = 0x1b (软盘大小是3.5in)
-第8个参数字节 = 0xff (总是0xff)
+<p>5.发送读取扇区命令<br />
+读取和写入命令一样，有8个参数和7个返回值！<br />
+第1个参数字节 = (磁头号 « 2) | 驱动器号 (驱动器号必须是当前选择的驱动器)<br />
+第2个参数字节 = 柱面号<br />
+第3个参数字节 = 磁头号 (没错，重复了 = =)<br />
+第4个参数字节 = 开始的扇区号<br />
+第5个参数字节 = 2 (总是2，代表软盘扇区大小总是512字节)<br />
+第6个参数字节 = 操作扇区数<br />
+第7个参数字节 = 0x1b (软盘大小是3.5in)<br />
+第8个参数字节 = 0xff (总是0xff)<br />
 这里不关心返回值，如果有兴趣可以自己查找资料。</p>
 
-<p>读取就是这样，如果要写入安排，只需要更改命令即可，这里就不再赘述了。最后按照国际惯例，提供一些深入学习的链接：
-<a href="http://wiki.osdev.org/Floppy">http://wiki.osdev.org/Floppy</a>
-<a href="http://en.wikipedia.org/wiki/Floppy">http://en.wikipedia.org/wiki/Floppy</a>
-<a href="http://www.isdaman.com/alsos/hardware/fdc/floppy.htm">http://www.isdaman.com/alsos/hardware/fdc/floppy.htm</a>
+<p>读取就是这样，如果要写入安排，只需要更改命令即可，这里就不再赘述了。最后按照国际惯例，提供一些深入学习的链接：<br />
+<a href="http://wiki.osdev.org/Floppy">http://wiki.osdev.org/Floppy</a><br />
+<a href="http://en.wikipedia.org/wiki/Floppy">http://en.wikipedia.org/wiki/Floppy</a><br />
+<a href="http://www.isdaman.com/alsos/hardware/fdc/floppy.htm">http://www.isdaman.com/alsos/hardware/fdc/floppy.htm</a><br />
 <a href="http://www.osdever.net/documents/82077AA_FloppyControllerDatasheet.pdf?the_id=41">http://www.osdever.net/documents/82077AA_FloppyControllerDatasheet.pdf</a></p>
 
   </article>

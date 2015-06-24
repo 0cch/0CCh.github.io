@@ -6,8 +6,8 @@
 </description>
     <link>http://0cch.com/</link>
     <atom:link href="http://0cch.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 24 Jun 2015 22:14:21 +0800</pubDate>
-    <lastBuildDate>Wed, 24 Jun 2015 22:14:21 +0800</lastBuildDate>
+    <pubDate>Wed, 24 Jun 2015 22:37:12 +0800</pubDate>
+    <lastBuildDate>Wed, 24 Jun 2015 22:37:12 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -832,55 +832,53 @@ XP=0x42，Win7=0x41，Win8.1=0x47&lt;/p&gt;
 
 &lt;p&gt;下面附带上这个功能的使用方法&lt;/p&gt;
 
-&lt;blockquote&gt;
-  &lt;p&gt;INT 15 - newer BIOSes - GET SYSTEM MEMORY MAP&lt;br /&gt;
-   AX = E820h&lt;br /&gt;
-   EAX = 0000E820h&lt;br /&gt;
-   EDX = 534D4150h (‘SMAP’)&lt;br /&gt;
-   EBX = continuation value or 00000000h to start at beginning of map&lt;br /&gt;
-   ECX = size of buffer for result, in bytes (should be &amp;gt;= 20 bytes)&lt;br /&gt;
-   ES:DI -&amp;gt; buffer for result (see #00581)&lt;br /&gt;
-Return: CF clear if successful&lt;br /&gt;
-    EAX = 534D4150h (‘SMAP’)&lt;br /&gt;
-    ES:DI buffer filled&lt;br /&gt;
-    EBX = next offset from which to copy or 00000000h if all done&lt;br /&gt;
-    ECX = actual length returned in bytes&lt;br /&gt;
-   CF set on error&lt;br /&gt;
-    AH = error code (86h) (see #00496 at INT 15/AH=80h)&lt;br /&gt;
-Notes:   originally introduced with the Phoenix BIOS v4.0, this function is&lt;br /&gt;
-    now supported by most newer BIOSes, since various versions of Windows&lt;br /&gt;
-    call it to find out about the system memory&lt;br /&gt;
-   a maximum of 20 bytes will be transferred at one time, even if ECX is&lt;br /&gt;
-    higher; some BIOSes (e.g. Award Modular BIOS v4.50PG) ignore the&lt;br /&gt;
-    value of ECX on entry, and always copy 20 bytes&lt;br /&gt;
-   some BIOSes expect the high word of EAX to be clear on entry, i.e.&lt;br /&gt;
-    EAX=0000E820h&lt;br /&gt;
-   if this function is not supported, an application should fall back&lt;br /&gt;
-    to AX=E802h, AX=E801h, and then AH=88h&lt;br /&gt;
-   the BIOS is permitted to return a nonzero continuation value in EBX&lt;br /&gt;
-    and indicate that the end of the list has already been reached by&lt;br /&gt;
-    returning with CF set on the next iteration&lt;br /&gt;
-   this function will return base memory and ISA/PCI memory contiguous&lt;br /&gt;
-    with base memory as normal memory ranges; it will indicate&lt;br /&gt;
-    chipset-defined address holes which are not in use and motherboard&lt;br /&gt;
-    memory-mapped devices, and all occurrences of the system BIOS as&lt;br /&gt;
-    reserved; standard PC address ranges will not be reported&lt;br /&gt;
-SeeAlso: AH=C7h,AX=E801h”Phoenix”,AX=E881h,MEM xxxxh:xxx0h”ACPI”&lt;br /&gt;
-Format of Phoenix BIOS system memory map address range descriptor:&lt;br /&gt;
-Offset   Size   Description   (Table 00580)&lt;br /&gt;
-00h   QWORD   base address&lt;br /&gt;
-08h   QWORD   length in bytes&lt;br /&gt;
-10h   DWORD   type of address range (see #00581)&lt;br /&gt;
-(Table 00581)&lt;br /&gt;
-Values for System Memory Map address type:&lt;br /&gt;
-01h   memory, available to OS&lt;br /&gt;
-02h   reserved, not available (e.g. system ROM, memory-mapped device)&lt;br /&gt;
-03h   ACPI Reclaim Memory (usable by OS after reading ACPI tables)&lt;br /&gt;
-04h   ACPI NVS Memory (OS is required to save this memory between NVS&lt;br /&gt;
-    sessions)&lt;br /&gt;
-other   not defined yet – treat as Reserved&lt;br /&gt;
-（from http://www.ctyme.com/intr/rb-1741.htm&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-windbg&quot; data-lang=&quot;windbg&quot;&gt;INT 15 - newer BIOSes - GET SYSTEM MEMORY MAP  
+   AX = E820h  
+   EAX = 0000E820h  
+   EDX = 534D4150h (&#39;SMAP&#39;)  
+   EBX = continuation value or 00000000h to start at beginning of map  
+   ECX = size of buffer for result, in bytes (should be &amp;gt;= 20 bytes)  
+   ES:DI -&amp;gt; buffer for result (see #00581)  
+Return: CF clear if successful  
+    EAX = 534D4150h (&#39;SMAP&#39;)  
+    ES:DI buffer filled  
+    EBX = next offset from which to copy or 00000000h if all done  
+    ECX = actual length returned in bytes  
+   CF set on error  
+    AH = error code (86h) (see #00496 at INT 15/AH=80h)  
+Notes:   originally introduced with the Phoenix BIOS v4.0, this function is  
+    now supported by most newer BIOSes, since various versions of Windows  
+    call it to find out about the system memory  
+   a maximum of 20 bytes will be transferred at one time, even if ECX is  
+    higher; some BIOSes (e.g. Award Modular BIOS v4.50PG) ignore the  
+    value of ECX on entry, and always copy 20 bytes  
+   some BIOSes expect the high word of EAX to be clear on entry, i.e.  
+    EAX=0000E820h  
+   if this function is not supported, an application should fall back  
+    to AX=E802h, AX=E801h, and then AH=88h  
+   the BIOS is permitted to return a nonzero continuation value in EBX  
+    and indicate that the end of the list has already been reached by  
+    returning with CF set on the next iteration  
+   this function will return base memory and ISA/PCI memory contiguous  
+    with base memory as normal memory ranges; it will indicate  
+    chipset-defined address holes which are not in use and motherboard  
+    memory-mapped devices, and all occurrences of the system BIOS as  
+    reserved; standard PC address ranges will not be reported  
+SeeAlso: AH=C7h,AX=E801h&quot;Phoenix&quot;,AX=E881h,MEM xxxxh:xxx0h&quot;ACPI&quot;  
+Format of Phoenix BIOS system memory map address range descriptor:  
+Offset   Size   Description   (Table 00580)  
+00h   QWORD   base address  
+08h   QWORD   length in bytes  
+10h   DWORD   type of address range (see #00581)  
+(Table 00581)  
+Values for System Memory Map address type:  
+01h   memory, available to OS  
+02h   reserved, not available (e.g. system ROM, memory-mapped device)  
+03h   ACPI Reclaim Memory (usable by OS after reading ACPI tables)  
+04h   ACPI NVS Memory (OS is required to save this memory between NVS  
+    sessions)  
+other   not defined yet -- treat as Reserved  
+（from http://www.ctyme.com/intr/rb-1741.htm&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;获得了4GB内存以上的RAM范围以后，再加上MmMapIoSpace，我们就能够访问系统没有使用的内存了。&lt;/p&gt;
 

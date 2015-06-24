@@ -768,88 +768,84 @@
 
 <p><a href="/uploads/2013/09/20130928134507.png"><img src="/uploads/2013/09/20130928134507.png" alt="20130928134507" /></a></p>
 
-<p>[python]
-‘’’
-Created on 2013-3-6</p>
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="s">'''
+Created on 2013-3-6
 
-<p>@author: nightxie
-‘’’</p>
+@author: nightxie
+'''</span>
 
-<p>import sys
-import urllib.request
-import urllib.parse
-import json</p>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">urllib.request</span>
+<span class="kn">import</span> <span class="nn">urllib.parse</span>
+<span class="kn">import</span> <span class="nn">json</span>
 
-<p>def GetKeyString(seed):
-    base_string = ‘abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/\:._-1234567890’;
-    target_string = ‘’;
-    while len(base_string) != 0 :
-        seed = (seed * 211 + 30031) % 65536;
-        index = (seed / 65536 * len(base_string));
-        target_string += base_string[int(index)];
-        base_string = base_string[:int(index)] + base_string[int(index)+1:];
-    return target_string;</p>
+<span class="k">def</span> <span class="nf">GetKeyString</span><span class="p">(</span><span class="n">seed</span><span class="p">):</span>
+    <span class="n">base_string</span> <span class="o">=</span> <span class="s">'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/</span><span class="se">\\</span><span class="s">:._-1234567890'</span><span class="p">;</span>
+    <span class="n">target_string</span> <span class="o">=</span> <span class="s">''</span><span class="p">;</span>
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">base_string</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">:</span>
+        <span class="n">seed</span> <span class="o">=</span> <span class="p">(</span><span class="n">seed</span> <span class="o">*</span> <span class="mi">211</span> <span class="o">+</span> <span class="mi">30031</span><span class="p">)</span> <span class="o">%</span> <span class="mi">65536</span><span class="p">;</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="n">seed</span> <span class="o">/</span> <span class="mi">65536</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">base_string</span><span class="p">));</span>
+        <span class="n">target_string</span> <span class="o">+=</span> <span class="n">base_string</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">index</span><span class="p">)];</span>
+        <span class="n">base_string</span> <span class="o">=</span> <span class="n">base_string</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">index</span><span class="p">)]</span> <span class="o">+</span> <span class="n">base_string</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">:];</span>
+    <span class="k">return</span> <span class="n">target_string</span><span class="p">;</span>
 
-<p>def GetFildId(daye_str, seed):</p>
+<span class="k">def</span> <span class="nf">GetFildId</span><span class="p">(</span><span class="n">daye_str</span><span class="p">,</span> <span class="n">seed</span><span class="p">):</span>
 
-<pre><code>new_list = daye_str.split('*');
-target_string = '';
-base_string = GetKeyString(seed);
-length = len(new_list);
-i = 0;
-while i &lt; length - 1:
-    index = int(new_list[i]);
-    target_string += base_string[index];
-    i += 1;
-return target_string;
-</code></pre>
+    <span class="n">new_list</span> <span class="o">=</span> <span class="n">daye_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">'*'</span><span class="p">);</span>
+    <span class="n">target_string</span> <span class="o">=</span> <span class="s">''</span><span class="p">;</span>
+    <span class="n">base_string</span> <span class="o">=</span> <span class="n">GetKeyString</span><span class="p">(</span><span class="n">seed</span><span class="p">);</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_list</span><span class="p">);</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_list</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+        <span class="n">target_string</span> <span class="o">+=</span> <span class="n">base_string</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">target_string</span><span class="p">;</span>
 
-<p>def GetFlvPath(videoids, flv_type):
-    url = ‘http://v.youku.com/player/getPlayList/VideoIDS/’ + videoids + ‘/timezone/+08/version/5/source/video’
-    req = urllib.request.Request(url);
-    req.add_header(‘Referer’, ‘http://static.youku.com/v1.0.0307/v/swf/player_yk.swf’);
-    req.add_header(‘User-Agent’, ‘Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.56 Safari/537.17’);
-    play_list = urllib.request.urlopen(req).read().decode(“utf8”);</p>
+<span class="k">def</span> <span class="nf">GetFlvPath</span><span class="p">(</span><span class="n">videoids</span><span class="p">,</span> <span class="n">flv_type</span><span class="p">):</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s">'http://v.youku.com/player/getPlayList/VideoIDS/'</span> <span class="o">+</span> <span class="n">videoids</span> <span class="o">+</span> <span class="s">'/timezone/+08/version/5/source/video'</span>
+    <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">);</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s">'Referer'</span><span class="p">,</span> <span class="s">'http://static.youku.com/v1.0.0307/v/swf/player_yk.swf'</span><span class="p">);</span>
+    <span class="n">req</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s">'User-Agent'</span><span class="p">,</span> <span class="s">'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.56 Safari/537.17'</span><span class="p">);</span>
+    <span class="n">play_list</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">"utf8"</span><span class="p">);</span>
+   
+    <span class="n">play_list_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">play_list</span><span class="p">)[</span><span class="s">'data'</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
+    <span class="n">seed</span> <span class="o">=</span> <span class="n">play_list_data</span><span class="p">[</span><span class="s">'seed'</span><span class="p">];</span>
+    <span class="n">streamfileids</span> <span class="o">=</span> <span class="n">play_list_data</span><span class="p">[</span><span class="s">'streamfileids'</span><span class="p">];</span>
+    <span class="n">regs</span> <span class="o">=</span> <span class="n">play_list_data</span><span class="p">[</span><span class="s">'segs'</span><span class="p">];</span>
+    
+    <span class="n">type_fileid</span> <span class="o">=</span> <span class="n">streamfileids</span><span class="p">[</span><span class="n">flv_type</span><span class="p">];</span>
+    <span class="n">type_list</span> <span class="o">=</span> <span class="n">regs</span><span class="p">[</span><span class="n">flv_type</span><span class="p">];</span>
+    <span class="n">url_type</span> <span class="o">=</span> <span class="n">flv_type</span><span class="p">;</span>
+    <span class="k">if</span> <span class="n">url_type</span> <span class="o">==</span> <span class="s">'hd2'</span><span class="p">:</span>
+        <span class="n">url_type</span> <span class="o">=</span> <span class="s">'flv'</span>
+    
+    <span class="n">type_list_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">type_list</span><span class="p">);</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">type_list_count</span> <span class="p">:</span>
+        <span class="n">fileid</span> <span class="o">=</span> <span class="n">GetFildId</span><span class="p">(</span><span class="n">type_fileid</span><span class="p">,</span> <span class="n">seed</span><span class="p">);</span>
+        <span class="n">fileid</span> <span class="o">=</span> <span class="n">fileid</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="s">"</span><span class="si">%0.2</span><span class="s">X"</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="n">fileid</span><span class="p">[</span><span class="mi">10</span><span class="p">:];</span>
+        <span class="n">fileid</span> <span class="o">+=</span> <span class="s">'?k='</span><span class="p">;</span>
+        <span class="n">fileid</span> <span class="o">+=</span> <span class="n">type_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s">'k'</span><span class="p">];</span>
+        <span class="n">flv_path</span> <span class="o">=</span> <span class="s">'http://f.youku.com/player/getFlvPath/sid/00_00/st/'</span><span class="o">+</span><span class="n">url_type</span><span class="o">+</span><span class="s">'/fileid/'</span> <span class="o">+</span> <span class="n">fileid</span><span class="p">;</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">flv_path</span><span class="p">);</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+        
+<span class="k">def</span> <span class="nf">GetVideoIdsFromUrl</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="n">url_object</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">);</span>
+    <span class="n">url_path</span> <span class="o">=</span> <span class="n">url_object</span><span class="o">.</span><span class="n">path</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">url_path</span><span class="p">[</span><span class="mi">11</span><span class="p">:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>
 
-<pre><code>play_list_data = json.loads(play_list)['data'][0];
-seed = play_list_data['seed'];
-streamfileids = play_list_data['streamfileids'];
-regs = play_list_data['segs'];
+<span class="k">def</span> <span class="nf">GetFlvPathFromUrl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">video_type</span><span class="p">):</span>
+    <span class="n">video_ids</span> <span class="o">=</span> <span class="n">GetVideoIdsFromUrl</span><span class="p">(</span><span class="n">url</span><span class="p">);</span>
+    <span class="n">GetFlvPath</span><span class="p">(</span><span class="n">video_ids</span><span class="p">,</span> <span class="n">video_type</span><span class="p">);</span>
 
-type_fileid = streamfileids[flv_type];
-type_list = regs[flv_type];
-url_type = flv_type;
-if url_type == 'hd2':
-    url_type = 'flv'
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">GetFlvPathFromUrl</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"youku.py  "</span><span class="p">);</span></code></pre></div>
 
-type_list_count = len(type_list);
-i = 0;
-while i &lt; type_list_count :
-    fileid = GetFildId(type_fileid, seed);
-    fileid = fileid[:8] + ("%0.2X" % i) + fileid[10:];
-    fileid += '?k=';
-    fileid += type_list[i]['k'];
-    flv_path = 'http://f.youku.com/player/getFlvPath/sid/00_00/st/'+url_type+'/fileid/' + fileid;
-    print(flv_path);
-    i += 1;
-</code></pre>
-
-<p>def GetVideoIdsFromUrl(url):
-    url_object = urllib.parse.urlparse(url);
-    url_path = url_object.path;
-    return url_path[11:-5]</p>
-
-<p>def GetFlvPathFromUrl(url, video_type):
-    video_ids = GetVideoIdsFromUrl(url);
-    GetFlvPath(video_ids, video_type);</p>
-
-<p>if <strong>name</strong> == ‘<strong>main</strong>’:
-    if len(sys.argv) == 3:
-        GetFlvPathFromUrl(sys.argv[1], sys.argv[2]);
-    else:
-        print(“youku.py  “);</p>
-
-<p>[/python]</p>
 
   </article>
 

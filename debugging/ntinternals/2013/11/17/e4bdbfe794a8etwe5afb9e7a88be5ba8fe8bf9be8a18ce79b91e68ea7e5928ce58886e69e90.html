@@ -768,16 +768,16 @@
 
 <p>ETW是Windows提供的机制，我们要使用他还需要工具，这些工具我们可以自己开发，因为Windows提供了调用接口。当然，更惬意的选择就是直接使用Windows提供的工具集WPT（Windows Performance Toolkit）。利用WPT和SDK，我们可以将ETW融入到我们自己的程序中，帮助我们调试程序和提升性能。</p>
 
-<p>以下是我们需要的工具：
-SDK:
-1. ECMangen.exe
+<p>以下是我们需要的工具：<br />
+SDK:<br />
+1. ECMangen.exe<br />
 2. mc.exe</p>
 
-<p>Windows:
+<p>Windows:<br />
 WEVTUtil.exe</p>
 
-<p>WPT:
-1. XPerf.exe
+<p>WPT:<br />
+1. XPerf.exe<br />
 2. XPerfView.exe</p>
 
 <p>首先我们需要用SDK中的工具ECMangen，生成一个manifest文件，这个文件用来描述记录的事件，如图。
@@ -785,8 +785,8 @@ WEVTUtil.exe</p>
 这里，我们首先创建一个Provider，接下来创建一个Event，参数可以随便填下，就像上图所示。作为演示，这里一个Event就够了（FirstEvent）。
 然后保存为0CChProvider.man。</p>
 
-<p>接下来我们MC来生成一个头文件，一个资源文件和两个二进制文件。命令行如：
-mc -um C:\etw\0CChProvider.man
+<p>接下来我们MC来生成一个头文件，一个资源文件和两个二进制文件。命令行如：<br />
+mc -um C:\etw\0CChProvider.man<br />
 <a href="/uploads/2013/11/20131117114801.png"><img src="/uploads/2013/11/20131117114801.png" alt="20131117114801" /></a></p>
 
 <p>然后我们可以创建一个工程，加入这个头文件和资源文件。并且在代码中插入写事件的代码，例如：</p>
