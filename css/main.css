@@ -13,7 +13,7 @@ dl, dd, ol, ul, figure {
  * Basic styling
  */
 body {
-  font-family: consolas, 微软雅黑;
+  font-family: consolas, 微软雅黑, "Microsoft Yahei";
   font-size: 14px;
   line-height: 1.5;
   font-weight: 300;
