@@ -81,9 +81,9 @@ blockquote {
   color: #828282;
   border-left: 4px solid #e8e8e8;
   padding-left: 15px;
-  font-size: 18px;
+  font-size: 12px;
   letter-spacing: -1px;
-  font-style: italic; }
+  /* font-style: italic; */ }
   blockquote > :last-child {
     margin-bottom: 0; }
 
@@ -146,6 +146,28 @@ pre {
       max-width: calc(1200px - (30px));
       padding-right: 15px;
       padding-left: 15px; } }
+
+.navi-content {
+  float: left;
+  width: 70%; }
+
+.nav-previous {
+  float: left;
+  width: 50%; }
+
+.nav-next {
+  float: right;
+  text-align: right;
+  width: 50%; }
+
+.more-link {
+  padding: 4px 8px;
+  background: #EEE;
+  border: 1px solid #dcdcdc;
+  border-radius: 3px;
+  clear: both;
+  margin-bottom: 0px;
+  display: inline-block; }
 
 /**
  * Clearfix
