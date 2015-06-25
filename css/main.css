@@ -129,6 +129,12 @@ pre {
     margin-left: 5px; }
   .sidebar .categories {
     margin-top: 30px; }
+  .sidebar .search {
+    width: 90%;
+    line-height: 30px; }
+  .sidebar .search-query {
+    width: 90%;
+    line-height: 30px; }
 
 /**
  * Wrapper
