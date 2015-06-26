@@ -6,8 +6,8 @@
 </description>
     <link>http://0cch.com/</link>
     <atom:link href="http://0cch.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 26 Jun 2015 18:13:28 +0800</pubDate>
-    <lastBuildDate>Fri, 26 Jun 2015 18:13:28 +0800</lastBuildDate>
+    <pubDate>Fri, 26 Jun 2015 23:07:05 +0800</pubDate>
+    <lastBuildDate>Fri, 26 Jun 2015 23:07:05 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -68,7 +68,7 @@ IZoneIdentifier&lt;/p&gt;
       <item>
         <title>Windows 8 SpellChecking API</title>
         <description>&lt;p&gt;在Windows 8下，多了一套很有趣的API，SpellChecking，这套API的作用也是一目了然，是做拼写检查的。这么有趣的一套API怎么能不写个程序玩玩呢，于是我写了个小程序，看了看对英文拼写检查的效果，如图。
-&lt;a href=&quot;/uploads/2015/05/20150518202121.png&quot;&gt;&lt;img src=&quot;/uploads/2015/05/20150518202121.png&quot; alt=&quot;20150518202121&quot; /&gt;&lt;/a&gt;
+&lt;a href=&quot;/uploads/2015/05/20150518202121.png&quot;&gt;&lt;img src=&quot;/uploads/2015/05/20150518202121.png&quot; alt=&quot;20150518202121&quot; /&gt;&lt;/a&gt;&lt;br /&gt;
 拼写检查会给出三个结果，分别是删除，替换和建议，根据不同的结果我们可以调用不同的接口来获得最佳的体验。代码如下：&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// SpellCheck.cpp : Defines the entry point for the console application.
