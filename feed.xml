@@ -6,8 +6,8 @@
 </description>
     <link>http://0cch.com/</link>
     <atom:link href="http://0cch.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 29 Jun 2015 00:54:25 +0800</pubDate>
-    <lastBuildDate>Mon, 29 Jun 2015 00:54:25 +0800</lastBuildDate>
+    <pubDate>Mon, 29 Jun 2015 01:32:10 +0800</pubDate>
+    <lastBuildDate>Mon, 29 Jun 2015 01:32:10 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -110,7 +110,101 @@ IZoneIdentifier&lt;/p&gt;
 &lt;a href=&quot;/uploads/2015/05/20150518202121.png&quot;&gt;&lt;img src=&quot;/uploads/2015/05/20150518202121.png&quot; alt=&quot;20150518202121&quot; /&gt;&lt;/a&gt;&lt;br /&gt;
 拼写检查会给出三个结果，分别是删除，替换和建议，根据不同的结果我们可以调用不同的接口来获得最佳的体验。代码如下：&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// SpellCheck.cpp : Defines the entry point for the console application.
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c1&quot;&gt;// SpellCheck.cpp : Defines the entry point for the console application.
 //
 &lt;/span&gt;
 &lt;span class=&quot;cp&quot;&gt;#include &quot;stdafx.h&quot;
@@ -204,7 +298,8 @@ IZoneIdentifier&lt;/p&gt;
 	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 
 	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 </description>
         <pubDate>Mon, 18 May 2015 20:30:35 +0800</pubDate>

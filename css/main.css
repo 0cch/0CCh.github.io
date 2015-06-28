@@ -90,20 +90,24 @@ blockquote {
 /**
  * Code formatting
  */
-pre,
-code {
+pre {
   font-family: consolas;
   font-size: 12px;
-  border: 1px solid #e8e8e8;
-  border-radius: 3px;
+  border-bottom: 1px solid #e8e8e8;
   background-color: #ffffff; }
 
 code {
-  padding: 1px 5px; }
+  padding: 1px 5px;
+  font-family: consolas;
+  font-size: 12px;
+  border: 0px;
+  background-color: #ffffff; }
 
 pre {
   padding: 8px 12px;
   overflow-x: auto; }
+  pre .lineno {
+    border-right: 1px solid #e8e8e8; }
   pre > code {
     border: 0;
     padding-right: 0;
@@ -372,7 +376,11 @@ pre {
  * Syntax highlighting styles
  */
 .highlight {
-  background: #fff; }
+  background: #fff;
+  border-top: 1px solid #e8e8e8;
+  border-right: 1px solid #e8e8e8;
+  border-left: 1px solid #e8e8e8;
+  border-radius: 3px; }
   .highlight .c {
     color: #998;
     font-style: italic; }
