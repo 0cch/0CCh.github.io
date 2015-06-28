@@ -109,6 +109,9 @@ pre {
     padding-right: 0;
     padding-left: 0; }
 
+pre.line-pre {
+  overflow-x: auto; }
+
 .sidebar {
   float: right;
   width: 20%;
