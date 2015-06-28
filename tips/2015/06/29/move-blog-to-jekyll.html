@@ -6,12 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>0CCh</title>
-  <meta name="description" content="printf("I am programmer!");
-">
+  <title>将blog迁移到了jekyll</title>
+  <meta name="description" content="上周终于下定决心把blog从wordpress转到jekyll，不是因为wordpress臃肿，也不是因为jekyll的更加Geek，纯粹是因为穷。我一直都觉得wordpress是一个非常伟大的blog程序，虽然臃肿了点，但确实功能强大操作简单，对于我这种懒人和对前端代码完全不熟的程序员来说，wordpress确...">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://0cch.com/page3/">
+  <link rel="canonical" href="http://0cch.com/tips/2015/06/29/move-blog-to-jekyll.html">
   <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
 </head>
 
@@ -781,286 +780,55 @@
   </ul>
  </div>
 </div>
-        <div class="home">
+        <div class="post">
 
-  <h1 class="page-heading">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title">将BLOG迁移到了JEKYLL</h1>
+    <p class="post-meta">Jun 29, 2015 • admin</p>
+  </header>
 
-  <ul class="post-list">
-    
-      <li>
-        <span class="post-meta">Apr 6, 2013</span>
+  <article class="post-content">
+    <p>上周终于下定决心把blog从<a href="http://0cch.net">wordpress</a>转到<a href="http://0cch.com">jekyll</a>，不是因为wordpress臃肿，也不是因为jekyll的更加Geek，纯粹是因为穷。我一直都觉得wordpress是一个非常伟大的blog程序，虽然臃肿了点，但确实功能强大操作简单，对于我这种懒人和对前端代码完全不熟的程序员来说，wordpress确实是一个非常好的选择。但是问题就出在了webhost上，我使用的webhost刚刚买的时候是50多刀一年，之后每年涨价，今年续费看了下需要100刀左右，这个确实让我心中无数的羊驼奔腾了起来。于是就决定把blog搬离这个地方。</p>
 
-        <h2>
-          <a class="post-link" href="/debugging/ntinternals/2013/04/06/proc_dump_study-e8bf9be7a88bdumpe5b7a5e585b7.html">PROC_DUMP_STUDY —— 进程DUMP工具</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 16, 2013</span>
+<p>刚开始我只是想找便宜的地方转移wordpress的blog。网上也有很多这类的webhost，第一年进去都很便宜，甚至有1刀一个月的。但是一朝被蛇咬啊，为了防止以后又被迫搬家，于是打消了这个念头。想要便宜和稳定的blog空间，看来是只有伟大的Github。而Github只支持静态程序，那么我也只能放弃wordpress的方便，自己折腾点静态博客程序了。摆在眼前的选择其实很多最基础jekyll，加强版的octopress以及hexo。第一个程序的优点就是简单基础，缺点就是太基础了，而octopress在jekyll的基础之上加上了一些插件，让blog默认的功能变得丰富起来。之后hexo，也是一个自带很多基础功能的程序而且还带了很多非常漂亮的主题，主题控的bloger不妨选择这个，我就特别喜欢他其中的一个默认主题，但是折腾样式的时候jekyll的基本结构都搭建好了，所以就没有更换hexo程序，于是极度痛苦的折腾了一周的css和ruby插件才把现在的blog折腾的和之前的差不多。</p>
 
-        <h2>
-          <a class="post-link" href="/ntinternals/2013/03/16/find_links_study-e4bbbffindlinkse79a84e69687e4bbb6e7a1ace993bee68ea5e69fa5e689bee5b7a5e585b7.html">FIND_LINKS_STUDY —— 仿FINDLINKS的文件硬链接查找工具</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 12, 2013</span>
+<p>简单说下用jekyll在Github上搭建blog的步骤，其实网上很多很多教程，这里记录下就是防止自己忘了把。<br />
+1. 首先在<a href="http://rubyinstaller.org/downloads/">http://rubyinstaller.org/downloads/</a>下载ruby和DevKit，安装分别安装他们，然后运行Devkit，分别执行：  <br />
+	1) dk.rb init<br />
+	2) dk.rb review<br />
+	3) dk.rb install<br />
+2. 接下来就是安装jekyll了，安装之前推荐更换Gem的源到https://ruby.taobao.org/ 这样下载程序比较快。具体方式是：<br />
+	1) gem source -r (url)<br />
+	2) gem source -a (new url)<br />
+	3) gem source -u<br />
+3. 然后就可以开始下载jekyll和他的代码高亮程序rouge了，gem install (app name)<br />
+4. 最后记得要设置_config.yml文件，尤其是高亮highlighter: rouge</p>
 
-        <h2>
-          <a class="post-link" href="/ntinternals/2013/03/12/e4bdbfe794a8ntfs_studye68ea2e5afbbhardlinke79a84e69cace8b4a8.html">使用NTFS_STUDY探寻HARDLINK的本质</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 9, 2013</span>
+<p>这样，最基础功能的blog就搭建好了，接下来就是把blog从wordpress转移到jekyll了。方法是使用exitwp这个python脚本。<br />
+1. 先导出wordpress的数据到一个xml里，这个功能wordpress是自带的。<br />
+2. 然后同个这个脚本把数据转换成markdown文件，放在jekyll生产的_post里面。并且把里面的图片和下载的url替换了。<br />
+3. 最后把wordpress的upload目录下载下来，放到jekyll里面即可。</p>
 
-        <h2>
-          <a class="post-link" href="/ntinternals/2013/03/09/access_enum_study-e4bbbfaccessenume79a84e5b7a5e585b7.html">ACCESS_ENUM_STUDY —— 仿ACCESSENUM的工具</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Feb 28, 2013</span>
+<p>这样我们看到的就是一个最简单的jekyll的blog，要想改变主题，自己去折腾吧。我能做的就是推荐两个jekyll的插件，分别是按日期和分类生成归档网页的，可以在我的<a href="https://github.com/0cch/0CChBlog/tree/master/_plugins">Github</a>上看到。</p>
 
-        <h2>
-          <a class="post-link" href="/ntinternals/2013/02/28/ntfs_info_study-e4bbbfntfsinfoe5b7a5e585b7.html">NTFS_INFO_STUDY —— 仿NTFSINFO工具</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Feb 21, 2013</span>
+<p>最后要说的是rouge语法高亮有个bug，在使用显示行号linenos参数的时候会出现嵌套错误的问题，解决方法倒是有，不过有了行号之后高亮的显示极其丑陋，所以还是我还是没用这个参数。如果有需求可以使用代码<a href="https://gist.github.com/0cch/775e4a8a94be175cae9c">rouge_linenos_patch.rb</a>覆盖”\lib\ruby\gems\2.2.0\gems\jekyll-2.5.3\lib\jekyll\tags\highlight.rb”里对应的函数即可。</p>
 
-        <h2>
-          <a class="post-link" href="/ntinternals/2013/02/21/pipe_list_study-e4bbbfpipeliste79a84e5b08fe5b7a5e585b7.html">PIPE_LIST_STUDY —— 仿PIPELIST的小工具</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Feb 18, 2013</span>
+<script src="https://gist.github.com/0cch/775e4a8a94be175cae9c.js?file=rouge_linenos_patch.rb"> </script>
 
-        <h2>
-          <a class="post-link" href="/2013/02/18/e6b2a1e69c89e4b896e7958ce69cabe697a5efbc8ce7949fe6b4bbe8bf98e8a681e7bba7e7bbad.html">又是总结和展望：没有世界末日，生活还要继续</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Feb 4, 2013</span>
 
-        <h2>
-          <a class="post-link" href="/ntinternals/2013/02/04/proc_study-e4bbbfpsliste79a84e8bf9be7a88be69fa5e79c8be5b7a5e585b7.html">PROC_STUDY —— 仿PSLIST的进程查看工具</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Jan 23, 2013</span>
-
-        <h2>
-          <a class="post-link" href="/ntinternals/2013/01/23/hive_study-e6b3a8e5868ce8a1a8e69687e4bbb6e6a0bce5bc8fe8a7a3e69e90e5b7a5e585b7.html">HIVE_STUDY —— 注册表文件格式解析工具</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Jan 20, 2013</span>
-
-        <h2>
-          <a class="post-link" href="/debugging/2013/01/20/e58886e4baabe887aae5b7b1e68993e980a0e79a84bugreporter.html">分享自己打造的BUGREPORTER</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Jan 20, 2013</span>
-
-        <h2>
-          <a class="post-link" href="/debugging/2013/01/20/dia_study-pdbe69fa5e79c8be5b7a5e585b7.html">DIA_STUDY —— PDB查看工具</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Jan 19, 2013</span>
-
-        <h2>
-          <a class="post-link" href="/ntinternals/2013/01/19/ntfsstudy-ntfse7a381e79b98e6a0bce5bc8fe5ada6e4b9a0e5b7a5e585b7.html">NTFSSTUDY —— NTFS磁盘格式学习工具</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Jan 12, 2013</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2013/01/12/e8aebee7bdaee7babfe7a88be5908d.html">设置线程名</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Dec 26, 2012</span>
-
-        <h2>
-          <a class="post-link" href="/ntinternals/2012/12/26/r3e58db8e8bdbde4bbbbe6848fe6b688e681afe992a9e5ad90.html">R3卸载任意消息钩子</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Nov 14, 2012</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2012/11/14/e585b3e4ba8ee695b4e59e8be695b0e7aca6e58fb7e4bd8de689a9e5b195e79a84e4b880e782b9e5bf83e5be97.html">关于整型数符号位扩展的一点心得</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Aug 16, 2012</span>
-
-        <h2>
-          <a class="post-link" href="/debugging/2012/08/16/dbgluaefbc8ce8aea9luae8849ae69cace4b99fe883bde68ea7e588b6windbge8bf9be8a18ce8b083e8af95.html">DBGLUA，让LUA脚本也能控制WINDBG进行调试(更新1.0.1.1)</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Aug 1, 2012</span>
-
-        <h2>
-          <a class="post-link" href="/ntinternals/2012/08/01/e585b3e4ba8ee588a4e696ade69687e4bbb6e698afe590a6e5ad98e59ca8e69c80e9ab98e69588e79a84e587bde695b0.html">关于判断文件是否存在最高效的函数</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Feb 12, 2012</span>
-
-        <h2>
-          <a class="post-link" href="/minikernel/2012/02/12/pioe8afbbide.html">PIO读IDE</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Jan 1, 2012</span>
-
-        <h2>
-          <a class="post-link" href="/2012/01/01/e680bbe7bb932011efbc8ce5b195e69c9b2012.html">总结2011，展望2012</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Dec 11, 2011</span>
-
-        <h2>
-          <a class="post-link" href="/minikernel/2011/12/11/e68891e69cace69da5e4b88de683b3e58699kernelefbc8ce79bb4e588b0e68891e79a84e8869de79b96e4b8ade4ba86e4b880e7aead.html">我本来不想写KERNEL，直到我的膝盖中了一箭</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Nov 1, 2011</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2011/11/01/e4b8bae4bb80e4b988e5bf85e9a1bbe794a8deletee9878ae694bee695b0e7bb84.html">为什么必须用DELETE[]释放数组</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Oct 30, 2011</span>
-
-        <h2>
-          <a class="post-link" href="/ntinternals/2011/10/30/volume-snapshot.html">VOLUME SNAPSHOT</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Sep 17, 2011</span>
-
-        <h2>
-          <a class="post-link" href="/debugging/2011/09/17/ntstatus-lookup.html">NTSTATUS LOOKUP</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Aug 28, 2011</span>
-
-        <h2>
-          <a class="post-link" href="/ntinternals/2011/08/28/e4b880e4bbbde7ae80e9998be79a84ntfs-parsee4bba3e7a081.html">一份简陋的NTFS PARSE代码</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Jun 10, 2011</span>
-
-        <h2>
-          <a class="post-link" href="/2011/06/10/reactos-freeldre7a381e79b98e58f8ae69687e4bbb6e7aea1e790862.html">REACTOS-FREELDR磁盘及文件管理2</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Jun 2, 2011</span>
-
-        <h2>
-          <a class="post-link" href="/2011/06/02/reactos-freeldre7a381e79b98e58f8ae69687e4bbb6e7aea1e79086.html">REACTOS-FREELDR磁盘及文件管理</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">May 23, 2011</span>
-
-        <h2>
-          <a class="post-link" href="/ntinternals/2011/05/23/e585b3e4ba8ee69687e4bbb6shareaccess.html">关于文件SHAREACCESS</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Apr 2, 2011</span>
-
-        <h2>
-          <a class="post-link" href="/debugging/2011/04/02/e8aea9e7a88be5ba8fe7ad89e5be85e8b083e8af95e599a8e99984e58aa0.html">让程序等待调试器附加</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Feb 28, 2011</span>
-
-        <h2>
-          <a class="post-link" href="/2011/02/28/hello-world.html">HELLO WORLD!</a>
-        </h2>
-		
-      </li>
-    
-  </ul>
-
-  <div class="navi-content">
-    
-    
-	  <div class="nav-next">
-        <a class="more-link" href="/page2">Newer posts</a>  
-	  </div>
-      
-      
-      
-  
-  </div>
+  </article>
+  <script type="text/javascript">
+	var duoshuoQuery = {short_name:"0cch"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+  </script>
+  <div class="ds-thread" data-thread-key="/tips/2015/06/29/move-blog-to-jekyll" data-title="将blog迁移到了jekyll" data-url="http://0cch.com/tips/2015/06/29/move-blog-to-jekyll.html"></div>
 </div>
 
       </div>
