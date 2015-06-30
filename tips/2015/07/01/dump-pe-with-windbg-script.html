@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Windows7下控制单个进程音量的小技巧</title>
-  <meta name="description" content="">
+  <title>用Windbg script将内存中的PE文件dump出来</title>
+  <meta name="description" content="最近看到有些恶意程序，从网络上下载PE文件后，直接放在内存里重定位和初始化，为了能将其dump出来，所以写了这个Windbg脚本。">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://0cch.com/tips/2013/09/10/windows7e4b88be68ea7e588b6e58d95e4b8aae8bf9be7a88be99fb3e9878fe79a84e5b08fe68a80e5b7a7.html">
+  <link rel="canonical" href="http://0cch.com/tips/2015/07/01/dump-pe-with-windbg-script.html">
   <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
 </head>
 
@@ -797,93 +797,40 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">WINDOWS7下控制单个进程音量的小技巧</h1>
-    <p class="post-meta">Sep 10, 2013 • admin</p>
+    <h1 class="post-title">用WINDBG SCRIPT将内存中的PE文件DUMP出来</h1>
+    <p class="post-meta">Jul 1, 2015 • admin</p>
   </header>
 
   <article class="post-content">
-    <p><a href="/uploads/2013/09/2013-09-10_200213.png"><img src="/uploads/2013/09/2013-09-10_200213.png" alt="2013-09-10_200213" /></a></p>
+    <p>最近看到有些恶意程序，从网络上下载PE文件后，直接放在内存里重定位和初始化，为了能将其dump出来，所以写了这个Windbg脚本。</p>
 
-<p>如上图所示，Windows7下有一个很有趣的功能，就是可以给单独的进程调节音量。出于好奇，在网上翻了下资料，原来这个功能要归功于Windows7上新的音频接口——Core Audio APIs。这套API是用COM写，各种接口也比较多。但是如果我们的目的只是控制单个进程的音量，那还是很简单的。接下来的代码就是控制进程音量的函数了。</p>
+<div class="highlight"><pre><code class="language-windbg" data-lang="windbg">.foreach( place  { !address /f:VAR,MEM_PRIVATE,MEM_COMMIT /c:"s -[1]a %1 %2 \"MZ\"" } ) 
+{
+	ad *
+	.catch {
+		r @$t2 = place;
+		r @$t0 = place;
+		r @$t1 = @@C++(((ntdll!_IMAGE_DOS_HEADER *)@$t0)-&gt;e_lfanew);
+		r @$t0 = @$t0 + @$t1;
+		r @$t1 = $vvalid(@$t0, 4);
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">const</span> <span class="n">CLSID</span> <span class="n">CLSID_MMDeviceEnumerator</span> <span class="o">=</span> <span class="kr">__uuidof</span><span class="p">(</span><span class="n">MMDeviceEnumerator</span><span class="p">);</span>
-<span class="k">const</span> <span class="n">IID</span> <span class="n">IID_IMMDeviceEnumerator</span> <span class="o">=</span> <span class="kr">__uuidof</span><span class="p">(</span><span class="n">IMMDeviceEnumerator</span><span class="p">);</span>
-<span class="k">const</span> <span class="n">IID</span> <span class="n">IID_IAudioSessionManager2</span> <span class="o">=</span> <span class="kr">__uuidof</span><span class="p">(</span><span class="n">IAudioSessionManager2</span><span class="p">);</span>
-<span class="k">const</span> <span class="n">IID</span> <span class="n">IID_IAudioSessionControl2</span> <span class="o">=</span> <span class="kr">__uuidof</span><span class="p">(</span><span class="n">IAudioSessionControl2</span><span class="p">);</span>
-<span class="k">const</span> <span class="n">IID</span> <span class="n">IID_ISimpleAudioVolume</span> <span class="o">=</span> <span class="kr">__uuidof</span><span class="p">(</span><span class="n">ISimpleAudioVolume</span><span class="p">);</span>
-
-<span class="n">BOOL</span> <span class="nf">SetProcessVolume</span><span class="p">(</span><span class="n">ULONG</span> <span class="n">target_pid</span><span class="p">,</span> <span class="kt">float</span> <span class="n">level</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">CComPtr</span> <span class="n">imm_dev_enumor</span><span class="p">;</span>
-
-    <span class="n">HRESULT</span> <span class="n">hr</span> <span class="o">=</span> <span class="n">imm_dev_enumor</span><span class="p">.</span><span class="n">CoCreateInstance</span><span class="p">(</span>
-        <span class="n">CLSID_MMDeviceEnumerator</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span>
-        <span class="n">CLSCTX_ALL</span><span class="p">);</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">FAILED</span><span class="p">(</span><span class="n">hr</span><span class="p">))</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
-    <span class="p">}</span>
-
-    <span class="n">CComPtr</span> <span class="n">imm_dev</span><span class="p">;</span>
-    <span class="n">hr</span> <span class="o">=</span> <span class="n">imm_dev_enumor</span><span class="o">-&gt;</span><span class="n">GetDefaultAudioEndpoint</span><span class="p">(</span><span class="n">eRender</span><span class="p">,</span> <span class="n">eMultimedia</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">imm</span><span class="p">;</span><span class="n">_dev</span><span class="p">.</span><span class="n">p</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">FAILED</span><span class="p">(</span><span class="n">hr</span><span class="p">))</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
-    <span class="p">}</span>
-
-    <span class="n">CComPtr</span> <span class="n">session_mgr2</span><span class="p">;</span>
-    <span class="n">hr</span> <span class="o">=</span> <span class="n">imm_dev</span><span class="o">-&gt;</span><span class="n">Activate</span><span class="p">(</span><span class="n">IID_IAudioSessionManager2</span><span class="p">,</span> <span class="n">CLSCTX_ALL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span> <span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">session</span><span class="p">;</span><span class="n">_mgr2</span><span class="p">.</span><span class="n">p</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">FAILED</span><span class="p">(</span><span class="n">hr</span><span class="p">))</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
-    <span class="p">}</span>
-
-    <span class="n">CComPtr</span> <span class="n">session_enumor</span><span class="p">;</span>
-    <span class="n">hr</span> <span class="o">=</span> <span class="n">session_mgr2</span><span class="o">-&gt;</span><span class="n">GetSessionEnumerator</span><span class="p">(</span><span class="o">&amp;</span><span class="n">session</span><span class="p">;</span><span class="n">_enumor</span><span class="p">.</span><span class="n">p</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">FAILED</span><span class="p">(</span><span class="n">hr</span><span class="p">))</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
-    <span class="p">}</span>
-
-    <span class="kt">int</span> <span class="n">count</span><span class="p">;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">FAILED</span><span class="p">(</span><span class="n">hr</span><span class="p">))</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
-    <span class="p">}</span>
-
-    <span class="n">hr</span> <span class="o">=</span> <span class="n">session_enumor</span><span class="o">-&gt;</span><span class="n">GetCount</span><span class="p">(</span><span class="o">&amp;</span><span class="n">count</span><span class="p">;);</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">count</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">CComPtr</span> <span class="n">session_ctrl</span><span class="p">;</span>
-        <span class="n">hr</span> <span class="o">=</span> <span class="n">session_enumor</span><span class="o">-&gt;</span><span class="n">GetSession</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">session</span><span class="p">;</span><span class="n">_ctrl</span><span class="p">.</span><span class="n">p</span><span class="p">);</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">FAILED</span><span class="p">(</span><span class="n">hr</span><span class="p">))</span> <span class="p">{</span>
-            <span class="k">continue</span><span class="p">;</span>
-        <span class="p">}</span>
-
-        <span class="n">CComPtr</span> <span class="n">session_ctrl2</span><span class="p">;</span>
-        <span class="n">hr</span> <span class="o">=</span> <span class="n">session_ctrl</span><span class="o">-&gt;</span><span class="n">QueryInterface</span><span class="p">(</span><span class="n">IID_IAudioSessionControl2</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span> <span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">session</span><span class="p">;</span><span class="n">_ctrl2</span><span class="p">.</span><span class="n">p</span><span class="p">);</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">FAILED</span><span class="p">(</span><span class="n">hr</span><span class="p">))</span> <span class="p">{</span>
-
-        <span class="p">}</span>
-
-        <span class="n">ULONG</span> <span class="n">pid</span><span class="p">;</span>
-        <span class="n">hr</span> <span class="o">=</span> <span class="n">session_ctrl2</span><span class="o">-&gt;</span><span class="n">GetProcessId</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pid</span><span class="p">;);</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">FAILED</span><span class="p">(</span><span class="n">hr</span><span class="p">))</span> <span class="p">{</span>
-            <span class="k">continue</span><span class="p">;</span>
-        <span class="p">}</span>
-
-
-        <span class="k">if</span> <span class="p">(</span><span class="n">pid</span> <span class="o">!=</span> <span class="n">target_pid</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">continue</span><span class="p">;</span>
-        <span class="p">}</span>
-
-        <span class="n">CComPtr</span> <span class="n">simple_vol</span><span class="p">;</span>
-        <span class="n">hr</span> <span class="o">=</span> <span class="n">session_ctrl2</span><span class="o">-&gt;</span><span class="n">QueryInterface</span><span class="p">(</span><span class="n">IID_ISimpleAudioVolume</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span> <span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">simple</span><span class="p">;</span><span class="n">_vol</span><span class="p">.</span><span class="n">p</span><span class="p">);</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">FAILED</span><span class="p">(</span><span class="n">hr</span><span class="p">))</span> <span class="p">{</span>
-            <span class="k">continue</span><span class="p">;</span>
-        <span class="p">}</span>
-
-        <span class="n">simple_vol</span><span class="o">-&gt;</span><span class="n">SetMasterVolume</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-    <span class="p">}</span>
-
-    <span class="k">return</span> <span class="n">TRUE</span><span class="p">;</span>
-<span class="p">}</span></code></pre></div>
-
+		.if (@@C++(@$t1 &amp;&amp; @@C++(((ntdll!_IMAGE_NT_HEADERS *)@$t0)-&gt;Signature) == 0x00004550))
+		{
+			r @$t1 = @@C++(((ntdll!_IMAGE_NT_HEADERS *)@$t0)-&gt;OptionalHeader.SizeOfImage);
+			.printf "%08x  %08x\n", @$t2, @$t1;
+			aS /x start_addr @$t2
+			aS /x dump_size @$t1
+			.block {
+				aS target_file e:\\${start_addr}.dll
+			}
+			
+			.block {
+				.printf "${target_file}"
+				.writemem "${target_file}" ${start_addr} L?${dump_size}
+			}
+		}
+	}
+}</code></pre></div>
 
   </article>
   <script type="text/javascript">
@@ -897,7 +844,7 @@
 		 || document.getElementsByTagName('body')[0]).appendChild(ds);
 	})();
   </script>
-  <div class="ds-thread" data-thread-key="/tips/2013/09/10/windows7e4b88be68ea7e588b6e58d95e4b8aae8bf9be7a88be99fb3e9878fe79a84e5b08fe68a80e5b7a7" data-title="Windows7下控制单个进程音量的小技巧" data-url="http://0cch.com/tips/2013/09/10/windows7e4b88be68ea7e588b6e58d95e4b8aae8bf9be7a88be99fb3e9878fe79a84e5b08fe68a80e5b7a7.html"></div>
+  <div class="ds-thread" data-thread-key="/tips/2015/07/01/dump-pe-with-windbg-script" data-title="用Windbg script将内存中的PE文件dump出来" data-url="http://0cch.com/tips/2015/07/01/dump-pe-with-windbg-script.html"></div>
 </div>
 
       </div>
