@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<script type="text/javascript">
+
+var generic_rights = [
+[0x1000000, "ACCESS_SYSTEM_SECURITY"],
+[0x20000, "STANDARD_RIGHTS_READ"],
+[0x20000, "STANDARD_RIGHTS_WRITE"],
+[0x20000, "STANDARD_RIGHTS_EXECUTE"],
+[0xf0000, "STANDARD_RIGHTS_REQUIRED"],
+[0x1f0000, "STANDARD_RIGHTS_ALL"],
+[0x20000, "READ_CONTROL"],
+[0x10000, "DELETE"],
+[0x100000, "SYNCHRONIZE"],
+[0x40000, "WRITE_DAC"],
+[0x80000, "WRITE_OWNER"],
+[0x80000000, "GENERIC_READ"],
+[0x40000000, "GENERIC_WRITE"],
+[0x20000000, "GENERIC_EXECUTE"],
+[0x10000000, "GENERIC_ALL"]];
+
+var process_rights = [
+[0x1000, "PROCESS_QUERY_LIMITED_INFORMATION"],
+[0x800, "PROCESS_SUSPEND_RESUME"],
+[0x400, "PROCESS_QUERY_INFORMATION"],
+[0x200, "PROCESS_SET_INFORMATION"],
+[0x100, "PROCESS_SET_QUOTA"],
+[0x80, "PROCESS_CREATE_PROCESS"],
+[0x40, "PROCESS_DUP_HANDLE"],
+[0x20, "PROCESS_VM_WRITE"],
+[0x10, "PROCESS_VM_READ"],
+[0x8, "PROCESS_VM_OPERATION"],
+[0x2, "PROCESS_CREATE_THREAD"],
+[0x1, "PROCESS_TERMINATE"],
+[0x1fffff, "PROCESS_ALL_ACCESS"]];
+
+var thread_rights = [
+[0x800, "THREAD_QUERY_LIMITED_INFORMATION"],
+[0x400, "THREAD_SET_LIMITED_INFORMATION"],
+[0x200, "THREAD_DIRECT_IMPERSONATION"],
+[0x100, "THREAD_IMPERSONATE"],
+[0x80, "THREAD_SET_THREAD_TOKEN"],
+[0x40, "THREAD_QUERY_INFORMATION"],
+[0x20, "THREAD_SET_INFORMATION"],
+[0x10, "THREAD_SET_CONTEXT"],
+[0x8, "THREAD_GET_CONTEXT"],
+[0x2, "THREAD_SUSPEND_RESUME"],
+[0x1, "THREAD_TERMINATE"],
+[0x1fffff, "THREAD_ALL_ACCESS"]];
+
+var event_rights = [
+[0x2, "EVENT_MODIFY_STATE"],
+[0x1f0003, "EVENT_ALL_ACCESS"]];
+
+var mutex_rights = [
+[0x1, "MUTEX_MODIFY_STATE"],
+[0x1f0001, "MUTEX_ALL_ACCESS"]];
+
+var semaphore_rights = [
+[0x2, "SEMAPHORE_MODIFY_STATE"],
+[0x1f0003, "SEMAPHORE_ALL_ACCESS"]];
+
+var timer_rights = [
+[0x2, "TIMER_MODIFY_STATE"],
+[0x1f0003, "TIMER_ALL_ACCESS"]]
+
+var desktop_rights = [
+[0x100, "DESKTOP_SWITCHDESKTOP"],
+[0x80, "DESKTOP_WRITEOBJECTS"],
+[0x40, "DESKTOP_ENUMERATE"],
+[0x20, "DESKTOP_JOURNALPLAYBACK"],
+[0x10, "DESKTOP_JOURNALRECORD"],
+[0x8, "DESKTOP_HOOKCONTROL"],
+[0x4, "DESKTOP_CREATEMENU"],
+[0x2, "DESKTOP_CREATEWINDOW"],
+[0x1, "DESKTOP_READOBJECTS"]];
+
+var winstation_rights = [
+[0x200, "WINSTA_READSCREEN"],
+[0x100, "WINSTA_ENUMERATE"],
+[0x40, "WINSTA_EXITWINDOWS"],
+[0x20, "WINSTA_ACCESSGLOBALATOMS"],
+[0x10, "WINSTA_WRITEATTRIBUTES"],
+[0x8, "WINSTA_CREATEDESKTOP"],
+[0x4, "WINSTA_ACCESSCLIPBOARD"],
+[0x2, "WINSTA_READATTRIBUTES"],
+[0x1, "WINSTA_ENUMDESKTOPS"],
+[0x37f, "WINSTA_ALL_ACCESS"]];
+
+var key_rights = [
+[0x20, "KEY_CREATE_LINK"],
+[0x10, "KEY_NOTIFY"],
+[0x8, "KEY_ENUMERATE_SUB_KEYS"],
+[0x4, "KEY_CREATE_SUB_KEY"],
+[0x2, "KEY_SET_VALUE"],
+[0x1, "KEY_QUERY_VALUE"],
+[0x100, "KEY_WOW64_64KEY"],
+[0x200, "KEY_WOW64_32KEY"],
+[0x20019, "KEY_EXECUTE"],
+[0x20019, "KEY_READ"],
+[0x20006, "KEY_WRITE"],
+[0xf003f, "KEY_ALL_ACCESS"]];
+
+var file_rights = [
+[0x1, "FILE_READ_DATA"],
+[0x1, "FILE_LIST_DIRECTORY"],
+[0x2, "FILE_WRITE_DATA"],
+[0x2, "FILE_ADD_FILE"],
+[0x4, "FILE_APPEND_DATA"],
+[0x4, "FILE_ADD_SUBDIRECTORY"],
+[0x4, "FILE_CREATE_PIPE_INSTANCE"],
+[0x8, "FILE_READ_EA"],
+[0x10, "FILE_WRITE_EA"],
+[0x20, "FILE_EXECUTE"],
+[0x20, "FILE_TRAVERSE"],
+[0x40, "FILE_DELETE_CHILD"],
+[0x80, "FILE_READ_ATTRIBUTES"],
+[0x100, "FILE_WRITE_ATTRIBUTES"],
+[0x1f01ff, "FILE_ALL_ACCESS"],
+[0x120089, "FILE_GENERIC_READ"],
+[0x120116, "FILE_GENERIC_WRITE"],
+[0x1200a0, "FILE_GENERIC_EXECUTE"]];
+
+var rights_root = [
+["process", process_rights],
+["thread", thread_rights],
+["event", event_rights],
+["mutex", mutex_rights],
+["semaphore", semaphore_rights],
+["timer", timer_rights],
+["desktop", desktop_rights],
+["winstation", winstation_rights],
+["key", key_rights],
+["file", file_rights]];
+
+function ParseAccessMask(type, access_mask)
+{
+	var output_str="Generic rights:\n";
+	for (var i in rights_root) {
+		if (rights_root[i][0].toLowerCase() == type.toLowerCase()) {
+			for (var j in generic_rights) {
+				if ((generic_rights[j][0] & access_mask) == generic_rights[j][0]) {
+					console.log("%s %s", generic_rights[j][1], generic_rights[j][0].toString(16));
+					output_str += generic_rights[j][1];
+					output_str += " ";
+					output_str += generic_rights[j][0].toString(16);
+					output_str += "\n";
+				}
+			}
+			
+			output_str += "\nSpecific rights: (";
+			output_str += rights_root[i][0].toLowerCase();
+			output_str += ")\n";
+			var cur_rights = rights_root[i][1];
+			for (var j in cur_rights) {
+				if ((cur_rights[j][0] & access_mask) == cur_rights[j][0]) {
+					console.log("%s %s", cur_rights[j][1], cur_rights[j][0].toString(16));
+					output_str += cur_rights[j][1];
+					output_str += " ";
+					output_str += cur_rights[j][0].toString(16);
+					output_str += "\n";
+				}
+			}
+			
+			document.getElementsByTagName("textarea")[0].value = output_str;
+			return;
+		}
+	}
+}
+
+function PrintAccessMask(){
+    var access_mask_value = document.getElementsByTagName("input")[0].value;
+	var type = document.getElementsByTagName("select")[0].value;
+	ParseAccessMask(type, access_mask_value);
+}
+</script>
+<body>
+<table border="0" cellspacing="0" cellpadding="5">
+<tr>
+<td>Object type</td><td>Access mask value</td>
+</tr>
+<tr>
+<td>
+<select>
+  <option>process</option>
+  <option>thread</option>
+  <option>event</option>
+  <option>mutex</option>
+  <option>semaphore</option>
+  <option>timer</option>
+  <option>desktop</option>
+  <option>winstation</option>
+  <option>key</option>
+  <option>file</option>
+</select>
+</td>
+<td>
+<input name="access_mask" type="text" maxlength="512">
+<input type="submit" value="Submit" onClick="PrintAccessMask()"/>
+</td>
+</tr>
+<tr>
+<td colspan="2"><textarea name="outputtext" rows="25" cols="45"></textarea></td>
+</tr>
+</table>
+</body>
+</html>

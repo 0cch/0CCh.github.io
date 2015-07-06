@@ -1,0 +1,131 @@
+<table height="213" cellpadding="5" width="385" align="center" border="1">
+
+<tbody><tr>
+<td valign="center" align="left" width="371" height="185">
+<form name="form1" action="">
+<p><strong><font face="Verdana"><font size="2">Enter the IOCTL value to decode in the box below</font><br></font></strong><font size="2"><br><br><font face="Verdana">IOCTL VALUE (hex) </font><input tabindex="1" onchange="decodeIt()" size="10" name="Ioctl"> <input onclick="decodeIt()" tabindex="2" type="button" value="Decode Now!" name="BtnSubmit"><br><br></font></p>
+<p><font face="verdana, arial, helvetica" size="2"><strong><font face="verdana, arial, helvetica" size="1">That IOCTL decodes to:</font><br></strong><br>Device:&nbsp;&nbsp;&nbsp;<input tabindex="-1" size="25" name="Device"><br><br>Function:&nbsp;<input tabindex="-1" size="10" name="Func"><br><br>Access:&nbsp; &nbsp;<input tabindex="-1" size="25" name="Access"><br><br>Method:&nbsp;&nbsp;<input tabindex="-1" size="25" name="Method"><br><br><br><br></font></p></form></td></tr></tbody></table>
+<script language="JavaScript">
+//
+// (c) Copyright 1998 - OSR Open Systems Resources, Inc.
+//
+ var foo = document.form1;
+ var controlCode;
+ 
+ controlCode = foo.Ioctl.value;
+ 
+ var device = new Array(55);
+ device[1]="BEEP"
+ device[2]="CD_ROM"
+ device[3]="CD_ROM_FILE_SYSTEM"
+ device[4]="CONTROLLER"
+ device[5]="DATALINK"
+ device[6]="DFS"
+ device[7]="DISK"
+ device[8]="DISK_FILE_SYSTEM"
+ device[9]="FILE_SYSTEM"
+ device[10]="INPORT_PORT"
+ device[11]="KEYBOARD"
+ device[12]="MAILSLOT"
+ device[13]="MIDI_IN"
+ device[14]="MIDI_OUT"
+ device[15]="MOUSE"
+ device[16]="MULTI_UNC_PROVIDER"
+ device[17]="NAMED_PIPE"
+ device[18]="NETWORK"
+ device[19]="NETWORK_BROWSER"
+ device[20]="NETWORK_FILE_SYSTEM"
+ device[21]="NULL"
+ device[22]="PARALLEL_PORT"
+ device[23]="PHYSICAL_NETCARD"
+ device[24]="PRINTER"
+ device[25]="SCANNER"
+ device[26]="SERIAL_MOUSE_PORT"
+ device[27]="SERIAL_PORT"
+ device[28]="SCREEN"
+ device[29]="SOUND"
+ device[30]="STREAMS"
+ device[31]="TAPE"
+ device[32]="TAPE_FILE_SYSTEM"
+ device[33]="TRANSPORT"
+ device[34]="UNKNOWN"
+ device[35]="VIDEO"
+ device[36]="VIRTUAL_DISK"
+ device[37]="WAVE_IN"
+ device[38]="WAVE_OUT"
+ device[39]="8042_PORT"
+ device[40]="NETWORK_REDIRECTOR"
+ device[41]="BATTERY"
+ device[42]="BUS_EXTENDER"
+ device[43]="MODEM"
+ device[44]="VDM"
+ device[45]="MASS_STORAGE"
+ device[46]="SMB"
+ device[47]="KS"
+ device[48]="CHANGER"
+ device[49]="SMARTCARD"
+ device[50]="ACPI"
+ device[51]="DVD"
+ device[52]="FULLSCREEN_VIDEO"
+ device[53]="DFS_FILE_SYSTEM"
+ device[54]="DFS_VOLUME"
+//
+// decodeIt
+// 
+// Decodes an IOCTL value
+//
+ function decodeIt() {
+  var access;
+  var method;
+  var input;
+  var deviceVal;
+  var funcVal;
+  input = parseInt(foo.Ioctl.value, 16);
+  if(isNaN(input)) {
+   alert(foo.Ioctl.value+"is not a valid IOCTL value");
+   return;
+  }
+  deviceVal = (input >> 16) & 0xFFF;
+  funcVal = (input >> 2) & 0xFFF;
+  if ((deviceVal <= 54) && (deviceVal != 0)) {
+    foo.Device.value = device[deviceVal]+
+        " (0x"+deviceVal.toString(16)+")";
+  } else {
+   foo.Device.value = "0x"+deviceVal.toString(16);
+  }
+  foo.Func.value = "0x"+funcVal.toString(16);
+  
+  access = (input >> 14) & 3;   
+  method = input & 3;
+  if (access == 0) {
+   foo.Access.value = "FILE_ANY_ACCESS";
+  } else {
+   if (access == 1)  {
+    foo.Access.value = "FILE_READ_ACCESS";
+   } else {
+    if (access == 2) {
+     foo.Access.value = "FILE_WRITE_ACCESS";
+    } else {
+     if (access == 3) {
+      foo.Access.value = "Read and Write";
+     }
+    }
+   }
+  }
+  if (method == 0) {
+   foo.Method.value = "METHOD_BUFFERED";
+   } else {
+   if (method == 1) {
+    foo.Method.value = "METHOD_IN_DIRECT";
+   } else {
+    if (method == 2) {
+     foo.Method.value = "METHOUD_OUT_DIRECT";
+     } else {
+     if(method == 3) {
+      foo.Method.value = "METHOD_NEITHER";
+     }
+    }
+   }
+  }
+ }
+</script>
