@@ -6,9 +6,75 @@
 </description>
     <link>http://0cch.com/</link>
     <atom:link href="http://0cch.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 24 Nov 2015 23:48:51 +0800</pubDate>
-    <lastBuildDate>Tue, 24 Nov 2015 23:48:51 +0800</lastBuildDate>
+    <pubDate>Sun, 06 Dec 2015 22:01:20 +0800</pubDate>
+    <lastBuildDate>Sun, 06 Dec 2015 22:01:20 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>C++异常的参数分析(0xE06D7363)</title>
+        <description>&lt;p&gt;Visual C++ 的编译器用0xE06D7363表示C++异常。 0xE06D7363表示的意思就是.msc。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-windbg&quot; data-lang=&quot;windbg&quot;&gt;0:025&amp;gt; .formats 0xE06D7363
+Evaluate expression:
+  Hex:     e06d7363
+  Decimal: -529697949
+  Octal:   34033271543
+  Binary:  11100000 01101101 01110011 01100011
+  Chars:   .msc
+  Time:    ***** Invalid
+  Float:   low -6.84405e+019 high 0
+  Double:  1.86029e-314&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;抛出异常代码的同时，还会带有三个到四个参数：&lt;br /&gt;
+参数0是一个magic code，一般为0x19930520，我们不用管他&lt;br /&gt;
+参数1是时异常抛出的对象指针&lt;br /&gt;
+参数2是抛出异常的基本信息&lt;br /&gt;
+参数3是抛出异常的模块基址(只有64位的程序才会有这个参数)，该基址加上异常信息的偏移才能获得信息的真正内存地址。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-windbg&quot; data-lang=&quot;windbg&quot;&gt;0:025&amp;gt; .exr -1
+ExceptionAddress: 75c8c41f (KERNELBASE!RaiseException+0x00000058)
+   ExceptionCode: e06d7363 (C++ EH exception)
+  ExceptionFlags: 00000001
+NumberParameters: 3
+   Parameter[0]: 19930520
+   Parameter[1]: 09c9f324
+   Parameter[2]: 6b5d0298&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;6b5d0298就是我们想要取得的信息，信息存储的格式为_s__ThrowInfo。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-windbg&quot; data-lang=&quot;windbg&quot;&gt;0:025&amp;gt; dt 6b5d0298 ole32!_s__ThrowInfo
+   +0x000 attributes       : 0
+   +0x004 pmfnUnwind       : 0x6b523b50     void  +0
+   +0x008 pForwardCompat   : (null) 
+   +0x00c pCatchableTypeArray : 0x6b5d028c _s__CatchableTypeArray&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;然后可以取得pCatchableTypeArray，我们可以从中获取抛出异常的类型信息。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-windbg&quot; data-lang=&quot;windbg&quot;&gt;0:025&amp;gt; dt 0x6b5d028c ole32!_s__CatchableTypeArray -r1
+   +0x000 nCatchableTypes  : 0n2
+   +0x004 arrayOfCatchableTypes : [0] 0x6b5d0270 _s__CatchableType
+      +0x000 properties       : 0
+      +0x004 pType            : 0x6b5e58f0 _TypeDescriptor
+      +0x008 thisDisplacement : _PMD
+      +0x014 sizeOrOffset     : 0n48
+      +0x018 copyFunction     : 0x6b523cc0        void  +0&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;到这里我们就取得了类型的描述结构体了，最后就能从中获取抛出的异常类型&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-windbg&quot; data-lang=&quot;windbg&quot;&gt;0:025&amp;gt; dt 0x6b5e58f0 ole32!_TypeDescriptor
+   +0x000 pVFTable         : 0x6b5c36e8 Void
+   +0x004 spare            : (null) 
+   +0x008 name             : [0]  &quot;.?AVinterprocess_exception@interprocess@boost@@&quot;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+</description>
+        <pubDate>Mon, 07 Dec 2015 05:57:50 +0800</pubDate>
+        <link>http://0cch.com/debugging/2015/12/07/cpp-exception-params.html</link>
+        <guid isPermaLink="true">http://0cch.com/debugging/2015/12/07/cpp-exception-params.html</guid>
+        
+        
+        <category>debugging</category>
+        
+      </item>
     
       <item>
         <title>gotcha sdk 全盘文件名搜索开发库</title>
@@ -899,61 +965,6 @@ WARNING: Stack unwind information not available. Following frames may be wrong.
         <link>http://0cch.com/tips/2015/06/29/move-blog-to-jekyll.html</link>
         <guid isPermaLink="true">http://0cch.com/tips/2015/06/29/move-blog-to-jekyll.html</guid>
         
-        
-        <category>tips</category>
-        
-      </item>
-    
-      <item>
-        <title>关于Zone.Identifier的一点记录</title>
-        <description>&lt;p&gt;自从Windows XP SP2开始，微软对文件加入了Zone.Identifier的数据流，所以这个也不算什么新东西了，最近偶然有机会研究了下所以就记录了下来。
-说起Zone.Identifier，我们最常见的应用就是在我们从Internet上下载了可执行文件后，运行的时候会弹出如下图的警告窗口：&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/uploads/2015/06/20150615150628.png&quot;&gt;&lt;img src=&quot;/uploads/2015/06/20150615150628.png&quot; alt=&quot;20150615150628&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;弹出这个窗口就是因为Explorer在运行这个文件的时候先检查了Zone.Identifier的数据，发现了如下文本&lt;br /&gt;
-[ZoneTransfer]&lt;br /&gt;
-ZoneId=3&lt;/p&gt;
-
-&lt;p&gt;这个ZoneId=3，就是指明这个文件是由Internet上下载的。根据MSDN，这个id有以下几种：&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tagURLZONE&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
-  &lt;span class=&quot;n&quot;&gt;URLZONE_INVALID&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;URLZONE_PREDEFINED_MIN&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;URLZONE_LOCAL_MACHINE&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;URLZONE_INTRANET&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;URLZONE_TRUSTED&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;URLZONE_INTERNET&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;URLZONE_UNTRUSTED&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;URLZONE_PREDEFINED_MAX&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;999&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;URLZONE_USER_MIN&lt;/span&gt;        &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;URLZONE_USER_MAX&lt;/span&gt;        &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10000&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;URLZONE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;查看这个数据流的方法也很简单，用notepad就行了。&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/uploads/2015/06/20150615153805.png&quot;&gt;&lt;img src=&quot;/uploads/2015/06/20150615153805.png&quot; alt=&quot;20150615153805&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;另外如果想给添加或者去除这个数据流，我们这里有两种方法：&lt;br /&gt;
-1.直接读写数据流，其实这个跟普通文件读写没什么两样。&lt;br /&gt;
-2.调用微软提供的com接口，这个比较是规范的。&lt;/p&gt;
-
-&lt;p&gt;对于第一种方法，没什么可说的，无非就是文件操作的那些API。第二种方法我们需要用到以下两个接口：&lt;br /&gt;
-IPersistFile&lt;br /&gt;
-IZoneIdentifier&lt;/p&gt;
-
-&lt;p&gt;我们先创建IZoneIdentifier接口，然后query出IPersistFile打开文件，最后读取或者写入文件。&lt;br /&gt;
-代码详见：http://blogs.msdn.com/b/oldnewthing/archive/2013/11/04/10463035.aspx&lt;/p&gt;
-
-&lt;p&gt;最后说一下，之所以能有Zone.Identifier这种功能，完全依赖于NTFS文件系统，它允许多个数据流的存在，对它而言，每个数据流无非就是一个属性而已，只不过Zone.Identifier是一个名字为Zone.Identifier的数据流，而文件本身的数据是一个没有命名的数据流而已。用ntfs_study查看，如下图，第一个Data数据没有名字是文件本身的数据，第二个就是Zone.Identifier的数据了。
-&lt;a href=&quot;/uploads/2015/06/20150615160110.png&quot;&gt;&lt;img src=&quot;/uploads/2015/06/20150615160110.png&quot; alt=&quot;20150615160110&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Mon, 15 Jun 2015 16:07:03 +0800</pubDate>
-        <link>http://0cch.com/ntinternals/tips/2015/06/15/e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95.html</link>
-        <guid isPermaLink="true">http://0cch.com/ntinternals/tips/2015/06/15/e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95.html</guid>
-        
-        
-        <category>ntinternals</category>
         
         <category>tips</category>
         

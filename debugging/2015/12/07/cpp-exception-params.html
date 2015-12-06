@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>使用Windows未使用内存原理和应用</title>
-  <meta name="description" content="">
+  <title>C++异常的参数分析(0xE06D7363)</title>
+  <meta name="description" content="Visual C++ 的编译器用0xE06D7363表示C++异常。 0xE06D7363表示的意思就是.msc。">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://0cch.com/ntinternals/2015/02/02/e4bdbfe794a8windowse69caae4bdbfe794a8e58685e5ad98e58e9fe79086e5928ce5ba94e794a8.html">
+  <link rel="canonical" href="http://0cch.com/debugging/2015/12/07/cpp-exception-params.html">
   <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
 </head>
 
@@ -873,89 +873,65 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">使用WINDOWS未使用内存原理和应用</h1>
-    <p class="post-meta">Feb 2, 2015 • admin</p>
+    <h1 class="post-title">C++异常的参数分析(0XE06D7363)</h1>
+    <p class="post-meta">Dec 7, 2015 • admin</p>
   </header>
 
   <article class="post-content">
-    <p><a href="/uploads/2015/02/20150202104522.png"><img src="/uploads/2015/02/20150202104522.png" alt="20150202104522" /></a></p>
+    <p>Visual C++ 的编译器用0xE06D7363表示C++异常。 0xE06D7363表示的意思就是.msc。</p>
 
-<p>配置4G内存，并且使用过32bit Windows系统的人都知道，虽然自己有4G的物理内存，但是Windows还是明确的告诉你，它只会用其中的3GB多，还有几百MB物理内存是用不到的，即使你开启了PAE。当然如果你用的服务器系统，那就当我没说。至于微软为啥服务端32bit系统可以用4GB以上，而限制普通客户端系统，按照Windows Internals的说法，是为了考虑驱动程序的兼容性问题。我这里想介绍的是，如何使用这些没有使用的物理内存。</p>
+<div class="highlight"><pre><code class="language-windbg" data-lang="windbg">0:025&gt; .formats 0xE06D7363
+Evaluate expression:
+  Hex:     e06d7363
+  Decimal: -529697949
+  Octal:   34033271543
+  Binary:  11100000 01101101 01110011 01100011
+  Chars:   .msc
+  Time:    ***** Invalid
+  Float:   low -6.84405e+019 high 0
+  Double:  1.86029e-314</code></pre></div>
 
-<p><a href="/uploads/2015/02/20150202105145.png"><img src="/uploads/2015/02/20150202105145.png" alt="20150202105145" /></a></p>
+<p>抛出异常代码的同时，还会带有三个到四个参数：<br />
+参数0是一个magic code，一般为0x19930520，我们不用管他<br />
+参数1是时异常抛出的对象指针<br />
+参数2是抛出异常的基本信息<br />
+参数3是抛出异常的模块基址(只有64位的程序才会有这个参数)，该基址加上异常信息的偏移才能获得信息的真正内存地址。</p>
 
-<p>首先，要想使用这些内存，我们必须找到他们，但是找到他们之前，我们还得了解物理内存地址是怎么分配。物理内存地址除了要给RAM提供地址之外，还需要给设备内存提供地址。为了考虑驱动的兼容性，这些设备内存被分配到4G以内的地址上，这样一来，就会有部分RAM不得不分配到4G以外的地址上了，所以我们无法使用它们。</p>
+<div class="highlight"><pre><code class="language-windbg" data-lang="windbg">0:025&gt; .exr -1
+ExceptionAddress: 75c8c41f (KERNELBASE!RaiseException+0x00000058)
+   ExceptionCode: e06d7363 (C++ EH exception)
+  ExceptionFlags: 00000001
+NumberParameters: 3
+   Parameter[0]: 19930520
+   Parameter[1]: 09c9f324
+   Parameter[2]: 6b5d0298</code></pre></div>
 
-<p><a href="/uploads/2015/02/20150202110332.png"><img src="/uploads/2015/02/20150202110332.png" alt="20150202110332" /></a></p>
+<p>6b5d0298就是我们想要取得的信息，信息存储的格式为_s__ThrowInfo。</p>
 
-<p>知道了这些，我们就需要聚焦到如何访问超过4GB内存的方法上了。不过方法也很简单，就是MmMapIoSpace函数，这个函数可以访问64bit的物理内存地址，并且将其映射到我们可以访问的虚拟内存上。</p>
+<div class="highlight"><pre><code class="language-windbg" data-lang="windbg">0:025&gt; dt 6b5d0298 ole32!_s__ThrowInfo
+   +0x000 attributes       : 0
+   +0x004 pmfnUnwind       : 0x6b523b50     void  +0
+   +0x008 pForwardCompat   : (null) 
+   +0x00c pCatchableTypeArray : 0x6b5d028c _s__CatchableTypeArray</code></pre></div>
 
-<p>说到这里，程序的代码仿佛就呈现在脑海了，不过等等，还忽略了一个最困难的问题！到底有存在多少RAM内存在4GB以上的地址空间呢？说这个问题最为困难，是因为你需要根据不同的情况做出不同的选择。</p>
+<p>然后可以取得pCatchableTypeArray，我们可以从中获取抛出异常的类型信息。</p>
 
-<p><a href="/uploads/2015/02/20150202095553.png"><img src="/uploads/2015/02/20150202095553.png" alt="20150202095553" /></a></p>
+<div class="highlight"><pre><code class="language-windbg" data-lang="windbg">0:025&gt; dt 0x6b5d028c ole32!_s__CatchableTypeArray -r1
+   +0x000 nCatchableTypes  : 0n2
+   +0x004 arrayOfCatchableTypes : [0] 0x6b5d0270 _s__CatchableType
+      +0x000 properties       : 0
+      +0x004 pType            : 0x6b5e58f0 _TypeDescriptor
+      +0x008 thisDisplacement : _PMD
+      +0x014 sizeOrOffset     : 0n48
+      +0x018 copyFunction     : 0x6b523cc0        void  +0</code></pre></div>
 
-<p>1.主板支持通过Bios查询RAM内存分配情况，在这种情况下，我们可以调用中断来获得最真实的RAM分配表。<br />
-2.主板不支持通过Bios查询RAM内存分配情况，那么我们很无奈的必须采用一个简单粗暴的方法，Write &amp; Test来获得4GB以外到底有多少RAM可用。</p>
+<p>到这里我们就取得了类型的描述结构体了，最后就能从中获取抛出的异常类型</p>
 
-<p>对于第二种情况，我们的做法是通过MmMapIoSpace函数，把4GB以上的物理地址逐一映射到虚拟内存中，然后写入特殊值，写入后马上读取，看是否写入成功，成功则证明RAM可用。<br />
-对于第一种情况，这里又要分为两个分支：<br />
-首先你的系统是NT6内核以下的情况，这时可以调用Ke386CallBios函数，调用中断接口。<br />
-而对于NT6的内核，我们需要调用新的x86BiosCall等一套函数。<br />
-需要调用的中断函数是0x15以及AX=E820，通过这个中断和功能号，我们就能获得SYSTEM MEMORY MAP</p>
+<div class="highlight"><pre><code class="language-windbg" data-lang="windbg">0:025&gt; dt 0x6b5e58f0 ole32!_TypeDescriptor
+   +0x000 pVFTable         : 0x6b5c36e8 Void
+   +0x004 spare            : (null) 
+   +0x008 name             : [0]  ".?AVinterprocess_exception@interprocess@boost@@"</code></pre></div>
 
-<p>下面附带上这个功能的使用方法</p>
-
-<div class="highlight"><pre><code class="language-windbg" data-lang="windbg">INT 15 - newer BIOSes - GET SYSTEM MEMORY MAP  
-   AX = E820h  
-   EAX = 0000E820h  
-   EDX = 534D4150h ('SMAP')  
-   EBX = continuation value or 00000000h to start at beginning of map  
-   ECX = size of buffer for result, in bytes (should be &gt;= 20 bytes)  
-   ES:DI -&gt; buffer for result (see #00581)  
-Return: CF clear if successful  
-    EAX = 534D4150h ('SMAP')  
-    ES:DI buffer filled  
-    EBX = next offset from which to copy or 00000000h if all done  
-    ECX = actual length returned in bytes  
-   CF set on error  
-    AH = error code (86h) (see #00496 at INT 15/AH=80h)  
-Notes:   originally introduced with the Phoenix BIOS v4.0, this function is  
-    now supported by most newer BIOSes, since various versions of Windows  
-    call it to find out about the system memory  
-   a maximum of 20 bytes will be transferred at one time, even if ECX is  
-    higher; some BIOSes (e.g. Award Modular BIOS v4.50PG) ignore the  
-    value of ECX on entry, and always copy 20 bytes  
-   some BIOSes expect the high word of EAX to be clear on entry, i.e.  
-    EAX=0000E820h  
-   if this function is not supported, an application should fall back  
-    to AX=E802h, AX=E801h, and then AH=88h  
-   the BIOS is permitted to return a nonzero continuation value in EBX  
-    and indicate that the end of the list has already been reached by  
-    returning with CF set on the next iteration  
-   this function will return base memory and ISA/PCI memory contiguous  
-    with base memory as normal memory ranges; it will indicate  
-    chipset-defined address holes which are not in use and motherboard  
-    memory-mapped devices, and all occurrences of the system BIOS as  
-    reserved; standard PC address ranges will not be reported  
-SeeAlso: AH=C7h,AX=E801h"Phoenix",AX=E881h,MEM xxxxh:xxx0h"ACPI"  
-Format of Phoenix BIOS system memory map address range descriptor:  
-Offset   Size   Description   (Table 00580)  
-00h   QWORD   base address  
-08h   QWORD   length in bytes  
-10h   DWORD   type of address range (see #00581)  
-(Table 00581)  
-Values for System Memory Map address type:  
-01h   memory, available to OS  
-02h   reserved, not available (e.g. system ROM, memory-mapped device)  
-03h   ACPI Reclaim Memory (usable by OS after reading ACPI tables)  
-04h   ACPI NVS Memory (OS is required to save this memory between NVS  
-    sessions)  
-other   not defined yet -- treat as Reserved  
-（from http://www.ctyme.com/intr/rb-1741.htm</code></pre></div>
-
-<p>获得了4GB内存以上的RAM范围以后，再加上MmMapIoSpace，我们就能够访问系统没有使用的内存了。</p>
-
-<p>说了这么多，这个有什么具体应用呢？我见过最多利用这个特性做的产品就是内存盘了。也没看到什么用的特别好的其他应用的方面，我想原因主要有三点，第一，即使获得了物理内存，最后还是映射了4GB以内的虚拟内存上，内存操作终究无法访问直接更多物理内存；第二，这部分内存没有系统统一管理，同类型的软件无法共存；第三，有4G内存赶紧快去换个64位系统吧=v=。</p>
 
   </article>
   <script type="text/javascript">
@@ -969,7 +945,7 @@ other   not defined yet -- treat as Reserved
 		 || document.getElementsByTagName('body')[0]).appendChild(ds);
 	})();
   </script>
-  <div class="ds-thread" data-thread-key="/ntinternals/2015/02/02/e4bdbfe794a8windowse69caae4bdbfe794a8e58685e5ad98e58e9fe79086e5928ce5ba94e794a8" data-title="使用Windows未使用内存原理和应用" data-url="http://0cch.com/ntinternals/2015/02/02/e4bdbfe794a8windowse69caae4bdbfe794a8e58685e5ad98e58e9fe79086e5928ce5ba94e794a8.html"></div>
+  <div class="ds-thread" data-thread-key="/debugging/2015/12/07/cpp-exception-params" data-title="C++异常的参数分析(0xE06D7363)" data-url="http://0cch.com/debugging/2015/12/07/cpp-exception-params.html"></div>
 </div>
 
       </div>
