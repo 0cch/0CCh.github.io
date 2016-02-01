@@ -6,9 +6,70 @@
 </description>
     <link>http://0cch.com/</link>
     <atom:link href="http://0cch.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 11 Jan 2016 12:23:44 +0800</pubDate>
-    <lastBuildDate>Mon, 11 Jan 2016 12:23:44 +0800</lastBuildDate>
+    <pubDate>Mon, 01 Feb 2016 21:17:04 +0800</pubDate>
+    <lastBuildDate>Mon, 01 Feb 2016 21:17:04 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>调试器最早的中断应用程序的方法</title>
+        <description>&lt;p&gt;这篇Blog分享一个Windbg的小技巧，就是让被调试程序更早的中断到调试器。熟悉Windbg的朋友都知道，用调试器运行程序，默认情况下都会中断到ntdll!LdrpDoDebuggerBreak。但是有时候我们会想去调试程序加载的过程，这个时候就需要我们更早的中断下来。那么这里就用利用到调试器最早接受到的调试事件了。CREATE_PROCESS_DEBUG_EVENT，这个调试事件是创建进程的时候进程发给调试器的，在这个时候，你甚至连ntdll都没有完成加载，这也导致ntdll的符号无法加载，很多有用的功能用不上。但幸运的是，虽然ntdll没有完成加载，但是已经加载到了内存，另外我们可以用手动加载符号的方法，把符号文件加载到ntdll的内存上去。&lt;/p&gt;
+
+&lt;p&gt;演示如下：&lt;/p&gt;
+
+&lt;p&gt;windbg.EXE -xe cpr -xe ld notepad.exe&lt;/p&gt;
+
+&lt;p&gt;这里设置中断系统事件cpr，也就是CREATE_PROCESS_DEBUG_EVENT&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-windbg&quot; data-lang=&quot;windbg&quot;&gt;0:000&amp;gt; lm
+start             end                 module name
+00007ff7`3f6e0000 00007ff7`3f721000   notepad    (deferred)             
+0:000&amp;gt; !teb
+TEB at 000000d995d21000
+error InitTypeRead( TEB )...&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;中断下来后我们可以看到，!teb是没法用的&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-windbg&quot; data-lang=&quot;windbg&quot;&gt;0:000&amp;gt; .imgscan
+MZ at 00007ff7`3f6e0000, prot 00000002, type 01000000 - size 41000
+  Name: notepad.exe
+MZ at 00007ffb`7c7b0000, prot 00000002, type 01000000 - size 1c1000
+  Name: ntdll.dll
+0:000&amp;gt; .reload /f ntdll.dll=00007ffb`7c7b0000&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;我们需要找到ntdll的模块，然后手动加载符号，然后就可以使用和ntdll有关系的命令了。&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-windbg&quot; data-lang=&quot;windbg&quot;&gt;0:000&amp;gt; lm
+start             end                 module name
+00007ff7`3f6e0000 00007ff7`3f721000   notepad    (deferred)             
+00007ffb`7c7b0000 00007ffb`7c971000   ntdll      (pdb symbols)          e:\workspace\mysymbols\ntdll.pdb\F296699DB5314A06935E88564D8CD2731\ntdll.pdb
+
+0:000&amp;gt; !teb
+TEB at 000000d995d21000
+    ExceptionList:        0000000000000000
+    StackBase:            000000d995af0000
+    StackLimit:           000000d995adf000
+    SubSystemTib:         0000000000000000
+    FiberData:            0000000000001e00
+    ArbitraryUserPointer: 0000000000000000
+    Self:                 000000d995d21000
+    EnvironmentPointer:   0000000000000000
+    ClientId:             0000000000001c8c . 00000000000017c4
+    RpcHandle:            0000000000000000
+    Tls Storage:          0000000000000000
+    PEB Address:          000000d995d20000
+    LastErrorValue:       0
+    LastStatusValue:      0
+    Count Owned Locks:    0
+    HardErrorMode:        0&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+</description>
+        <pubDate>Mon, 01 Feb 2016 21:15:03 +0000</pubDate>
+        <link>http://0cch.com/debugging/2016/02/01/app-cpr-event.html</link>
+        <guid isPermaLink="true">http://0cch.com/debugging/2016/02/01/app-cpr-event.html</guid>
+        
+        
+        <category>debugging</category>
+        
+      </item>
     
       <item>
         <title>总结和展望：转折的一年</title>
@@ -903,47 +964,6 @@ WARNING: Stack unwind information not available. Following frames may be wrong.
         <pubDate>Mon, 13 Jul 2015 08:20:57 +0800</pubDate>
         <link>http://0cch.com/tips/2015/07/13/monitor-process-with-wmi.html</link>
         <guid isPermaLink="true">http://0cch.com/tips/2015/07/13/monitor-process-with-wmi.html</guid>
-        
-        
-        <category>tips</category>
-        
-      </item>
-    
-      <item>
-        <title>用Windbg script将内存中的PE文件dump出来</title>
-        <description>&lt;p&gt;最近看到有些恶意程序，从网络上下载PE文件后，直接放在内存里重定位和初始化，为了能将其dump出来，所以写了这个Windbg脚本。&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-windbg&quot; data-lang=&quot;windbg&quot;&gt;.foreach( place  { !address /f:VAR,MEM_PRIVATE,MEM_COMMIT /c:&quot;s -[1]a %1 %2 \&quot;MZ\&quot;&quot; } ) 
-{
-	ad *
-	.catch {
-		r @$t2 = place;
-		r @$t0 = place;
-		r @$t1 = @@C++(((ntdll!_IMAGE_DOS_HEADER *)@$t0)-&amp;gt;e_lfanew);
-		r @$t0 = @$t0 + @$t1;
-		r @$t1 = $vvalid(@$t0, 4);
-
-		.if (@@C++(@$t1 &amp;amp;&amp;amp; @@C++(((ntdll!_IMAGE_NT_HEADERS *)@$t0)-&amp;gt;Signature) == 0x00004550))
-		{
-			r @$t1 = @@C++(((ntdll!_IMAGE_NT_HEADERS *)@$t0)-&amp;gt;OptionalHeader.SizeOfImage);
-			.printf &quot;%08x  %08x\n&quot;, @$t2, @$t1;
-			aS /x start_addr @$t2
-			aS /x dump_size @$t1
-			.block {
-				aS target_file e:\\${start_addr}.dll
-			}
-			
-			.block {
-				.printf &quot;${target_file}&quot;
-				.writemem &quot;${target_file}&quot; ${start_addr} L?${dump_size}
-			}
-		}
-	}
-}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-</description>
-        <pubDate>Wed, 01 Jul 2015 08:11:15 +0800</pubDate>
-        <link>http://0cch.com/tips/2015/07/01/dump-pe-with-windbg-script.html</link>
-        <guid isPermaLink="true">http://0cch.com/tips/2015/07/01/dump-pe-with-windbg-script.html</guid>
         
         
         <category>tips</category>
