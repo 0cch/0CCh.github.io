@@ -6,9 +6,26 @@
 </description>
     <link>http://0cch.com/</link>
     <atom:link href="http://0cch.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 23 Feb 2016 00:56:11 +0800</pubDate>
-    <lastBuildDate>Tue, 23 Feb 2016 00:56:11 +0800</lastBuildDate>
+    <pubDate>Thu, 17 Mar 2016 13:48:08 +0800</pubDate>
+    <lastBuildDate>Thu, 17 Mar 2016 13:48:08 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>查看消息窗口工具</title>
+        <description>&lt;p&gt;我们都知道用Spy++去查看窗口句柄的相关信息，但是这款工具无法找到消息窗口(Message-Only Windows)。所以写了个查看消息窗口的工具，帮我排查一些这方面的问题。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/uploads/2016/03/20160317120246.png&quot;&gt;&lt;img src=&quot;/uploads/2016/03/20160317120246.png&quot; alt=&quot;20160317120246&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;下载：&lt;a href=&quot;/uploads/2016/03/MsgOnlyWnd.zip&quot;&gt;MsgOnlyWnd&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Thu, 17 Mar 2016 20:00:45 +0800</pubDate>
+        <link>http://0cch.com/tips/2016/03/17/msg-wnd-view.html</link>
+        <guid isPermaLink="true">http://0cch.com/tips/2016/03/17/msg-wnd-view.html</guid>
+        
+        
+        <category>tips</category>
+        
+      </item>
     
       <item>
         <title>c06d007f异常的解决方法</title>
@@ -1011,24 +1028,6 @@ WARNING: Stack unwind information not available. Following frames may be wrong.
         <pubDate>Thu, 27 Aug 2015 20:04:23 +0800</pubDate>
         <link>http://0cch.com/tips/2015/08/27/3-interesting-API.html</link>
         <guid isPermaLink="true">http://0cch.com/tips/2015/08/27/3-interesting-API.html</guid>
-        
-        
-        <category>tips</category>
-        
-      </item>
-    
-      <item>
-        <title>OleFileView 查看Ole文件数据结构的工具</title>
-        <description>&lt;p&gt;OleFileView是一个查看结构化存储文件的工具，我们熟悉的Ole存储的文件就是这种格式，虽然很老了，但是依旧被广泛使用，例如老版本Office的文件doc，xls等，包括msi，jumplist等，都是采用的这种格式。&lt;br /&gt;
-所以我也就抽了点时间研究了一下这个数据结构，可以说这就是个小型的文件系统，虽然比不上NTFS，但是对于一般的存储可以说是小菜一碟。&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/uploads/2015/08/20150803003316.png&quot;&gt;&lt;img src=&quot;/uploads/2015/08/20150803003316.png&quot; alt=&quot;20150803003316&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;下载：&lt;a href=&quot;/uploads/2015/08/OleFileView.zip&quot;&gt;OleFileView.zip&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Mon, 03 Aug 2015 08:21:28 +0800</pubDate>
-        <link>http://0cch.com/tips/2015/08/03/ole-file-view-tool.html</link>
-        <guid isPermaLink="true">http://0cch.com/tips/2015/08/03/ole-file-view-tool.html</guid>
         
         
         <category>tips</category>
