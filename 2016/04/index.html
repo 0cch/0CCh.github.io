@@ -6,11 +6,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>关于Zone.Identifier的一点记录</title>
-  <meta name="description" content="自从Windows XP SP2开始，微软对文件加入了Zone.Identifier的数据流，所以这个也不算什么新东西了，最近偶然有机会研究了下所以就记录了下来。说起Zone.Identifier，我们最常见的应用就是在我们从Internet上下载了可执行文件后，运行的时候会弹出如下图的警告窗口：">
+  <title>month 2016-04</title>
+  <meta name="description" content="printf("I am programmer!");
+">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://0cch.com/ntinternals/tips/2015/06/15/e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95.html">
+  <link rel="canonical" href="http://0cch.com/2016/04/">
   <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
 </head>
 
@@ -926,71 +927,13 @@
   </ul>
  </div>
 </div>
-        <div class="post">
+        <h1 class="category"> Posts archive: 4 - 2016 </h1><br>
+<ul class="posts">
 
-  <header class="post-header">
-    <h1 class="post-title">关于ZONE.IDENTIFIER的一点记录</h1>
-    <p class="post-meta">Jun 15, 2015 • admin</p>
-  </header>
+    <div><span class="month">APR</span> <span class="day">12</span> <span class="year">2016</span> </div>
+    <h2><a href="/tips/2016/04/12/get-desktop-icon-pos.html">获取桌面图标位置</a></h2>
 
-  <article class="post-content">
-    <p>自从Windows XP SP2开始，微软对文件加入了Zone.Identifier的数据流，所以这个也不算什么新东西了，最近偶然有机会研究了下所以就记录了下来。
-说起Zone.Identifier，我们最常见的应用就是在我们从Internet上下载了可执行文件后，运行的时候会弹出如下图的警告窗口：</p>
-
-<p><a href="/uploads/2015/06/20150615150628.png"><img src="/uploads/2015/06/20150615150628.png" alt="20150615150628" /></a></p>
-
-<p>弹出这个窗口就是因为Explorer在运行这个文件的时候先检查了Zone.Identifier的数据，发现了如下文本<br />
-[ZoneTransfer]<br />
-ZoneId=3</p>
-
-<p>这个ZoneId=3，就是指明这个文件是由Internet上下载的。根据MSDN，这个id有以下几种：</p>
-
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">typedef</span> <span class="k">enum</span> <span class="n">tagURLZONE</span> <span class="p">{</span> 
-  <span class="n">URLZONE_INVALID</span>         <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-  <span class="n">URLZONE_PREDEFINED_MIN</span>  <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="n">URLZONE_LOCAL_MACHINE</span>   <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="n">URLZONE_INTRANET</span><span class="p">,</span>
-  <span class="n">URLZONE_TRUSTED</span><span class="p">,</span>
-  <span class="n">URLZONE_INTERNET</span><span class="p">,</span>
-  <span class="n">URLZONE_UNTRUSTED</span><span class="p">,</span>
-  <span class="n">URLZONE_PREDEFINED_MAX</span>  <span class="o">=</span> <span class="mi">999</span><span class="p">,</span>
-  <span class="n">URLZONE_USER_MIN</span>        <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
-  <span class="n">URLZONE_USER_MAX</span>        <span class="o">=</span> <span class="mi">10000</span>
-<span class="p">}</span> <span class="n">URLZONE</span><span class="p">;</span></code></pre></div>
-
-<p>查看这个数据流的方法也很简单，用notepad就行了。</p>
-
-<p><a href="/uploads/2015/06/20150615153805.png"><img src="/uploads/2015/06/20150615153805.png" alt="20150615153805" /></a></p>
-
-<p>另外如果想给添加或者去除这个数据流，我们这里有两种方法：<br />
-1.直接读写数据流，其实这个跟普通文件读写没什么两样。<br />
-2.调用微软提供的com接口，这个比较是规范的。</p>
-
-<p>对于第一种方法，没什么可说的，无非就是文件操作的那些API。第二种方法我们需要用到以下两个接口：<br />
-IPersistFile<br />
-IZoneIdentifier</p>
-
-<p>我们先创建IZoneIdentifier接口，然后query出IPersistFile打开文件，最后读取或者写入文件。<br />
-代码详见：http://blogs.msdn.com/b/oldnewthing/archive/2013/11/04/10463035.aspx</p>
-
-<p>最后说一下，之所以能有Zone.Identifier这种功能，完全依赖于NTFS文件系统，它允许多个数据流的存在，对它而言，每个数据流无非就是一个属性而已，只不过Zone.Identifier是一个名字为Zone.Identifier的数据流，而文件本身的数据是一个没有命名的数据流而已。用ntfs_study查看，如下图，第一个Data数据没有名字是文件本身的数据，第二个就是Zone.Identifier的数据了。
-<a href="/uploads/2015/06/20150615160110.png"><img src="/uploads/2015/06/20150615160110.png" alt="20150615160110" /></a></p>
-
-  </article>
-  <script type="text/javascript">
-	var duoshuoQuery = {short_name:"0cch"};
-	(function() {
-		var ds = document.createElement('script');
-		ds.type = 'text/javascript';ds.async = true;
-		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-		ds.charset = 'UTF-8';
-		(document.getElementsByTagName('head')[0] 
-		 || document.getElementsByTagName('body')[0]).appendChild(ds);
-	})();
-  </script>
-  <div class="ds-thread" data-thread-key="/ntinternals/tips/2015/06/15/e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95" data-title="关于Zone.Identifier的一点记录" data-url="http://0cch.com/ntinternals/tips/2015/06/15/e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95.html"></div>
-</div>
-
+</ul>
       </div>
     </div>
 

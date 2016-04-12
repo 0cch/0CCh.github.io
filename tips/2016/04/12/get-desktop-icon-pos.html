@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>关于Zone.Identifier的一点记录</title>
-  <meta name="description" content="自从Windows XP SP2开始，微软对文件加入了Zone.Identifier的数据流，所以这个也不算什么新东西了，最近偶然有机会研究了下所以就记录了下来。说起Zone.Identifier，我们最常见的应用就是在我们从Internet上下载了可执行文件后，运行的时候会弹出如下图的警告窗口：">
+  <title>获取桌面图标位置</title>
+  <meta name="description" content="用来干什么就不用说了，反正不是什么好事情 =v=">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://0cch.com/ntinternals/tips/2015/06/15/e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95.html">
+  <link rel="canonical" href="http://0cch.com/tips/2016/04/12/get-desktop-icon-pos.html">
   <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
 </head>
 
@@ -929,52 +929,151 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">关于ZONE.IDENTIFIER的一点记录</h1>
-    <p class="post-meta">Jun 15, 2015 • admin</p>
+    <h1 class="post-title">获取桌面图标位置</h1>
+    <p class="post-meta">Apr 12, 2016 • admin</p>
   </header>
 
   <article class="post-content">
-    <p>自从Windows XP SP2开始，微软对文件加入了Zone.Identifier的数据流，所以这个也不算什么新东西了，最近偶然有机会研究了下所以就记录了下来。
-说起Zone.Identifier，我们最常见的应用就是在我们从Internet上下载了可执行文件后，运行的时候会弹出如下图的警告窗口：</p>
+    <p>用来干什么就不用说了，反正不是什么好事情 =v=</p>
 
-<p><a href="/uploads/2015/06/20150615150628.png"><img src="/uploads/2015/06/20150615150628.png" alt="20150615150628" /></a></p>
+<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68</pre></td><td class="code"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">_DESKTOP_ICON_INFO</span> <span class="p">{</span>
+	<span class="n">LVITEMW</span> <span class="n">item</span><span class="p">;</span>
+	<span class="n">WCHAR</span> <span class="n">item_text</span><span class="p">[</span><span class="n">MAX_PATH</span><span class="p">];</span>
+	<span class="n">RECT</span> <span class="n">rc</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">DESKTOP_ICON_INFO</span><span class="p">,</span> <span class="o">*</span><span class="n">PDESKTOP_ICON_INFO</span><span class="p">;</span>
 
-<p>弹出这个窗口就是因为Explorer在运行这个文件的时候先检查了Zone.Identifier的数据，发现了如下文本<br />
-[ZoneTransfer]<br />
-ZoneId=3</p>
+<span class="n">BOOL</span> <span class="nf">GetDesktopIconInfo</span><span class="p">(</span><span class="n">LPCWSTR</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">RECT</span> <span class="o">&amp;</span><span class="n">rc</span><span class="p">,</span> <span class="n">HWND</span> <span class="o">&amp;</span><span class="n">desktop</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">HWND</span> <span class="n">progman</span> <span class="o">=</span> <span class="n">FindWindow</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">"Progman"</span><span class="p">),</span> <span class="n">TEXT</span><span class="p">(</span><span class="s">"Program Manager"</span><span class="p">));</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">progman</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
+	<span class="p">}</span>
+	
 
-<p>这个ZoneId=3，就是指明这个文件是由Internet上下载的。根据MSDN，这个id有以下几种：</p>
+	<span class="n">HWND</span> <span class="n">def_view</span> <span class="o">=</span> <span class="n">FindWindowEx</span><span class="p">(</span><span class="n">progman</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">TEXT</span><span class="p">(</span><span class="s">"SHELLDLL_DefView"</span><span class="p">),</span> <span class="nb">NULL</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">def_view</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
+	<span class="p">}</span>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="k">typedef</span> <span class="k">enum</span> <span class="n">tagURLZONE</span> <span class="p">{</span> 
-  <span class="n">URLZONE_INVALID</span>         <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-  <span class="n">URLZONE_PREDEFINED_MIN</span>  <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="n">URLZONE_LOCAL_MACHINE</span>   <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="n">URLZONE_INTRANET</span><span class="p">,</span>
-  <span class="n">URLZONE_TRUSTED</span><span class="p">,</span>
-  <span class="n">URLZONE_INTERNET</span><span class="p">,</span>
-  <span class="n">URLZONE_UNTRUSTED</span><span class="p">,</span>
-  <span class="n">URLZONE_PREDEFINED_MAX</span>  <span class="o">=</span> <span class="mi">999</span><span class="p">,</span>
-  <span class="n">URLZONE_USER_MIN</span>        <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
-  <span class="n">URLZONE_USER_MAX</span>        <span class="o">=</span> <span class="mi">10000</span>
-<span class="p">}</span> <span class="n">URLZONE</span><span class="p">;</span></code></pre></div>
+	<span class="n">HWND</span> <span class="n">list_view</span> <span class="o">=</span> <span class="n">FindWindowEx</span><span class="p">(</span><span class="n">def_view</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">TEXT</span><span class="p">(</span><span class="s">"SysListView32"</span><span class="p">),</span> <span class="n">TEXT</span><span class="p">(</span><span class="s">"FolderView"</span><span class="p">));</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">list_view</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="n">desktop</span> <span class="o">=</span> <span class="n">list_view</span><span class="p">;</span>
 
-<p>查看这个数据流的方法也很简单，用notepad就行了。</p>
+	<span class="n">ULONG</span> <span class="n">process_id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="n">GetWindowThreadProcessId</span><span class="p">(</span><span class="n">progman</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">process_id</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">process_id</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
+	<span class="p">}</span>
 
-<p><a href="/uploads/2015/06/20150615153805.png"><img src="/uploads/2015/06/20150615153805.png" alt="20150615153805" /></a></p>
+	<span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="o">::</span><span class="n">SendMessage</span><span class="p">(</span><span class="n">list_view</span><span class="p">,</span> <span class="n">LVM_GETITEMCOUNT</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 
-<p>另外如果想给添加或者去除这个数据流，我们这里有两种方法：<br />
-1.直接读写数据流，其实这个跟普通文件读写没什么两样。<br />
-2.调用微软提供的com接口，这个比较是规范的。</p>
+	<span class="n">HANDLE</span> <span class="n">process_handle</span> <span class="o">=</span> <span class="n">OpenProcess</span><span class="p">(</span>
+		<span class="n">PROCESS_VM_OPERATION</span> <span class="o">|</span> <span class="n">PROCESS_VM_READ</span> <span class="o">|</span> <span class="n">PROCESS_VM_WRITE</span> <span class="o">|</span> <span class="n">PROCESS_QUERY_INFORMATION</span><span class="p">,</span> <span class="n">FALSE</span><span class="p">,</span> <span class="n">process_id</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">process_handle</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">FALSE</span><span class="p">;</span>
+	<span class="p">}</span>
 
-<p>对于第一种方法，没什么可说的，无非就是文件操作的那些API。第二种方法我们需要用到以下两个接口：<br />
-IPersistFile<br />
-IZoneIdentifier</p>
+	<span class="n">PUCHAR</span> <span class="n">remote_addr</span> <span class="o">=</span> <span class="p">(</span><span class="n">PUCHAR</span><span class="p">)</span><span class="n">VirtualAllocEx</span><span class="p">(</span><span class="n">process_handle</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> 
+		<span class="k">sizeof</span><span class="p">(</span><span class="n">DESKTOP_ICON_INFO</span><span class="p">),</span> <span class="n">MEM_COMMIT</span><span class="p">,</span> <span class="n">PAGE_READWRITE</span><span class="p">);</span>
 
-<p>我们先创建IZoneIdentifier接口，然后query出IPersistFile打开文件，最后读取或者写入文件。<br />
-代码详见：http://blogs.msdn.com/b/oldnewthing/archive/2013/11/04/10463035.aspx</p>
+	<span class="n">DESKTOP_ICON_INFO</span> <span class="n">icon_info</span><span class="p">;</span>
+	<span class="n">icon_info</span><span class="p">.</span><span class="n">item</span><span class="p">.</span><span class="n">iItem</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="n">icon_info</span><span class="p">.</span><span class="n">item</span><span class="p">.</span><span class="n">iSubItem</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="n">icon_info</span><span class="p">.</span><span class="n">item</span><span class="p">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">LVIF_TEXT</span><span class="p">;</span>
+	<span class="n">icon_info</span><span class="p">.</span><span class="n">item</span><span class="p">.</span><span class="n">pszText</span> <span class="o">=</span> <span class="p">(</span><span class="n">WCHAR</span> <span class="o">*</span><span class="p">)(</span><span class="n">remote_addr</span> <span class="o">+</span> <span class="n">offsetof</span><span class="p">(</span><span class="n">DESKTOP_ICON_INFO</span><span class="p">,</span> <span class="n">item_text</span><span class="p">));</span>
+	<span class="n">icon_info</span><span class="p">.</span><span class="n">item</span><span class="p">.</span><span class="n">cchTextMax</span> <span class="o">=</span> <span class="n">MAX_PATH</span><span class="p">;</span>
 
-<p>最后说一下，之所以能有Zone.Identifier这种功能，完全依赖于NTFS文件系统，它允许多个数据流的存在，对它而言，每个数据流无非就是一个属性而已，只不过Zone.Identifier是一个名字为Zone.Identifier的数据流，而文件本身的数据是一个没有命名的数据流而已。用ntfs_study查看，如下图，第一个Data数据没有名字是文件本身的数据，第二个就是Zone.Identifier的数据了。
-<a href="/uploads/2015/06/20150615160110.png"><img src="/uploads/2015/06/20150615160110.png" alt="20150615160110" /></a></p>
+	<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">count</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">icon_info</span><span class="p">.</span><span class="n">rc</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">LVIR_BOUNDS</span><span class="p">;</span>
+		<span class="n">ZeroMemory</span><span class="p">(</span><span class="n">icon_info</span><span class="p">.</span><span class="n">item_text</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">icon_info</span><span class="p">.</span><span class="n">item_text</span><span class="p">));</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">WriteProcessMemory</span><span class="p">(</span><span class="n">process_handle</span><span class="p">,</span> <span class="n">remote_addr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">icon_info</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">icon_info</span><span class="p">),</span> <span class="nb">NULL</span><span class="p">))</span> <span class="p">{</span>
+			 <span class="o">::</span><span class="n">SendMessage</span><span class="p">(</span><span class="n">list_view</span><span class="p">,</span> <span class="n">LVM_GETITEMTEXT</span><span class="p">,</span> <span class="p">(</span><span class="n">WPARAM</span><span class="p">)</span><span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">LPARAM</span><span class="p">)(</span><span class="n">remote_addr</span> <span class="o">+</span> <span class="n">offsetof</span><span class="p">(</span><span class="n">DESKTOP_ICON_INFO</span><span class="p">,</span> <span class="n">item</span><span class="p">)));</span>
+			 <span class="o">::</span><span class="n">SendMessage</span><span class="p">(</span><span class="n">list_view</span><span class="p">,</span> <span class="n">LVM_GETITEMRECT</span><span class="p">,</span> <span class="p">(</span><span class="n">WPARAM</span><span class="p">)</span><span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">LPARAM</span><span class="p">)(</span><span class="n">remote_addr</span> <span class="o">+</span> <span class="n">offsetof</span><span class="p">(</span><span class="n">DESKTOP_ICON_INFO</span><span class="p">,</span> <span class="n">rc</span><span class="p">)));</span>
+			 <span class="n">ReadProcessMemory</span><span class="p">(</span><span class="n">process_handle</span><span class="p">,</span> <span class="n">remote_addr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">icon_info</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">icon_info</span><span class="p">),</span> <span class="nb">NULL</span><span class="p">);</span>
+
+			 <span class="k">if</span> <span class="p">(</span><span class="n">_wcsicmp</span><span class="p">(</span><span class="n">icon_info</span><span class="p">.</span><span class="n">item_text</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+				 <span class="n">rc</span> <span class="o">=</span> <span class="n">icon_info</span><span class="p">.</span><span class="n">rc</span><span class="p">;</span>
+				 <span class="k">break</span><span class="p">;</span>
+			 <span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="n">VirtualFreeEx</span><span class="p">(</span><span class="n">process_handle</span><span class="p">,</span> <span class="n">remote_addr</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">MEM_RELEASE</span><span class="p">);</span>
+	<span class="n">CloseHandle</span><span class="p">(</span><span class="n">process_handle</span><span class="p">);</span>
+	<span class="k">return</span> <span class="n">TRUE</span><span class="p">;</span>
+<span class="p">}</span><span class="w">
+</span></pre></td></tr></tbody></table>
+
+</code></pre></div>
 
   </article>
   <script type="text/javascript">
@@ -988,7 +1087,7 @@ IZoneIdentifier</p>
 		 || document.getElementsByTagName('body')[0]).appendChild(ds);
 	})();
   </script>
-  <div class="ds-thread" data-thread-key="/ntinternals/tips/2015/06/15/e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95" data-title="关于Zone.Identifier的一点记录" data-url="http://0cch.com/ntinternals/tips/2015/06/15/e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95.html"></div>
+  <div class="ds-thread" data-thread-key="/tips/2016/04/12/get-desktop-icon-pos" data-title="获取桌面图标位置" data-url="http://0cch.com/tips/2016/04/12/get-desktop-icon-pos.html"></div>
 </div>
 
       </div>
