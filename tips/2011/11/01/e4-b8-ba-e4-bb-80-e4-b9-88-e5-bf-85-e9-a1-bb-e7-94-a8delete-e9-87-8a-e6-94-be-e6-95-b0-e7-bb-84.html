@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>为什么必须用delete[]释放数组</title>
+  <meta name="description" content="最近不知哪来的好奇心，对C++产生了一些兴趣，要知道我通常情况下都是cpp文件中写c代码，c代码中嵌汇编。不过，在做了一些大点的项目之后，确确实实发现了，这种编码方式麻烦的一面。有时候甚至自己都难得维护以前写的东西。所以选择性看了google的c++编程规范，而且对scoped_ptr和auto_ptr的区别参数...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://0cch.com/tips/2011/11/01/e4-b8-ba-e4-bb-80-e4-b9-88-e5-bf-85-e9-a1-bb-e7-94-a8delete-e9-87-8a-e6-94-be-e6-95-b0-e7-bb-84.html">
+  <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">0CCh</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+    <div class="page-content">
+      <div class="wrapper">
+	  <div class="sidebar">
+ <form class="search" method="GET" action="https://www.google.com.hk/search">
+  <input type="text" name="as_q" class="search-query" placeholder="Search">
+  <input type="hidden" name="as_sitesearch" value="0cch.com">
+ </form>
+ <div class="categories">
+  <h3>Categories:</h3>
+  <ul>
+   
+    
+   
+    
+   
+    
+   
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+      <li><a class="page-link" href="/categories/debugging/">Debugging</a></li>
+	  
+    
+   
+    
+	  
+      <li><a class="page-link" href="/categories/ntinternals/">NTInternals</a></li>
+	  
+    
+   
+    
+	  
+      <li><a class="page-link" href="/categories/tips/">Tips</a></li>
+	  
+    
+   
+    
+	  
+      <li><a class="page-link" href="/categories/minikernel/">MiniKernel</a></li>
+	  
+    
+   
+    
+	  
+      <li><a class="page-link" href="/categories/debugging/">debugging</a></li>
+	  
+    
+   
+    
+   
+    
+   
+    
+   
+  </ul>
+ </div>
+ <div class="categories">
+  <h3>Archives:</h3>
+  <ul>
+   
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2016/04/">2016-04</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2016/03/">2016-03</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2016/02/">2016-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2016/01/">2016-01</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/12/">2015-12</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/11/">2015-11</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/10/">2015-10</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/09/">2015-09</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/08/">2015-08</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/07/">2015-07</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/06/">2015-06</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/05/">2015-05</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/04/">2015-04</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/03/">2015-03</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/02/">2015-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/01/">2015-01</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/12/">2014-12</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/11/">2014-11</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/10/">2014-10</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/09/">2014-09</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/08/">2014-08</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/07/">2014-07</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/06/">2014-06</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/05/">2014-05</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/04/">2014-04</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/03/">2014-03</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/02/">2014-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/01/">2014-01</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/12/">2013-12</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/11/">2013-11</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/10/">2013-10</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/09/">2013-09</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/08/">2013-08</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/07/">2013-07</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/06/">2013-06</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/05/">2013-05</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/04/">2013-04</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/03/">2013-03</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/02/">2013-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/01/">2013-01</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2012/12/">2012-12</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2012/11/">2012-11</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2012/08/">2012-08</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2012/02/">2012-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2012/01/">2012-01</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/12/">2011-12</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/11/">2011-11</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/10/">2011-10</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/09/">2011-09</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/08/">2011-08</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/06/">2011-06</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/05/">2011-05</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/04/">2011-04</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/02/">2011-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+   
+    
+   
+    
+   
+    
+   
+    
+   
+    
+   
+    
+   
+  </ul>
+ </div>
+ <div class="categories">
+  <h3>Blogroll</h3>
+  <ul>
+     <li><a href="http://sysdbg.com" target="_blank" title="=v=">cradiator</a></li>
+  </ul>
+ </div>
+ <div class="categories">
+  <h3> </h3>
+  <ul>
+     <li>Subscribe: <a href="/feed.xml">via RSS</a></li>
+  </ul>
+ </div>
+</div>
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">为什么必须用DELETE[]释放数组</h1>
+    <p class="post-meta">Nov 1, 2011 • admin</p>
+  </header>
+
+  <article class="post-content">
+    <p>最近不知哪来的好奇心，对C++产生了一些兴趣，要知道我通常情况下都是cpp文件中写c代码，c代码中嵌汇编。不过，在做了一些大点的项目之后，确确实实发现了，这种编码方式麻烦的一面。有时候甚至自己都难得维护以前写的东西。所以选择性看了google的c++编程规范，而且对scoped_ptr和auto_ptr的区别参数兴趣。然后我得出的结论是这两种实际上是其实差不多，只不过scoped_ptr拷贝构造函数和赋值构造函数都是私有的。这样就避免粗心大意的程序员调用他。其他的区别还真没看出来。</p>
+
+<p>OK，这些都不是记录这篇tip的重点。重点在于boost，或者说是google的scoped_ptr代码里面实现了scoped_array。而要用在数组上使用智能指针，就必须用数组的智能指针类。而auto_ptr刚好没有数组部分，所以对于数组，就不能用auto_ptr了。（为什么不用vector？这也不是重点）</p>
+
+<p>作为一个蹩脚的C++程序员，我这时候开始犯晕了。我们知道只能指针都是帮助程序员去释放资源，让程序员把精力放到更重要的地方。那么在我看来那么所需要做的就是析构的时候 delete 或者 delete[] 就行了。要知道，delete[] 就是调用的delete，他们只是单纯的释放内存。那么数组和非数组又有什么区别？</p>
+
+<p>光想肯定不行，写两个例子。</p>
+
+<p>首先是new 一个char数组，分别用delete和delete[]释放。结果表明，没有任何问题，而且不会产生内存泄露。坑爹么？NO，还没完，其实咱们最怀疑的一直都是数组对象，因为他们都有构造和析构函数。而char这样的系统内建类型，想象得出不会出什么问题。new一个对象数组，分别用delete和delete[] 释放。果然问题暴露了，delete的时候出了问题。</p>
+
+<p>知其然，不足以满足好奇心。下面才是拿手的，精彩的要放在后面嘛。</p>
+
+<p>先看测试代码</p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="cp">#include
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">A</span> <span class="p">{</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="n">A</span><span class="p">()</span> <span class="p">{</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"start 1"</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;}</span>
+<span class="o">~</span><span class="n">A</span><span class="p">()</span> <span class="p">{</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"End 1"</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="n">A</span> <span class="o">*</span><span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="n">A</span><span class="p">[</span><span class="mi">10</span><span class="p">]();</span>
+
+<span class="k">delete</span><span class="p">[]</span> <span class="n">a</span><span class="p">;</span>
+<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+ </code></pre></figure>
+
+<p>编译后看到代码如下</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">0040103D push 0Eh
+0040103F call operator new[] (403ED0h)</code></pre></figure>
+
+<p>注意到这里传入的大小时0Eh，也就是说申请分配14个字节大小的内存。但是我们知道C++标准中空类的大小应该是1字节。那么多出的dword我们就很容易想到他的用处，应该是记录数组大小的。事实也确实如此。</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">mov dword ptr [eax],0Ah</code></pre></figure>
+
+<p>这里明确交代，给分配内存的第一个dword传入10。</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">00401069 push offset A::~A (4011D0h)
+0040106E push offset A::A (401120h)
+00401073 push 0Ah
+00401075 push 1
+00401077 mov ecx,dword ptr [ebp-0F8h]
+0040107D add ecx,4
+00401080 push ecx
+00401081 call `eh vector constructor iterator' (40A010h)</code></pre></figure>
+
+<p>这里是调用构造函数，注意是vector版本的构造函数。参数分别是数组的this指针，sizeof(A)，数组数量，构造和析构函数。这样，在这个函数内部循环10次调用构造函数，构造完毕。</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">004010BD mov eax,dword ptr [ebp-14h]
+004010C0 mov dword ptr [ebp-0E0h],eax
+004010C6 mov ecx,dword ptr [ebp-0E0h]
+004010CC mov dword ptr [ebp-0ECh],ecx
+004010D2 cmp dword ptr [ebp-0ECh],0
+004010D9 je main+0F0h (4010F0h)
+004010DB push 3
+004010DD mov ecx,dword ptr [ebp-0ECh]
+004010E3 call A::`vector deleting destructor' (401230h)</code></pre></figure>
+
+<p>这里是析构部分传入数组的this指针，传入flag(3)，调用析构函数。</p>
+
+<p>继续看call之后的代码</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">00401253 mov eax,dword ptr [ebp+8]
+00401256 and eax,2
+00401259 je A::`vector deleting destructor'+61h (401291h)
+0040125B push offset A::~A (4011D0h)
+00401260 mov eax,dword ptr [this]
+00401263 mov ecx,dword ptr [eax-4]
+00401266 push ecx
+00401267 push 1
+00401269 mov edx,dword ptr [this]
+0040126C push edx
+0040126D call `eh vector destructor iterator' (40A920h)
+00401272 mov eax,dword ptr [ebp+8]</code></pre></figure>
+
+<p>如果flag中位1是set，那么调用eh_vector_destructor_iterator调用每个析构函数。参数分别是this，sizeof(A)，数组个数（这里很明显是从eax-4中拿出来的）以及析构函数地址。</p>
+
+<p>OK，明白了delete[]的做法，我们看看delete为什么失败。</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">004010BD mov eax,dword ptr [ebp-14h]
+004010C0 mov dword ptr [ebp-0E0h],eax
+004010C6 mov ecx,dword ptr [ebp-0E0h]
+004010CC mov dword ptr [ebp-0ECh],ecx
+004010D2 cmp dword ptr [ebp-0ECh],0
+004010D9 je main+0F0h (4010F0h)
+004010DB push 1
+004010DD mov ecx,dword ptr [ebp-0ECh]
+004010E3 call A::`scalar deleting destructor' (4012D0h)</code></pre></figure>
+
+<p>这里调用的析构函数都不一样是一个scalar版本的函数。</p>
+
+<p>继续看这个函数的关键部分</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">004012F3 mov ecx,dword ptr [this]
+004012F6 call A::~A (4011D0h)
+004012FB mov eax,dword ptr [ebp+8]
+004012FE and eax,1
+00401301 je A::`scalar deleting destructor'+3Fh (40130Fh)
+00401303 mov eax,dword ptr [this]
+00401306 push eax
+00401307 call operator delete (40A890h)</code></pre></figure>
+
+<p>这里很清楚的看到，只进行一次析构，然后就释放内存。所以我们看到的现象是只调用一次析构函数。那么为什么会崩溃呢？因为delete错了地址。看上面的对比的值，eax-4才是new返回的地址，所以delete的不应该是eax，而是eax-4。</p>
+
+<p>真相大白？NO，还有一个问题，delete[] 和delete 内建类型真的成功了么？
+看看我贴出的代码吧，这里不解释了。</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">;delete[] version
+0040101E push 0Ah
+00401020 call operator new[] (4014C0h)
+00401025 add esp,4
+00401028 mov dword ptr [ebp-0E0h],eax
+0040102E mov eax,dword ptr [ebp-0E0h]
+00401034 mov dword ptr [a],eax
+00401037 mov eax,dword ptr [a]
+0040103A mov dword ptr [ebp-0D4h],eax
+00401040 mov ecx,dword ptr [ebp-0D4h]
+00401046 push ecx
+00401047 call operator delete[] (401600h) `
+
+;delete version
+0040101E push 0Ah
+00401020 call operator new[] (4014C0h)
+00401025 add esp,4
+00401028 mov dword ptr [ebp-0E0h],eax
+0040102E mov eax,dword ptr [ebp-0E0h]
+00401034 mov dword ptr [a],eax
+00401037 mov eax,dword ptr [a]
+0040103A mov dword ptr [ebp-0D4h],eax
+00401040 mov ecx,dword ptr [ebp-0D4h]
+00401046 push ecx
+00401047 call operator delete (401600h)</code></pre></figure>
+
+<p>就像我刚刚所说的delete[]会调用delete。所以不会出任何问题。</p>
+
+<p>如果汇编看的头疼的话，这里我写了两个函数的逆向代码（说了精彩的应该放在后面的）：</p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="n">A</span><span class="o">::</span><span class="err">'</span><span class="n">scalar</span> <span class="n">deleting</span> <span class="n">destructor</span><span class="err">'</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">this</span><span class="o">-&gt;~</span><span class="n">A</span><span class="p">();</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">A</span><span class="o">::</span><span class="k">operator</span> <span class="k">delete</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">A</span><span class="o">::</span><span class="err">'</span><span class="n">vector</span> <span class="n">deleting</span> <span class="n">destructor</span><span class="err">'</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">count</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="p">)((</span><span class="kt">int</span><span class="p">)</span><span class="k">this</span> <span class="o">-</span> <span class="mi">4</span><span class="p">);</span>
+		<span class="err">'</span><span class="n">eh</span> <span class="n">vector</span> <span class="n">destructor</span> <span class="n">iterator</span><span class="err">'</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">A</span><span class="p">),</span> <span class="n">count</span><span class="p">,</span> <span class="n">A</span><span class="o">::~</span><span class="n">A</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">flags</span><span class="o">&amp;</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">A</span><span class="o">::</span><span class="k">operator</span> <span class="k">delete</span><span class="p">((</span><span class="kt">void</span> <span class="o">*</span><span class="p">)((</span><span class="kt">int</span><span class="p">)</span><span class="k">this</span> <span class="o">-</span> <span class="mi">4</span><span class="p">));</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">else</span> <span class="p">{</span>
+		<span class="k">this</span><span class="o">-&gt;~</span><span class="n">A</span><span class="p">();</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">A</span><span class="o">::</span><span class="k">operator</span> <span class="k">delete</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">};</span>
+ </code></pre></figure>
+
+<p>分析到这，终于明白。数组一定要用delete[]释放才安全。所以千万不要用auto_ptr作为数组的智能指针，不然会死的很惨。这里还要提一点，auto_ptr也不要用到容器里面去了，也是不允许的。非要这么做就用shared_ptr吧， C++0x已经在stl中加入的这部分。从vs2008 sp1开始支持。低版本的vs的话就去boost里面找吧。</p>
+
+  </article>
+  <script type="text/javascript">
+	var duoshuoQuery = {short_name:"0cch"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+  </script>
+  <div class="ds-thread" data-thread-key="/tips/2011/11/01/%e4%b8%ba%e4%bb%80%e4%b9%88%e5%bf%85%e9%a1%bb%e7%94%a8delete%e9%87%8a%e6%94%be%e6%95%b0%e7%bb%84" data-title="为什么必须用delete[]释放数组" data-url="http://0cch.com/tips/2011/11/01/e4-b8-ba-e4-bb-80-e4-b9-88-e5-bf-85-e9-a1-bb-e7-94-a8delete-e9-87-8a-e6-94-be-e6-95-b0-e7-bb-84.html"></div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">0CCh</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>0CCh</li>
+          <!--<li><a href="mailto:"></a></li>-->
+		  <li><a href="/uploads/2011/02/1363142043-59.gif"><img alt="1363142043-59" src="/uploads/2011/02/1363142043-59.gif" width="161" height="22"></a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/0CCh">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">0CCh</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">printf("I am programmer!");
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

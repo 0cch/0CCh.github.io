@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>使用PCI IDE Controller读写硬盘 – 2</title>
+  <meta name="description" content="">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://0cch.com/minikernel/2013/09/01/e4-bd-bf-e7-94-a8pci-ide-controller-e8-af-bb-e5-86-99-e7-a1-ac-e7-9b-98-2.html">
+  <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">0CCh</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+    <div class="page-content">
+      <div class="wrapper">
+	  <div class="sidebar">
+ <form class="search" method="GET" action="https://www.google.com.hk/search">
+  <input type="text" name="as_q" class="search-query" placeholder="Search">
+  <input type="hidden" name="as_sitesearch" value="0cch.com">
+ </form>
+ <div class="categories">
+  <h3>Categories:</h3>
+  <ul>
+   
+    
+   
+    
+   
+    
+   
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+      <li><a class="page-link" href="/categories/debugging/">Debugging</a></li>
+	  
+    
+   
+    
+	  
+      <li><a class="page-link" href="/categories/ntinternals/">NTInternals</a></li>
+	  
+    
+   
+    
+	  
+      <li><a class="page-link" href="/categories/tips/">Tips</a></li>
+	  
+    
+   
+    
+	  
+      <li><a class="page-link" href="/categories/minikernel/">MiniKernel</a></li>
+	  
+    
+   
+    
+	  
+      <li><a class="page-link" href="/categories/debugging/">debugging</a></li>
+	  
+    
+   
+    
+   
+    
+   
+    
+   
+  </ul>
+ </div>
+ <div class="categories">
+  <h3>Archives:</h3>
+  <ul>
+   
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2016/04/">2016-04</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2016/03/">2016-03</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2016/02/">2016-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2016/01/">2016-01</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/12/">2015-12</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/11/">2015-11</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/10/">2015-10</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/09/">2015-09</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/08/">2015-08</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/07/">2015-07</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/06/">2015-06</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/05/">2015-05</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/04/">2015-04</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/03/">2015-03</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/02/">2015-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/01/">2015-01</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/12/">2014-12</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/11/">2014-11</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/10/">2014-10</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/09/">2014-09</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/08/">2014-08</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/07/">2014-07</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/06/">2014-06</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/05/">2014-05</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/04/">2014-04</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/03/">2014-03</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/02/">2014-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/01/">2014-01</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/12/">2013-12</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/11/">2013-11</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/10/">2013-10</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/09/">2013-09</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/08/">2013-08</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/07/">2013-07</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/06/">2013-06</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/05/">2013-05</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/04/">2013-04</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/03/">2013-03</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/02/">2013-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/01/">2013-01</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2012/12/">2012-12</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2012/11/">2012-11</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2012/08/">2012-08</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2012/02/">2012-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2012/01/">2012-01</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/12/">2011-12</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/11/">2011-11</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/10/">2011-10</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/09/">2011-09</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/08/">2011-08</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/06/">2011-06</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/05/">2011-05</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/04/">2011-04</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/02/">2011-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+   
+    
+   
+    
+   
+    
+   
+    
+   
+    
+   
+    
+   
+  </ul>
+ </div>
+ <div class="categories">
+  <h3>Blogroll</h3>
+  <ul>
+     <li><a href="http://sysdbg.com" target="_blank" title="=v=">cradiator</a></li>
+  </ul>
+ </div>
+ <div class="categories">
+  <h3> </h3>
+  <ul>
+     <li>Subscribe: <a href="/feed.xml">via RSS</a></li>
+  </ul>
+ </div>
+</div>
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">使用PCI IDE CONTROLLER读写硬盘 – 2</h1>
+    <p class="post-meta">Sep 1, 2013 • admin</p>
+  </header>
+
+  <article class="post-content">
+    <p><a href="/uploads/2013/09/20130901011808.png"><img src="/uploads/2013/09/20130901011808.png" alt="20130901011808" /></a></p>
+
+<p>上一篇文章简单介绍了用PIO的方式读写硬盘数据，那么这篇文章就来介绍另一种数据传输的方式——DMA。</p>
+
+<p>DMA全称是Direct memory access，以下依旧是wiki上的一段简短的介绍：<br />
+“直接存储器访问（Direct Memory Access，DMA）是计算机科学中的一种内存访问技术。它允许某些电脑内部的硬件子系统（电脑外设），可以独立地直接读写系统存储器，而不需绕道中央处理器（CPU）。很多硬件的系统会使用DMA，包含硬盘控制器、绘图显卡、网卡和声卡。”</p>
+
+<p>结合以上的描述和上一篇PIO的介绍，我们就可以发现DMA的优势，他最大的优势之一就是解放了CPU，让CPU不用重复的执行IO端口的操作读写数据。使用DMA的时候，CPU可以做其他的计算，读写数据的操作完全交由CPU外部的DMA芯片进行操作。当读写操作结束后CPU收到通知，然后再来处理读写之后的工作。DMA的另一个优势，就是速度快，不过这么说也不是完全正确的。因为古老的ISA DMA的速度只有4MB/s，现代CPU跑起PIO来，传输速度应该会比这个快。幸运的是，硬盘使用的DMA并不是ISA DMA，而是PCI DMA。PCI DMA的速度通常都超过了100MB/s，所以说速度也算是DMA的一个优势了吧。这里在顺便提一点，ISA DMA也不是完全没有用处的。软盘使用的DMA就是ISA DMA，虽然说软盘在现代的PC上已经消失了，但是如果要写自己的Mini Kernel，那么支持软盘以及ISA DMA还是很有必要的。</p>
+
+<p>DMA的优势很明显，付出的代价就是编程起来相对复杂。那么下面就来介绍让IDE使用DMA传输数据的基础知识。</p>
+
+<p><strong>物理区域描述符（Physical Region Descriptor）</strong><br />
+<a href="/uploads/2013/09/20130828165621.jpg"><img src="/uploads/2013/09/20130828165621.jpg" alt="20130828165621" /></a>进行数据传输的物理内存块都用物理区域描述符进行描述。当所有在物理区域描述符表中的物理区域描述符所指向的内存都被传输完成后，数据传输就会停止。每个物理区域描述符是8字节。前4个字节指定的是物理内存区域的地址。接下来的两个字节指定内存数量。最后一个字节的第7位表示此理区域描述符是该表中最后一个描述符。</p>
+
+<p><strong>物理区域描述符表（Physical Region Descriptor Table）</strong><br />
+这张表中包含一定数量的物理区域描述符（PRD），描述符表必须是4字节对齐且不能跨越64K边界的内存。</p>
+
+<p><strong>总线主控IDE寄存器（Bus Master IDE Register）</strong><br />
+<a href="/uploads/2013/09/20130829115331.png"><img src="/uploads/2013/09/20130829115331.png" alt="20130829115331" /></a></p>
+
+<p>要获得总线主控IDE寄存器的基础地址，需要读取PCI配置空间IDE区域的0x20处的DWORD。由于这篇文章不会设计到如何读取PCI配置空间，所以这里的基址就采用bochs设定（0xC000）。后面代码部分也会直接硬编码。</p>
+
+<p><strong>总线主控IDE命令寄存器（Bus Master IDE Command Register）</strong><br />
+<a href="/uploads/2013/09/20130829120041.png"><img src="/uploads/2013/09/20130829120041.png" alt="20130829120041" /></a></p>
+
+<p>这里读写控制位是特别要注意的，刚开始容易理解错误。这里的读写是针对的设备，而不是CPU。也就是说这里的都，是指设备读取CPU指定的内存到自己的数据空间。而写是指将自己的数据空间的数据写到CPU指定的内存。所以这里的读写和我们对硬盘要做的读写是刚好相反的。</p>
+
+<p><strong>总线主控IDE状态寄存器（Bus Master IDE Status Register）</strong><br />
+<a href="/uploads/2013/09/20130829120248.png"><img src="/uploads/2013/09/20130829120248.png" alt="20130829120248" /></a></p>
+
+<p><strong>描述符指针寄存器（Descriptor Table Pointer Register）</strong><br />
+用于设置物理区域描述符表的地址</p>
+
+<p>对于初学者理论知识不用了解的过细，最好还是在代码中边写边学习，还是一边堆代码，一边解释吧。<br />
+（关于下面代码的补充说明：由于使用DMA必须处理中断以获得DMA处理结束的信号，而配置中断又涉及到许多理论知识和额外代码（8259A &amp;IDT），所以下面的代码就不涉及配置中断了，我这里就假设CPU已经进入保护模式，但没有开启分页并且IDE的中断已经配置完毕了。以下代码依旧为了保持最简洁，忽略了状态和结果的检查，在试验中够用即可）</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">mov dx, 0C000h ; 设置开始停止位为0，停止DMA
+mov al, 0h
+out dx, al
+
+mov dx, 0C002h ; 清除中断位和错误位，这里清除方式比较特别，设置1后清除
+mov al, 6h
+out dx, al
+
+; 配置描述符表，表地址为10000h，且只有一个描述符
+; 描述符描述的物理基址是20000h，大小为512字节，且设置了第7位，
+; 说明自己就是最后一个描述符
+mov dword ptr [10000h], 20000h
+mov dowrd ptr [10004h], 200h | 80000000h
+mov dx, 0C004h
+mov eax, 10000h
+out dx, eax
+
+mov dx, 3f6h   ; 这里不再设置nIEN，DMA需要中断
+mov al, 0h
+out dx, al
+
+mov dx, 1f1h   ; 下面代码基本上和PIO一致，
+mov al, 0      ; 详细注释请看上一篇文章
+out dx, al
+
+mov dx, 1f2h
+mov al, 1
+out dx, al
+
+mov dx, 1f3h
+mov al, 11h
+out dx, al
+
+mov dx, 1f4h
+mov al, 22h
+out dx, al
+
+mov dx, 1f5h
+mov al, 33h
+out dx, al
+
+mov dx, 1f6h
+mov al, 44h
+out dx, al
+
+mov dx, 1f7h   ; 设置读取扇区的命令C8h，不同于20h，这个是DMA读取扇区的命令
+mov al, C8h
+out dx, al
+
+mov dx, 0C000h ; 设置开始停止位为1，开始DMA，并且指定为读取硬盘操作
+mov al, 9h     ; （对硬盘而言是写出，所以设置bit3）
+out dx, al
+
+call wait_int  ; 等待中断
+
+mov dx, 0C000h ; 中断返回，设置开始停止位为0，停止DMA
+mov al, 0h     ; 如果一切都顺利，那么20000h开始的512个字节
+out dx, al     ; 就应该是读出的硬盘数据了
+ </code></pre></figure>
+
+<p>上面的代码主要分为以下这几步：<br />
+1) 在系统内存中配置PRD Table。每个PRD是8个字节，其中包含着一个起始内存地址和一个内存大小传送，而且PRD必须是4字节对齐的。<br />
+2) 给PRD Table指针寄存器传入配置好的PRD Table的地址，设置读写控制位，清除中断和错误位。<br />
+3) 设置读写命令，包括读写的驱动器，逻辑地址等（这里基本上和PIO类似）。<br />
+4) 设置总线主控IDE命令寄存器的开始/停止位为1，控制器开始执行DMA操作。<br />
+5) 控制器DMA操作结束，IDE设备发起中断，收到中断后，设置开始/停止位为0（我们省略了读取状态寄存器来查看操作是否成功的步骤。）</p>
+
+<p>如果只是从IDE方面来看，代码没有复杂多少，可惜的是他还需要配合其他计算机硬件，所以实际要用上的代码要比PIO多上了不少。最后还是给大家推荐一些深入理解DMA的资料吧。<br />
+ISA DMA：<a href="http://wiki.osdev.org/ISA_DMA">http://wiki.osdev.org/ISA_DMA</a><br />
+PCI DMA：<a href="http://wiki.osdev.org/ATA/ATAPI_using_DMA">http://wiki.osdev.org/ATA/ATAPI_using_DMA</a></p>
+
+  </article>
+  <script type="text/javascript">
+	var duoshuoQuery = {short_name:"0cch"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+  </script>
+  <div class="ds-thread" data-thread-key="/minikernel/2013/09/01/%e4%bd%bf%e7%94%a8pci-ide-controller%e8%af%bb%e5%86%99%e7%a1%ac%e7%9b%98-2" data-title="使用PCI IDE Controller读写硬盘 – 2" data-url="http://0cch.com/minikernel/2013/09/01/e4-bd-bf-e7-94-a8pci-ide-controller-e8-af-bb-e5-86-99-e7-a1-ac-e7-9b-98-2.html"></div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">0CCh</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>0CCh</li>
+          <!--<li><a href="mailto:"></a></li>-->
+		  <li><a href="/uploads/2011/02/1363142043-59.gif"><img alt="1363142043-59" src="/uploads/2011/02/1363142043-59.gif" width="161" height="22"></a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/0CCh">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">0CCh</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">printf("I am programmer!");
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

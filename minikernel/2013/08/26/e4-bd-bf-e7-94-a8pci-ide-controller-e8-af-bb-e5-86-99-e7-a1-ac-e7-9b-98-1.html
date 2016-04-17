@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>使用PCI IDE Controller读写硬盘 – 1</title>
+  <meta name="description" content="">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://0cch.com/minikernel/2013/08/26/e4-bd-bf-e7-94-a8pci-ide-controller-e8-af-bb-e5-86-99-e7-a1-ac-e7-9b-98-1.html">
+  <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">0CCh</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+    <div class="page-content">
+      <div class="wrapper">
+	  <div class="sidebar">
+ <form class="search" method="GET" action="https://www.google.com.hk/search">
+  <input type="text" name="as_q" class="search-query" placeholder="Search">
+  <input type="hidden" name="as_sitesearch" value="0cch.com">
+ </form>
+ <div class="categories">
+  <h3>Categories:</h3>
+  <ul>
+   
+    
+   
+    
+   
+    
+   
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+      <li><a class="page-link" href="/categories/debugging/">Debugging</a></li>
+	  
+    
+   
+    
+	  
+      <li><a class="page-link" href="/categories/ntinternals/">NTInternals</a></li>
+	  
+    
+   
+    
+	  
+      <li><a class="page-link" href="/categories/tips/">Tips</a></li>
+	  
+    
+   
+    
+	  
+      <li><a class="page-link" href="/categories/minikernel/">MiniKernel</a></li>
+	  
+    
+   
+    
+	  
+      <li><a class="page-link" href="/categories/debugging/">debugging</a></li>
+	  
+    
+   
+    
+   
+    
+   
+    
+   
+  </ul>
+ </div>
+ <div class="categories">
+  <h3>Archives:</h3>
+  <ul>
+   
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2016/04/">2016-04</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2016/03/">2016-03</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2016/02/">2016-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2016/01/">2016-01</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/12/">2015-12</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/11/">2015-11</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/10/">2015-10</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/09/">2015-09</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/08/">2015-08</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/07/">2015-07</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/06/">2015-06</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/05/">2015-05</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/04/">2015-04</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/03/">2015-03</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/02/">2015-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2015/01/">2015-01</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/12/">2014-12</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/11/">2014-11</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/10/">2014-10</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/09/">2014-09</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/08/">2014-08</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/07/">2014-07</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/06/">2014-06</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/05/">2014-05</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/04/">2014-04</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/03/">2014-03</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/02/">2014-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2014/01/">2014-01</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/12/">2013-12</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/11/">2013-11</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/10/">2013-10</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/09/">2013-09</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/08/">2013-08</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/07/">2013-07</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/06/">2013-06</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/05/">2013-05</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/04/">2013-04</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/03/">2013-03</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/02/">2013-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2013/01/">2013-01</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2012/12/">2012-12</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2012/11/">2012-11</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2012/08/">2012-08</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2012/02/">2012-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2012/01/">2012-01</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/12/">2011-12</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/11/">2011-11</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/10/">2011-10</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/09/">2011-09</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/08/">2011-08</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/06/">2011-06</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/05/">2011-05</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/04/">2011-04</a></li>
+	  
+    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2011/02/">2011-02</a></li>
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+	  
+	  
+    
+   
+    
+   
+    
+   
+    
+   
+    
+   
+    
+   
+    
+   
+    
+   
+  </ul>
+ </div>
+ <div class="categories">
+  <h3>Blogroll</h3>
+  <ul>
+     <li><a href="http://sysdbg.com" target="_blank" title="=v=">cradiator</a></li>
+  </ul>
+ </div>
+ <div class="categories">
+  <h3> </h3>
+  <ul>
+     <li>Subscribe: <a href="/feed.xml">via RSS</a></li>
+  </ul>
+ </div>
+</div>
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">使用PCI IDE CONTROLLER读写硬盘 – 1</h1>
+    <p class="post-meta">Aug 26, 2013 • admin</p>
+  </header>
+
+  <article class="post-content">
+    <p><a href="/uploads/2013/08/PIO_hd04.jpg"><img src="/uploads/2013/08/PIO_hd04.jpg" alt="PIO_hd04" /></a></p>
+
+<p>上一篇文章中提到了一些IDE基础的知识，并且知道了如何判断IDE的类型。接下来介绍IDE最基本的IO方法——PIO。</p>
+
+<p>PIO是Programmed input/output的缩写，下面是一段wiki上对PIO的介绍：<br />
+“可编程输入输出（英语：PIO）是CPU与外围设备（如网卡、硬盘等）传输数据的一种方法。当 CPU 上执行的软件程序使用 I/O 地址空间来与输入/输出设备（I/O 设备）进行数据传输时，系统即进行了 PIO. 这和直接内存存取（DMA）恰好相反。</p>
+
+<p>在 PC 上最常见的使用 PIO 的例子是 ATA 接口，但 ATA 接口也可以在 DMA 模式下工作。 PC 上的许多比较古老的设备也使用 PIO, 如串行端口、并行端口（在不使用 ECP 模式时）、PS/2 接口、MIDI 接口、内部时钟以及一些古老的网卡。”</p>
+
+<p>实际上，在DMA出现之前，PIO是硬盘唯一的数据传输的方式。就算是现在，ATA的部分命令还必须使用PIO的方式获得数据，例如DEVICE IDENTIFY。PIO传输数据的思想简单直接，例如从硬盘都数据，只需要在硬盘准备好了之后，不断的读取特定端口就能将数据读出来了。例如 in eax, dx（dx里是数据端口号），这样每次就传输4个字节，也就是说如果需要传输512（一个扇区）的数据，需要128次IO。这样一方面数据传输的效率难以提高，另一方面还占用了CPU时间。所以被DMA淘汰也是有道理的。然而，他也有自身的优势，那就是编程起来简单方便。不像DMA那样，需要配置中断和其他一些事情。简单的对IDE下命令就可以达到数据传输的目的了。所以这也是我们入门的很好的切入口。</p>
+
+<p>最后，在开始堆代码之前，我们必须了解硬盘的两种寻址模式：CHS(cylinders-heads-sectors，磁柱-磁头-扇区)寻址模式和LBA(Logical Block Address, 逻辑区块地址)寻址模式。<br />
+CHS寻址模式，区块必须以硬盘上某个磁柱、磁头、扇区的硬件位置所合成的地址来指定。<br />
+LBA寻址模式从0开始编号来定位区块，第一区块LBA=0，第二区块LBA=1，依此类推。</p>
+
+<p>前者的描述更偏向物理，理解起来需要转换，而后者更偏向思维逻辑，理解起来直接了当。既然LBA模式简单容易理解，所以下面的文章和代码所采用的寻址模式就默认是LBA28。所谓LBA28其实是LBA模式中的子模式，它可以寻址到128GB，与之对应的是LBA48，它的寻址范围可以达到128PB，这个对我们来说没啥意义，所以还是选用LBA28。另外CHS模式还需要解释硬盘机械方面的知识，前提太多不利于学习，就暂时搁下吧。</p>
+
+<p>好了，介绍理论的知识不是这篇文章的目的，就让我们一边堆代码，一边讲解这些理论知识吧。下面就是一段读取硬盘数据的asm代码。</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">    mov dx, 3f6h    ; 1.设置nIEN
+    mov al, 2h
+    out dx, al
+    
+    mov dx, 1f1h    ; 2.设置FEATURES为0
+    mov al, 0
+    out dx, al
+        
+    mov dx, 1f2h    ; 3.设置读取的扇区数量，这里指定为1
+    mov al, 1
+    out dx, al
+        
+    mov dx, 1f3h    ; 4.设置读取地址的低八位
+    mov al, 11h
+    out dx, al
+        
+    mov dx, 1f4h    ; 5.设置读取地址的中八位
+    mov al, 22h
+    out dx, al
+        
+    mov dx, 1f5h    ; 6.设置读取地址的高八位
+    mov al, 33h
+    out dx, al
+    
+    mov dx, 1f6h    ; 7.设置LBA模式，目标驱动器，和地址的最高4位
+    mov al, 44h     ;   其中第6位（40h）是设置LBA模式，第4位设置主从驱动器，0为主驱动器
+    out dx, al      ;   后四位就是LBA最高位了，这里是4h，也就是说读取的地址是04332211h
+        
+    mov dx, 1f7h    ; 8.设置读取扇区的命令20h
+    mov al, 20h
+    out dx, al
+pri_stat:
+    in al, dx       ; 9.轮询状态寄存器，第3位（8）如果是设置状态，表明可以进行数据传输了。
+    test al, 8
+    jz pri_stat
+         
+    mov ecx, 512/4  ; IO 128次！
+    mov edi, offset buffer  ; 设置buffer地址到edi
+    mov dx, 1f0h
+    rep insw        ; 10.循环128次从数据寄存器读取1个扇区的数据
+ </code></pre></figure>
+
+<p>上面的代码主要分为以下这几步：<br />
+1.我们现在不需要IRQs，所以我们这里要禁用它，以免发生不必要的问题。这里，我们设置CBR（Control Block Register）的第1位，也叫nIEN位，只要它处于设置的状态，那么IRQs就不会触发。<br />
+2.设置FEATURES寄存器<br />
+3.设置扇区数寄存器<br />
+4.设置LBA低8位<br />
+5.设置LBA中8位<br />
+6.设置LBA中高8位<br />
+7.设置LBA最高4位，以及驱动器，指明使用LBA模式<br />
+8.设置读扇区命令<br />
+9.轮询等待完成状态<br />
+10.循环128次读取1个扇区的数据（128*4=512 bytes）</p>
+
+<p>再看看写扇区有哪些不同呢？没错，只有最后几条指令有细微的差别。</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">    mov dx, 1f7h
+    mov al, 30h     ; 这里命令改为30h，写扇区
+    out dx, al
+pri_stat:
+    in al,dx
+    test al,8
+    jz pri_stat
+    
+    mov ecx, 512/4
+    mov esi, offset buffer ; 设置buffer地址到esi
+    mov dx, 1f0h
+    rep outsd       ; 这里指令改为outsd
+ </code></pre></figure>
+
+<p>看起来还是很简单的吧！不过这也是当然的，因为我们没有做任何的排错和检验处理。不过这样的代码才是初学者最喜欢看到的吧，同样对于做操作系统实验也没多大问题。</p>
+
+<p>最后，如果对CHS以及LBA和CHS的转换关系感兴趣，推荐翻阅wiki：<br />
+<a href="http://en.wikipedia.org/wiki/Cylinder-head-sector">http://en.wikipedia.org/wiki/Cylinder-head-sector</a><br />
+<a href="http://en.wikipedia.org/wiki/Logical_block_addressing#CHS_conversion">http://en.wikipedia.org/wiki/Logical_block_addressing#CHS_conversion</a></p>
+
+<p>在下一篇的文章中，会介绍一些用PCI DMA的方式读写硬盘的知识。</p>
+
+  </article>
+  <script type="text/javascript">
+	var duoshuoQuery = {short_name:"0cch"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+  </script>
+  <div class="ds-thread" data-thread-key="/minikernel/2013/08/26/%e4%bd%bf%e7%94%a8pci-ide-controller%e8%af%bb%e5%86%99%e7%a1%ac%e7%9b%98-1" data-title="使用PCI IDE Controller读写硬盘 – 1" data-url="http://0cch.com/minikernel/2013/08/26/e4-bd-bf-e7-94-a8pci-ide-controller-e8-af-bb-e5-86-99-e7-a1-ac-e7-9b-98-1.html"></div>
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">0CCh</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>0CCh</li>
+          <!--<li><a href="mailto:"></a></li>-->
+		  <li><a href="/uploads/2011/02/1363142043-59.gif"><img alt="1363142043-59" src="/uploads/2011/02/1363142043-59.gif" width="161" height="22"></a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/0CCh">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">0CCh</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">printf("I am programmer!");
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
