@@ -168,6 +168,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -192,6 +194,11 @@
    
     
    
+    
+   
+    
+	  
+	  
     
    
     
@@ -506,6 +513,13 @@
   <h3>Archives:</h3>
   <ul>
    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2016/05/">2016-05</a></li>
+	  
+    
    
     
 	  
@@ -972,22 +986,6 @@
 
 <p>最后要说的是rouge语法高亮有个bug，在使用显示行号linenos参数的时候会出现嵌套错误的问题，解决方法倒是有，不过有了行号之后高亮的显示极其丑陋，所以还是我还是没用这个参数。如果有需求可以使用代码<a href="https://gist.github.com/0cch/775e4a8a94be175cae9c">rouge_linenos_patch.rb</a>覆盖”\lib\ruby\gems\2.2.0\gems\jekyll-2.5.3\lib\jekyll\tags\highlight.rb”里对应的函数即可。</p>
 
-<noscript><pre>def string_rsub(str, pattern, replacement)
-  last_match = nil
-  while true
-    pos = last_match.nil? ? 0 : last_match.end(0)
-    m = pattern.match(str, pos)
-    break if m.nil?
-      ast_match = m
-  end
-  last_match ? (last_match.pre_match + replacement + last_match.post_match) : str
-end
-def add_code_tag(code)
-  # Add nested &lt;code&gt; tags to code blocks
-  code = code.sub(/&lt;pre&gt;\n*/,&#39;&lt;pre&gt;&lt;code class=&quot;language-&#39; + @lang.to_s.gsub(&quot;+&quot;, &quot;-&quot;) + &#39;&quot; data-lang=&quot;&#39; + @lang.to_s + &#39;&quot;&gt;&#39;)
-  code = string_rsub(code, /\n*&lt;\/pre&gt;/,&quot;&lt;/code&gt;&lt;/pre&gt;&quot;)
-  code.strip
-end</pre></noscript>
 <script src="https://gist.github.com/0cch/775e4a8a94be175cae9c.js?file=rouge_linenos_patch.rb"> </script>
 
 
