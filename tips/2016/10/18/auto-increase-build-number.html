@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>C++异常的参数分析(0xE06D7363)</title>
-  <meta name="description" content="Visual C++ 的编译器用0xE06D7363表示C++异常。 0xE06D7363表示的意思就是.msc。">
+  <title>编译时自动增加build number</title>
+  <meta name="description" content="最近和朋友讨论版本号常用的几种规范，前三位..基本上一致，不需要详说。主要区别产生在最后一位，有的是build number，有的是时间日期，还有的是git或者svn的revision。我习惯用build number，每次编译都会增加版本号最后一位的数字。但是手动去修改明显不科学也不可靠，所以给和我有一样习惯的...">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://0cch.com/debugging/2015/12/07/cpp-exception-params.html">
+  <link rel="canonical" href="http://0cch.com/tips/2016/10/18/auto-increase-build-number.html">
   <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
 </head>
 
@@ -1026,69 +1026,51 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">C++异常的参数分析(0XE06D7363)</h1>
-    <p class="post-meta">Dec 7, 2015 • admin</p>
+    <h1 class="post-title">编译时自动增加BUILD NUMBER</h1>
+    <p class="post-meta">Oct 18, 2016 • admin</p>
   </header>
 
   <article class="post-content">
-    <p>Visual C++ 的编译器用0xE06D7363表示C++异常。 0xE06D7363表示的意思就是.msc。</p>
+    <p>最近和朋友讨论版本号常用的几种规范，前三位<主版本>.<子版本>.<修正版本>基本上一致，不需要详说。主要区别产生在最后一位，有的是build number，有的是时间日期，还有的是git或者svn的revision。我习惯用build number，每次编译都会增加版本号最后一位的数字。但是手动去修改明显不科学也不可靠，所以给和我有一样习惯的朋友分享一个我早年写的python脚本，无论是自己的工具还是公司的产品我一直都在用这个。</修正版本></子版本></主版本></p>
 
-<figure class="highlight"><pre><code class="language-windbg" data-lang="windbg">0:025&gt; .formats 0xE06D7363
-Evaluate expression:
-  Hex:     e06d7363
-  Decimal: -529697949
-  Octal:   34033271543
-  Binary:  11100000 01101101 01110011 01100011
-  Chars:   .msc
-  Time:    ***** Invalid
-  Float:   low -6.84405e+019 high 0
-  Double:  1.86029e-314
-  </code></pre></figure>
+<div class="highlighter-rouge"><pre class="highlight"><code>用法就是在VS的工程属性Build Event -&gt; Pre Build Event里设置x:\incbuildnum.py $(ProjectDir)$(ProjectName).rc。
+</code></pre>
+</div>
 
-<p>抛出异常代码的同时，还会带有三个到四个参数：<br />
-参数0是一个magic code，一般为0x19930520，我们不用管他<br />
-参数1是时异常抛出的对象指针<br />
-参数2是抛出异常的基本信息<br />
-参数3是抛出异常的模块基址(只有64位的程序才会有这个参数)，该基址加上异常信息的偏移才能获得信息的真正内存地址。</p>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
 
-<figure class="highlight"><pre><code class="language-windbg" data-lang="windbg">0:025&gt; .exr -1
-ExceptionAddress: 75c8c41f (KERNELBASE!RaiseException+0x00000058)
-   ExceptionCode: e06d7363 (C++ EH exception)
-  ExceptionFlags: 00000001
-NumberParameters: 3
-   Parameter[0]: 19930520
-   Parameter[1]: 09c9f324
-   Parameter[2]: 6b5d0298
-   </code></pre></figure>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s">".bak"</span><span class="p">):</span>
+	<span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s">".bak"</span><span class="p">)</span>
+<span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s">".bak"</span><span class="p">)</span>
 
-<p>6b5d0298就是我们想要取得的信息，信息存储的格式为_s__ThrowInfo。</p>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">'r+'</span><span class="p">)</span> <span class="k">as</span> <span class="n">content_file</span><span class="p">:</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">content_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    
+    
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">"VALUE </span><span class="se">\"</span><span class="s">FileVersion</span><span class="se">\"</span><span class="s">, </span><span class="se">\"</span><span class="s">(([</span><span class="se">\\</span><span class="s">d]+).[ ]*)*([</span><span class="se">\\</span><span class="s">d]+)</span><span class="se">\"</span><span class="s">"</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+    <span class="n">new_ver</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">"(VALUE </span><span class="se">\"</span><span class="s">FileVersion</span><span class="se">\"</span><span class="s">, </span><span class="se">\"</span><span class="s">([</span><span class="se">\\</span><span class="s">d]+.[ ]*)*)[</span><span class="se">\\</span><span class="s">d]+</span><span class="se">\"</span><span class="s">"</span><span class="p">,</span> <span class="s">"</span><span class="se">\\</span><span class="s">g&lt;1&gt;"</span> <span class="o">+</span> <span class="n">new_ver</span> <span class="o">+</span> <span class="s">"</span><span class="se">\"</span><span class="s">"</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
 
-<figure class="highlight"><pre><code class="language-windbg" data-lang="windbg">0:025&gt; dt 6b5d0298 ole32!_s__ThrowInfo
-   +0x000 attributes       : 0
-   +0x004 pmfnUnwind       : 0x6b523b50     void  +0
-   +0x008 pForwardCompat   : (null) 
-   +0x00c pCatchableTypeArray : 0x6b5d028c _s__CatchableTypeArray
-   </code></pre></figure>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">"FILEVERSION (([</span><span class="se">\\</span><span class="s">d]+).[ ]*)*([</span><span class="se">\\</span><span class="s">d]+)"</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+    <span class="n">new_ver</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">"(FILEVERSION ([</span><span class="se">\\</span><span class="s">d]+.[ ]*)*)([</span><span class="se">\\</span><span class="s">d]+)"</span><span class="p">,</span> <span class="s">"</span><span class="se">\\</span><span class="s">g&lt;1&gt;"</span> <span class="o">+</span> <span class="n">new_ver</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
 
-<p>然后可以取得pCatchableTypeArray，我们可以从中获取抛出异常的类型信息。</p>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">"VALUE </span><span class="se">\"</span><span class="s">ProductVersion</span><span class="se">\"</span><span class="s">, </span><span class="se">\"</span><span class="s">(([</span><span class="se">\\</span><span class="s">d]+).[ ]*)*([</span><span class="se">\\</span><span class="s">d]+)</span><span class="se">\"</span><span class="s">"</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+    <span class="n">new_ver</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">"(VALUE </span><span class="se">\"</span><span class="s">ProductVersion</span><span class="se">\"</span><span class="s">, </span><span class="se">\"</span><span class="s">([</span><span class="se">\\</span><span class="s">d]+.[ ]*)*)[</span><span class="se">\\</span><span class="s">d]+</span><span class="se">\"</span><span class="s">"</span><span class="p">,</span> <span class="s">"</span><span class="se">\\</span><span class="s">g&lt;1&gt;"</span> <span class="o">+</span> <span class="n">new_ver</span> <span class="o">+</span> <span class="s">"</span><span class="se">\"</span><span class="s">"</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
 
-<figure class="highlight"><pre><code class="language-windbg" data-lang="windbg">0:025&gt; dt 0x6b5d028c ole32!_s__CatchableTypeArray -r1
-   +0x000 nCatchableTypes  : 0n2
-   +0x004 arrayOfCatchableTypes : [0] 0x6b5d0270 _s__CatchableType
-      +0x000 properties       : 0
-      +0x004 pType            : 0x6b5e58f0 _TypeDescriptor
-      +0x008 thisDisplacement : _PMD
-      +0x014 sizeOrOffset     : 0n48
-      +0x018 copyFunction     : 0x6b523cc0        void  +0
-	  </code></pre></figure>
-
-<p>到这里我们就取得了类型的描述结构体了，最后就能从中获取抛出的异常类型</p>
-
-<figure class="highlight"><pre><code class="language-windbg" data-lang="windbg">0:025&gt; dt 0x6b5e58f0 ole32!_TypeDescriptor
-   +0x000 pVFTable         : 0x6b5c36e8 Void
-   +0x004 spare            : (null) 
-   +0x008 name             : [0]  ".?AVinterprocess_exception@interprocess@boost@@"</code></pre></figure>
-
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">"PRODUCTVERSION (([</span><span class="se">\\</span><span class="s">d]+).[ ]*)*([</span><span class="se">\\</span><span class="s">d]+)"</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+    <span class="n">new_ver</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">"(PRODUCTVERSION ([</span><span class="se">\\</span><span class="s">d]+.[ ]*)*)([</span><span class="se">\\</span><span class="s">d]+)"</span><span class="p">,</span> <span class="s">"</span><span class="se">\\</span><span class="s">g&lt;1&gt;"</span> <span class="o">+</span> <span class="n">new_ver</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+    
+    <span class="n">content_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">content_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+    <span class="n">content_file</span><span class="o">.</span><span class="n">truncate</span><span class="p">()</span>
+    <span class="n">content_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    </code></pre></figure>
 
   </article>
   <script type="text/javascript">
@@ -1102,7 +1084,7 @@ NumberParameters: 3
 		 || document.getElementsByTagName('body')[0]).appendChild(ds);
 	})();
   </script>
-  <div class="ds-thread" data-thread-key="/debugging/2015/12/07/cpp-exception-params" data-title="C++异常的参数分析(0xE06D7363)" data-url="http://0cch.com/debugging/2015/12/07/cpp-exception-params.html"></div>
+  <div class="ds-thread" data-thread-key="/tips/2016/10/18/auto-increase-build-number" data-title="编译时自动增加build number" data-url="http://0cch.com/tips/2016/10/18/auto-increase-build-number.html"></div>
 </div>
 
       </div>
