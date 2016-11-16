@@ -180,6 +180,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -204,6 +206,11 @@
    
     
    
+    
+   
+    
+	  
+	  
     
    
     
@@ -548,6 +555,13 @@
   <h3>Archives:</h3>
   <ul>
    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2016/11/">2016-11</a></li>
+	  
+    
    
     
 	  
@@ -1049,10 +1063,12 @@ ntdll!KiUserCallbackDispatcher<br />
 USER32!NtUserCreateWindowEx<br />
 USER32!_CreateWindowEx</p>
 
-<p>看着个堆栈，防注入的方法这里就可以大概说出三种：<br />
-1. 被创建窗口程序了。<br />
-2. Hook LoadLibraryExW，判断是否是自己的模块。<br />
-3. Hook __ClientLoadLibrary，替换为空函数。</p>
+<p>看着个堆栈，防注入的方法这里就可以大概说出三种：</p>
+<ol>
+  <li>被创建窗口程序了。</li>
+  <li>Hook LoadLibraryExW，判断是否是自己的模块。</li>
+  <li>Hook __ClientLoadLibrary，替换为空函数。</li>
+</ol>
 
 <p>第一个方法其实也谈不上方法，也就是说控制台程序就不用担心这些了。第二个方法需要是否是判断自己的模块，这个方法也挺麻烦的，因为你得放过一些不是自己的模块，比如微软的模块。所以这里重点说第三个方法，我们去Hook __ClientLoadLibrary，这样我们就只是避免了全局钩子的注入了。这里我们不用去Inline Hook该函数，Inline Hook比较麻烦。我们的做法是修改user32!apfnDispatch这个数组，直接替换对应于__ClientLoadLibrary所在位置的值。这样摆在我们面前的稍微麻烦一点的事情有两个，一个是确定数组开始的地址，第二就是确定__ClientLoadLibrary在数组中的index。
 那么分别来解决这两个问题：</p>
@@ -1070,10 +1086,12 @@ XP=0x42，Win7=0x41，Win8.1=0x47</p>
   </li>
 </ol>
 
-<p>好了，知道了这些，后面的就不用说太详细了，无非就是这三步：<br />
-1. 写个空的__ClientLoadLibrary函数MyClientLoadLibrary。<br />
-2. VirtualProtect设置KernelCallbackTable + index * sizeof(PVOID)地址内存保护属性为PAGE_READWRITE。<br />
-3. 替换__ClientLoadLibrary为MyClientLoadLibrary，再把内存属性换回原来的。</p>
+<p>好了，知道了这些，后面的就不用说太详细了，无非就是这三步：</p>
+<ol>
+  <li>写个空的__ClientLoadLibrary函数MyClientLoadLibrary。</li>
+  <li>VirtualProtect设置KernelCallbackTable + index * sizeof(PVOID)地址内存保护属性为PAGE_READWRITE。</li>
+  <li>替换__ClientLoadLibrary为MyClientLoadLibrary，再把内存属性换回原来的。</li>
+</ol>
 
 <p>OK，大功告成了。</p>
 

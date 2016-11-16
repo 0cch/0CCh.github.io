@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>关于DLL加载和运行的性能优化总结</title>
-  <meta name="description" content="本文从三个方面总结了加快DLL加载和运行速度的方法，他们分别是：  1. 使用Rebase和Bind。  2. 按序号的方式导入函数。  3. 使用预读取技术（chromium加载dll时使用了此项）。">
+  <meta name="description" content="本文从三个方面总结了加快DLL加载和运行速度的方法，他们分别是：  使用Rebase和Bind。  按序号的方式导入函数。  使用预读取技术（chromium加载dll时使用了此项）。">
 
   <link rel="stylesheet" href="/css/main.css">
   <link rel="canonical" href="http://0cch.com/debugging/ntinternals/2013/05/19/e5-85-b3-e4-ba-8edll-e5-8a-a0-e8-bd-bd-e5-92-8c-e8-bf-90-e8-a1-8c-e6-80-a7-e8-83-bd-e4-bc-98-e5-8c-96-e6-80-bb-e7-bb-93.html">
@@ -36,6 +36,8 @@
         
           
           <a class="page-link" href="/about/">About</a>
+          
+        
           
         
           
@@ -508,6 +510,11 @@
    
     
 	  
+	  
+    
+   
+    
+	  
       <li><a class="page-link" href="/categories/debugging/">Debugging</a></li>
 	  
     
@@ -548,6 +555,13 @@
   <h3>Archives:</h3>
   <ul>
    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2016/11/">2016-11</a></li>
+	  
+    
    
     
 	  
@@ -1031,10 +1045,12 @@
   </header>
 
   <article class="post-content">
-    <p>本文从三个方面总结了加快DLL加载和运行速度的方法，他们分别是：<br />
-  1. 使用Rebase和Bind。<br />
-  2. 按序号的方式导入函数。<br />
-  3. 使用预读取技术（chromium加载dll时使用了此项）。</p>
+    <p>本文从三个方面总结了加快DLL加载和运行速度的方法，他们分别是：</p>
+<ol>
+  <li>使用Rebase和Bind。</li>
+  <li>按序号的方式导入函数。</li>
+  <li>使用预读取技术（chromium加载dll时使用了此项）。</li>
+</ol>
 
 <p>首先，讨论一下使用Rebase和Bind，提高DLL加载和运行性能的方法。我们知道，在编译链接DLL的时候，连接器会给DLL一个加载基址，而这个加载基址对于DLL模块中的使用了硬编码地址的代码和数据是至关重要的。因为这些硬编码的地址都是连接器通过DLL加载基址计算出来的。</p>
 

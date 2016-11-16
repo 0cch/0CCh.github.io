@@ -180,6 +180,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -204,6 +206,11 @@
    
     
    
+    
+   
+    
+	  
+	  
     
    
     
@@ -548,6 +555,13 @@
   <h3>Archives:</h3>
   <ul>
    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2016/11/">2016-11</a></li>
+	  
+    
    
     
 	  
@@ -1036,16 +1050,20 @@
 <p>ETW是Windows提供的机制，我们要使用他还需要工具，这些工具我们可以自己开发，因为Windows提供了调用接口。当然，更惬意的选择就是直接使用Windows提供的工具集WPT（Windows Performance Toolkit）。利用WPT和SDK，我们可以将ETW融入到我们自己的程序中，帮助我们调试程序和提升性能。</p>
 
 <p>以下是我们需要的工具：<br />
-SDK:<br />
-1. ECMangen.exe<br />
-2. mc.exe</p>
+SDK:</p>
+<ol>
+  <li>ECMangen.exe</li>
+  <li>mc.exe</li>
+</ol>
 
 <p>Windows:<br />
 WEVTUtil.exe</p>
 
-<p>WPT:<br />
-1. XPerf.exe<br />
-2. XPerfView.exe</p>
+<p>WPT:</p>
+<ol>
+  <li>XPerf.exe</li>
+  <li>XPerfView.exe</li>
+</ol>
 
 <p>首先我们需要用SDK中的工具ECMangen，生成一个manifest文件，这个文件用来描述记录的事件，如图。
 <a href="/uploads/2013/11/20131117114336.png"><img src="/uploads/2013/11/20131117114336.png" alt="20131117114336" /></a>
