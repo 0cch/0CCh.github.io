@@ -6,9 +6,82 @@
 </description>
     <link>http://0cch.com/</link>
     <atom:link href="http://0cch.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 16 Nov 2016 11:45:56 +0800</pubDate>
-    <lastBuildDate>Wed, 16 Nov 2016 11:45:56 +0800</lastBuildDate>
+    <pubDate>Wed, 14 Dec 2016 11:23:38 +0800</pubDate>
+    <lastBuildDate>Wed, 14 Dec 2016 11:23:38 +0800</lastBuildDate>
     <generator>Jekyll v3.2.1</generator>
+    
+      <item>
+        <title>快速抛出失败的方法 INT 29H</title>
+        <description>&lt;p&gt;从Windows8开始，Windows设计了一个新的中断，INT 29H，用来快速的抛出失败。在sdk中，他被声明为 __fastfail:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#define FAST_FAIL_LEGACY_GS_VIOLATION          0
+#define FAST_FAIL_VTGUARD_CHECK_FAILURE        1
+#define FAST_FAIL_STACK_COOKIE_CHECK_FAILURE   2
+#define FAST_FAIL_CORRUPT_LIST_ENTRY           3
+#define FAST_FAIL_INCORRECT_STACK              4
+#define FAST_FAIL_INVALID_ARG                  5
+#define FAST_FAIL_GS_COOKIE_INIT               6
+#define FAST_FAIL_FATAL_APP_EXIT               7
+#define FAST_FAIL_RANGE_CHECK_FAILURE          8
+#define FAST_FAIL_UNSAFE_REGISTRY_ACCESS       9
+#define FAST_FAIL_GUARD_ICALL_CHECK_FAILURE    10
+#define FAST_FAIL_GUARD_WRITE_CHECK_FAILURE    11
+#define FAST_FAIL_INVALID_FIBER_SWITCH         12
+#define FAST_FAIL_INVALID_SET_OF_CONTEXT       13
+#define FAST_FAIL_INVALID_REFERENCE_COUNT      14
+#define FAST_FAIL_INVALID_JUMP_BUFFER          18
+#define FAST_FAIL_MRDATA_MODIFIED              19
+#define FAST_FAIL_CERTIFICATION_FAILURE        20
+#define FAST_FAIL_INVALID_EXCEPTION_CHAIN      21
+#define FAST_FAIL_CRYPTO_LIBRARY               22
+#define FAST_FAIL_INVALID_CALL_IN_DLL_CALLOUT  23
+#define FAST_FAIL_INVALID_IMAGE_BASE           24
+#define FAST_FAIL_DLOAD_PROTECTION_FAILURE     25
+#define FAST_FAIL_UNSAFE_EXTENSION_CALL        26
+#define FAST_FAIL_DEPRECATED_SERVICE_INVOKED   27
+#define FAST_FAIL_INVALID_BUFFER_ACCESS        28
+#define FAST_FAIL_INVALID_BALANCED_TREE        29
+#define FAST_FAIL_INVALID_NEXT_THREAD          30
+#define FAST_FAIL_GUARD_ICALL_CHECK_SUPPRESSED 31         // Telemetry, nonfatal
+#define FAST_FAIL_APCS_DISABLED                32
+#define FAST_FAIL_INVALID_IDLE_STATE           33
+#define FAST_FAIL_MRDATA_PROTECTION_FAILURE    34
+#define FAST_FAIL_UNEXPECTED_HEAP_EXCEPTION    35
+#define FAST_FAIL_INVALID_FAST_FAIL_CODE       0xFFFFFFFF
+&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#if _MSC_VER &amp;gt;= 1610
+&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;DECLSPEC_NORETURN&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;VOID&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;__fastfail&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;_In_&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Code&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;cp&quot;&gt;#pragma intrinsic(__fastfail)
+&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#endif
+&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;/*
+	// 汇编代码为
+	mov ecx, code
+	int 29h
+*/&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;在中断代码执行后，操作系统会根据执行代码的环境来做出不同的处理。&lt;br /&gt;
+如果__fastfail发生在Ring0中，操作系统会抛出一个KERNEL_SECURITY_CHECK_FAILURE (0x139)的蓝屏。如果__fastfail发生在Ring3，系统会抛出一个第二次机会的不可继续执行的异常，异常代码为0xC0000409，然后走进我们熟悉的Windows Error Reporting(WER)流程。另外，无论__fastfail发生在R0或者R3，如果有调试器正在调试系统或进程，都将得到一次中断到调试器的机会，这让我们能够看清楚具体发生了什么事情。但是正如我上面所说，这个是一个不可继续执行的异常，所以我们不能在调试器里处理了异常后让程序继续向前跑，当然也不能用try和except去捕获异常。&lt;/p&gt;
+
+&lt;p&gt;我觉得__fastfail是个非常不错的设计，它让程序可以快速的进入内核异常处理流程，不需要执行额外的用户层的代码，也不需要额外的内存空间，提高了不可恢复的异常处理的性能，更重要的是，简单快速不依赖内存的执行方式也保证了系统的安全。所以在系统的安全检查失败处理中，大量使用了这个方式，减少被攻击的可能性。&lt;/p&gt;
+
+&lt;p&gt;最后，如果INT 29H发生在Windows8以下的系统上，内核里会抛出一个常规的UNEXPECTED_KERNEL_MODE_TRAP的蓝屏，而用户层程序会抛出一个ACCESS VIOLATION的异常。&lt;/p&gt;
+</description>
+        <pubDate>Tue, 13 Dec 2016 18:36:42 +0800</pubDate>
+        <link>http://0cch.com/debugging/2016/12/13/int29h.html</link>
+        <guid isPermaLink="true">http://0cch.com/debugging/2016/12/13/int29h.html</guid>
+        
+        
+        <category>Debugging</category>
+        
+      </item>
     
       <item>
         <title>windbg的lua脚本扩展luadbg</title>
@@ -598,89 +671,6 @@
         
         
         <category>Tips</category>
-        
-      </item>
-    
-      <item>
-        <title>c06d007f异常的解决方法</title>
-        <description>&lt;p&gt;c06d007f这个异常通常是在PE的延迟加载dll的时候发生的，加载器找不到对应的dll就会抛出这个异常。如果我们对这个异常不熟悉，按照常规方式去找上下文，那么结果肯定会让你失望。例如3.2526.1373.0版本的libcef在XP上运行的情况。&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-windbg&quot; data-lang=&quot;windbg&quot;&gt;0:000&amp;gt; kb
- # ChildEBP RetAddr  Args to Child              
-00 0012f218 7c92d9ac 7c86449d d0000144 00000004 ntdll!KiFastSystemCallRet
-01 0012f21c 7c86449d d0000144 00000004 00000000 ntdll!ZwRaiseHardError+0xc
-02 0012f4a0 7c843892 0012f4c8 7c839b21 0012f4d0 kernel32!UnhandledExceptionFilter+0x628
-03 0012f4a8 7c839b21 0012f4d0 00000000 0012f4d0 kernel32!BaseProcessStart+0x39
-04 0012f4d0 7c9232a8 0012f5bc 0012ffe0 0012f5d4 kernel32!_except_handler3+0x61
-05 0012f4f4 7c92327a 0012f5bc 0012ffe0 0012f5d4 ntdll!ExecuteHandler2+0x26
-06 0012f5a4 7c92e46a 00000000 0012f5d4 0012f5bc ntdll!ExecuteHandler+0x24
-07 0012f5a4 00000000 00000000 0012f5d4 0012f5bc ntdll!KiUserExceptionDispatcher+0xe
-WARNING: Frame IP not in any known module. Following frames may be wrong.
-08 0012fff4 004a991e 00000000 78746341 00000020 0x0
-09 0012fff8 00000000 78746341 00000020 00000001 cefclient!pre_c_init+0xb9 [f:\dd\vctools\crt_bld\self_x86\crt\src\crtexe.c @ 261]
-
-0:000&amp;gt; .cxr 0012f5d4;k
-eax=0012f8a4 ebx=1314a58c ecx=00000000 edx=00000001 esi=0012f954 edi=68d60000
-eip=00000000 esp=0012fff8 ebp=00000000 iopl=0         nv up ei pl nz na po nc
-cs=001b  ss=0023  ds=0023  es=0023  fs=003b  gs=0000             efl=00000202
-00000000 ??              ???
-  *** Stack trace for last set context - .thread/.cxr resets it
- # ChildEBP RetAddr  
-WARNING: Frame IP not in any known module. Following frames may be wrong.
-00 0012fff4 004a991e 0x0
-01 0012fff8 00000000 cefclient!pre_c_init+0xb9 [f:\dd\vctools\crt_bld\self_x86\crt\src\crtexe.c @ 261]&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;直接看栈回溯或者通过设置cxr看栈回溯，并没有帮助我们找到什么有用的信息。&lt;/p&gt;
-
-&lt;p&gt;这里要使用的方法是，利用异常的参数来找到具体延迟加载谁的时候发生了异常。&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-windbg&quot; data-lang=&quot;windbg&quot;&gt;0:000&amp;gt; .exr 0012f5bc 
-ExceptionAddress: 7c812aeb (kernel32!RaiseException+0x00000053)
-   ExceptionCode: c06d007f
-  ExceptionFlags: 00000000
-NumberParameters: 1
-   Parameter[0]: 0012f918
-   &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;这里的参数0，就是我们要找的目标，记录了出错时候ebp-0x30的数据，也就是含有关键信息的地方。让我们仔细看看：&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-windbg&quot; data-lang=&quot;windbg&quot;&gt;0:000&amp;gt; dds 0012f918
-0012f918  00000024
-0012f91c  1314a58c libcef!_DELAY_IMPORT_DESCRIPTOR_dbghelp_dll
-0012f920  13181dbc libcef!_imp__SymGetSearchPathW
-0012f924  12ebdd20 libcef!_sz_dbghelp_dll
-0012f928  00000001
-0012f92c  1314ac8e libcef!dxva2_NULL_THUNK_DATA_DLN+0x7e
-0012f930  68d60000 dbghelp!_imp__CryptAcquireContextA &amp;lt;PERF&amp;gt; (dbghelp+0x0)
-0012f934  00000000
-0012f938  0000007f
-0012f93c  1314c138 libcef!dxva2_NULL_THUNK_DATA_DLN+0x1528
-0012f940  00000003
-0012f944  00000000
-0012f948  0012f9f8
-0012f94c  11d17587 libcef!_tailMerge_dbghelp_dll+0xd
-0012f950  0012f918
-0012f954  13181dbc libcef!_imp__SymGetSearchPathW
-0012f958  00000008
-0012f95c  7c9301bb ntdll!RtlAllocateHeap+0xeac
-0012f960  1019014e libcef!base::debug::`anonymous namespace'::InitializeSymbols+0x9e [f:\stnts\browser\cef\ws\src\chromium\src\base\debug\stack_trace_win.cc @ 79]
-0012f964  ffffffff
-0012f968  00170880&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;我们可以清楚的看到加载器延迟加载SymGetSearchPathW的时候发生了问题。让我们进一步用depends工具验证一下&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/uploads/2016/02/20160223003624.png&quot;&gt;&lt;img src=&quot;/uploads/2016/02/20160223003624.png&quot; alt=&quot;20160223003624&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;如上图所示，XP自带的dbghelp里没有SymGetSearchPathW这个导出函数。要解决这个异常，实际上就需要在运行目录里添加一个稍微新一点的dbghelp文件，我这里替换的是6.2.9200.16384的dbghelp，替换过后问题已经不再出现了。&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/uploads/2016/02/20160223003711.png&quot;&gt;&lt;img src=&quot;/uploads/2016/02/20160223003711.png&quot; alt=&quot;20160223003711&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Tue, 23 Feb 2016 08:55:58 +0800</pubDate>
-        <link>http://0cch.com/debugging/2016/02/23/delay-load-error.html</link>
-        <guid isPermaLink="true">http://0cch.com/debugging/2016/02/23/delay-load-error.html</guid>
-        
-        
-        <category>debugging</category>
         
       </item>
     
