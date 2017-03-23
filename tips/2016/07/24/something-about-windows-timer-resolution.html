@@ -1116,17 +1116,7 @@
 <p>最后说下Windows高精度时钟查询的实现，在2000和XP时代，系统用TSC来演算时间，但是那个时候，多核并不支持TSC同步，这回带来一些问题。Vista系统采用了High Precision Event Timer (HPET)或者ACPI Power Management Timer (PM timer)，但是这种Timer的延时比较高，当然，这个延时是百纳秒级别的，可以说基本上不会对普通程序有什么影响。之后的系统就使用了固定频率的TSC，这样在多核状态下也能保证同步，而且延时很低。更详细的资料可以参考：https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx</p>
 
   </article>
-  <script type="text/javascript">
-	var duoshuoQuery = {short_name:"0cch"};
-	(function() {
-		var ds = document.createElement('script');
-		ds.type = 'text/javascript';ds.async = true;
-		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-		ds.charset = 'UTF-8';
-		(document.getElementsByTagName('head')[0] 
-		 || document.getElementsByTagName('body')[0]).appendChild(ds);
-	})();
-  </script>
+  
   <div class="ds-thread" data-thread-key="/tips/2016/07/24/something-about-windows-timer-resolution" data-title="关于Windows Timer精确度" data-url="http://0cch.com/tips/2016/07/24/something-about-windows-timer-resolution.html"></div>
 </div>
 

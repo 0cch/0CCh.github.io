@@ -1274,17 +1274,7 @@
 <p>分析到这，终于明白。数组一定要用delete[]释放才安全。所以千万不要用auto_ptr作为数组的智能指针，不然会死的很惨。这里还要提一点，auto_ptr也不要用到容器里面去了，也是不允许的。非要这么做就用shared_ptr吧， C++0x已经在stl中加入的这部分。从vs2008 sp1开始支持。低版本的vs的话就去boost里面找吧。</p>
 
   </article>
-  <script type="text/javascript">
-	var duoshuoQuery = {short_name:"0cch"};
-	(function() {
-		var ds = document.createElement('script');
-		ds.type = 'text/javascript';ds.async = true;
-		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-		ds.charset = 'UTF-8';
-		(document.getElementsByTagName('head')[0] 
-		 || document.getElementsByTagName('body')[0]).appendChild(ds);
-	})();
-  </script>
+  
   <div class="ds-thread" data-thread-key="/tips/2011/11/01/%e4%b8%ba%e4%bb%80%e4%b9%88%e5%bf%85%e9%a1%bb%e7%94%a8delete%e9%87%8a%e6%94%be%e6%95%b0%e7%bb%84" data-title="为什么必须用delete[]释放数组" data-url="http://0cch.com/tips/2011/11/01/e4-b8-ba-e4-bb-80-e4-b9-88-e5-bf-85-e9-a1-bb-e7-94-a8delete-e9-87-8a-e6-94-be-e6-95-b0-e7-bb-84.html"></div>
 </div>
 
