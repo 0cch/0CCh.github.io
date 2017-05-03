@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>DNSSwitcher —— 一个方便切换DNS的小工具</title>
-  <meta name="description" content="最近百度也推出的自己的公共DNS，现在可供我们选择使用的DNS也多了起来。但是每次更改DNS都输入IP，确实挺麻烦的。于是我周末在家就写了个切换DNS的小程序，绿色且易用，能在配置好的DNS直接切换，当然也能切换回自动获取DNS的模式。至于配置文件，可以手动修改，也可以通过程序来修改，都挺方便的。">
+  <title>0cchext插件实用命令dttoc</title>
+  <meta name="description" content="最近给0cchext添加了一个实用的逆向命令，dttoc，这个命令可以把dt命令输出的结构体转化为C的结构，方便我们做逆向还原工作。">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://0cch.com/tips/2014/12/14/dnsswitcher-e4-b8-80-e4-b8-aa-e6-96-b9-e4-be-bf-e5-88-87-e6-8d-a2dns-e7-9a-84-e5-b0-8f-e5-b7-a5-e5-85-b7.html">
+  <link rel="canonical" href="http://0cch.com/debugging/2017/05/02/0cchext-dttoc-command.html">
   <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
 </head>
 
@@ -1124,30 +1124,134 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">DNSSWITCHER —— 一个方便切换DNS的小工具</h1>
-    <p class="post-meta">Dec 14, 2014 • admin</p>
+    <h1 class="post-title">0CCHEXT插件实用命令DTTOC</h1>
+    <p class="post-meta">May 2, 2017 • admin</p>
   </header>
 
   <article class="post-content">
-    <p>最近百度也推出的自己的公共DNS，现在可供我们选择使用的DNS也多了起来。但是每次更改DNS都输入IP，确实挺麻烦的。于是我周末在家就写了个切换DNS的小程序，绿色且易用，能在配置好的DNS直接切换，当然也能切换回自动获取DNS的模式。至于配置文件，可以手动修改，也可以通过程序来修改，都挺方便的。</p>
+    <p>最近给<a href="https://github.com/0cch/0cchext/releases/tag/1.0.16.3.55">0cchext</a>添加了一个实用的逆向命令，dttoc，这个命令可以把dt命令输出的结构体转化为C的结构，方便我们做逆向还原工作。</p>
 
-<p><a href="/uploads/2014/12/20141214190237.png"><img src="/uploads/2014/12/20141214190237.png" alt="20141214190237" /></a></p>
-
-<p>配置文件格式如<br />
-[Google DNS]<br />
-dns1=8.8.8.8<br />
-dns2=8.8.4.4<br />
-[Open DNS]<br />
-dns1=208.67.222.222<br />
-dns2=208.67.220.220<br />
-…</p>
-
-<p>下载：<a href="/uploads/2014/12/DNSSwitcher.zip">DNSSwitcher</a></p>
-
+<div class="highlighter-rouge"><pre class="highlight"><code>0:000&gt; !0cchext.dttoc nt!_peb
+struct _PEB {
+	BYTE InheritedAddressSpace;
+	BYTE ReadImageFileExecOptions;
+	BYTE BeingDebugged;
+	union {
+		BYTE BitField;
+		struct {
+			BYTE ImageUsesLargePages:1;
+			BYTE IsProtectedProcess:1;
+			BYTE IsImageDynamicallyRelocated:1;
+			BYTE SkipPatchingUser32Forwarders:1;
+			BYTE IsPackagedProcess:1;
+			BYTE IsAppContainer:1;
+			BYTE IsProtectedProcessLight:1;
+			BYTE IsLongPathAwareProcess:1;
+		};
+	};
+	VOID* Mutant;
+	VOID* ImageBaseAddress;
+	_PEB_LDR_DATA* Ldr;
+	_RTL_USER_PROCESS_PARAMETERS* ProcessParameters;
+	VOID* SubSystemData;
+	VOID* ProcessHeap;
+	_RTL_CRITICAL_SECTION* FastPebLock;
+	_SLIST_HEADER* AtlThunkSListPtr;
+	VOID* IFEOKey;
+	union {
+		DWORD CrossProcessFlags;
+		struct {
+			DWORD ProcessInJob:1;
+			DWORD ProcessInitializing:1;
+			DWORD ProcessUsingVEH:1;
+			DWORD ProcessUsingVCH:1;
+			DWORD ProcessUsingFTH:1;
+			DWORD ReservedBits0:27;
+		};
+	};
+	union {
+		VOID* KernelCallbackTable;
+		VOID* UserSharedInfoPtr;
+	};
+	DWORD SystemReserved[1];
+	_SLIST_HEADER* AtlThunkSListPtr32;
+	VOID* ApiSetMap;
+	DWORD TlsExpansionCounter;
+	VOID* TlsBitmap;
+	DWORD TlsBitmapBits[2];
+	VOID* ReadOnlySharedMemoryBase;
+	VOID* SparePvoid0;
+	VOID** ReadOnlyStaticServerData;
+	VOID* AnsiCodePageData;
+	VOID* OemCodePageData;
+	VOID* UnicodeCaseTableData;
+	DWORD NumberOfProcessors;
+	DWORD NtGlobalFlag;
+	_LARGE_INTEGER CriticalSectionTimeout;
+	DWORD HeapSegmentReserve;
+	DWORD HeapSegmentCommit;
+	DWORD HeapDeCommitTotalFreeThreshold;
+	DWORD HeapDeCommitFreeBlockThreshold;
+	DWORD NumberOfHeaps;
+	DWORD MaximumNumberOfHeaps;
+	VOID** ProcessHeaps;
+	VOID* GdiSharedHandleTable;
+	VOID* ProcessStarterHelper;
+	DWORD GdiDCAttributeList;
+	_RTL_CRITICAL_SECTION* LoaderLock;
+	DWORD OSMajorVersion;
+	DWORD OSMinorVersion;
+	WORD OSBuildNumber;
+	WORD OSCSDVersion;
+	DWORD OSPlatformId;
+	DWORD ImageSubsystem;
+	DWORD ImageSubsystemMajorVersion;
+	DWORD ImageSubsystemMinorVersion;
+	DWORD ActiveProcessAffinityMask;
+	DWORD GdiHandleBuffer[34];
+	void* PostProcessInitRoutine;
+	VOID* TlsExpansionBitmap;
+	DWORD TlsExpansionBitmapBits[32];
+	DWORD SessionId;
+	_ULARGE_INTEGER AppCompatFlags;
+	_ULARGE_INTEGER AppCompatFlagsUser;
+	VOID* pShimData;
+	VOID* AppCompatInfo;
+	_UNICODE_STRING CSDVersion;
+	_ACTIVATION_CONTEXT_DATA* ActivationContextData;
+	_ASSEMBLY_STORAGE_MAP* ProcessAssemblyStorageMap;
+	_ACTIVATION_CONTEXT_DATA* SystemDefaultActivationContextData;
+	_ASSEMBLY_STORAGE_MAP* SystemAssemblyStorageMap;
+	DWORD MinimumStackCommit;
+	_FLS_CALLBACK_INFO* FlsCallback;
+	_LIST_ENTRY FlsListHead;
+	VOID* FlsBitmap;
+	DWORD FlsBitmapBits[4];
+	DWORD FlsHighIndex;
+	VOID* WerRegistrationData;
+	VOID* WerShipAssertPtr;
+	VOID* pUnused;
+	VOID* pImageHeaderHash;
+	union {
+		DWORD TracingFlags;
+		struct {
+			QWORD HeapTracingEnabled:1;
+			QWORD CritSecTracingEnabled:1;
+			QWORD LibLoaderTracingEnabled:1;
+			QWORD SpareTracingBits:29;
+		};
+	};
+	QWORD CsrServerReadOnlySharedMemoryBase;
+	DWORD TppWorkerpListLock;
+	_LIST_ENTRY TppWorkerpList;
+	VOID* WaitOnAddressHashTable[128];
+};
+</code></pre>
+</div>
 
   </article>
   
-  <div class="ds-thread" data-thread-key="/tips/2014/12/14/dnsswitcher-%e4%b8%80%e4%b8%aa%e6%96%b9%e4%be%bf%e5%88%87%e6%8d%a2dns%e7%9a%84%e5%b0%8f%e5%b7%a5%e5%85%b7" data-title="DNSSwitcher —— 一个方便切换DNS的小工具" data-url="http://0cch.com/tips/2014/12/14/dnsswitcher-e4-b8-80-e4-b8-aa-e6-96-b9-e4-be-bf-e5-88-87-e6-8d-a2dns-e7-9a-84-e5-b0-8f-e5-b7-a5-e5-85-b7.html"></div>
+  <div class="ds-thread" data-thread-key="/debugging/2017/05/02/0cchext-dttoc-command" data-title="0cchext插件实用命令dttoc" data-url="http://0cch.com/debugging/2017/05/02/0cchext-dttoc-command.html"></div>
 </div>
 
       </div>

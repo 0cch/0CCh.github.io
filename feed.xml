@@ -6,9 +6,140 @@
 </description>
     <link>http://0cch.com/</link>
     <atom:link href="http://0cch.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 05 Apr 2017 10:29:10 +0800</pubDate>
-    <lastBuildDate>Wed, 05 Apr 2017 10:29:10 +0800</lastBuildDate>
+    <pubDate>Wed, 03 May 2017 11:36:03 +0800</pubDate>
+    <lastBuildDate>Wed, 03 May 2017 11:36:03 +0800</lastBuildDate>
     <generator>Jekyll v3.2.1</generator>
+    
+      <item>
+        <title>0cchext插件实用命令dttoc</title>
+        <description>&lt;p&gt;最近给&lt;a href=&quot;https://github.com/0cch/0cchext/releases/tag/1.0.16.3.55&quot;&gt;0cchext&lt;/a&gt;添加了一个实用的逆向命令，dttoc，这个命令可以把dt命令输出的结构体转化为C的结构，方便我们做逆向还原工作。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;0:000&amp;gt; !0cchext.dttoc nt!_peb
+struct _PEB {
+	BYTE InheritedAddressSpace;
+	BYTE ReadImageFileExecOptions;
+	BYTE BeingDebugged;
+	union {
+		BYTE BitField;
+		struct {
+			BYTE ImageUsesLargePages:1;
+			BYTE IsProtectedProcess:1;
+			BYTE IsImageDynamicallyRelocated:1;
+			BYTE SkipPatchingUser32Forwarders:1;
+			BYTE IsPackagedProcess:1;
+			BYTE IsAppContainer:1;
+			BYTE IsProtectedProcessLight:1;
+			BYTE IsLongPathAwareProcess:1;
+		};
+	};
+	VOID* Mutant;
+	VOID* ImageBaseAddress;
+	_PEB_LDR_DATA* Ldr;
+	_RTL_USER_PROCESS_PARAMETERS* ProcessParameters;
+	VOID* SubSystemData;
+	VOID* ProcessHeap;
+	_RTL_CRITICAL_SECTION* FastPebLock;
+	_SLIST_HEADER* AtlThunkSListPtr;
+	VOID* IFEOKey;
+	union {
+		DWORD CrossProcessFlags;
+		struct {
+			DWORD ProcessInJob:1;
+			DWORD ProcessInitializing:1;
+			DWORD ProcessUsingVEH:1;
+			DWORD ProcessUsingVCH:1;
+			DWORD ProcessUsingFTH:1;
+			DWORD ReservedBits0:27;
+		};
+	};
+	union {
+		VOID* KernelCallbackTable;
+		VOID* UserSharedInfoPtr;
+	};
+	DWORD SystemReserved[1];
+	_SLIST_HEADER* AtlThunkSListPtr32;
+	VOID* ApiSetMap;
+	DWORD TlsExpansionCounter;
+	VOID* TlsBitmap;
+	DWORD TlsBitmapBits[2];
+	VOID* ReadOnlySharedMemoryBase;
+	VOID* SparePvoid0;
+	VOID** ReadOnlyStaticServerData;
+	VOID* AnsiCodePageData;
+	VOID* OemCodePageData;
+	VOID* UnicodeCaseTableData;
+	DWORD NumberOfProcessors;
+	DWORD NtGlobalFlag;
+	_LARGE_INTEGER CriticalSectionTimeout;
+	DWORD HeapSegmentReserve;
+	DWORD HeapSegmentCommit;
+	DWORD HeapDeCommitTotalFreeThreshold;
+	DWORD HeapDeCommitFreeBlockThreshold;
+	DWORD NumberOfHeaps;
+	DWORD MaximumNumberOfHeaps;
+	VOID** ProcessHeaps;
+	VOID* GdiSharedHandleTable;
+	VOID* ProcessStarterHelper;
+	DWORD GdiDCAttributeList;
+	_RTL_CRITICAL_SECTION* LoaderLock;
+	DWORD OSMajorVersion;
+	DWORD OSMinorVersion;
+	WORD OSBuildNumber;
+	WORD OSCSDVersion;
+	DWORD OSPlatformId;
+	DWORD ImageSubsystem;
+	DWORD ImageSubsystemMajorVersion;
+	DWORD ImageSubsystemMinorVersion;
+	DWORD ActiveProcessAffinityMask;
+	DWORD GdiHandleBuffer[34];
+	void* PostProcessInitRoutine;
+	VOID* TlsExpansionBitmap;
+	DWORD TlsExpansionBitmapBits[32];
+	DWORD SessionId;
+	_ULARGE_INTEGER AppCompatFlags;
+	_ULARGE_INTEGER AppCompatFlagsUser;
+	VOID* pShimData;
+	VOID* AppCompatInfo;
+	_UNICODE_STRING CSDVersion;
+	_ACTIVATION_CONTEXT_DATA* ActivationContextData;
+	_ASSEMBLY_STORAGE_MAP* ProcessAssemblyStorageMap;
+	_ACTIVATION_CONTEXT_DATA* SystemDefaultActivationContextData;
+	_ASSEMBLY_STORAGE_MAP* SystemAssemblyStorageMap;
+	DWORD MinimumStackCommit;
+	_FLS_CALLBACK_INFO* FlsCallback;
+	_LIST_ENTRY FlsListHead;
+	VOID* FlsBitmap;
+	DWORD FlsBitmapBits[4];
+	DWORD FlsHighIndex;
+	VOID* WerRegistrationData;
+	VOID* WerShipAssertPtr;
+	VOID* pUnused;
+	VOID* pImageHeaderHash;
+	union {
+		DWORD TracingFlags;
+		struct {
+			QWORD HeapTracingEnabled:1;
+			QWORD CritSecTracingEnabled:1;
+			QWORD LibLoaderTracingEnabled:1;
+			QWORD SpareTracingBits:29;
+		};
+	};
+	QWORD CsrServerReadOnlySharedMemoryBase;
+	DWORD TppWorkerpListLock;
+	_LIST_ENTRY TppWorkerpList;
+	VOID* WaitOnAddressHashTable[128];
+};
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Tue, 02 May 2017 19:33:24 +0800</pubDate>
+        <link>http://0cch.com/debugging/2017/05/02/0cchext-dttoc-command.html</link>
+        <guid isPermaLink="true">http://0cch.com/debugging/2017/05/02/0cchext-dttoc-command.html</guid>
+        
+        
+        <category>Debugging</category>
+        
+      </item>
     
       <item>
         <title>Delphi异常0EEDFADE</title>
@@ -606,31 +737,6 @@ x64: sxe -c &quot;da poi(poi(poi(@rbp+48))-70)+1;du /c 100 poi(poi(@rbp+48)+8)&q
         <pubDate>Tue, 23 Aug 2016 19:58:00 +0800</pubDate>
         <link>http://0cch.com/tips/2016/08/23/create-file-in-metadata.html</link>
         <guid isPermaLink="true">http://0cch.com/tips/2016/08/23/create-file-in-metadata.html</guid>
-        
-        
-        <category>Tips</category>
-        
-      </item>
-    
-      <item>
-        <title>关于Windows Timer精确度</title>
-        <description>&lt;p&gt;Windows Timer相比大家都用过，WM_TIMER, WM_SYSTIMER, Waitable Timer, Multimedia Timer, Timer Queue Timer，这么多种Timer，给我们变成提供了很大的方便，有窗口无窗口都能自如选择。所以尽量也不要自己再造轮子，用什么Sleep来写Timer。这种“自定义”的Timer肯定是没有由系统内核DPC触发的Timer效率高的。&lt;/p&gt;
-
-&lt;p&gt;OK，回到正题，关于Timer的精确度。首先看看SysInternal工具集的clockres的显示：&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/uploads/2016/07/20160725102628.png&quot;&gt;&lt;img src=&quot;/uploads/2016/07/20160725102628.png&quot; alt=&quot;20160725102628&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;从图中可以看出，我这个系统的最大精确度15.6毫秒，最小是0.5毫秒，当前是15.6毫秒。默认情况下，Windows会用最大精确度，因为这样可以减少CPU的消耗，而且高精度的定时器，绝大多数程序都不会用到。基于15.6毫秒这个精度，那么我们设置Timer间隔为15.6毫秒以下都是没有意义的，这里再提一下，Sleep函数在内核也是用的定时器，也就是说这个精确度下，Sleep(10)也是没有意义的，间隔会达到15-16毫秒。&lt;/p&gt;
-
-&lt;p&gt;当然，我们有的时候也是需要高精度的定时器的，这个时候我们需要设置时间精度。timeBeginPeriod这个函数就可以完成这个任务，这个函数调用了ntdll的NtSetTimerResolution函数，我们也可以直接调用这个ntdll函数，只不过我们需要动态获得这个函数的地址罢了。值得注意的是，并不是你想设置什么精确度都可以，Windows内部实际上维护了一份可以设置的精度列表，他会选择一个和你设置相近的的精度设置上去，这个列表保存在Hal里面。&lt;/p&gt;
-
-&lt;p&gt;好了，再说下Windows时钟，Windows时钟更新时间总是用的最大精度，在我个系统上也就是每次更新时间都是间隔15.6毫秒。也就是说如果用GetTickCount来统计性能问题，最大精度也就是15-16毫秒。举个例子，一段代码运行时间不足15.6毫秒，要么统计结果是0，要么是15-16毫秒，时间精度不会影响Windows时钟更新。&lt;/p&gt;
-
-&lt;p&gt;最后说下Windows高精度时钟查询的实现，在2000和XP时代，系统用TSC来演算时间，但是那个时候，多核并不支持TSC同步，这回带来一些问题。Vista系统采用了High Precision Event Timer (HPET)或者ACPI Power Management Timer (PM timer)，但是这种Timer的延时比较高，当然，这个延时是百纳秒级别的，可以说基本上不会对普通程序有什么影响。之后的系统就使用了固定频率的TSC，这样在多核状态下也能保证同步，而且延时很低。更详细的资料可以参考：https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx&lt;/p&gt;
-</description>
-        <pubDate>Sun, 24 Jul 2016 19:27:25 +0800</pubDate>
-        <link>http://0cch.com/tips/2016/07/24/something-about-windows-timer-resolution.html</link>
-        <guid isPermaLink="true">http://0cch.com/tips/2016/07/24/something-about-windows-timer-resolution.html</guid>
         
         
         <category>Tips</category>
