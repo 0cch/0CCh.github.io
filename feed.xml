@@ -6,9 +6,36 @@
 </description>
     <link>http://0cch.com/</link>
     <atom:link href="http://0cch.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 03 May 2017 11:36:03 +0800</pubDate>
-    <lastBuildDate>Wed, 03 May 2017 11:36:03 +0800</lastBuildDate>
-    <generator>Jekyll v3.2.1</generator>
+    <pubDate>Mon, 26 Jun 2017 21:58:18 +0800</pubDate>
+    <lastBuildDate>Mon, 26 Jun 2017 21:58:18 +0800</lastBuildDate>
+    <generator>Jekyll v3.1.2</generator>
+    
+      <item>
+        <title>切换到session 0</title>
+        <description>&lt;p&gt;这是一个小技巧，可以帮助我们从session 1切换到session 0，并且获得system权限。有了system权限，可以做一些admin做不了的事情，具体哪些事情大伙可以自己挖掘。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;切换到session 0：    rundll32 winsta.dll WinStationSwitchToServicesSession
+切换会原session：    rundll32 winsta.dll WinStationRevertFromServicesSession
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;但是如果直接切换到session 0，会发现一个问题，我们没有桌面程序，所以什么事情也做不了。解决方法也很简单，创建一个explorer就可以了。但是普通方法创建explorer，怎么会不能创建到session 0，于是这里可想而知，我们需要一个服务来创建explorer。专门写一个服务程序未免太麻烦，这里可以使用cmd来快速创建explorer。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sc create desktop0 binpath= &quot;cmd /c start explorer.exe&quot; type= own type= interact
+net start desktop0
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;虽然cmd不是服务，但是也会被运行起来，只不过不能与服务管理器交互，所以在超时的时候会被结束。不过那个时候已经没关系了，因为explorer已经创建起来了。接下来就可以切换了session 0，用system权限管理电脑了。&lt;/p&gt;
+</description>
+        <pubDate>Mon, 26 Jun 2017 05:48:24 +0800</pubDate>
+        <link>http://0cch.com/tips/2017/06/26/switch-to-session-0.html</link>
+        <guid isPermaLink="true">http://0cch.com/tips/2017/06/26/switch-to-session-0.html</guid>
+        
+        
+        <category>Tips</category>
+        
+      </item>
     
       <item>
         <title>0cchext插件实用命令dttoc</title>
@@ -145,32 +172,32 @@ struct _PEB {
         <title>Delphi异常0EEDFADE</title>
         <description>&lt;p&gt;0EEDFADE是Delphi内部异常代码，该异常通常有7个参数，我们用的上的是第二个参数，这个参数指向的是Exception的对象，通过这个对象，我们就可以查出异常的一些信息。&lt;/p&gt;
 
-&lt;p&gt;以Delphi XE2为例,Class name的偏移为（不同的版本偏移有所不同）：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;x86_vmtClassName = -56(0x38);
+&lt;p&gt;以Delphi XE2为例,Class name的偏移为（不同的版本偏移有所不同）：&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+x86_vmtClassName = -56(0x38);
 x64_vmtClassName = -112(0x70);
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;我们可以用如下命令获取相关信息：&lt;br /&gt;
+```
+x86: da poi(poi(exception_object)-38)+1;du /c 100 poi(exception_object+4)&lt;br /&gt;
+x64: da poi(poi(exception_object)-70)+1;du /c 100 poi(exception_object+8)&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+以上命令就能获取异常的类名，而exception_object+sizeof(pointer)则是Exception Message的所在偏移，这是一个unicode string。实际效果如下：
+
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
+&lt;p&gt;0:002&amp;gt; da poi(poi(003a2800)-38)+1;du /c 100 poi(003a2800 +4)
+00b9ec47  “TTransportExceptionUnknown”
+00375b8c  “ServerTransport.Accept() may not return NULL”
+```&lt;/p&gt;
 
-&lt;p&gt;我们可以用如下命令获取相关信息：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;x86: da poi(poi(exception_object)-38)+1;du /c 100 poi(exception_object+4)  
-x64: da poi(poi(exception_object)-70)+1;du /c 100 poi(exception_object+8)  
-
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;以上命令就能获取异常的类名，而exception_object+sizeof(pointer)则是Exception Message的所在偏移，这是一个unicode string。实际效果如下：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;0:002&amp;gt; da poi(poi(003a2800)-38)+1;du /c 100 poi(003a2800 +4)
-00b9ec47  &quot;TTransportExceptionUnknown&quot;
-00375b8c  &quot;ServerTransport.Accept() may not return NULL&quot;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;当然，我们也可以设置event filter去截获异常：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;x86: sxe -c &quot;da poi(poi(poi(@ebp+1c))-38)+1;du /c 100 poi(poi(@ebp+1c)+4)&quot; 0EEDFADE
+&lt;p&gt;当然，我们也可以设置event filter去截获异常：&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+x86: sxe -c &quot;da poi(poi(poi(@ebp+1c))-38)+1;du /c 100 poi(poi(@ebp+1c)+4)&quot; 0EEDFADE
 x64: sxe -c &quot;da poi(poi(poi(@rbp+48))-70)+1;du /c 100 poi(poi(@rbp+48)+8)&quot; 0EEDFADE
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/p&gt;
 </description>
         <pubDate>Tue, 04 Apr 2017 18:03:16 +0800</pubDate>
         <link>http://0cch.com/debugging/2017/04/04/delphi-exception.html</link>
@@ -267,30 +294,30 @@ x64: sxe -c &quot;da poi(poi(poi(@rbp+48))-70)+1;du /c 100 poi(poi(@rbp+48)+8)&q
         <title>让编译器不推荐(deprecate)使用一个函数</title>
         <description>&lt;p&gt;在开发一些公共库函数的时候，我们常常会对函数进行改写，这个时候我们会希望使用者用新的函数。为了提醒使用者，我们可以通过将函数声明为deprecated，这样编译器在编译的时候会抛出一个C4995或者C4996的警告。这个警告我们应该也经常看到过，比如使用strcpy，编译器会提示我们使用strcpy_s。&lt;/p&gt;
 
-&lt;p&gt;使用这个编译器特性有两种方法：&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;__declspec(deprecated)&lt;/li&gt;
-  &lt;li&gt;#pragma deprecated&lt;/li&gt;
-&lt;/ol&gt;
+&lt;p&gt;使用这个编译器特性有两种方法：&lt;br /&gt;
+1. __declspec(deprecated)
+2. #pragma deprecated&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;__declspec(deprecated)&lt;br /&gt;
+  &lt;li&gt;
+    &lt;p&gt;__declspec(deprecated)&lt;br /&gt;
 &lt;a href=&quot;https://msdn.microsoft.com/en-us/library/044swk7y.aspx&quot;&gt;https://msdn.microsoft.com/en-us/library/044swk7y.aspx&lt;/a&gt;&lt;br /&gt;
-这种方法直接声明在函数或者类之前，在使用函数的地方会抛出C4996的警告
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;__declspec(deprecated) void func1(int) {}  
-&lt;/code&gt;&lt;/pre&gt;
-    &lt;/div&gt;
-    &lt;p&gt;当然我们还可以给警告自定义消息信息&lt;/p&gt;
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;__declspec(deprecated(&quot;** this is a deprecated function **&quot;)) void func2(int) {}  
-&lt;/code&gt;&lt;/pre&gt;
-    &lt;/div&gt;
+这种方法直接声明在函数或者类之前，在使用函数的地方会抛出C4996的警告&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+__declspec(deprecated) void func1(int) {}  
+&lt;/code&gt;
+当然我们还可以给警告自定义消息信息&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+__declspec(deprecated(&quot;** this is a deprecated function **&quot;)) void func2(int) {}  
+&lt;/code&gt;&lt;/p&gt;
   &lt;/li&gt;
-  &lt;li&gt;#pragma deprecated&lt;br /&gt;
+  &lt;li&gt;
+    &lt;p&gt;#pragma deprecated&lt;br /&gt;
 &lt;a href=&quot;https://msdn.microsoft.com/en-us/library/c8xdzzhh.aspx&quot;&gt;https://msdn.microsoft.com/en-us/library/c8xdzzhh.aspx&lt;/a&gt;&lt;br /&gt;
-这种方法可以一次性声明多个函数或者类，使用函数的地方会抛出C4995的警告
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#pragma deprecated(func1, func2)  
-&lt;/code&gt;&lt;/pre&gt;
-    &lt;/div&gt;
+这种方法可以一次性声明多个函数或者类，使用函数的地方会抛出C4995的警告&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;
+#pragma deprecated(func1, func2)  
+&lt;/code&gt;&lt;/p&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
 
@@ -430,7 +457,7 @@ x64: sxe -c &quot;da poi(poi(poi(@rbp+48))-70)+1;du /c 100 poi(poi(@rbp+48)+8)&q
 	&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;remove&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;.bak&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;n&quot;&gt;shutil&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;copy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;.bak&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
-&lt;span class=&quot;k&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'r+'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;content_file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&#39;r+&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;content_file&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;content&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;content_file&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;read&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
     
     
@@ -684,59 +711,6 @@ x64: sxe -c &quot;da poi(poi(poi(@rbp+48))-70)+1;du /c 100 poi(poi(@rbp+48)+8)&q
         <pubDate>Wed, 21 Sep 2016 20:22:50 +0800</pubDate>
         <link>http://0cch.com/tips/2016/09/21/verify-cert.html</link>
         <guid isPermaLink="true">http://0cch.com/tips/2016/09/21/verify-cert.html</guid>
-        
-        
-        <category>Tips</category>
-        
-      </item>
-    
-      <item>
-        <title>在NTFS元文件目录里创建文件</title>
-        <description>&lt;p&gt;说到Rootkit就不能提到他的文件隐藏，Rootkit隐藏文件的方式千奇百怪，这里说其中一个通过NTFS元文件目录无法被普通程序显示的特性隐藏文件的方法。&lt;/p&gt;
-
-&lt;p&gt;我们都知道NTFS是有元文件的，比如$MFT(NTFS主文件表)，这种文件是我们看不到的，但是系统能访问。同样还有一种元文件目录，这个目录也是看不到的，无论你是否打开了显示系统文件，隐藏文件的选项。那么如果我们把要隐藏的文件放在这种目录下，那么就达到了隐藏的效果。&lt;/p&gt;
-
-&lt;p&gt;举个例子 $Extend\$RmMetadata 这个目录。我们可以通过Winhex解析NTFS来读取这个目录的情况，而普通程序不行。这里我们通过这样的代码来创建文件。&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#define GPA(x) *(FARPROC *)&amp;amp;My##x = GetProcAddress(GetModuleHandle(L&quot;ntdll.dll&quot;), #x)	
-&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;GPA&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NtCreateFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;GPA&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RtlInitUnicodeString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;IO_STATUS_BLOCK&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;iob&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;HANDLE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;UNICODE_STRING&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;uni_str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;MyRtlInitUnicodeString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;uni_str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;L&quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\\&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;??&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\\&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;Global&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\\&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;D:&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\\&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;$Extend&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\\&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;$RmMetadata&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\\&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;$0cch&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-	&lt;span class=&quot;n&quot;&gt;OBJECT_ATTRIBUTES&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;oa&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;InitializeObjectAttributes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;oa&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;uni_str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;OBJ_CASE_INSENSITIVE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;OBJ_KERNEL_HANDLE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-	&lt;span class=&quot;n&quot;&gt;LONG&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MyNtCreateFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
-	&lt;span class=&quot;n&quot;&gt;FILE_APPEND_DATA&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SYNCHRONIZE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
-	&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;oa&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
-	&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;iob&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
-	&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
-	&lt;span class=&quot;n&quot;&gt;FILE_ATTRIBUTE_HIDDEN&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FILE_ATTRIBUTE_SYSTEM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
-	&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
-	&lt;span class=&quot;n&quot;&gt;FILE_SUPERSEDE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
-	&lt;span class=&quot;n&quot;&gt;FILE_SYNCHRONOUS_IO_NONALERT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FILE_NON_DIRECTORY_FILE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
-	&lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
-	&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-	
-	&lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;buffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;0123456789&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;WriteFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;buffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;strlen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;buffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ULONG&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-	&lt;span class=&quot;n&quot;&gt;CloseHandle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;值得注意的是我们必须用System用户权限去运行这个程序，才能创建文件到元文件目录，这里要用到psexec：&lt;/p&gt;
-
-&lt;p&gt;psexec  -s C:\0cch\Test.exe&lt;/p&gt;
-
-&lt;p&gt;然后我们看看效果&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/uploads/2016/08/20160824115523.png&quot;&gt;&lt;img src=&quot;/uploads/2016/08/20160824115523.png&quot; alt=&quot;20160824115523&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Tue, 23 Aug 2016 19:58:00 +0800</pubDate>
-        <link>http://0cch.com/tips/2016/08/23/create-file-in-metadata.html</link>
-        <guid isPermaLink="true">http://0cch.com/tips/2016/08/23/create-file-in-metadata.html</guid>
         
         
         <category>Tips</category>

@@ -194,6 +194,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -218,6 +220,11 @@
    
     
    
+    
+   
+    
+	  
+	  
     
    
     
@@ -597,6 +604,13 @@
   <h3>Archives:</h3>
   <ul>
    
+   
+    
+	  
+	  
+	  <li><a class="page-link" href="/2017/06/">2017-06</a></li>
+	  
+    
    
     
 	  
@@ -1131,30 +1145,30 @@
   <article class="post-content">
     <p>在开发一些公共库函数的时候，我们常常会对函数进行改写，这个时候我们会希望使用者用新的函数。为了提醒使用者，我们可以通过将函数声明为deprecated，这样编译器在编译的时候会抛出一个C4995或者C4996的警告。这个警告我们应该也经常看到过，比如使用strcpy，编译器会提示我们使用strcpy_s。</p>
 
-<p>使用这个编译器特性有两种方法：</p>
-<ol>
-  <li>__declspec(deprecated)</li>
-  <li>#pragma deprecated</li>
-</ol>
+<p>使用这个编译器特性有两种方法：<br />
+1. __declspec(deprecated)
+2. #pragma deprecated</p>
 
 <ul>
-  <li>__declspec(deprecated)<br />
+  <li>
+    <p>__declspec(deprecated)<br />
 <a href="https://msdn.microsoft.com/en-us/library/044swk7y.aspx">https://msdn.microsoft.com/en-us/library/044swk7y.aspx</a><br />
-这种方法直接声明在函数或者类之前，在使用函数的地方会抛出C4996的警告
-    <div class="highlighter-rouge"><pre class="highlight"><code>__declspec(deprecated) void func1(int) {}  
-</code></pre>
-    </div>
-    <p>当然我们还可以给警告自定义消息信息</p>
-    <div class="highlighter-rouge"><pre class="highlight"><code>__declspec(deprecated("** this is a deprecated function **")) void func2(int) {}  
-</code></pre>
-    </div>
+这种方法直接声明在函数或者类之前，在使用函数的地方会抛出C4996的警告<br />
+<code class="highlighter-rouge">
+__declspec(deprecated) void func1(int) {}  
+</code>
+当然我们还可以给警告自定义消息信息<br />
+<code class="highlighter-rouge">
+__declspec(deprecated("** this is a deprecated function **")) void func2(int) {}  
+</code></p>
   </li>
-  <li>#pragma deprecated<br />
+  <li>
+    <p>#pragma deprecated<br />
 <a href="https://msdn.microsoft.com/en-us/library/c8xdzzhh.aspx">https://msdn.microsoft.com/en-us/library/c8xdzzhh.aspx</a><br />
-这种方法可以一次性声明多个函数或者类，使用函数的地方会抛出C4995的警告
-    <div class="highlighter-rouge"><pre class="highlight"><code>#pragma deprecated(func1, func2)  
-</code></pre>
-    </div>
+这种方法可以一次性声明多个函数或者类，使用函数的地方会抛出C4995的警告<br />
+<code class="highlighter-rouge">
+#pragma deprecated(func1, func2)  
+</code></p>
   </li>
 </ul>
 
