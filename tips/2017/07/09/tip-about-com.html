@@ -6,12 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>0CCh</title>
-  <meta name="description" content="printf("I am programmer!");
-">
+  <title>调试COM的一个tip</title>
+  <meta name="description" content="最近遇到朋友的一个程序崩溃，原因是接口没有释放的时候调用了CoUninitialize，接着才释放接口。这个应该是个很明显的问题，但是朋友告诉我以前代码就是这个样子的，没有崩溃过，最近修改了部分代码但并不是这一块的。为了看看究竟什么回事，我把没有崩溃的程序抓了dump，看了COM的初始化引用计数：">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://0cch.com/">
+  <link rel="canonical" href="http://0cch.com/tips/2017/07/09/tip-about-com.html">
   <link rel="alternate" type="application/rss+xml" title="0CCh" href="http://0cch.com/feed.xml" />
 </head>
 
@@ -1150,295 +1149,36 @@
   </ul>
  </div>
 </div>
-        <div class="home">
+        <div class="post">
 
-  <h1 class="page-heading">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title">调试COM的一个TIP</h1>
+    <p class="post-meta">Jul 9, 2017 • admin</p>
+  </header>
 
-  <ul class="post-list">
-    
-      <li>
-        <span class="post-meta">Jul 9, 2017</span>
+  <article class="post-content">
+    <p>最近遇到朋友的一个程序崩溃，原因是接口没有释放的时候调用了CoUninitialize，接着才释放接口。这个应该是个很明显的问题，但是朋友告诉我以前代码就是这个样子的，没有崩溃过，最近修改了部分代码但并不是这一块的。为了看看究竟什么回事，我把没有崩溃的程序抓了dump，看了COM的初始化引用计数：</p>
 
-        <h2>
-          <a class="post-link" href="/tips/2017/07/09/tip-about-com.html">调试COM的一个TIP</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 2, 2017</span>
+<div class="highlighter-rouge"><pre class="highlight"><code>0:000&gt; dt _teb @$teb ReservedForOle
+ntdll!_TEB
+   +0x1758 ReservedForOle : 0x00000000`00271b00 Void
 
-        <h2>
-          <a class="post-link" href="/ntinternals/2017/07/02/gotcha-sdk-monitor-update.html">GOTCHA SDK 文件监控功能更新</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Jun 26, 2017</span>
+0:000&gt; dt ole32!SOleTlsData 0x00000000`00271b00 cComInits pNativeApt
+   +0x028 cComInits  : 5
+   +0x080 pNativeApt : 0x00000000`00272680 CComApartment
+   
+0:000&gt; dt 0x00000000`00272680 CComApartment _AptKind
+ole32!CComApartment
+   +0x010 _AptKind : 4 ( APTKIND_APARTMENTTHREADED )
+   
+</code></pre>
+</div>
 
-        <h2>
-          <a class="post-link" href="/tips/2017/06/26/switch-to-session-0.html">切换到SESSION 0</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">May 2, 2017</span>
+<p>没有崩溃的时候，引用计数确实不为0，也能看出是个STA。后来朋友发现，之所以之前没有崩溃，是因为之前线程加载的某个dll中，有初始化COM的调用，所以引用计数不为0。后来移开了这个dll，问题就出现了。</p>
 
-        <h2>
-          <a class="post-link" href="/debugging/2017/05/02/0cchext-dttoc-command.html">0CCHEXT插件实用命令DTTOC</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Apr 4, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/debugging/2017/04/04/delphi-exception.html">DELPHI异常0EEDFADE</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 8, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2017/03/08/set-dpi.html">WINDOWS 10设置系统DPI</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Feb 12, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2017/02/12/deprecate-a-function.html">让编译器不推荐(DEPRECATE)使用一个函数</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Jan 2, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2017/01/02/pdbdownloader.html">PDB 下载工具</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Dec 13, 2016</span>
-
-        <h2>
-          <a class="post-link" href="/debugging/2016/12/13/int29h.html">快速抛出失败的方法 INT 29H</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Nov 15, 2016</span>
-
-        <h2>
-          <a class="post-link" href="/debugging/2016/11/15/luadbg-windbg-ext.html">WINDBG的LUA脚本扩展LUADBG</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Oct 18, 2016</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2016/10/18/auto-increase-build-number.html">编译时自动增加BUILD NUMBER</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Sep 21, 2016</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2016/09/21/verify-cert.html">验证文件签名</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Aug 23, 2016</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2016/08/23/create-file-in-metadata.html">在NTFS元文件目录里创建文件</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 24, 2016</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2016/07/24/something-about-windows-timer-resolution.html">关于WINDOWS TIMER精确度</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Jun 26, 2016</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2016/06/26/win10-taskmgr-killproc.html">WINDOWS 10 任务管理器结束任务流程</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">May 18, 2016</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2016/05/18/win8-shell-long-filename.html">WINDOWS 8 SHELL API对于长路径文件名的支持</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Apr 12, 2016</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2016/04/12/get-desktop-icon-pos.html">获取桌面图标位置</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 17, 2016</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2016/03/17/msg-wnd-view.html">查看消息窗口工具</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Feb 23, 2016</span>
-
-        <h2>
-          <a class="post-link" href="/debugging/2016/02/23/delay-load-error.html">C06D007F异常的解决方法</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Feb 2, 2016</span>
-
-        <h2>
-          <a class="post-link" href="/debugging/2016/02/02/app-cpr-event.html">调试器最早的中断应用程序的方法</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Jan 11, 2016</span>
-
-        <h2>
-          <a class="post-link" href="/2016/01/11/2016-zjzw.html">总结和展望：转折的一年</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Dec 7, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/debugging/2015/12/07/cpp-exception-params.html">C++异常的参数分析(0XE06D7363)</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Nov 25, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/ntinternals/2015/11/25/gotcha-sdk.html">GOTCHA SDK 全盘文件名搜索开发库</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Nov 2, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/debugging/2015/11/02/app-startup-fail-dump.html">程序初始化失败DUMP分析</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Oct 6, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/debugging/2015/10/06/0cchext.html">WINDBG插件0CCHEXT</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Sep 8, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/debugging/2015/09/08/foxmail-hung.html">FOXMAIL无法响应</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Aug 27, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2015/08/27/3-interesting-API.html">介绍三个有趣的API</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Aug 3, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2015/08/03/ole-file-view-tool.html">OLEFILEVIEW 查看OLE文件数据结构的工具</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 13, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2015/07/13/monitor-process-with-wmi.html">使用WMI监控进程创建和结束</a>
-        </h2>
-		
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 1, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/tips/2015/07/01/dump-pe-with-windbg-script.html">用WINDBG SCRIPT将内存中的PE文件DUMP出来</a>
-        </h2>
-		
-      </li>
-    
-  </ul>
-
-  <div class="navi-content">
-    
-      
-      
-    
-	  <div class="nav-previous">
-        <a class="more-link" href="/page2">Older posts</a>  
-	  </div>
-      
+  </article>
   
-  </div>
+  <div class="ds-thread" data-thread-key="/tips/2017/07/09/tip-about-com" data-title="调试COM的一个tip" data-url="http://0cch.com/tips/2017/07/09/tip-about-com.html"></div>
 </div>
 
       </div>
