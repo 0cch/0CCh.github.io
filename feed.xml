@@ -6,9 +6,24 @@
 </description>
     <link>http://0cch.com/</link>
     <atom:link href="http://0cch.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 10 Jul 2017 17:20:33 +0800</pubDate>
-    <lastBuildDate>Mon, 10 Jul 2017 17:20:33 +0800</lastBuildDate>
+    <pubDate>Wed, 26 Jul 2017 16:12:02 +0800</pubDate>
+    <lastBuildDate>Wed, 26 Jul 2017 16:12:02 +0800</lastBuildDate>
     <generator>Jekyll v3.2.1</generator>
+    
+      <item>
+        <title>测试插入网易云音乐</title>
+        <description>&lt;p&gt;真心喜欢古风歌曲&lt;/p&gt;
+
+&lt;iframe frameborder=&quot;no&quot; border=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; width=&quot;330&quot; height=&quot;450&quot; src=&quot;//music.163.com/outchain/player?type=1&amp;amp;id=3164957&amp;amp;auto=1&amp;amp;height=430&quot;&gt;&lt;/iframe&gt;
+</description>
+        <pubDate>Wed, 26 Jul 2017 00:11:42 +0800</pubDate>
+        <link>http://0cch.com/tips/2017/07/26/insert-163-music.html</link>
+        <guid isPermaLink="true">http://0cch.com/tips/2017/07/26/insert-163-music.html</guid>
+        
+        
+        <category>Tips</category>
+        
+      </item>
     
       <item>
         <title>调试COM的一个tip</title>
@@ -463,25 +478,6 @@ x64: sxe -c &quot;da poi(poi(poi(@rbp+48))-70)+1;du /c 100 poi(poi(@rbp+48)+8)&q
         <pubDate>Tue, 13 Dec 2016 18:36:42 +0800</pubDate>
         <link>http://0cch.com/debugging/2016/12/13/int29h.html</link>
         <guid isPermaLink="true">http://0cch.com/debugging/2016/12/13/int29h.html</guid>
-        
-        
-        <category>Debugging</category>
-        
-      </item>
-    
-      <item>
-        <title>windbg的lua脚本扩展luadbg</title>
-        <description>&lt;p&gt;2012年的时候，我在blog上写到过开发了一个windbg的lua扩展&lt;a href=&quot;https://0cch.com/debugging/2012/08/16/dbglua-ef-bc-8c-e8-ae-a9lua-e8-84-9a-e6-9c-ac-e4-b9-9f-e8-83-bd-e6-8e-a7-e5-88-b6windbg-e8-bf-9b-e8-a1-8c-e8-b0-83-e8-af-95.html&quot;&gt;dbglua&lt;/a&gt;，当时觉得windbg的原生脚本语法太奇怪了，而且太不容易使用。现在来看，依旧如此，只不过我已经很熟悉这个原生脚本了。而这个lua扩展反倒是没什么用，因为用起来也不太方便，比如访问结构体。&lt;/p&gt;
-
-&lt;p&gt;最近无意之中看了一眼pykd，他用重载.操作符的方式访问符号和结构体深深的吸引了我，感觉非常有趣。而python本身依赖比较多，这也促使我拿起之前的代码看了看，并且决定在github上重新建立这个项目叫做&lt;a href=&quot;https://github.com/0cch/luadbg&quot;&gt;luadbg&lt;/a&gt;，这次我决定长期维护这个项目，想到新的功能就往里面写，就像我一直维护的&lt;a href=&quot;https://github.com/0cch/0cchext&quot;&gt;0cchext&lt;/a&gt;一样。luadbg除了兼容了老dbglua的函数以外，还添加了几个我觉得很方便的类，主要是用重载.操作符的方式来访问模块和结构体的数据，效果如下图所示：&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/uploads/2016/11/20161116113129.png&quot;&gt;&lt;img src=&quot;/uploads/2016/11/20161116113129.png&quot; alt=&quot;20161116113129&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;当然，也可以用!luacmd命令进入input模式，从而一条一条的输入语句来测试正确性。&lt;/p&gt;
-</description>
-        <pubDate>Tue, 15 Nov 2016 18:50:37 +0800</pubDate>
-        <link>http://0cch.com/debugging/2016/11/15/luadbg-windbg-ext.html</link>
-        <guid isPermaLink="true">http://0cch.com/debugging/2016/11/15/luadbg-windbg-ext.html</guid>
         
         
         <category>Debugging</category>
