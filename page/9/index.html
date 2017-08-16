@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>0CCh Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="0CCh Blog">
+<meta property="og:url" content="http://0cch.com/page/9/index.html">
+<meta property="og:site_name" content="0CCh Blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="0CCh Blog">
+  
+    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0CCh Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-e4bdbfe794a8e58fafe7bc96e7a88be997b4e99a94e5ae9ae697b6e599a8programmable-interval-timere7bc96e58699e7b3bbe7bb9fe697b6e9929f" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/08/04/e4bdbfe794a8e58fafe7bc96e7a88be997b4e99a94e5ae9ae697b6e599a8programmable-interval-timere7bc96e58699e7b3bbe7bb9fe697b6e9929f/" class="article-date">
+  <time datetime="2013-08-04T00:12:15.000Z" itemprop="datePublished">2013-08-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/MiniKernel/">MiniKernel</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/08/04/e4bdbfe794a8e58fafe7bc96e7a88be997b4e99a94e5ae9ae697b6e599a8programmable-interval-timere7bc96e58699e7b3bbe7bb9fe697b6e9929f/">使用可编程间隔定时器(Programmable Interval Timer)编写系统时钟</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>很久没有写关于MiniKernel的文章了，这周末看着有点时间，就写一点关于定时器的东西吧。</p>
+<p><a href="/uploads/2013/08/8253.jpg"><img src="/uploads/2013/08/8253.jpg" alt="8253"></a></p>
+<h2 id="简单介绍"><a href="#简单介绍" class="headerlink" title="简单介绍"></a>简单介绍</h2><p>可编程间隔定时器（PIT）芯片（也就是我们常说的8253/8254芯片），他包含了1个振荡器，1个预分频器和3个独立的分频器。每个分频器有一个输出，它是可以让定时器控制外部电路（例如，IRQ0）</p>
+<p>其中PIT的振荡器的频率是1.193182 MHz。具体为什么是这么个奇怪的数字，是有一点历史的，但这些不是这篇文章的重点，有兴趣的可以Google一下。</p>
+<p>分频器也比较容易理解，就是把高频分割为低频，一般来说就是使用一个计数器，当每次脉冲的时候，计数器的数值减少，当计数器数值为0的时候，在输出上产生一个脉冲，并且计数器复位，重新开始计数。</p>
+<p>PIT定时器的准确度依赖于所使用的振荡器，一般来说，一天的浮动为+/- 1.73秒。不过这种浮动，对我们影响并不大，所以也不必过于在意。</p>
+<p>PIT的输出通道一共有三个：通道0，直接连接到IRQ0，并且触发时钟中断（这个通道是我们写MiniKernel最重要的一个。）。通道1，貌似以前是定时刷新内存的，但是现在没什么用了。通道2是连接到PC扬声器的，目前我也没有研究过它的作用。</p>
+<p>这里再重点介绍一下通道0：PIT通道0的输出是连接到PIC芯片上的（8259A，以后有空也可以写一篇简单的介绍），因此，它能生成一个IRQ0的中断。通常情况下，在开机时，BIOS会将通道0的计数器的值设置为65535或0（其中如果是0，硬件会自动转化为65536），这样，它的输出频率就是18.2065Hz。另外，之所以说通道0最重要，主要原因就是它是三个通道中，唯一一个能连接到IRQ的，对于编写系统时钟至关重要。</p>
+<h2 id="编程相关"><a href="#编程相关" class="headerlink" title="编程相关"></a>编程相关</h2><p>PIT是使用以下IO端口进行控制：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">I/O 端口     用途</div><div class="line">0x40         通道0的数据端口</div><div class="line">0x41         通道1的数据端口</div><div class="line">0x42         通道2的数据端口</div><div class="line">0x43         控制字寄存器</div></pre></td></tr></table></figure></p>
+<p>控制字寄存器的具体内容如下：</p>
+<p><a href="/uploads/2013/08/8253cw.png"><img src="/uploads/2013/08/8253cw.png" alt="8253cw"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">Bits</div><div class="line">6 7选择通道：</div><div class="line">0 0 =通道0</div><div class="line">0 1 =通道1</div><div class="line">1 0 =通道2</div><div class="line">1 1 =回读命令（只有8254支持）</div><div class="line">4 5访问模式：</div><div class="line">0 0 =锁存计数值命令</div><div class="line">0 1 =访问模式：读写最低有效字节</div><div class="line">1 0 =访问模式：读写最高有效字节</div><div class="line">1 1 =访问模式：先读写最低有效字节，然后读写高位字节</div><div class="line">1-3工作模式：</div><div class="line">0 0 0 =模式0（计数结束中断）</div><div class="line">0 0 1 =模式1（硬件再触发单稳）</div><div class="line">0 1 0 =模式2（速率发生器）</div><div class="line">0 1 1 =模式3（方波发生器）</div><div class="line">1 0 0 =模式4（软件触发闸门）</div><div class="line">1 0 1 =模式5（硬件触发闸门）</div><div class="line">1 1 0 =模式2（速率发生器，与010B相同）</div><div class="line">1 1 1 =模式3（方波发生器，与011B相同）</div><div class="line">0 BCD /二进制模式：0 = 16位二进制数，1 =四位BCD&lt;/blockquote&gt;</div></pre></td></tr></table></figure>
+<p>这里，我们要写系统时钟，那么就应该这样选择：</p>
+<ol>
+<li>选择通道，必须是通道0，那么bit 6 7 就分别为 0 0。  </li>
+<li>由于我们的计数器是16位的，那么访问模式bit 4 5就应该选择1 1。  </li>
+<li>数据模式，毫无疑问选择二进制模式。  </li>
+<li>最后就是工作模式了，应该选择什么呢？这里我也不想把这些模式都讲的很清楚，因为那样就涉及到引脚和电平等等硬件知识。现在我们只需要知道0，1，4，5这些模式都可以触发中断，但是却不会自动复位。只有模式2和3会自动复位。所以模式2 3都是我们可以用来作为系统时钟的模式。那么1-3 bits可以为0 1 0或者0 1 1。</li>
+</ol>
+<h2 id="例子："><a href="#例子：" class="headerlink" title="例子："></a>例子：</h2><p>现在假设，系统的时钟中断例程已经设置好了，并且设置好了PIC的IRQ0到这个例程。下面要做的事情就是，设置时钟中断的频率了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mov dx, 1193180 / 100 ; 没10ms触发一次中断</div><div class="line">mov al, 110110b ; 设置控制字寄存器，上面已经介绍过每个位的含意</div><div class="line">out 0x43, al</div><div class="line">mov ax, dx</div><div class="line">out 0x40, al   ;先设置低位的值</div><div class="line">xchg ah, al</div><div class="line">out 0x40, al   ;再设置高位的值</div></pre></td></tr></table></figure>
+<p>总的来说8253 和 8254 是很有用的芯片。他们可以用在很多不同的设备，并用于很多不同的目的。不过就目前的PC来说，系统对他们的依赖已经不像以前那样严重了。随着科技的进步，APIC Timer已经可以取代他们。另外2005年，Intel和MS已经联合开发了新的高精度的定时器芯片High Precision Event Timer（HPET）。</p>
+<p>虽然成熟的系统可能已经不用8253 和 8254了，但是对于我们自己的迷你内核来说，使用它们就完全足够了</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/08/04/e4bdbfe794a8e58fafe7bc96e7a88be997b4e99a94e5ae9ae697b6e599a8programmable-interval-timere7bc96e58699e7b3bbe7bb9fe697b6e9929f/" data-id="cj6etaktg002xfcg9vlw0366g" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e585b3e4ba8ejsoncppe79a84e4b8ade69687e7bc96e7a081e997aee9a298" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/07/19/e585b3e4ba8ejsoncppe79a84e4b8ade69687e7bc96e7a081e997aee9a298/" class="article-date">
+  <time datetime="2013-07-19T08:58:51.000Z" itemprop="datePublished">2013-07-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/07/19/e585b3e4ba8ejsoncppe79a84e4b8ade69687e7bc96e7a081e997aee9a298/">关于JsonCpp的中文编码问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近工作中用到了jsoncpp来解析json文件。但是遇到了一个这样的问题，如果json代码中有中文，并且用“\u594E\u6258\u65AF”这样的方式表示，那么jsoncpp解析的时候，就会把他转换成UTF-8。到这一步还是OK的，然后我就试图把这段中文写回文件，问题就来了，jsoncpp不会把中文转换为“\u594E\u6258\u65AF”这样的形式在存储，而是直接存储为UTF-8格式的文件。如图所示：</p>
+<p><a href="/uploads/2013/07/20130719231900.png"><img src="/uploads/2013/07/20130719231900.png" alt="20130719231900"></a></p>
+<p>而我恰好是需要这种经过编码的形式的字符串，而非直接给我中文。在网上搜了搜，貌似也没有很好的解决方案，只好自己修改jsoncpp的代码以满足这个需求了。<br>简单读了下jsoncpp的read和write的代码。jsoncpp在read的时候会调用codePointToUTF8这个函数把\uXXXX这个形式的代码转换成UTF-8，但是write的时候就没有这样的转换了，虽然不是很了解作者这么写的思路，但是修改的思路倒是有了。我的做法是把所有需要两个和两个以上字节表示一个字符的UTF-8字符串全部转换成\uXXXX这个形式。那么就需要写一个转换函数。<a href="http://en.wikipedia.org/wiki/UTF-8" target="_blank" rel="external">http://en.wikipedia.org/wiki/UTF-8</a> 上很清楚的描述了这些转换关系，所以完全可以自己动手写一个这样的函数。以下是我自己的实现：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">UTF8TocodePoint</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *c, <span class="keyword">unsigned</span> <span class="keyword">int</span> *result)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line"><span class="keyword">int</span> count = <span class="number">0</span>;</div><div class="line"></div><div class="line"><span class="keyword">if</span> (((*c) &amp; <span class="number">0x80</span>) == <span class="number">0</span>) &#123;</div><div class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;(*c);</div><div class="line">count = <span class="number">1</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xe0</span>) == <span class="number">0xc0</span>) &#123;</div><div class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0x1f</span>) &lt;&lt; <span class="number">6</span>) | ((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>));</div><div class="line">count = <span class="number">2</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xf0</span>) == <span class="number">0xe0</span>) &#123;</div><div class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0xf</span>) &lt;&lt; <span class="number">12</span>) | (((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">6</span>) | (((*(c + <span class="number">2</span>)) &amp; <span class="number">0x3f</span>)));</div><div class="line">count = <span class="number">3</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xf8</span>) == <span class="number">0xf0</span>) &#123;</div><div class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0x7</span>) &lt;&lt; <span class="number">18</span>) | (((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">12</span>) | (((*(c + <span class="number">2</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">6</span>) | (((*(c + <span class="number">3</span>)) &amp; <span class="number">0x3f</span>)));</div><div class="line">count = <span class="number">4</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xfc</span>) == <span class="number">0xf8</span>) &#123;</div><div class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0x3</span>) &lt;&lt; <span class="number">24</span>) | (((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">18</span>) | (((*(c + <span class="number">2</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">12</span>) | (((*(c + <span class="number">3</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">6</span>) | (((*(c + <span class="number">4</span>)) &amp; <span class="number">0x3f</span>)));</div><div class="line">count = <span class="number">5</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xfe</span>) == <span class="number">0xfc</span>) &#123;</div><div class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0x1</span>) &lt;&lt; <span class="number">30</span>) | (((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">24</span>) | (((*(c + <span class="number">2</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">18</span>) | (((*(c + <span class="number">3</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">12</span>) | (((*(c + <span class="number">4</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">6</span>) | (((*(c + <span class="number">5</span>)) &amp; <span class="number">0x3f</span>)));</div><div class="line">count = <span class="number">6</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">return</span> count;</div><div class="line">&#125;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+<p>然后把这个函数的调用加入到valueToQuotedString中，将原始的代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">if</span> ( isControlCharacter( *c ) )</div><div class="line">&#123;</div><div class="line"><span class="built_in">std</span>::<span class="built_in">ostringstream</span> oss;</div><div class="line">oss &lt;&lt; <span class="string">"\\u"</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; <span class="built_in">std</span>::uppercase &lt;&lt; <span class="built_in">std</span>::setfill(<span class="string">'0'</span>) &lt;&lt; <span class="built_in">std</span>::setw(<span class="number">4</span>) &lt;&lt; <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(*c);</div><div class="line">result += oss.str();</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span></div><div class="line">&#123;</div><div class="line">result += *c;</div><div class="line">&#125;</div><div class="line"><span class="keyword">break</span>;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+<p>修改为：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">if</span> ( isControlCharacter( *c ) )</div><div class="line">&#123;</div><div class="line"><span class="built_in">std</span>::<span class="built_in">ostringstream</span> oss;</div><div class="line">oss &lt;&lt; <span class="string">"\\u"</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; <span class="built_in">std</span>::uppercase &lt;&lt; <span class="built_in">std</span>::setfill(<span class="string">'0'</span>) &lt;&lt; <span class="built_in">std</span>::setw(<span class="number">4</span>) &lt;&lt; <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(*c);</div><div class="line">result += oss.str();</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> <span class="keyword">if</span> ((*c) &amp; <span class="number">0x80</span>) &#123;</div><div class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> num = <span class="number">0</span>;</div><div class="line">c += UTF8TocodePoint(c, &amp;num) - <span class="number">1</span>;</div><div class="line"><span class="built_in">std</span>::<span class="built_in">ostringstream</span> oss;</div><div class="line">oss &lt;&lt; <span class="string">"\\u"</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; <span class="built_in">std</span>::uppercase &lt;&lt; <span class="built_in">std</span>::setfill(<span class="string">'0'</span>) &lt;&lt; <span class="built_in">std</span>::setw(<span class="number">4</span>) &lt;&lt; <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(num);</div><div class="line">result += oss.str();</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span></div><div class="line">&#123;</div><div class="line">result += *c;</div><div class="line">&#125;</div><div class="line"><span class="keyword">break</span>;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+<p>这样还没算结束，因为这个函数开头的地方还有一个判断，我们也需要修改一下，将原始代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">if</span> (<span class="built_in">strpbrk</span>(value, <span class="string">"\"\\\b\f\n\r\t"</span>) == <span class="literal">NULL</span> &amp;&amp; !containsControlCharacter( value ))</div><div class="line"><span class="keyword">return</span> <span class="built_in">std</span>::<span class="built_in">string</span>(<span class="string">"\""</span>) + value + <span class="string">"\""</span>;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+<p>修改为：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">if</span> (<span class="built_in">strpbrk</span>(value, <span class="string">"\"\\\b\f\n\r\t"</span>) == <span class="literal">NULL</span> &amp;&amp; !containsControlCharacter( value ) &amp;&amp; !containsMultiByte( value ))</div><div class="line"><span class="keyword">return</span> <span class="built_in">std</span>::<span class="built_in">string</span>(<span class="string">"\""</span>) + value + <span class="string">"\""</span>;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+<p>containsMultiByte的实现是这样的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">containsMultiByte</span><span class="params">( <span class="keyword">const</span> <span class="keyword">char</span>* str )</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line"><span class="keyword">while</span> ( *str )</div><div class="line">&#123;</div><div class="line"><span class="keyword">if</span> ( ( *(str++) ) &amp; <span class="number">0x80</span> )</div><div class="line"><span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+<p>好了，万事俱备，现在试一试效果，结果如图：</p>
+<p><a href="/uploads/2013/07/20130719232025.png"><img src="/uploads/2013/07/20130719232025.png" alt="20130719232025"></a></p>
+<p>现在这个jsoncpp看起来已经满足了我的需求，但是不确定的是，不知道这样修改会不会引起其他问题。现在也只能说暂时不去管他，有问题再一步一步的修改吧。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/07/19/e585b3e4ba8ejsoncppe79a84e4b8ade69687e7bc96e7a081e997aee9a298/" data-id="cj6etakte002vfcg9ulbtyvup" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e8b083e8af95e68c82e6adbbe79a84explorer" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/07/05/e8b083e8af95e68c82e6adbbe79a84explorer/" class="article-date">
+  <time datetime="2013-07-05T09:40:28.000Z" itemprop="datePublished">2013-07-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/07/05/e8b083e8af95e68c82e6adbbe79a84explorer/">调试挂死的Explorer</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一个同事前几天告诉我说，他的explorer.exe总是挂死，不知道是什么情况导致的。于是我让他下次挂死的时候抓个dump我。抓Dump的工具很多，例如用Win7的TaskMgr，sysinternals的Procexp，或者Windbg本身。不过考虑到explorer挂死了，操作桌面起来不方便，所以最好选择能够自动检测挂死并且抓住dump的工具。这里比较推荐的是sysinternals的Procdump以及我开发的<a href="http://0cch.net/wordpress/?p=208" target="_blank" rel="external">proc_dump_study</a>（带UI）。</p>
+<p><a href="/uploads/2013/07/20130706003632.png"><img src="/uploads/2013/07/20130706003632.png" alt="20130706003632"></a></p>
+<p>第二天，同事把explorer.exe挂死的Dump传给了我，200多MB。用Windbg打开Dump文件，第一反应就是看看有多少线程再说吧。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">0:000&gt; ~</div><div class="line">. 0 Id: b14.b18 Suspend: 0 Teb: 7ffde000 Unfrozen</div><div class="line">1 Id: b14.b1c Suspend: 0 Teb: 7ffdd000 Unfrozen</div><div class="line">...</div><div class="line">54 Id: b14.1a94 Suspend: 0 Teb: 7ff75000 Unfrozen</div><div class="line">55 Id: b14.18c8 Suspend: 0 Teb: 7ff74000 Unfrozen</div></pre></td></tr></table></figure>
+<p>56个线程，肯定不能依次看栈回溯。按照尝试判断，explorer界面挂死，肯定是刷新界面的线程挂死了。所以栈回溯里肯定有explorer的身影。于是找找哪个线程有explorer模块。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">0:000&gt; !findstack explorer!</div><div class="line">Thread 000, 2 frame(s) match</div><div class="line">* 04 001bf924 0087aa50 explorer!wWinMain+0x54a</div><div class="line">* 05 001bf9b8 75771154 explorer!_initterm_e+0x1b1</div><div class="line"></div><div class="line">Thread 003, 2 frame(s) match</div><div class="line">* 11 0324f714 008757a6 explorer!CTray::_MessageLoop+0x265</div><div class="line">* 12 0324f724 75b346bc explorer!CTray::MainThreadProc+0x8a</div><div class="line"></div><div class="line">Thread 008, 1 frame(s) match</div><div class="line">* 03 04a1fc0c 75b346bc explorer!CSoundWnd::s_ThreadProc+0x3a</div></pre></td></tr></table></figure>
+<p>从上面的结果看来，3号线程最可疑，于是看看完整的堆栈情况。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">0:003&gt; kv</div><div class="line"># ChildEBP RetAddr Args to Child</div><div class="line">00 0324f508 76eb5aec 75236924 00000002 0324f55c ntdll!KiFastSystemCallRet (FPO: [0,0,0])</div><div class="line">01 0324f50c 75236924 00000002 0324f55c 00000001 ntdll!NtWaitForMultipleObjects+0xc (FPO: [5,0,0])</div><div class="line">02 0324f5a8 7576f10a 0324f55c 0324f5d0 00000000 KERNELBASE!WaitForMultipleObjectsEx+0x100 (FPO: [Non-Fpo])</div><div class="line">03 0324f5f0 75fa90be 00000002 7ffdf000 00000000 kernel32!WaitForMultipleObjectsExImplementation+0xe0 (FPO: [Non-Fpo])</div><div class="line">04 0324f644 73d51717 000002fc 0324f678 ffffffff user32!RealMsgWaitForMultipleObjectsEx+0x13c (FPO: [Non-Fpo])</div><div class="line">05 0324f664 73d517b8 000024ff ffffffff 00000000 duser!CoreSC::Wait+0x59 (FPO: [Non-Fpo])</div><div class="line">06 0324f68c 73d51757 000024ff 00000000 0324f6b8 duser!CoreSC::WaitMessage+0x54 (FPO: [Non-Fpo])</div><div class="line">07 0324f69c 75fa949f 000024ff 00000000 0324f68c duser!MphWaitMessageEx+0x2b (FPO: [Non-Fpo])</div><div class="line">08 0324f6b8 76eb60ce 0324f6d0 00000008 0324f7e8 user32!__ClientWaitMessageExMPH+0x1e (FPO: [Non-Fpo])</div><div class="line">09 0324f6d4 75fa93f3 00851dee 00000000 80000000 ntdll!KiUserCallbackDispatcher+0x2e (FPO: [0,0,0])</div><div class="line">0a 0324f6d8 00851dee 00000000 80000000 00901180 user32!NtUserWaitMessage+0xc (FPO: [0,0,0])</div><div class="line">0b 0324f714 008757a6 00000000 75b318f2 0324f7ac explorer!CTray::_MessageLoop+0x265 (FPO: [Non-Fpo])</div><div class="line">0c 0324f724 75b346bc 00901180 00000000 00000000 explorer!CTray::MainThreadProc+0x8a (FPO: [Non-Fpo])</div><div class="line">0d 0324f7ac 75771154 001bf810 0324f7f8 76ecb299 shlwapi!WrapperThreadProc+0x1b5 (FPO: [Non-Fpo])</div><div class="line">0e 0324f7b8 76ecb299 001bf810 75d00467 00000000 kernel32!BaseThreadInitThunk+0xe (FPO: [Non-Fpo])</div><div class="line">0f 0324f7f8 76ecb26c 75b345e9 001bf810 00000000 ntdll!__RtlUserThreadStart+0x70 (FPO: [Non-Fpo])</div><div class="line">10 0324f810 00000000 75b345e9 001bf810 00000000 ntdll!_RtlUserThreadStart+0x1b (FPO: [Non-Fpo])</div></pre></td></tr></table></figure>
+<p>可以看出线程正在调用WaitForMultipleObjectsEx等待两个内核对象。那么看看这两个内核对象是什么吧。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">0:003&gt; dp 0324f55c L2</div><div class="line">0324f55c 00000318 000002fc</div><div class="line">0:003&gt; !handle 00000318</div><div class="line">Handle 00000318</div><div class="line">Type Event</div><div class="line">0:003&gt; !handle 000002fc</div><div class="line">Handle 000002fc</div><div class="line">Type Event</div></pre></td></tr></table></figure>
+<p>很不幸，两个内核对象都是Event，这样就没有什么可参考的价值了，因为我们没办法知道谁应该去设置两个event。那么好吧，从其他方面下手，看能不能发现问题。看看关键区的情况。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">0:003&gt; !cs -l</div><div class="line">-----------------------------------------</div><div class="line">DebugInfo = 0x76f47540</div><div class="line">Critical section = 0x76f47340 (ntdll!LdrpLoaderLock+0x0)</div><div class="line">LOCKED</div><div class="line">LockCount = 0x6</div><div class="line">WaiterWoken = No</div><div class="line">OwningThread = 0x000013e0</div><div class="line">RecursionCount = 0x1</div><div class="line">LockSemaphore = 0x220</div><div class="line">SpinCount = 0x00000000</div><div class="line">-----------------------------------------</div><div class="line">DebugInfo = 0x002ac6e0</div><div class="line">Critical section = 0x765ea0f0 (shell32!CMountPoint::_csDL+0x0)</div><div class="line">LOCKED</div><div class="line">LockCount = 0x0</div><div class="line">WaiterWoken = No</div><div class="line">OwningThread = 0x000013e0</div><div class="line">RecursionCount = 0x1</div><div class="line">LockSemaphore = 0xA50</div><div class="line">SpinCount = 0x00000000</div></pre></td></tr></table></figure>
+<p>看到一个很可疑的情况了，两个cs都被一个线程占用，更可疑的是这个线程居然还占用了LdrpLoaderLock。这就很有可能是引起死锁的原因了。来看看这个线程的完整堆栈。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">0:053&gt; ~~[13e0]s</div><div class="line">eax=06d02f00 ebx=00000000 ecx=03920000 edx=06ce0000 esi=000015ac edi=00000000</div><div class="line">eip=76eb6194 esp=0b1ad1cc ebp=0b1ad238 iopl=0 nv up ei pl zr na pe nc</div><div class="line">cs=001b ss=0023 ds=0023 es=0023 fs=003b gs=0000 efl=00000246</div><div class="line">ntdll!KiFastSystemCallRet:</div><div class="line">76eb6194 c3 ret</div><div class="line">0:053&gt; k</div><div class="line"># ChildEBP RetAddr</div><div class="line">00 0b1ad1c8 76eb5b0c ntdll!KiFastSystemCallRet</div><div class="line">01 0b1ad1cc 7523179c ntdll!ZwWaitForSingleObject+0xc</div><div class="line">02 0b1ad238 7576efe3 KERNELBASE!WaitForSingleObjectEx+0x98</div><div class="line">03 0b1ad250 7576ef92 kernel32!WaitForSingleObjectExImplementation+0x75</div><div class="line">04 0b1ad264 7622399a kernel32!WaitForSingleObject+0x12</div><div class="line">05 0b1ad294 7622299c shell32!CMountPoint::_InitLocalDrives+0xcd</div><div class="line">...</div><div class="line">14 0b1ad81c 762aa690 shell32!SHGetFolderLocation+0x121</div><div class="line">15 0b1ad838 0a5c0bf5 shell32!SHGetSpecialFolderLocation+0x17</div><div class="line">WARNING: Stack unwind information not available. Following frames may be wrong.</div><div class="line">16 0b1ae0bc 0a5bfceb HaoZipExt!DllUnregisterServer+0x1cd04</div><div class="line">17 0b1ae240 0a5e0200 HaoZipExt!DllUnregisterServer+0x1bdfa</div><div class="line">18 0b1ae284 0a5e02b9 HaoZipExt!DllUnregisterServer+0x3c30f</div><div class="line">19 0b1ae2ac 76ecfbdf HaoZipExt!DllUnregisterServer+0x3c3c8</div><div class="line">1a 0b1ae3a0 76ed008b ntdll!LdrpRunInitializeRoutines+0x26f</div><div class="line">1b 0b1ae50c 76ecf499 ntdll!LdrpLoadDll+0x4d1</div><div class="line">1c 0b1ae540 7523b96d ntdll!LdrLoadDll+0x92</div><div class="line">1d 0b1ae57c 7534a333 KERNELBASE!LoadLibraryExW+0x1d3</div><div class="line">1e 0b1ae598 7534a2b8 ole32!LoadLibraryWithLogging+0x16</div><div class="line">...</div><div class="line">39 0b1afbac 76241ee6 shell32!CShellExecute::_DoExecute+0x5a</div><div class="line">3a 0b1afbc0 75b346bc shell32!CShellExecute::s_ExecuteThreadProc+0x30</div><div class="line">3b 0b1afc48 75771154 shlwapi!WrapperThreadProc+0x1b5</div><div class="line">3c 0b1afc54 76ecb299 kernel32!BaseThreadInitThunk+0xe</div><div class="line">3d 0b1afc94 76ecb26c ntdll!__RtlUserThreadStart+0x70</div><div class="line">3e 0b1afcac 00000000 ntdll!_RtlUserThreadStart+0x1b</div></pre></td></tr></table></figure>
+<p>首先一眼就看到了一个非系统模块HaoZipExt。再扫一眼，发现他在LdrpLoaderLock的时候又去等待了某个内核对象。那么再来看看这个内核对象是什么吧。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">0:053&gt; kv L5</div><div class="line"># ChildEBP RetAddr Args to Child</div><div class="line">00 0b1ad1c8 76eb5b0c 7523179c 000015ac 00000000 ntdll!KiFastSystemCallRet (FPO: [0,0,0])</div><div class="line">01 0b1ad1cc 7523179c 000015ac 00000000 00000000 ntdll!ZwWaitForSingleObject+0xc (FPO: [3,0,0])</div><div class="line">02 0b1ad238 7576efe3 000015ac ffffffff 00000000 KERNELBASE!WaitForSingleObjectEx+0x98 (FPO: [Non-Fpo])</div><div class="line">03 0b1ad250 7576ef92 000015ac ffffffff 00000000 kernel32!WaitForSingleObjectExImplementation+0x75 (FPO: [Non-Fpo])</div><div class="line">04 0b1ad264 7622399a 000015ac ffffffff 00000000 kernel32!WaitForSingleObject+0x12 (FPO: [Non-Fpo])</div><div class="line">0:053&gt; !handle 000015ac f</div><div class="line">Handle 000015ac</div><div class="line">Type Thread</div><div class="line">Attributes 0</div><div class="line">GrantedAccess 0x1fffff:</div><div class="line">Delete,ReadControl,WriteDac,WriteOwner,Synch</div><div class="line">Terminate,Suspend,Alert,GetContext,SetContext,SetInfo,QueryInfo,SetToken,Impersonate,DirectImpersonate</div><div class="line">HandleCount 4</div><div class="line">PointerCount 7</div><div class="line">Name &lt;none&gt;</div><div class="line">Object specific information</div><div class="line">Thread Id b14.1a94</div><div class="line">Priority 10</div><div class="line">Base Priority 0</div></pre></td></tr></table></figure>
+<p>原来他在等待1a94这个线程结束啊，那么这个1a94线程又在干嘛呢？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">0:054&gt; ~~[1a94]s</div><div class="line">eax=0bbdfbb4 ebx=00000000 ecx=00000000 edx=00000000 esi=76f47340 edi=00000000</div><div class="line">eip=76eb6194 esp=0bbdfa24 ebp=0bbdfa88 iopl=0 nv up ei pl nz ac pe cy</div><div class="line">cs=001b ss=0023 ds=0023 es=0023 fs=003b gs=0000 efl=00000217</div><div class="line">ntdll!KiFastSystemCallRet:</div><div class="line">76eb6194 c3 ret</div><div class="line">0:054&gt; kv</div><div class="line"># ChildEBP RetAddr Args to Child</div><div class="line">00 0bbdfa20 76eb5b0c 76e9f98e 00000220 00000000 ntdll!KiFastSystemCallRet (FPO: [0,0,0])</div><div class="line">01 0bbdfa24 76e9f98e 00000220 00000000 00000000 ntdll!ZwWaitForSingleObject+0xc (FPO: [3,0,0])</div><div class="line">02 0bbdfa88 76e9f872 00000000 00000000 00000000 ntdll!RtlpWaitOnCriticalSection+0x13e (FPO: [Non-Fpo])</div><div class="line">03 0bbdfab0 76ecb31d 76f47340 7d4908db 7ff75000 ntdll!RtlEnterCriticalSection+0x150 (FPO: [Non-Fpo])</div><div class="line">04 0bbdfb44 76ecb13c 0bbdfbb4 7d49080f 00000000 ntdll!LdrpInitializeThread+0xc6 (FPO: [Non-Fpo])</div><div class="line">05 0bbdfb90 76ecb169 0bbdfbb4 76e70000 00000000 ntdll!_LdrpInitialize+0x1ad (FPO: [Non-Fpo])</div><div class="line">06 0bbdfba0 00000000 0bbdfbb4 76e70000 00000000 ntdll!LdrInitializeThunk+0x10 (FPO: [Non-Fpo])</div></pre></td></tr></table></figure>
+<p>原来这个线程在等待LdrpLoaderLock这个锁啊，真相大白了。这里理一下思路，线程13e0，创建后，调用Loadlibrary，装载HaoZipExt。这个时候HaoZipExt获得LdrpLoaderLock，但是HaoZipExt犯了编写DLL的大忌。在DLLMain里面做了一些不能预期的事情。HaoZipExt调用了SHGetSpecialFolderLocation，这个函数在内部会创建一个线程，运行一个叫做FirstHardwareEnumThreadProc 的子过程。这个线程起来之后，就会通知所用的DllMain，告诉他们DLL_THREAD_ATTACH的消息。但是告诉他们这个消息之前，首先要获得LdrpLoaderLock这个锁。但是LdrpLoaderLock这个锁正在被创建他的线程使用，而且还在等自己结束，就这样死锁了。这也是MSDN特别强调告诉我们，不要在DllMain里有过多自己不能预期的操作的原因。</p>
+<p>那么看看这个罪魁祸首是什么模块吧。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">0:054&gt; lmvm HaoZipExt</div><div class="line">Browse full module list</div><div class="line">start end module name</div><div class="line">0a5a0000 0a605000 HaoZipExt (export symbols) HaoZipExt.dll</div><div class="line">Loaded symbol image file: HaoZipExt.dll</div><div class="line">Image path: C:\Program Files\HaoZip\HaoZipExt.dll</div><div class="line">Image name: HaoZipExt.dll</div><div class="line">Browse all global symbols functions data</div><div class="line">Timestamp: Wed Jul 25 17:16:06 2012 (500FB956)</div><div class="line">CheckSum: 0006C14B</div><div class="line">ImageSize: 00065000</div><div class="line">File version: 3.0.1.9002</div><div class="line">Product version: 3.0.1.9002</div><div class="line">File flags: 0 (Mask 3F)</div><div class="line">File OS: 40004 NT Win32</div><div class="line">File type: 2.0 Dll</div><div class="line">File date: 00000000.00000000</div><div class="line">Translations: 0804.04b0</div><div class="line">CompanyName: 瑞创网络</div><div class="line">ProductName: 2345好压（HaoZip）</div><div class="line">InternalName: HaoZipExt</div><div class="line">OriginalFilename: HaoZipExt.dll</div><div class="line">ProductVersion: 3.0</div><div class="line">FileVersion: 3.0.1.9002</div><div class="line">FileDescription: 2345好压-Windows扩展模块</div><div class="line">LegalCopyright: 版权所有(c) 2012 瑞创网络</div><div class="line">Comments: www.haozip.com</div></pre></td></tr></table></figure>
+<p>知道问题后，我感觉这应该就是explorer挂死的原因，虽然没有100%的证据，但是至少也是一个造成死锁的程序，早卸载为妙，于是我告诉了同事，卸载了这个叫做好压的软件。之后几天，explorer运行正常，再也没有出现过挂死现象了。</p>
+<p>最后总结HaoZipExt犯的错误<br>1.在DllMain里面的做了线程创建的操作。<br>2.跟挂死无关，只是吐槽一下他在DllMain里面调用了SHGetSpecialFolderLocation这个函数。因为这个函数已经不被支持，而且有可能在将来被废弃。以下是MSDN的原话：[SHGetSpecialFolderLocation is not supported and may be altered or unavailable in the future. Instead, useSHGetFolderLocation.]</p>
+<p>感叹一下，写一个健壮的程序真的不是件容易的事啊。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/07/05/e8b083e8af95e68c82e6adbbe79a84explorer/" data-id="cj6etaktc002sfcg9wedqelz7" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e585b3e4ba8ewow64e79a84e4b880e782b9e8aeb0e5bd95" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/06/30/e585b3e4ba8ewow64e79a84e4b880e782b9e8aeb0e5bd95/" class="article-date">
+  <time datetime="2013-06-30T09:44:59.000Z" itemprop="datePublished">2013-06-30</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>►<a class="article-category-link" href="/categories/NTInternals/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/06/30/e585b3e4ba8ewow64e79a84e4b880e782b9e8aeb0e5bd95/">关于WOW64的一点记录</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>1.关于TEB的地址：32位的TEB地址在64位TEB地址加上0x2000的偏移处。验证如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">0:000&gt; r @$teb</div><div class="line">$teb=000000007efdb000</div><div class="line"></div><div class="line">0:000:x86&gt; dg @fs</div><div class="line">P Si Gr Pr Lo</div><div class="line">Sel Base Limit Type l ze an es ng Flags</div><div class="line">---- ----------------- ----------------- ---------- - -- -- -- -- --------</div><div class="line">0053 7efdd000 00000fff Data RW Ac 3 Bg By P Nl 000004f3</div><div class="line"></div><div class="line">0:000:x86&gt; ? 7efdd000 - 7efdb000</div><div class="line">Evaluate expression: 8192 = 00002000</div></pre></td></tr></table></figure>
+<p>2.从32位切换到到64位的时候，系统会保存32位的寄存器状态。这些状态保存在Teb-&gt;TlsShots[1]中。继续用Windbg验证：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">0:000&gt; dt _teb @$teb -a5 TlsSlots</div><div class="line">ntdll!_TEB</div><div class="line">+0x1480 TlsSlots :</div><div class="line">[00] (null)</div><div class="line">[01] 0x00000000`001cfd20 Void</div><div class="line">[02] (null)</div><div class="line">[03] 0x00000000`001ca930 Void</div><div class="line">[04] (null)</div><div class="line"></div><div class="line">0:000&gt; !wow64exts.r</div><div class="line"></div><div class="line">No wow64 context address specified, dumping wow64 context from cpu area...</div><div class="line">Teb64 Address: 0x7efdb000, CpuArea Address: 0x1cfd20</div><div class="line"></div><div class="line">Context Address: 0x1cfd24</div><div class="line"></div><div class="line">eax=00000000 ebx=00000000 ecx=00000000 edx=00000000 esi=77200094 edi=00000000</div><div class="line">eip=772000a6 esp=000ee0ac ebp=000ee150 iopl=0 nv up ei pl zr na po nc</div><div class="line">cs=0023 ss=002b ds=002b es=002b fs=0053 gs=002b efl=00000246</div></pre></td></tr></table></figure>
+<p>3.从64位切换到到32位的时候,会保存64位的RSP，保持的地址是Teb-&gt;TlsShots[0]。切换回64位的时候，这个地址被清0。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">0:000&gt; dt ntdll!_TEB @r12 -a5 TlsSlots</div><div class="line">+0x1480 TlsSlots :</div><div class="line">[00] 0x00000000`001ce530 Void</div><div class="line">[01] 0x00000000`001cfd20 Void</div><div class="line">[02] (null)</div><div class="line">[03] (null)</div><div class="line">[04] (null)</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/06/30/e585b3e4ba8ewow64e79a84e4b880e782b9e8aeb0e5bd95/" data-id="cj6etakt9002lfcg9jyo9co7n" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-etwlogview-e5ae9ee697b6e69fa5e79c8betwe79a84e5b7a5e585b7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/06/12/etwlogview-e5ae9ee697b6e69fa5e79c8betwe79a84e5b7a5e585b7/" class="article-date">
+  <time datetime="2013-06-12T09:55:03.000Z" itemprop="datePublished">2013-06-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/06/12/etwlogview-e5ae9ee697b6e69fa5e79c8betwe79a84e5b7a5e585b7/">EtwLogView —— 实时查看ETW的工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近玩XPerf玩的比较多，也经常和cradiator(<a href="http://sysdbg.com" target="_blank" rel="external">blog</a>)讨论xperf和etw的话题。上周吃饭的时候就讨论到，貌似没找到一款实时记录查看etw的工具。当时我的观点是，只是看etw的原始记录很难分析出什么东西，必须配合很细工具，例如xperfview。这样才能有效的发挥出etw的威力，所以实时工具用处不大。而cradiator认为，除了这些常规的用法外，如果能实时记录查看etw的信息，那么把etw当作平时的log输出方式也是不错的选择。这样的好处就是，不需要额外的加入log机制，使用etw就足够强大，其次如果遇上了问题，这些etw的记录又可以作为event，帮助xperfview的分析。然后这家伙就怂恿我写一个:-)</p>
+<p>经过上面的一番介绍，应该就能知道EtwLogView的用处何在了。他是一个“实时”记录查看etw的工具。之所以用上了引号。是因为这个实时是有不确定性的。例如，如果一个provider输出了大量的事件信息。那么这个工具就会遇上麻烦，因为更新记录，和刷新界面的速度很可能跟不上provider的输出速度。这样，这个实时就大打折扣。不过就像cradiator所说的，只用来监控自己的事件，倒没什么问题。</p>
+<p>现在EtwLogView是1.0版本，勉强算是可以先用着吧。</p>
+<p>首先需要在Windows7系统和管理员权限运行工具，然后就可以创建Session，创建的时候需要选择Session的Provider。可以在List选择，也可以自己输入（必须为GUID格式）。如果想监视多个Provider，那么每个GUID之间需要用分号隔开。</p>
+<p><a href="/uploads/2013/06/20130613010933.png"><img src="/uploads/2013/06/20130613010933.png" alt="20130613010933"></a></p>
+<p><a href="/uploads/2013/06/20130613011032.png"><img src="/uploads/2013/06/20130613011032.png" alt="20130613011032"></a></p>
+<p>另外，如果想更灵活的设置Session，可以使用xperf创建Session。然后打开EtwLogView，选择打开Session。在文本框中输入Session名，如果有多个Session需要监视，那么可以用分号隔开Session名。</p>
+<p><a href="/uploads/2013/06/20130613011054.png"><img src="/uploads/2013/06/20130613011054.png" alt="20130613011054"></a></p>
+<p>ETW输出的信息很多，我主要列出了12列，并且可以根据自己的需要选择显示的列。</p>
+<p><a href="/uploads/2013/06/20130613011110.png"><img src="/uploads/2013/06/20130613011110.png" alt="20130613011110"></a></p>
+<p>目前的功能就这么多，如果真的有的上再来看看能加上哪些功能吧。</p>
+<p>下载<a href="/uploads/2013/06/EtwLogView.zip">EtwLogView</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/06/12/etwlogview-e5ae9ee697b6e69fa5e79c8betwe79a84e5b7a5e585b7/" data-id="cj6etakta002pfcg951evpnih" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e587a0e4b8aae69c89e8b6a3e79a84e69caae69687e6a1a3e58c96windbge79a84e689a9e5b195e591bde4bba4" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/06/07/e587a0e4b8aae69c89e8b6a3e79a84e69caae69687e6a1a3e58c96windbge79a84e689a9e5b195e591bde4bba4/" class="article-date">
+  <time datetime="2013-06-06T19:58:20.000Z" itemprop="datePublished">2013-06-07</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/06/07/e587a0e4b8aae69c89e8b6a3e79a84e69caae69687e6a1a3e58c96windbge79a84e689a9e5b195e591bde4bba4/">几个有趣的未文档化Windbg的扩展命令</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这里使用的是Windbg最新版本，版本号是6.2.9200，可以在Windows8的SDK中获得。</p>
+<p>1.eflags 用更加友好的方式显示被设置的标志寄存器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">0:000&gt; r efl</div><div class="line">efl=00000246</div><div class="line"></div><div class="line">0:000&gt; !eflags</div><div class="line">BIT_1_RESERVED</div><div class="line">PARITY_FLAG</div><div class="line">ZERO_FLAG</div><div class="line">INTERRUPTS_ENABLED</div><div class="line"></div><div class="line">0:000&gt; r zf</div><div class="line">zf=1</div><div class="line">0:000&gt; r if</div><div class="line">if=1</div></pre></td></tr></table></figure>
+<p>2.frame 用module!function的方式设置栈帧</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">0:000&gt; kn L3</div><div class="line"># ChildEBP RetAddr</div><div class="line">00 0018df2c 7586d7db kernel32!CreateFileW</div><div class="line">01 0018e024 7586d9d1 apphelp!IdentifyCandidates+0x176</div><div class="line">02 0018e054 7586d87b apphelp!ApphelpQueryExe+0xb8</div><div class="line"></div><div class="line">0:000&gt; .frame</div><div class="line">00 0018df2c 7586d7db kernel32!CreateFileW</div><div class="line"></div><div class="line">0:000&gt; !frame apphelp!ApphelpQueryExe</div><div class="line">Frame Set to 0x00000002</div><div class="line"></div><div class="line">0:000&gt; .frame</div><div class="line">02 0018e054 7586d87b apphelp!ApphelpQueryExe+0xb8</div></pre></td></tr></table></figure>
+<p>3.hashblob 计算指定内存的hash，hash方式包括md5和sha1</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">0:000&gt; !hashblob</div><div class="line">Not enough parameters 0</div><div class="line">!hashblob &lt;hash&gt; &lt;Start&gt; &lt;End&gt;</div><div class="line">&lt;hash&gt;: 1 for MD5</div><div class="line">&lt;hash&gt;: 2 for SHA1</div><div class="line"></div><div class="line">0:000&gt; !hashblob 1 001f0000 001f0100</div><div class="line">DCC4E0B6659F6887DEC24A9FF2D57DC8</div></pre></td></tr></table></figure>
+<p>4.imports 列出指定模块的导入函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">0:000&gt; !imports notepad</div><div class="line"></div><div class="line">notepad notepad Imports from file: ADVAPI32.dll</div><div class="line">RegSetValueExW</div><div class="line">RegQueryValueExW</div><div class="line">...</div><div class="line">notepad Imports from file: KERNEL32.dll</div><div class="line">FindNLSString</div><div class="line">GlobalAlloc</div><div class="line">GlobalUnlock</div><div class="line">GlobalLock</div><div class="line">GetTimeFormatW</div><div class="line">GetDateFormatW</div><div class="line">GetLocalTime</div><div class="line">...</div></pre></td></tr></table></figure>
+<p>5.inframe 找出指定地址所在的栈帧范围</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">ChildEBP RetAddr</div><div class="line">0018df2c 7586d7db kernel32!CreateFileW</div><div class="line">0018e024 7586d9d1 apphelp!IdentifyCandidates+0x176</div><div class="line"></div><div class="line">0:000&gt; !inframe 0018df8c</div><div class="line">0018df8c 0 00001714 0018df34 &lt; 0018df8c &lt; 0018e02c</div><div class="line">Frame: 1</div></pre></td></tr></table></figure>
+<p>6.inmodule 找出指定地址所在的模块</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">0:000&gt; !inmodule 7586d9d1</div><div class="line">0x7586d9d1: apphelp!ApphelpQueryExe</div></pre></td></tr></table></figure>
+<p>7.url 用默认浏览器打开指定网页</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">0:000&gt; !url</div><div class="line">Please provide a valid URL (http://... or https://... )</div><div class="line">USAGE: !url &lt;url&gt;</div><div class="line"></div><div class="line">0:000&gt; !url http://0cch.net</div></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/06/07/e587a0e4b8aae69c89e8b6a3e79a84e69caae69687e6a1a3e58c96windbge79a84e689a9e5b195e591bde4bba4/" data-id="cj6etakt7002hfcg9eai9sk7w" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e585b3e4ba8edlle58aa0e8bdbde5928ce8bf90e8a18ce680a7e883bde4bc98e58c96e680bbe7bb93" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/05/19/e585b3e4ba8edlle58aa0e8bdbde5928ce8bf90e8a18ce680a7e883bde4bc98e58c96e680bbe7bb93/" class="article-date">
+  <time datetime="2013-05-19T05:52:29.000Z" itemprop="datePublished">2013-05-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>►<a class="article-category-link" href="/categories/Debugging/NTInternals/">NTInternals</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/05/19/e585b3e4ba8edlle58aa0e8bdbde5928ce8bf90e8a18ce680a7e883bde4bc98e58c96e680bbe7bb93/">关于DLL加载和运行的性能优化总结</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文从三个方面总结了加快DLL加载和运行速度的方法，他们分别是：  </p>
+<ol>
+<li>使用Rebase和Bind。  </li>
+<li>按序号的方式导入函数。  </li>
+<li>使用预读取技术（chromium加载dll时使用了此项）。  </li>
+</ol>
+<p>首先，讨论一下使用Rebase和Bind，提高DLL加载和运行性能的方法。我们知道，在编译链接DLL的时候，连接器会给DLL一个加载基址，而这个加载基址对于DLL模块中的使用了硬编码地址的代码和数据是至关重要的。因为这些硬编码的地址都是连接器通过DLL加载基址计算出来的。</p>
+<p>这样，当我们的DLL被加载到进程空间当中的时候，如果足够幸运的话，DLL正好被加载到连接器所指定的地址，那么那些硬编码的地址就是完全正确的，加载过程不需要其他额外的工作就能让DLL正确运行了。</p>
+<p>但是，真实的情况并不是这么理想，因为我们的进程可能不得不加载许许多多DLL，这样就会导致，某些DLL预定的基址可能已经被其他DLL使用。因此，前者就不得不加载到其他地址。由此带来的影响也是显而易见的，硬编码的地址就会出错。为了不让这种错误发生，加载器也就不得不多做一些工作，就是重新矫正这些硬编码。这样，如果DLL里包含的硬编码地址越多，加载的速度就会越慢，从而导致DLL加载性能下降。</p>
+<p>另一方面，由于DLL加载基址是不可预见的，所以DLL加载的时候，加载器会根据导入表搜索所有的导入函数，计算并且确定导入函数的正确地址。这个过程也会对DLL加载性能有一定影响。</p>
+<p>微软已经考虑到了这个问题的优化方法，在SDK中为我们提供了Rebase和Bind工具。其中Rebase工具，可以合理安排进程中DLL的加载地址，并且修改到PE中，从而避免DLL加载时Rebase操作。这样，一旦我们确认了DLL的加载基址是不会发生改变，那么我们就可以使用Bind工具将导入表进行绑定，这样的好处就是加载器不需要在加载的时候去计算确定导入函数地址，因为这些地址以及被预设了。</p>
+<p>需要注意的一点，即使你做了这么多的事情，也不能完全避免加载基址的冲突，例如使用ASLR的DLL，其加载的地址是会发生变化的。所以就不能保证Rebase和Bind的有效性。具体能优化多少性能，在不同的案例中可能结果不同，需要具体实验才能知道。</p>
+<p>第二种优化DLL运行性能的方案就是使用序号而非名称的方式导入函数。这一点也就非常容易解释了，如果通过函数名确定导入函数地址，那么加载器就不得不对字符串进行比较，从而确定正确的函数地址，虽然DLL的导出表是按顺序字母排列的，并且查找方式也是二分查找，但是如果函数很多，这依然是个耗时的工作。例如，我机器上的MFC100.dll有14000多个导出函数，如果进程需要按照名称确定自己需要的函数是哪一个，那么工作量还是不小的吧。所以MFC100.dll很明智的使用了导出序号的方法，这样加载器计算导入函数的时候，就能够使用序号来确定函数地址了，也就是简单使用数组搜索，从而得到目标函数地址。</p>
+<p>这种方法的优化效果同样也要根据具体情况而定，如果导入函数少，目标DLL导出的函数也非常少，那么这种优化应该是没有什么意义的。相反，如果需要导入函数很多，而且目标DLL也导出了很多函数，那么在想提高程序加载性能的时候，不妨试一试这个方案。</p>
+<p>最后一个方法是Pre-Read技术，使用在chromium中的。这种方法的原理是将DLL预先存入系统缓存，从而减少Page Fault来达到提高性能的目的。这种优化主要针对的是进程冷启动加载DLL的情况。进程第一次启动的时候，加载所需的DLL，DLL会被MAP到内存空间，虽然如果查询这片MAP的内存，会发现确实是COMMIT状态。但是，实际上系统并没要保证这些内存在Working Set中。一般情况下，系统只会把你想要用到的内存加载到Working Set中，以节约物理内存。这样，当我们每次用到这个并没有对应的Working Set的虚拟内存的时候，就发生了Page Fault，系统这个时候才会把这些内存加载到Working Set。而Page Fault对性能的影响很是比较大的。所以Pre-Read技术就有了用武之地。</p>
+<p>Chromium对Pre-Read实现的非常好，代码的具体位置是<a href="http://src.chromium.org/viewvc/chrome/trunk/src/chrome/app/image_pre_reader_win.cc" target="_blank" rel="external">http://src.chromium.org/viewvc/chrome/trunk/src/chrome/app/image_pre_reader_win.cc</a> 。代码中，分别针对XP和XP以上的系统使用了不同的方法让系统缓存目标DLL。在XP以上的系统中，代码简单的通过ReadFile将文件读取到内存中，然后释放内存，关闭文件句柄，就可以达到缓存目标DLL的目的。而在XP系统下，做法有些不同，它使用LoadLibraryEx函数，将文件Load到内存空间，然后尝试对每个Page进行读取操作，已达到让数据载入Working Set的目的。</p>
+<p>以上是我所知道的三种加载DLL的优化方法，也可能还有更多更好的方法，有兴趣的可以一起讨论下。不过无论什么性能优化方法，都必须建立在实际项目的基础上，并且有科学的依据和论证，切不可只从理论上下结论来优化程序，纸上谈兵，这样很可能适得其反，让性能变得更糟。（例如这个例子里所提到的，看上去不错的优化可能还不如什么都不做：<a href="http://blogs.msdn.com/b/oldnewthing/archive/2004/12/17/317157.aspx" target="_blank" rel="external">http://blogs.msdn.com/b/oldnewthing/archive/2004/12/17/317157.aspx</a>）。至于说，如何得到程序运行数据用于总结出有效的优化方案，这里强烈推荐一款神器XPerf。实际上，也是因为使用了XPerf，才让我对性能优化产生了浓厚的兴趣！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/05/19/e585b3e4ba8edlle58aa0e8bdbde5928ce8bf90e8a18ce680a7e883bde4bc98e58c96e680bbe7bb93/" data-id="cj6etakt6002efcg92tgskm83" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-gdi_handle_study-e69fa5e79c8be8bf9be7a88bgdie8b584e6ba90e68385e586b5e79a84e5b7a5e585b7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/05/04/gdi_handle_study-e69fa5e79c8be8bf9be7a88bgdie8b584e6ba90e68385e586b5e79a84e5b7a5e585b7/" class="article-date">
+  <time datetime="2013-05-04T00:16:35.000Z" itemprop="datePublished">2013-05-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/05/04/gdi_handle_study-e69fa5e79c8be8bf9be7a88bgdie8b584e6ba90e68385e586b5e79a84e5b7a5e585b7/">gdi_handle_study —— 查看进程GDI资源情况的工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>gdi_handle_study 是一个用于查看进程中gdi句柄资源的工具。可以用于监控gdi资源是否泄露，已经对gdi资源的使用情况。使用方法非常简单：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&lt;blockquote&gt;usage: gdi_handle_study.exe [-c] [-v [-f &lt;filter&gt;]] [processname|pid]</div><div class="line">processname    List GDI handles loaded by process (partial name accepted)</div><div class="line">pid                   List GDI handles associated with the specified process id</div><div class="line">-c                    Show GDI count information.</div><div class="line">-v                    Show GDI handle information.</div><div class="line">-f                    Filter the GDI handle type.&lt;/blockquote&gt;</div></pre></td></tr></table></figure>
+<p>在不用任何参数的情况下，工具会显示所有进程的gdi资源使用概况，如图所示：<br><a href="/uploads/2013/05/20130504154700.png"><img src="/uploads/2013/05/20130504154700.png" alt="20130504154700"></a></p>
+<p>值得注意的是，GDI Total和GDI All的区别在于，GDI Total统计出来的数量，是通过工具本身枚举可统计GDI资源后得出统计值，而GDI All是通过系统API直接获得的值，有些的情况下，GDI Total的值是小于GDI All的值的。这种情况可能因为某些GDI资源是系统保留的。另外一个要注意的是，如果要显示所有进程的gdi情况，需要有管理员权限运行该工具。</p>
+<p>processname和pid参数能让我们指定需要查看的进程名或者进程ID。参数-c能查看更为详细的gdi资源的统计情况。如下图所示：<br><a href="/uploads/2013/05/20130504155533.png"><img src="/uploads/2013/05/20130504155533.png" alt="20130504155533"></a></p>
+<p>从上图可以看出，qq这种DirectUI程序，用的Bitmap资源何其的多啊。。。</p>
+<p>-v参数是用来查看更为详细的GDI资源信息，其中就包括额资源的句柄，资源的种类以及资源的内核对象地址。如图所示：<br><a href="/uploads/2013/05/20130504160314.png"><img src="/uploads/2013/05/20130504160314.png" alt="20130504160314"></a></p>
+<p>最后工具还能利用-f filter，来查看想看到的资源情况，例如上图中，bitmap不是自己想看的资源，但是却占据了大量的视野。这个时候filter就能用上了。如图：<br><a href="/uploads/2013/05/20130504160837.png"><img src="/uploads/2013/05/20130504160837.png" alt="20130504160837"></a></p>
+<p>上图就是利用filter，显示的Brush资源的详细情况了。</p>
+<p>下载<a href="/uploads/2013/05/gdi_handle_study.zip">gdi_handle_study</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/05/04/gdi_handle_study-e69fa5e79c8be8bf9be7a88bgdie8b584e6ba90e68385e586b5e79a84e5b7a5e585b7/" data-id="cj6etakt4002bfcg940bonmx4" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-procmem-e8bf9be7a88be58685e5ad98e69fa5e79c8be5b7a5e585b7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/04/21/procmem-e8bf9be7a88be58685e5ad98e69fa5e79c8be5b7a5e585b7/" class="article-date">
+  <time datetime="2013-04-21T07:41:31.000Z" itemprop="datePublished">2013-04-21</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>►<a class="article-category-link" href="/categories/Debugging/NTInternals/">NTInternals</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/04/21/procmem-e8bf9be7a88be58685e5ad98e69fa5e79c8be5b7a5e585b7/">ProcMem —— 进程内存查看工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>ProcMem是一个进程内存的查看工具，他可以显示进程中的内存分配情况，以及内存大概的用途，并且Dump指定的内存模块。工具界面如下图</p>
+<p><a href="/uploads/2013/04/20130421231145.png"><img src="/uploads/2013/04/20130421231145.png" alt="20130421231145"></a></p>
+<p>ProcMem并不是实时监控目标进程的内存情况，而是对内存情况作了一次快照和统计，并且显示出来。所以想看到进程最新的内存状态，可以点击Refresh菜单。</p>
+<p>工具上半部分就是显示的目标进程的内存分布情况，以及一些细节信息。这里必须要谈到一点，Windows的标准控件中没有TreeList，对我这个写100个程序99个没有界面的人来说，自绘这个东西差点没要了我的命。</p>
+<p>工具的下半部分用来显示TreeList选中项的内存情况，十六进制表示。值得注意的是，这里只会显示选中内存头个PAGE_SIZE大小的内存情况。如果想查看该项内存的全部情况，可以使用Dump功能，把内存Dump下来，然后用WinHex这样的工具查看，这个简单的内存显示区，只是为了提供一个预览功能而已。</p>
+<p>值得一提的是，菜单Find，不是用来查找下方十六进制内存显示的内容，而是用来查找TreeList中的项目。例如想找到有关ntdll的内存区域，可以在查找框中输入ntdll，这样就可以定位如图所示的项目了。</p>
+<p>这个工具是我花了大半周的业余时间弄的，时间比较仓促，不可避免的可能会有些bug。如果你刚好用上了这个工具，而且发现了bug，不妨通过邮件联系我（邮箱地址见<a href="http://0cch.net/wordpress/?page_id=2" target="_blank" rel="external">About Me</a>页面）。</p>
+<p>下载<a href="/uploads/2013/04/ProcMem.zip">ProcMem</a>(包括32和64位版本)</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/04/21/procmem-e8bf9be7a88be58685e5ad98e69fa5e79c8be5b7a5e585b7/" data-id="cj6etakt10028fcg9npyem7ks" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e8aeb0vc6e4b8adstle79a84mape79a84e4b880e5a484bug" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/04/19/e8aeb0vc6e4b8adstle79a84mape79a84e4b880e5a484bug/" class="article-date">
+  <time datetime="2013-04-18T22:29:04.000Z" itemprop="datePublished">2013-04-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>►<a class="article-category-link" href="/categories/Debugging/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/04/19/e8aeb0vc6e4b8adstle79a84mape79a84e4b880e5a484bug/">记VC6中STL的map的一处BUG</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天和同事一起调了一个vc6.0中stl的map的一个bug。</p>
+<p>BUG的起因是，我们的项目中使用了stl的map类。而这个map类的对象被用在了不同的DLL模块中，在这样的条件写，BUG就产生了，一个模块内部map对象指针能正常工作，另一个模块内部就出了问题。起初我们就觉得很奇怪，很简单一份代码，怎么会出现访问无效内存的情况，我们还是通常的思路，先在自己身上找问题。调了一会发现，自己的代码确实没有错误。于是我们把目光转向了vc6的stl本身。</p>
+<p>跟踪了一下stl的代码，发现错误发生在下面这段代码内部。</p>
+<p><a href="/uploads/2013/04/20130419140128.png"><img src="/uploads/2013/04/20130419140128.png" alt="20130419140128"></a></p>
+<p>在正常的模块中while (_x != _Nil)这个循环只经历了一次，就跳出循环了。而发生错误模块中第二次进入这个循环，也就在这次的循环中，出现了内存访问异常的情况。很明显就要看两次_x != _Nil比较的详细结果。刚开始我被误导了，以为_Nil就是一个为0的常量，把注意力留在_X上后来发现，正确和错误的模块中，_X值一直都是相同的。这才缓过神来，_Nil这个值有问题。</p>
+<p>确实，这个不是一个0，更不是一个常量，他是一个静态指针变量。在map对象被创建的时候，生成了一个填充为0的结构体，并且把结构体指针存到了这个变量中。</p>
+<p>真相大白了，由于在不同的模块中都是用了stl的map代码，这样map的代码就被编译了两份，同样每个模块中map的_Nil也存放在各自的模块地址范围内。这样就使得_Nil值是不相同的，如果在非创建这个map对象的模块中引用对象指针，并且调用map的函数。如果遇到了_Nil，就会引用此模块自己的_Nil，而不是创建对象模块的_Nil，如果这个模块没有初始化过map对象，那么这个模块的_Nil就是0，即使初始化过，两个模块的_Nil也没可能是同一个值。</p>
+<p>新版stl中这个bug必然已经解决，简单来看看vs2010的stl</p>
+<p><a href="/uploads/2013/04/20130419142503.png"><img src="/uploads/2013/04/20130419142503.png" alt="20130419142503"></a></p>
+<p>循环中检查是否为空，用到了函数_Isnil这个，而这个函数查看了_Nodeptr结构中的_Isnil成员变量。判断空放在成员对象内部，这样在多模块之间调用该对象就不会有任何问题了。</p>
+<p>话说，vc6的stl确实是bug一堆，很早之前，人们就喜欢用sgi-stl来代替vc6自带的stl了。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/04/19/e8aeb0vc6e4b8adstle79a84mape79a84e4b880e5a484bug/" data-id="cj6etaksx0022fcg99og639uz" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    <a class="extend prev" rel="prev" href="/page/8/">&laquo; __('prev')</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/10/">__('next') &raquo;</a>
+  </nav>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 0CCh<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

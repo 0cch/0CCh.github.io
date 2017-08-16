@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>0CCh Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="0CCh Blog">
+<meta property="og:url" content="http://0cch.com/page/7/index.html">
+<meta property="og:site_name" content="0CCh Blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="0CCh Blog">
+  
+    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0CCh Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-global-loggere68993e5bc80e5bc80e69cbae590afe58aa8etwe697a5e5bf97" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/04/05/global-loggere68993e5bc80e5bc80e69cbae590afe58aa8etwe697a5e5bf97/" class="article-date">
+  <time datetime="2014-04-04T18:49:44.000Z" itemprop="datePublished">2014-04-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/04/05/global-loggere68993e5bc80e5bc80e69cbae590afe58aa8etwe697a5e5bf97/">Global Logger打开开机启动ETW日志</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在我看来XP确实应该寿终正寝了，因为确实在很多机制方面不如新的系统，比如ETW。而微软的XPERF也没有能在XP上直接安装的。当然，老版本的XPERF还能在XP上运行，只是监控能力有限，到了新版本的XPERF，在XP上就运行不了了。但是，XP却在中国还活的好好的，所以优化其性能必不可少。于是，在没有XPERF支持的情况下，要做到开启ETW日志，我们就需要微软提供的Global Logger机制，打开开机启动的Trace Session。</p>
+<p>微软对打开Global Logger的方法做了详细的说明：<a href="http://msdn.microsoft.com/en-us/library/windows/hardware/ff546686(v=vs.85" target="_blank" rel="external">http://msdn.microsoft.com/en-us/library/windows/hardware/ff546686(v=vs.85).aspx </a>.aspx )，我这里没必要再赘述了，只有一个地方需要注意，要说明一下<strong>EnableKernelFlags</strong>这个变量，他是一个REG_BINARY类型，他的值是EVENT_TRACE_PROPERTIES的EnableFlags。但是EnableFlags是一个DWORD，而<strong>EnableKernelFlags</strong>是一个32字节的数组。如果你设置的时候，只是设置了一个DWORD，那么你会发现ETW 日志不会开启。</p>
+<p>话说到这，<strong>EnableKernelFlags</strong>中前4字节的DWORD是EVENT_TRACE_PROPERTIES的组合，那么后面还有28字节是干什么的呢？实际上ETW能记录的标志还有很多，只是没有在EVENT_TRACE_PROPERTIES中说明，他们都被分到8个分组里面去了，这也是为什么有32个字节的Flags。具体怎么分组，还有哪些标志位，可以参考WRK的代码。</p>
+<p>我这里写了个小工具可以用来设置Global Flags，不过如果你能找到XP上可以用的XPERF当然是最好的选择了！</p>
+<p><a href="/uploads/2014/04/20140405104746.png"><img src="/uploads/2014/04/20140405104746.png" alt="20140405104746"></a></p>
+<p>下载:<a href="/uploads/2014/04/GlobalLog.zip">GlobalLog</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2014/04/05/global-loggere68993e5bc80e5bc80e69cbae590afe58aa8etwe697a5e5bf97/" data-id="cj6etakua004afcg9x35hnuuv" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e4b88de698bee7a4bae5afb9e8af9de6a186e6a0bce5bc8fe58c96e7a381e79b98e79a84e696b9e6b395" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/03/16/e4b88de698bee7a4bae5afb9e8af9de6a186e6a0bce5bc8fe58c96e7a381e79b98e79a84e696b9e6b395/" class="article-date">
+  <time datetime="2014-03-16T05:40:51.000Z" itemprop="datePublished">2014-03-16</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/03/16/e4b88de698bee7a4bae5afb9e8af9de6a186e6a0bce5bc8fe58c96e7a381e79b98e79a84e696b9e6b395/">不显示对话框格式化磁盘的方法</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我们都知道格式化磁盘会弹出如下图所示的这样的一个对话框。</p>
+<p><a href="/uploads/2014/03/20140316210304.png"><img src="/uploads/2014/03/20140316210304-177x300.png" alt="20140316210304"></a></p>
+<p>编写格式化磁盘的程序的时候，我们需要用到SHFormatDrive这个API，同样的，他也会弹出一个对话框。出现对话框当然是为了安全考虑，防止磁盘被用户不知情的情况下格式化，导致数据丢失。但是，某些情况下，确实希望静默的去格式化，而不去打扰用户，例如格式化Ramdisk。那么就需要找点一个办法要求不弹出对话框的格式化磁盘。既然Windows并没有提供这样的API，那我们只能深入分析下调用过程，找出可以使用的API。</p>
+<p>怎么找的就不想说了，无非用ProcMon看一下堆栈就清楚明白了。在fmifs.dll中有一些导出的API可以帮助完成这一的任务，比如FormatEx，FormatEx2。</p>
+<p>这里简单的描述下FormatEx的用法：<br>函数原型是</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function">VOID WINAPI <span class="title">FormatEx</span><span class="params">(</span></span></div><div class="line"><span class="function"><span class="params">	LPCWSTR DriveRoot,</span></span></div><div class="line"><span class="function"><span class="params">	MEDIA_TYPE MediaType,</span></span></div><div class="line"><span class="function"><span class="params">	LPCWSTR FileSystemTypeName,</span></span></div><div class="line"><span class="function"><span class="params">	LPCWSTR Label,</span></span></div><div class="line"><span class="function"><span class="params">	BOOL QuickFormat,</span></span></div><div class="line"><span class="function"><span class="params">	ULONG ClusterSize,</span></span></div><div class="line"><span class="function"><span class="params">	FILE_SYSTEM_CALLBACK Callback</span></span></div><div class="line"><span class="function"><span class="params">)</span></span>;</div><div class="line"> </div></pre></td></tr></table></figure>
+<p>参数<br>DriveRoot —— 盘符，如”K:\”<br>MediaType —— 磁盘类型，如FixedMedia<br>FileSystemTypeName —— 要格式化的文件系统，如”NTFS”<br>Label —— 标签，随便写吧<br>QuickFormat —— 快速格式化<br>ClusterSize —— 簇大小<br>Callback —— 状态回调函数  </p>
+<p>回调函数原型</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">BOOLEAN</span> <span class="params">(__stdcall *FILE_SYSTEM_CALLBACK)</span><span class="params">(</span></span></div><div class="line"><span class="function"><span class="params">	ULONG                        Command,</span></span></div><div class="line"><span class="function"><span class="params">	ULONG                        Action,</span></span></div><div class="line"><span class="function"><span class="params">	PVOID                        pData</span></span></div><div class="line"><span class="function"><span class="params">)</span></span>;</div><div class="line"> </div></pre></td></tr></table></figure>
+<p>Command 表示Action和pData的意义，比如Command = 0表示pData是进度，Command = 11表示完成。还有其他的状态，例如错误等等，这些google一下就知道了。这个函数返回TRUE表示函数继续运行，FALSE表示停止格式化。</p>
+<p>比如，下面是格式化K盘：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">FormatEx(<span class="string">L"K:\", FixedMedia, L"</span>NTFS<span class="string">", L"</span><span class="number">0</span>CCh<span class="string">", TRUE, 4096, FormatExCallback);</span></div><div class="line"><span class="string"> </span></div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2014/03/16/e4b88de698bee7a4bae5afb9e8af9de6a186e6a0bce5bc8fe58c96e7a381e79b98e79a84e696b9e6b395/" data-id="cj6etaku70044fcg929647mvf" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e4b880e4b8aae69c89e6848fe6809de79a84warning-c4930" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/03/01/e4b880e4b8aae69c89e6848fe6809de79a84warning-c4930/" class="article-date">
+  <time datetime="2014-03-01T07:06:06.000Z" itemprop="datePublished">2014-03-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/03/01/e4b880e4b8aae69c89e6848fe6809de79a84warning-c4930/">一个有意思的warning —— C4930</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>C4930是微软的C++编译器提示的一个警告，在维基百科中，把造成这种警告的语句描述成最让人为难的解析的语句。那么这里我们看看到底是有多么为难，这个可以帮助我们进一步了解C++和编译器。</p>
+<p>那么首先，我最开始发现这个问题是在类似这样的代码中碰到的。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">std</span>::<span class="function">ifstream <span class="title">s</span><span class="params">(<span class="string">"d:\\xxx.txt"</span>)</span></span>;</div><div class="line">std::string str(std::istream_iterator&lt;char&gt;(s), std::istream_iterator&lt;char&gt;());</div><div class="line"> </div></pre></td></tr></table></figure>
+<p>如果编译这个，编译器会毫不留情地扔给你一个C4930警告，提示编译器不知道怎么做，所以跳过编译。如果你没看懂这警告，后果就是这句话根本不会编译进去，即使编译通过了，运行也会和设想的不同。</p>
+<p>先说个简单的C4930的例子吧。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function">MyClass <span class="title">sample</span><span class="params">()</span></span>;</div><div class="line"> </div></pre></td></tr></table></figure>
+<p>这句代码非常简单，也很容易明白。如果这么写，那么编译器就混乱，因为这句话可以是描述：<br>1.一个变量的定义，调用默认构造。<br>2.一个函数的声明。<br>所以编译器就傻了，他把这个认为是函数声明，所以不会做任何事情。<br>同样的事情发生在  </p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">std::string str(std::istream_iterator&lt;char&gt;(s), std::istream_iterator&lt;char&gt;());</div><div class="line"> </div></pre></td></tr></table></figure>
+<p>这里，我们实际上就是给string的构造函数传入iterator来构造这个string。但是编译器可不是这么觉得，他认为这句话应该这样解析：一个返回string的函数，函数名为str，函数参数有两个并且类型相同，都是istream_iterator<char>，不同的是一个有参数名s，一个省略了参数名！</char></p>
+<p>编译器这么解析，也真没错，我们就只能通过修改代码来明确目的了。通常的做法是给第一个iterator外加上括<br>号：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">std::string str((std::istream_iterator&lt;char&gt;(s)), std::istream_iterator&lt;char&gt;());</div><div class="line"> </div></pre></td></tr></table></figure>
+<p>不过，我写这两行代码也就是为了偷懒读取一个文件的字符串，所以我可以干脆改成一行：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">std::string str(std::istream_iterator&lt;char&gt;(std::ifstream("d:\\xxx.txt")), std::istream_iterator&lt;char&gt;());</div><div class="line"> </div></pre></td></tr></table></figure>
+<p>这样就能顺利编译运行了。</p>
+<p>最近在看新版的《The C++ Standard Library A Tutorial and Reference》里面也看到了这个东西，很有意思所<br>以拿出来说下。而且新版的书中，已经包含了C++11的解释，很有意思。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2014/03/01/e4b880e4b8aae69c89e6848fe6809de79a84warning-c4930/" data-id="cj6etaku90048fcg9oo3kldcb" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-guid-tool-e4b880e4b8aae8bdace68da2guide6a0bce5bc8fe79a84e5b08fe5b7a5e585b7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/02/23/guid-tool-e4b880e4b8aae8bdace68da2guide6a0bce5bc8fe79a84e5b08fe5b7a5e585b7/" class="article-date">
+  <time datetime="2014-02-23T06:09:44.000Z" itemprop="datePublished">2014-02-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/02/23/guid-tool-e4b880e4b8aae8bdace68da2guide6a0bce5bc8fe79a84e5b08fe5b7a5e585b7/">GUID TOOL —— 一个转换GUID格式的小工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>周末闲来无事，逆向点有趣的功能的时候遇到这样一个问题。有些16进制的数貌似就是GUID，但是需要转换为注册表形式，才方便在注册表里面搜索。所以就写了个小工具转换16进制，C语言格式以及注册表格式的GUID。</p>
+<p>usage: guid.exe &lt;&lt;-r|-c|-h&gt; guid_string&gt; | &lt;-g&gt;<br>-r Format registry guid string.<br>-c Format C code guid string.<br>-x Format HEX guid string.<br>-g Create new guid.  </p>
+<p><a href="/uploads/2014/02/20140223220404.png"><img src="/uploads/2014/02/20140223220404-1024x549.png" alt="20140223220404"></a></p>
+<p><a href="/uploads/2014/02/20140223220314.png"><img src="/uploads/2014/02/20140223220314-1024x570.png" alt="20140223220314"></a></p>
+<p>下载：<a href="/uploads/2014/02/guid.zip">guid</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2014/02/23/guid-tool-e4b880e4b8aae8bdace68da2guide6a0bce5bc8fe79a84e5b08fe5b7a5e585b7/" data-id="cj6etaku60042fcg9rw15hxg9" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-ssd-trime58a9fe883bde79a84e4b880e4ba9be8aeb0e5bd95" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/02/11/ssd-trime58a9fe883bde79a84e4b880e4ba9be8aeb0e5bd95/" class="article-date">
+  <time datetime="2014-02-11T07:39:35.000Z" itemprop="datePublished">2014-02-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/02/11/ssd-trime58a9fe883bde79a84e4b880e4ba9be8aeb0e5bd95/">SSD TRIM功能的一些记录</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>如今SSD越来越普及了，本来就想了解下关于SSD的一些情况，正好工作中有机会接触这一块的东西，很幸运。这里先记录一些已知知识，方便以后自己查阅。</p>
+<p>说到SSD，第一个想到的就是读写速度快。那个就要归功于其存储原理，关于SSD存储原理的文章很多，我这里简单通俗的描述一下：  </p>
+<ol>
+<li>SSD存储不同于机械硬盘，他没有机械硬盘所谓的扇区、柱面，磁头。查询逻辑地址上的数据没有机械上的寻址（没有马达）。SSD的存储介质是闪存。  </li>
+<li>SSD存储数据被覆盖的时候不会马上覆盖原有数据，而是继续往之前没有写的闪存上写。因为闪存擦除次数非常有限，同一个地方小范围反复擦除会导致整个SSD的寿命缩短。  </li>
+<li>SSD内部是有自己的GC（垃圾回收器），这个GC擦除不需要的数据以及调整需要的数据的位置，能帮助SSD进行擦除平衡。  </li>
+</ol>
+<p>而这里重点要说到的TRIM功能就是辅助GC更好工作的一环。从Windows 7开始，文件系统上已经集成了自动TRIM功能。但是早些时候的系统，例如Windows XP，就没有这样的功能了。所以手动TRIM工具就出现了。比如Intel的固态硬盘工具集，其中就包含了手动TRIM功能。也许，有人回想，SSD的高端用户团体怎么会还在使用XP呢？不幸的是还真有这样一群坚守XP的SSD用户。下面就记录一些关于执行TRIM要做的事情。</p>
+<p>先决条件：  </p>
+<ol>
+<li>要执行TRIM，首先要确保自己的硬盘模式是AHCI的。  </li>
+<li>然后，系统需要时XP SP2 RC2以上（我想就算是XP的用户，现在也应该都是SP3了吧）。  </li>
+</ol>
+<p>上面的第一条非常重要，因为目前世面上的大部分盗版盘和所有正版安装盘，都是没有带AHCI驱动的。也就是说，如果你的BIOS上把硬盘模式调整为AHCI，那你回没有任何意外看到一个蓝屏。少部分盗版系统盘会说明自己是支持AHCI的，否则，就需要在IDE/ATA模式下，安装系统，然后去网上找到你的BIOS所指定AHCI驱动，安装后在把BIOS调整回AHCI。</p>
+<p>最后，来看看执行TRIM的一种思路：  </p>
+<ol>
+<li>判断系统版本，硬盘的控制器，SSD是否支持TRIM。  </li>
+<li>创建多个1G的文件，直到占满所有磁盘空间。  </li>
+<li>获得这些文件的基于卷的簇。  </li>
+<li>将簇转换成基于卷的逻辑地址。  </li>
+<li>将基于卷的逻辑地址转换成基于硬盘的逻辑地址。  </li>
+<li>按照ATA文档，发送TRIM指令。  </li>
+<li>删除所有创建的1G文件。  </li>
+</ol>
+<p>上面有几个和ATA相关的简单介绍下。首先是SSD是否支持TRIM的问题，需要发送DEVICE IDENTIFY指令，获得硬盘数据，其中WORD 169表示是否支持TRIM，如果是1就是支持了。其次，发生TRIM指令，实际上发送的是DATA SET MANAGEMENT指令，其中Features register设置为1，即为TRIM指令了。至于如何在没有驱动的情况下发生这些指令（这也是我要求系统版本要是XP SP2 RC2以上的原因），可以利用DeviceIOControl函数发送IOCTL_ATA_PASS_THROUGH来完成。</p>
+<p>这些记录已经很详细了，那几百行的代码就没必要贴出来了。</p>
+<p>另外TRIM还有一个思路，实现起来可以麻烦一些，简单说说吧：  </p>
+<ol>
+<li>首先获得NTFS的Bitmap，获得空闲的簇。  </li>
+<li>转换空闲的簇到基于硬盘的逻辑地址。  </li>
+<li>发送TRIM指令  </li>
+</ol>
+<p>之所以说这个比较麻烦，是因为他需要保证在进行TRIM的时候，NTFS不发生写操作。方法就是LOCK VOLUME，但不幸的是，系统盘是没法LOCK的，所以这就不得不写一个Native Application，放在开机的时候运行，也就是Check Disk运行的时机。这个思路的优点是：TRIM全面，精确，速度快。</p>
+<p>差不多就是这些了，希望这个记录对自己和他人都有所帮助。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2014/02/11/ssd-trime58a9fe883bde79a84e4b880e4ba9be8aeb0e5bd95/" data-id="cj6etaku40040fcg9qrgfsy4w" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e4b880e782b9e69c89e585b3ntdlle4b8ade68f90e4be9be79a84bitmape7b3bbe58897e587bde695b0" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/01/18/e4b880e782b9e69c89e585b3ntdlle4b8ade68f90e4be9be79a84bitmape7b3bbe58897e587bde695b0/" class="article-date">
+  <time datetime="2014-01-17T18:19:28.000Z" itemprop="datePublished">2014-01-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/01/18/e4b880e782b9e69c89e585b3ntdlle4b8ade68f90e4be9be79a84bitmape7b3bbe58897e587bde695b0/">一点有关Ntdll中提供的bitmap系列函数</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我们都知道STL中提供了一个bitset类，但是在我真正操作有关文件系统的时候，发现这个类提供的功能并不能满足我的需求。幸运的是Ntdll中提供了一套操作bitmap的API。于是我抽了点时间把这几个API总结了一下，写成了一个类。这个类只是简单的对Ntdll的bitmap相关API做很浅的封装，没啥好说的。要说的是这套bitmap的API用起来确实很方便。<br>这些API包括：<br>RtlInitializeBitMap<br>RtlFindClearBits<br>RtlFindClearBitsAndSet<br>RtlFindClearRuns<br>RtlFindLastBackwardRunClear<br>RtlFindLongestRunClear<br>RtlFindNextForwardRunClear<br>RtlFindSetBits<br>RtlFindSetBitsAndClear<br>RtlSetAllBits<br>RtlSetBits<br>RtlClearAllBits<br>RtlClearBits<br>RtlNumberOfClearBits<br>RtlNumberOfSetBits<br>RtlAreBitsClear<br>RtlAreBitsSet<br>以上这些，在MSDN上都能查到API的详细文档介绍。唯一不方便的就是使用的时候需要GetProcAddress一下。所以我为了自己以后使用方便才写了一个类。</p>
+<p>在项目（<a href="https://github.com/0cch/bitmap" target="_blank" rel="external">https://github.com/0cch/bitmap</a>）中，bitmap_class是封装类，整个工程是一个使用这套API，获得文件系统的bitmap，并且查找空闲簇的一个例子。</p>
+<p><a href="/uploads/2014/01/2014-01-18_101801.png"><img src="/uploads/2014/01/2014-01-18_101801.png" alt="2014-01-18_101801"></a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2014/01/18/e4b880e782b9e69c89e585b3ntdlle4b8ade68f90e4be9be79a84bitmape7b3bbe58897e587bde695b0/" data-id="cj6etaku3003yfcg91mk9dirn" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e680bbe7bb93e5928ce5b195e69c9befbc9ae8b4a8e9878fe6af94e8be83e5a4a7e782b9efbc8ce5b0b1e4b88de5aeb9e69893e8a2abe9a38ee590b9e58aa8" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/12/31/e680bbe7bb93e5928ce5b195e69c9befbc9ae8b4a8e9878fe6af94e8be83e5a4a7e782b9efbc8ce5b0b1e4b88de5aeb9e69893e8a2abe9a38ee590b9e58aa8/" class="article-date">
+  <time datetime="2013-12-31T08:07:45.000Z" itemprop="datePublished">2013-12-31</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/12/31/e680bbe7bb93e5928ce5b195e69c9befbc9ae8b4a8e9878fe6af94e8be83e5a4a7e782b9efbc8ce5b0b1e4b88de5aeb9e69893e8a2abe9a38ee590b9e58aa8/">总结和展望：质量比较大点，就不容易被风吹动</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>又到了一年一度的总结和展望。时间过得真快，2012年定计划的那会好想就发生在昨天。还能清晰的记得当时的计划，当然也是因为计划定的足够的简单。当然还是把个人的计划放在后面，先来总结下2013年的工作。这年的工作真是富有戏剧性，工作中做了一些网页前端的工作，这确实让我措手不及，不过既然组里有这样的需求，也只能硬着头皮上了，还好是这也并不算忙，不影响个人计划的进展。另一方面，公司拿我们部门和其他公司合并了，<br>换句话说，我们部门被裁了，只不过以一种漂亮的方式。就如同所有的接纳新员工的老大一样，新公司的leader会给你谈未来画大饼。只不过，对不起，我真的不看好这种抱团取暖的合并，所以，我选择离开。由于平时有一定的积累，所以找份靠谱的工作也并不是特别难的事情。能预感到新的工作会比较忙，不过我想，应该还是能hold住的。</p>
+<p>当然，要说最放不下的，要数公司的健身房。掐指一算，已经坚持锻炼了16个月了！依稀记得12年是拼命跑25分钟能跑到4km多点，而13年已经能跑过5km了。一年的时间，让我在25分钟里能超越过去的自己两圈，“想想还有点小激动呢！”。另外肱二头肌和肱三头肌已经比较明显了，上臂粗了好多，穿短袖看起来MAN了好多，不过腹肌虽然能看出来，但还是不算特别明显。这里不得不提醒一下sysdbg的博主，“我督促你健身了16个月，你是不是应该请我吃金钱豹啊？！别客气，跪谢就免了，嗯！”。噢！说到这货，我还想到了一个事情，就是练字。现在字终于写的有点人样了，虽然写急了还是很丑，但是应该比以前好点了吧……大概……是这样。</p>
+<p>我记得，13年的个人计划只有一个就是山寨sysinternals的工具。这次算是完成的比较好吧，工具集中大部分小工具都山寨了，只有个别界面特别复杂，功能特别强大的工具没有山寨。实在是没有动力写界面。另外，又一次把minikernel重写了一次，也围绕这个发布了不少的blog，但是这个minikernel还是缺少挺多的东西，比如很核心的多进程和多线程。一方面是突然遇到公司方面的事情打断了进度，另一个方面也是自己懒。</p>
+<p>至于2014年的个人计划，还真不好说，还不知道新工作是个什么情况，但是我个人还是比较想写一个脚本语言以及完善这个minikernel的。另外继续健身，练字也是必须的。最近因为灌篮高手高清重置版播出了，也导致我又想没事抽出点时间打打球了。另外在13年，花了很多时间看dota2的视频，这个也是被sysdbg的博主吐槽了好久，最近也已经开始戒dota了，时间真是越来越不够用。<br>希望15年写总结的时候，能看到一个质量更大的自己吧，希望写的这些计划能完成75%以上。</p>
+<p>最后，还是祝福家人，朋友，自己在新的一年里幸福安康，合家欢乐！！！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/12/31/e680bbe7bb93e5928ce5b195e69c9befbc9ae8b4a8e9878fe6af94e8be83e5a4a7e782b9efbc8ce5b0b1e4b88de5aeb9e69893e8a2abe9a38ee590b9e58aa8/" data-id="cj6etaku1003ufcg9fafrwtyp" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-showiedevtool-e68993e5bc80iee68ea7e4bbb6e79a84e5bc80e58f91e4babae59198e5b7a5e585b7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/12/07/showiedevtool-e68993e5bc80iee68ea7e4bbb6e79a84e5bc80e58f91e4babae59198e5b7a5e585b7/" class="article-date">
+  <time datetime="2013-12-07T10:05:03.000Z" itemprop="datePublished">2013-12-07</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/12/07/showiedevtool-e68993e5bc80iee68ea7e4bbb6e79a84e5bc80e58f91e4babae59198e5b7a5e585b7/">ShowIEDevTool —— 打开IE控件的开发人员工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在网上看到一大牛blog（<a href="http://blog.titilima.com/launch-f12-tools.html" target="_blank" rel="external">http://blog.titilima.com/launch-f12-tools.html</a>），讨论的是在内嵌的IE窗口中，打开开发人员工具。文章写的很好，而且还提供了开源的工具，实在是业界良心。于是我臭不要脸的A了部分关键代码，弄了个命令行版工具。有兴趣的强烈推荐阅读上面的blog，以及其提供的开源工具的代码。</p>
+<p>下载<a href="/uploads/2013/12/ShowIEDevTool.zip">ShowIEDevTool</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/12/07/showiedevtool-e68993e5bc80iee68ea7e4bbb6e79a84e5bc80e58f91e4babae59198e5b7a5e585b7/" data-id="cj6etaku0003sfcg96ox05ige" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-xperfhelper-xperfe79a84windowse591bde4bba4e8a18ce8849ae69cace7949fe68890e5b7a5e585b7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/12/01/xperfhelper-xperfe79a84windowse591bde4bba4e8a18ce8849ae69cace7949fe68890e5b7a5e585b7/" class="article-date">
+  <time datetime="2013-12-01T06:25:52.000Z" itemprop="datePublished">2013-12-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/12/01/xperfhelper-xperfe79a84windowse591bde4bba4e8a18ce8849ae69cace7949fe68890e5b7a5e585b7/">XPerfHelper —— XPerf的Windows命令行脚本生成工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>使用过XPerf的应该都知道，写一个XPerf的命令行是多么的麻烦，如果不太熟悉，需要反复的查看帮助里的参数。所以一般情况下，大家会把命令写到一个cmd或者bat的脚本中，这样就可以双击来使用XPerf，只需要第一次费点心思写脚本罢了。但是我还是觉得，即使是只用写一次脚本，也还是挺麻烦的，于是写了这个小工具，生成cmd脚本文件。妈妈再也不用担心我的XPerf命令写错了。</p>
+<p><a href="/uploads/2013/12/20131201221223.png"><img src="/uploads/2013/12/20131201221223.png" alt="20131201221223"></a></p>
+<p>如上图所示，我们可以选择kernel flag和stackwalk，然后选择providers，点击OK，生成cmd文件即可。下面是一个生成的cmd的内容：</p>
+<p><a href="/uploads/2013/12/20131201222315.png"><img src="/uploads/2013/12/20131201222315.png" alt="20131201222315"></a></p>
+<p>下载<a href="/uploads/2013/12/XPerfHelper.zip">XPerfHelper</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/12/01/xperfhelper-xperfe79a84windowse591bde4bba4e8a18ce8849ae69cace7949fe68890e5b7a5e585b7/" data-id="cj6etaku2003wfcg9h5fgh0yt" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e4bdbfe794a8etwe5afb9e7a88be5ba8fe8bf9be8a18ce79b91e68ea7e5928ce58886e69e90" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/11/17/e4bdbfe794a8etwe5afb9e7a88be5ba8fe8bf9be8a18ce79b91e68ea7e5928ce58886e69e90/" class="article-date">
+  <time datetime="2013-11-16T20:20:11.000Z" itemprop="datePublished">2013-11-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>►<a class="article-category-link" href="/categories/Debugging/NTInternals/">NTInternals</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/11/17/e4bdbfe794a8etwe5afb9e7a88be5ba8fe8bf9be8a18ce79b91e68ea7e5928ce58886e69e90/">使用ETW对程序进行监控和分析</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>ETW（Event Tracing for Windows）是Windows提供的对程序进行事件记录，跟踪，使用的机制。我们可以利用这个机制对程序进行调试和性能分析。从Windows Vista开始，ETW已经非常好的融合在Windows内核之中了，在Windows 7开始，这一个机制更加完善，几乎记录了Windows运行的每一个细节。我个人猜测，从Windows Vista开始到Windows 7直到现在的Windows 8，性能都在不断提高，ETW机制应该是功不可没的。</p>
+<p>ETW是Windows提供的机制，我们要使用他还需要工具，这些工具我们可以自己开发，因为Windows提供了调用接口。当然，更惬意的选择就是直接使用Windows提供的工具集WPT（Windows Performance Toolkit）。利用WPT和SDK，我们可以将ETW融入到我们自己的程序中，帮助我们调试程序和提升性能。</p>
+<p>以下是我们需要的工具：<br>SDK:  </p>
+<ol>
+<li>ECMangen.exe  </li>
+<li>mc.exe  </li>
+</ol>
+<p>Windows:<br>WEVTUtil.exe  </p>
+<p>WPT:  </p>
+<ol>
+<li>XPerf.exe  </li>
+<li>XPerfView.exe  </li>
+</ol>
+<p>首先我们需要用SDK中的工具ECMangen，生成一个manifest文件，这个文件用来描述记录的事件，如图。<br><a href="/uploads/2013/11/20131117114336.png"><img src="/uploads/2013/11/20131117114336.png" alt="20131117114336"></a><br>这里，我们首先创建一个Provider，接下来创建一个Event，参数可以随便填下，就像上图所示。作为演示，这里一个Event就够了（FirstEvent）。<br>然后保存为0CChProvider.man。</p>
+<p>接下来我们MC来生成一个头文件，一个资源文件和两个二进制文件。命令行如：<br>mc -um C:\etw\0CChProvider.man<br><a href="/uploads/2013/11/20131117114801.png"><img src="/uploads/2013/11/20131117114801.png" alt="20131117114801"></a></p>
+<p>然后我们可以创建一个工程，加入这个头文件和资源文件。并且在代码中插入写事件的代码，例如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdafx.h"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"../../0CChProvider.h"</span></span></div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    EventRegisterMy0CChProvider();</div><div class="line">    EventWriteFirstEvent(<span class="string">L"Hello ETW World!"</span>);</div><div class="line">    Sleep(<span class="number">1000</span>);</div><div class="line">    EventWriteFirstEvent(<span class="string">L"Bye ETW World!"</span>);</div><div class="line">    EventUnregisterMy0CChProvider();</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
+<p>在这里，我们利用EventRegisterMy0CChProvider先注册自己的Provider，接下写事件才会发挥作用。记录事件后，我们需要反注册Provider。<br>好了，演示代码就这么一点，然后编译即可。</p>
+<p>接下来我们需要注册这个Provider给系统，需要使用到系统自带的工具WEVTUtil.exe。<br>wevtutil im C:\etw\0CChProvider.man</p>
+<p>注册成功后就可以利用XPerf开启ETW，然后运行程序，查看记录的事件了。</p>
+<ol>
+<li>xperf -start 0cch -on My0CChProvider:::’stack’</li>
+<li>xperf -on base</li>
+<li>Run 0CChProvider.exe</li>
+<li>xperf -stop 0cch -stop -d d:\0cch.etl</li>
+<li>xperf d:\0cch.etl</li>
+</ol>
+<p>XPerfView会生成分析数据如图：<br><a href="/uploads/2013/11/20131117115853.png"><img src="/uploads/2013/11/20131117115853.png" alt="20131117115853"></a></p>
+<p><a href="/uploads/2013/11/20131117120007.png"><img src="/uploads/2013/11/20131117120007-1024x622.png" alt="20131117120007"></a></p>
+<p>整体来说，想简单的使用ETW也就是这么简单，当然你也可以把他弄得很复杂，这里就不介绍了。话说<a href="http://sysdbg.com/" target="_blank" rel="external">sysdbg</a>早就让我写点XPerf的东西，但是因为各种懒没写，刚好最近终于有空了，就先写了这么个简单的介绍，就当作一个开篇吧，话说某人的Blog好久没更新了呀。。。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/11/17/e4bdbfe794a8etwe5afb9e7a88be5ba8fe8bf9be8a18ce79b91e68ea7e5928ce58886e69e90/" data-id="cj6etakty003qfcg9qxuhyphf" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    <a class="extend prev" rel="prev" href="/page/6/">&laquo; __('prev')</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/8/">__('next') &raquo;</a>
+  </nav>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 0CCh<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

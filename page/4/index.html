@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>0CCh Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="0CCh Blog">
+<meta property="og:url" content="http://0cch.com/page/4/index.html">
+<meta property="og:site_name" content="0CCh Blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="0CCh Blog">
+  
+    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0CCh Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-dump-pe-with-windbg-script" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/07/01/dump-pe-with-windbg-script/" class="article-date">
+  <time datetime="2015-06-30T16:11:15.000Z" itemprop="datePublished">2015-07-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/07/01/dump-pe-with-windbg-script/">用Windbg script将内存中的PE文件dump出来</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近看到有些恶意程序，从网络上下载PE文件后，直接放在内存里重定位和初始化，为了能将其dump出来，所以写了这个Windbg脚本。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">.foreach( place  &#123; !address /f:VAR,MEM_PRIVATE,MEM_COMMIT /c:&quot;s -[1]a %1 %2 \&quot;MZ\&quot;&quot; &#125; ) </div><div class="line">&#123;</div><div class="line">	ad *</div><div class="line">	.catch &#123;</div><div class="line">		r @$t2 = place;</div><div class="line">		r @$t0 = place;</div><div class="line">		r @$t1 = @@C++(((ntdll!_IMAGE_DOS_HEADER *)@$t0)-&gt;e_lfanew);</div><div class="line">		r @$t0 = @$t0 + @$t1;</div><div class="line">		r @$t1 = $vvalid(@$t0, 4);</div><div class="line"></div><div class="line">		.if (@@C++(@$t1 &amp;&amp; @@C++(((ntdll!_IMAGE_NT_HEADERS *)@$t0)-&gt;Signature) == 0x00004550))</div><div class="line">		&#123;</div><div class="line">			r @$t1 = @@C++(((ntdll!_IMAGE_NT_HEADERS *)@$t0)-&gt;OptionalHeader.SizeOfImage);</div><div class="line">			.printf &quot;%08x  %08x\n&quot;, @$t2, @$t1;</div><div class="line">			aS /x start_addr @$t2</div><div class="line">			aS /x dump_size @$t1</div><div class="line">			.block &#123;</div><div class="line">				aS target_file e:\\$&#123;start_addr&#125;.dll</div><div class="line">			&#125;</div><div class="line">			</div><div class="line">			.block &#123;</div><div class="line">				.printf &quot;$&#123;target_file&#125;&quot;</div><div class="line">				.writemem &quot;$&#123;target_file&#125;&quot; $&#123;start_addr&#125; L?$&#123;dump_size&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2015/07/01/dump-pe-with-windbg-script/" data-id="cj6etakvi005vfcg99nbk18h1" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-move-blog-to-jekyll" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/28/move-blog-to-jekyll/" class="article-date">
+  <time datetime="2015-06-28T14:29:37.000Z" itemprop="datePublished">2015-06-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/28/move-blog-to-jekyll/">将blog迁移到了jekyll</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>上周终于下定决心把blog从<a href="http://0cch.net" target="_blank" rel="external">wordpress</a>转到<a href="http://0cch.com">jekyll</a>，不是因为wordpress臃肿，也不是因为jekyll的更加Geek，纯粹是因为穷。我一直都觉得wordpress是一个非常伟大的blog程序，虽然臃肿了点，但确实功能强大操作简单，对于我这种懒人和对前端代码完全不熟的程序员来说，wordpress确实是一个非常好的选择。但是问题就出在了webhost上，我使用的webhost刚刚买的时候是50多刀一年，之后每年涨价，今年续费看了下需要100刀左右，这个确实让我心中无数的羊驼奔腾了起来。于是就决定把blog搬离这个地方。</p>
+<p>刚开始我只是想找便宜的地方转移wordpress的blog。网上也有很多这类的webhost，第一年进去都很便宜，甚至有1刀一个月的。但是一朝被蛇咬啊，为了防止以后又被迫搬家，于是打消了这个念头。想要便宜和稳定的blog空间，看来是只有伟大的Github。而Github只支持静态程序，那么我也只能放弃wordpress的方便，自己折腾点静态博客程序了。摆在眼前的选择其实很多最基础jekyll，加强版的octopress以及hexo。第一个程序的优点就是简单基础，缺点就是太基础了，而octopress在jekyll的基础之上加上了一些插件，让blog默认的功能变得丰富起来。之后hexo，也是一个自带很多基础功能的程序而且还带了很多非常漂亮的主题，主题控的bloger不妨选择这个，我就特别喜欢他其中的一个默认主题，但是折腾样式的时候jekyll的基本结构都搭建好了，所以就没有更换hexo程序，于是极度痛苦的折腾了一周的css和ruby插件才把现在的blog折腾的和之前的差不多。</p>
+<p>简单说下用jekyll在Github上搭建blog的步骤，其实网上很多很多教程，这里记录下就是防止自己忘了把。  </p>
+<ol>
+<li>首先在<a href="http://rubyinstaller.org/downloads/" target="_blank" rel="external">http://rubyinstaller.org/downloads/</a>下载ruby和DevKit，安装分别安装他们，然后运行Devkit，分别执行：<br> 1) dk.rb init<br> 2) dk.rb review<br> 3) dk.rb install  </li>
+<li>接下来就是安装jekyll了，安装之前推荐更换Gem的源到<a href="https://ruby.taobao.org/" target="_blank" rel="external">https://ruby.taobao.org/</a> 这样下载程序比较快。具体方式是：<br> 1) gem source -r (url)<br> 2) gem source -a (new url)<br> 3) gem source -u  </li>
+<li>然后就可以开始下载jekyll和他的代码高亮程序rouge了，gem install (app name)  </li>
+<li>最后记得要设置_config.yml文件，尤其是高亮highlighter: rouge</li>
+</ol>
+<p>这样，最基础功能的blog就搭建好了，接下来就是把blog从wordpress转移到jekyll了。方法是使用exitwp这个python脚本。  </p>
+<ol>
+<li>先导出wordpress的数据到一个xml里，这个功能wordpress是自带的。  </li>
+<li>然后同个这个脚本把数据转换成markdown文件，放在jekyll生产的_post里面。并且把里面的图片和下载的url替换了。  </li>
+<li>最后把wordpress的upload目录下载下来，放到jekyll里面即可。</li>
+</ol>
+<p>这样我们看到的就是一个最简单的jekyll的blog，要想改变主题，自己去折腾吧。我能做的就是推荐两个jekyll的插件，分别是按日期和分类生成归档网页的，可以在我的<a href="https://github.com/0cch/0CChBlog/tree/master/_plugins" target="_blank" rel="external">Github</a>上看到。</p>
+<p>最后要说的是rouge语法高亮有个bug，在使用显示行号linenos参数的时候会出现嵌套错误的问题，解决方法倒是有，不过有了行号之后高亮的显示极其丑陋，所以还是我还是没用这个参数。如果有需求可以使用代码<a href="https://gist.github.com/0cch/775e4a8a94be175cae9c" target="_blank" rel="external">rouge_linenos_patch.rb</a>覆盖”\lib\ruby\gems\2.2.0\gems\jekyll-2.5.3\lib\jekyll\tags\highlight.rb”里对应的函数即可。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2015/06/28/move-blog-to-jekyll/" data-id="cj6etakvj005xfcg97yr3odvy" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/15/e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95/" class="article-date">
+  <time datetime="2015-06-15T00:07:03.000Z" itemprop="datePublished">2015-06-15</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>►<a class="article-category-link" href="/categories/NTInternals/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/15/e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95/">关于Zone.Identifier的一点记录</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>自从Windows XP SP2开始，微软对文件加入了Zone.Identifier的数据流，所以这个也不算什么新东西了，最近偶然有机会研究了下所以就记录了下来。<br>说起Zone.Identifier，我们最常见的应用就是在我们从Internet上下载了可执行文件后，运行的时候会弹出如下图的警告窗口：</p>
+<p><a href="/uploads/2015/06/20150615150628.png"><img src="/uploads/2015/06/20150615150628.png" alt="20150615150628"></a></p>
+<p>弹出这个窗口就是因为Explorer在运行这个文件的时候先检查了Zone.Identifier的数据，发现了如下文本<br>[ZoneTransfer]<br>ZoneId=3</p>
+<p>这个ZoneId=3，就是指明这个文件是由Internet上下载的。根据MSDN，这个id有以下几种：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span> tagURLZONE &#123; </div><div class="line">  URLZONE_INVALID         = <span class="number">-1</span>,</div><div class="line">  URLZONE_PREDEFINED_MIN  = <span class="number">0</span>,</div><div class="line">  URLZONE_LOCAL_MACHINE   = <span class="number">0</span>,</div><div class="line">  URLZONE_INTRANET,</div><div class="line">  URLZONE_TRUSTED,</div><div class="line">  URLZONE_INTERNET,</div><div class="line">  URLZONE_UNTRUSTED,</div><div class="line">  URLZONE_PREDEFINED_MAX  = <span class="number">999</span>,</div><div class="line">  URLZONE_USER_MIN        = <span class="number">1000</span>,</div><div class="line">  URLZONE_USER_MAX        = <span class="number">10000</span></div><div class="line">&#125; URLZONE; </div></pre></td></tr></table></figure>
+<p>查看这个数据流的方法也很简单，用notepad就行了。</p>
+<p><a href="/uploads/2015/06/20150615153805.png"><img src="/uploads/2015/06/20150615153805.png" alt="20150615153805"></a></p>
+<p>另外如果想给添加或者去除这个数据流，我们这里有两种方法：<br>1.直接读写数据流，其实这个跟普通文件读写没什么两样。<br>2.调用微软提供的com接口，这个比较是规范的。  </p>
+<p>对于第一种方法，没什么可说的，无非就是文件操作的那些API。第二种方法我们需要用到以下两个接口：<br>IPersistFile<br>IZoneIdentifier</p>
+<p>我们先创建IZoneIdentifier接口，然后query出IPersistFile打开文件，最后读取或者写入文件。<br>代码详见：<a href="http://blogs.msdn.com/b/oldnewthing/archive/2013/11/04/10463035.aspx" target="_blank" rel="external">http://blogs.msdn.com/b/oldnewthing/archive/2013/11/04/10463035.aspx</a></p>
+<p>最后说一下，之所以能有Zone.Identifier这种功能，完全依赖于NTFS文件系统，它允许多个数据流的存在，对它而言，每个数据流无非就是一个属性而已，只不过Zone.Identifier是一个名字为Zone.Identifier的数据流，而文件本身的数据是一个没有命名的数据流而已。用ntfs_study查看，如下图，第一个Data数据没有名字是文件本身的数据，第二个就是Zone.Identifier的数据了。<br><a href="/uploads/2015/06/20150615160110.png"><img src="/uploads/2015/06/20150615160110.png" alt="20150615160110"></a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2015/06/15/e585b3e4ba8ezone-identifiere79a84e4b880e782b9e8aeb0e5bd95/" data-id="cj6etakvg005tfcg9j00jt1ys" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-windows-8-spellchecking-api" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/18/windows-8-spellchecking-api/" class="article-date">
+  <time datetime="2015-05-18T04:30:35.000Z" itemprop="datePublished">2015-05-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/18/windows-8-spellchecking-api/">Windows 8 SpellChecking API</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在Windows 8下，多了一套很有趣的API，SpellChecking，这套API的作用也是一目了然，是做拼写检查的。这么有趣的一套API怎么能不写个程序玩玩呢，于是我写了个小程序，看了看对英文拼写检查的效果，如图。<br><a href="/uploads/2015/05/20150518202121.png"><img src="/uploads/2015/05/20150518202121.png" alt="20150518202121"></a><br>拼写检查会给出三个结果，分别是删除，替换和建议，根据不同的结果我们可以调用不同的接口来获得最佳的体验。代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// SpellCheck.cpp : Defines the entry point for the console application.</span></div><div class="line"><span class="comment">//</span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdafx.h"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atlbase.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atlstr.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;Spellcheck.h&gt;</span></span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">CCoInitialize</span> &#123;</span></div><div class="line"><span class="keyword">public</span>:</div><div class="line">	CCoInitialize() &#123;</div><div class="line">		CoInitializeEx(<span class="literal">NULL</span>, COINIT_MULTITHREADED);</div><div class="line">	&#125;</div><div class="line">	~CCoInitialize() &#123; CoUninitialize(); &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">LPCWSTR kActionStrings[] = &#123;</div><div class="line">	<span class="string">L"CORRECTIVE_ACTION_NONE"</span>,</div><div class="line">	<span class="string">L"CORRECTIVE_ACTION_GET_SUGGESTIONS"</span>,</div><div class="line">	<span class="string">L"CORRECTIVE_ACTION_REPLACE"</span>,</div><div class="line">	<span class="string">L"CORRECTIVE_ACTION_DELETE"</span></div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">	CCoInitialize com_init;</div><div class="line">	CComPtr spell_checker_factory;</div><div class="line">	HRESULT hr = CoCreateInstance(__uuidof(SpellCheckerFactory), <span class="literal">NULL</span>, CLSCTX_INPROC_SERVER, __uuidof(spell_checker_factory),</div><div class="line">		<span class="keyword">reinterpret_cast</span>(&amp;spell;_checker_factory));</div><div class="line">	<span class="keyword">if</span> (FAILED(hr)) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	LPCWSTR lang_tag = <span class="string">L"en-US"</span>;</div><div class="line">	BOOL suppored = FALSE;</div><div class="line">	spell_checker_factory-&gt;IsSupported(lang_tag, &amp;suppored;);</div><div class="line">	<span class="keyword">if</span> (!suppored) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	CComPtr spell_checker;</div><div class="line">	hr = spell_checker_factory-&gt;CreateSpellChecker(lang_tag, &amp;spell;_checker);</div><div class="line">	<span class="keyword">if</span> (FAILED(hr)) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	WCHAR my_text[] = <span class="string">L"Helloo world, I am am new heere, hvae fun"</span>;</div><div class="line">	wprintf(<span class="string">L"%s\n\n"</span>, my_text);</div><div class="line">	CComPtr spell_errors;</div><div class="line">	hr = spell_checker-&gt;Check(my_text, &amp;spell;_errors);</div><div class="line">	<span class="keyword">if</span> (FAILED(hr)) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	CComPtr spell_error;</div><div class="line">	<span class="keyword">while</span> (spell_errors-&gt;Next(&amp;spell;_error) == S_OK) &#123;</div><div class="line">		ULONG index, length;</div><div class="line">		<span class="keyword">if</span> (SUCCEEDED(spell_error-&gt;get_StartIndex(&amp;index;)) &amp;&amp; SUCCEEDED(spell_error-&gt;get_Length(&amp;length;))) &#123;</div><div class="line">			<span class="function">CStringW <span class="title">tmp_str</span><span class="params">(my_text + index, length)</span></span>;</div><div class="line">			wprintf(<span class="string">L"%-10s    "</span>, tmp_str.GetString());</div><div class="line"></div><div class="line">			CORRECTIVE_ACTION action;</div><div class="line">			<span class="keyword">if</span> (SUCCEEDED(spell_error-&gt;get_CorrectiveAction(&amp;action;))) &#123;</div><div class="line">				wprintf(<span class="string">L"%-40s    "</span>, kActionStrings[action]);</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (action == CORRECTIVE_ACTION_DELETE) &#123;</div><div class="line">				wprintf(<span class="string">L"delete %s\n"</span>, tmp_str.GetString());</div><div class="line">			&#125;</div><div class="line">			<span class="keyword">else</span> <span class="keyword">if</span> (action == CORRECTIVE_ACTION_GET_SUGGESTIONS) &#123;</div><div class="line">				CComPtr spell_suggestions;</div><div class="line">				hr = spell_checker-&gt;Suggest(tmp_str.GetString(), &amp;spell;_suggestions);</div><div class="line">				<span class="keyword">if</span> (FAILED(hr)) &#123;</div><div class="line">					<span class="keyword">break</span>;;</div><div class="line">				&#125;</div><div class="line"></div><div class="line">				WCHAR *suggestion_str;</div><div class="line">				<span class="keyword">while</span> (spell_suggestions-&gt;Next(<span class="number">1</span>, &amp;suggestion;_str, <span class="literal">NULL</span>) == S_OK) &#123;</div><div class="line">					wprintf(<span class="string">L"%s "</span>, suggestion_str);</div><div class="line">					CoTaskMemFree(suggestion_str);</div><div class="line">				&#125;</div><div class="line">				wprintf(<span class="string">L"\n"</span>);</div><div class="line">			&#125;</div><div class="line">			<span class="keyword">else</span> <span class="keyword">if</span> (action == CORRECTIVE_ACTION_REPLACE) &#123;</div><div class="line">				WCHAR *replace_str;</div><div class="line">				hr = spell_error-&gt;get_Replacement(&amp;replace;_str);</div><div class="line">				wprintf(<span class="string">L"%s\n"</span>, replace_str);</div><div class="line">				CoTaskMemFree(replace_str);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		spell_error.Release();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2015/05/18/windows-8-spellchecking-api/" data-id="cj6etakva005rfcg9uy9kxe2v" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-windows-8-1-genericmappinge5afb9e5ba94e79a84access_mask" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/01/windows-8-1-genericmappinge5afb9e5ba94e79a84access_mask/" class="article-date">
+  <time datetime="2015-05-01T09:06:17.000Z" itemprop="datePublished">2015-05-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/01/windows-8-1-genericmappinge5afb9e5ba94e79a84access_mask/">Windows 8.1 GenericMapping对应的ACCESS_MASK</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我们在创建或者打开对象的时候需要指定ACCESS_MASK，有的时候为了方便，我们会在ACCESS_MASK的参数中填GenericRead,GenericWrite这样的值，那么对于这些对象来说，这些GenericXXX究竟是什么样的ACCESS_MASK都是保存在对象的GenericMapping中，以下就是Windows 8.1中所有对象的GenericMapping了。<br><a href="/uploads/2015/05/20150502010045.png"><img src="/uploads/2015/05/20150502010045.png" alt="20150502010045"></a></p>
+<p>将ACCESS_MASK数字转换成我们看得懂的宏，可以使用我写的一个小网页：<br><a href="http://0cch.com/accessmask.html">http://0cch.com/accessmask.html</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2015/05/01/windows-8-1-genericmappinge5afb9e5ba94e79a84access_mask/" data-id="cj6etakv8005ofcg9w6an319a" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-memmapview-e69fa5e79c8be585b1e4baabe58685e5ad98e698a0e5b084e79a84e5b7a5e585b7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/04/18/memmapview-e69fa5e79c8be585b1e4baabe58685e5ad98e698a0e5b084e79a84e5b7a5e585b7/" class="article-date">
+  <time datetime="2015-04-18T07:56:03.000Z" itemprop="datePublished">2015-04-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>►<a class="article-category-link" href="/categories/Debugging/NTInternals/">NTInternals</a>►<a class="article-category-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/04/18/memmapview-e69fa5e79c8be585b1e4baabe58685e5ad98e698a0e5b084e79a84e5b7a5e585b7/">MemMapView —— 查看共享内存映射的工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>MemMapView是一个查看Named Shared Memory的工具，它能够枚举系统中的命名共享内存的名称，并且浏览其数据。</p>
+<p><a href="/uploads/2015/04/20150418234836.png"><img src="/uploads/2015/04/20150418234836.png" alt="20150418234836"></a></p>
+<p>下载：<a href="/uploads/2015/04/MemMapView.zip">MemMapView</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2015/04/18/memmapview-e69fa5e79c8be585b1e4baabe58685e5ad98e698a0e5b084e79a84e5b7a5e585b7/" data-id="cj6etakv6005kfcg9m6ukmwrm" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e998b2e6ada2global-windows-hookse6b3a8e585a5e79a84e4b880e4b8aae696b9e6b395" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/04/10/e998b2e6ada2global-windows-hookse6b3a8e585a5e79a84e4b880e4b8aae696b9e6b395/" class="article-date">
+  <time datetime="2015-04-10T08:56:02.000Z" itemprop="datePublished">2015-04-10</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>►<a class="article-category-link" href="/categories/NTInternals/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/04/10/e998b2e6ada2global-windows-hookse6b3a8e585a5e79a84e4b880e4b8aae696b9e6b395/">防止Global Windows Hooks注入的一个方法</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我们都知道SetWindowsHookEx可以设置全局钩子，让自己的dll注入到有窗口的进程中去。注入原理就不再赘述了，网上资料很多，简单看一下调用堆栈方便我们说明怎么去防注入。<br>kernel32!LoadLibraryExW<br>USER32!__ClientLoadLibrary<br>ntdll!KiUserCallbackDispatcher<br>nt!KiCallUserMode<br>nt!KeUserModeCallback<br>win32k!ClientLoadLibrary<br>win32k!xxxLoadHmodIndex<br>win32k!xxxCallHook2<br>win32k!xxxCallHook<br>win32k!xxxCreateWindowEx<br>win32k!NtUserCreateWindowEx<br>nt!KiFastCallEntry<br>ntdll!KiFastSystemCallRet<br>ntdll!KiUserCallbackDispatcher<br>USER32!NtUserCreateWindowEx<br>USER32!_CreateWindowEx  </p>
+<p>看着个堆栈，防注入的方法这里就可以大概说出三种：  </p>
+<ol>
+<li>被创建窗口程序了。  </li>
+<li>Hook LoadLibraryExW，判断是否是自己的模块。  </li>
+<li>Hook __ClientLoadLibrary，替换为空函数。  </li>
+</ol>
+<p>第一个方法其实也谈不上方法，也就是说控制台程序就不用担心这些了。第二个方法需要是否是判断自己的模块，这个方法也挺麻烦的，因为你得放过一些不是自己的模块，比如微软的模块。所以这里重点说第三个方法，我们去Hook <strong>ClientLoadLibrary，这样我们就只是避免了全局钩子的注入了。这里我们不用去Inline Hook该函数，Inline Hook比较麻烦。我们的做法是修改user32!apfnDispatch这个数组，直接替换对应于</strong>ClientLoadLibrary所在位置的值。这样摆在我们面前的稍微麻烦一点的事情有两个，一个是确定数组开始的地址，第二就是确定__ClientLoadLibrary在数组中的index。<br>那么分别来解决这两个问题：</p>
+<ol>
+<li><p>组数的位置<br>其实就是PEB的KernelCallbackTable，虽然PEB没有文档化，但是也没见过他变过什么。所以我们可以写死KernelCallbackTable的偏移。说稍微有点麻烦就是指的，这个偏移在32bit和64bit的系统上是不同的而已，32位系统的偏移是0x2c，64位系统是0x58。另外一个就是获得PEB的方法了，32位程序你既可以写点汇编从fs中获取，也能调用<strong>readfsdword获得，64位程序会麻烦点，你需要先获得TEB，然后从TEB里得到PEB，至于获得TEB的方法，你可以直接调用</strong>readgsqword获得，也可以调用ntdll的NtCurrentTeb获得。</p>
+</li>
+<li><p><strong>ClientLoadLibrary在数组中的index<br>这个就稍微繁琐点，我们需要把我们关心的系统用windbg带上符号都看一眼才能知道是多少了。<br>我这里提供几个常用系统中</strong>ClientLoadLibrary在数组中的index：<br>XP=0x42，Win7=0x41，Win8.1=0x47</p>
+</li>
+</ol>
+<p>好了，知道了这些，后面的就不用说太详细了，无非就是这三步：  </p>
+<ol>
+<li>写个空的__ClientLoadLibrary函数MyClientLoadLibrary。  </li>
+<li>VirtualProtect设置KernelCallbackTable + index * sizeof(PVOID)地址内存保护属性为PAGE_READWRITE。  </li>
+<li>替换__ClientLoadLibrary为MyClientLoadLibrary，再把内存属性换回原来的。  </li>
+</ol>
+<p>OK，大功告成了。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2015/04/10/e998b2e6ada2global-windows-hookse6b3a8e585a5e79a84e4b880e4b8aae696b9e6b395/" data-id="cj6etakv7005mfcg9joghdzmc" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e58f91e78eb0file-system-minifiltere79a84e4b880e5a484e997aee9a298" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/03/26/e58f91e78eb0file-system-minifiltere79a84e4b880e5a484e997aee9a298/" class="article-date">
+  <time datetime="2015-03-26T00:08:33.000Z" itemprop="datePublished">2015-03-26</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>►<a class="article-category-link" href="/categories/NTInternals/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/03/26/e58f91e78eb0file-system-minifiltere79a84e4b880e5a484e997aee9a298/">发现File System Minifilter的一处问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这两天有个朋友一直问我用用户普通权限连接minifilter server port的问题。给他解答的同时，也发现了这个方面的一个问题。首先说用普通用户权限连接port的方法，其实就是设置FltCreateCommunicationPort参数里ObjectAttributes的SecurityDescriptor，加入everyone的ACE就行了。那么加入everyone的ace你就要指定一个ACCESS_MASK，在MSDN里，介绍了两个可以使用的MASK</p>
+<p><a href="/uploads/2015/03/20150326155009.png"><img src="/uploads/2015/03/20150326155009.png" alt="20150326155009"></a></p>
+<p>其中FLT_PORT_CONNECT=1，FLT_PORT_ALL_ACCESS=1F0001。看到这里，多数人都可能会认为如果只想让everyone连接上去，不给他所用权限，那么在这个ACE里加入FLT_PORT_CONNECT就可以了。然后就掉到微软的坑里了，和我那个朋友一样:)。</p>
+<p><a href="/uploads/2015/03/20150326154028.png"><img src="/uploads/2015/03/20150326154028.png" alt="20150326154028"></a></p>
+<p>实际上指定FLT_PORT_CONNECT会让R3的程序无法连接驱动的port，原因就是FilterConnectCommunicationPort函数没有让你指定你需求的ACCESS，而是在底层打开port的时候直接请求FLT_PORT_ALL_ACCESS。这个时候如果你的ACE里面是FLT_PORT_CONNECT，那当然无法连接上去了。所以这里把ACE里的ACCESS_MASK设置为FLT_PORT_ALL_ACCESS就行了。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2015/03/26/e58f91e78eb0file-system-minifiltere79a84e4b880e5a484e997aee9a298/" data-id="cj6etakv5005ifcg9z0mw6u7e" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-windbge69fa5e79c8bobject-hooke79a84e8849ae69cac" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/03/24/windbge69fa5e79c8bobject-hooke79a84e8849ae69cac/" class="article-date">
+  <time datetime="2015-03-23T18:08:18.000Z" itemprop="datePublished">2015-03-24</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/03/24/windbge69fa5e79c8bobject-hooke79a84e8849ae69cac/">Windbg查看Object Hook的脚本</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>学好Windbg，基本上可以代替很多工具，这次分享一个查看Object Hook的脚本：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">r @$t0 = <span class="number">2</span>;</div><div class="line">r? @$t1 = ((nt!_OBJECT_TYPE**)@@(nt!ObTypeIndexTable))[@$t0];</div><div class="line"></div><div class="line">.<span class="keyword">while</span> ((@$t1 &amp; <span class="number">0xffffffff</span>) != <span class="number">0</span>) &#123;</div><div class="line">	.<span class="built_in">printf</span> <span class="string">"Type Name:%-20msu\t"</span>, @@C++(&amp;@$t1-&gt;Name);</div><div class="line">	.<span class="built_in">printf</span> /D <span class="string">"detail\n"</span>, @$t1;</div><div class="line">	.<span class="built_in">printf</span> <span class="string">"DumpProcedure        : %y\n"</span>, @@C++(@$t1-&gt;TypeInfo.DumpProcedure);</div><div class="line">	.<span class="built_in">printf</span> <span class="string">"OpenProcedure        : %y\n"</span>, @@C++(@$t1-&gt;TypeInfo.OpenProcedure);</div><div class="line">	.<span class="built_in">printf</span> <span class="string">"CloseProcedure       : %y\n"</span>, @@C++(@$t1-&gt;TypeInfo.CloseProcedure);</div><div class="line">	.<span class="built_in">printf</span> <span class="string">"DeleteProcedure      : %y\n"</span>, @@C++(@$t1-&gt;TypeInfo.DeleteProcedure);</div><div class="line">	.<span class="built_in">printf</span> <span class="string">"ParseProcedure       : %y\n"</span>, @@C++(@$t1-&gt;TypeInfo.ParseProcedure);</div><div class="line">	.<span class="built_in">printf</span> <span class="string">"SecurityProcedure    : %y\n"</span>, @@C++(@$t1-&gt;TypeInfo.SecurityProcedure);</div><div class="line">	.<span class="built_in">printf</span> <span class="string">"QueryNameProcedure   : %y\n"</span>, @@C++(@$t1-&gt;TypeInfo.QueryNameProcedure);</div><div class="line">	.<span class="built_in">printf</span> <span class="string">"OkayToCloseProcedure : %y\n\n"</span>, @@C++(@$t1-&gt;TypeInfo.OkayToCloseProcedure);</div><div class="line">	</div><div class="line">	r @$t0 = @$t0 + <span class="number">1</span>;</div><div class="line">	r? @$t1 = ((nt!_OBJECT_TYPE**)@@(nt!ObTypeIndexTable))[@$t0];</div><div class="line">&#125;;</div><div class="line"> </div></pre></td></tr></table></figure>
+<p><a href="/uploads/2015/03/20150324095806.png"><img src="/uploads/2015/03/20150324095806.png" alt="20150324095806"></a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2015/03/24/windbge69fa5e79c8bobject-hooke79a84e8849ae69cac/" data-id="cj6etakv4005gfcg93jzhzjse" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e4b880e4b8aae8a7a3e69e90inie69687e4bbb6e79a84e7b1bb" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/03/17/e4b880e4b8aae8a7a3e69e90inie69687e4bbb6e79a84e7b1bb/" class="article-date">
+  <time datetime="2015-03-17T01:56:04.000Z" itemprop="datePublished">2015-03-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/03/17/e4b880e4b8aae8a7a3e69e90inie69687e4bbb6e79a84e7b1bb/">一个解析INI文件的类</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>虽然微软强烈推荐用注册表代替ini来记录软件配置，但是由于写ini文件的方便性和可读性的优势，还是让很多程序员选择把配置记录到ini文件中。但是用Windows API操作ini文件有个缺点，就是每次调用如GetPrivateProfileInt，WritePrivateProfileString等函数，都会产生一次文件打开关闭以及读写操作，并且对ini文件重新解析，这是非常低效的。所以如果需要大量的操作ini文件，例如需要读取很多配置信息以启动软件，那么这样的用法无疑会增加软件的冷启动时间。为了解决这个问题，我们就需要自己写一个模块，他能够一次性读取并且解析好ini文件。在需要读取的时候直接从内存读取，需要些的时候先全部写到内存里，最后在刷新到文件上。所以我写了一个ParseIni的类，来完成这个工作。代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div><div class="line">233</div><div class="line">234</div><div class="line">235</div><div class="line">236</div><div class="line">237</div><div class="line">238</div><div class="line">239</div><div class="line">240</div><div class="line">241</div><div class="line">242</div><div class="line">243</div><div class="line">244</div><div class="line">245</div><div class="line">246</div><div class="line">247</div><div class="line">248</div><div class="line">249</div><div class="line">250</div><div class="line">251</div><div class="line">252</div><div class="line">253</div><div class="line">254</div><div class="line">255</div><div class="line">256</div><div class="line">257</div><div class="line">258</div><div class="line">259</div><div class="line">260</div><div class="line">261</div><div class="line">262</div><div class="line">263</div><div class="line">264</div><div class="line">265</div><div class="line">266</div><div class="line">267</div><div class="line">268</div><div class="line">269</div><div class="line">270</div><div class="line">271</div><div class="line">272</div><div class="line">273</div><div class="line">274</div><div class="line">275</div><div class="line">276</div><div class="line">277</div><div class="line">278</div><div class="line">279</div><div class="line">280</div><div class="line">281</div><div class="line">282</div><div class="line">283</div><div class="line">284</div><div class="line">285</div><div class="line">286</div><div class="line">287</div><div class="line">288</div><div class="line">289</div><div class="line">290</div><div class="line">291</div><div class="line">292</div><div class="line">293</div><div class="line">294</div><div class="line">295</div><div class="line">296</div><div class="line">297</div><div class="line">298</div><div class="line">299</div><div class="line">300</div><div class="line">301</div><div class="line">302</div><div class="line">303</div><div class="line">304</div><div class="line">305</div><div class="line">306</div><div class="line">307</div><div class="line">308</div><div class="line">309</div><div class="line">310</div><div class="line">311</div><div class="line">312</div><div class="line">313</div><div class="line">314</div><div class="line">315</div><div class="line">316</div><div class="line">317</div><div class="line">318</div><div class="line">319</div><div class="line">320</div><div class="line">321</div><div class="line">322</div><div class="line">323</div><div class="line">324</div><div class="line">325</div><div class="line">326</div><div class="line">327</div><div class="line">328</div><div class="line">329</div><div class="line">330</div><div class="line">331</div><div class="line">332</div><div class="line">333</div><div class="line">334</div><div class="line">335</div><div class="line">336</div><div class="line">337</div><div class="line">338</div><div class="line">339</div><div class="line">340</div><div class="line">341</div><div class="line">342</div><div class="line">343</div><div class="line">344</div><div class="line">345</div><div class="line">346</div><div class="line">347</div><div class="line">348</div><div class="line">349</div><div class="line">350</div><div class="line">351</div><div class="line">352</div><div class="line">353</div><div class="line">354</div><div class="line">355</div><div class="line">356</div><div class="line">357</div><div class="line">358</div><div class="line">359</div><div class="line">360</div><div class="line">361</div><div class="line">362</div><div class="line">363</div><div class="line">364</div><div class="line">365</div><div class="line">366</div><div class="line">367</div><div class="line">368</div><div class="line">369</div><div class="line">370</div><div class="line">371</div><div class="line">372</div><div class="line">373</div><div class="line">374</div><div class="line">375</div><div class="line">376</div><div class="line">377</div><div class="line">378</div><div class="line">379</div><div class="line">380</div><div class="line">381</div><div class="line">382</div><div class="line">383</div><div class="line">384</div><div class="line">385</div><div class="line">386</div><div class="line">387</div><div class="line">388</div><div class="line">389</div><div class="line">390</div><div class="line">391</div><div class="line">392</div><div class="line">393</div><div class="line">394</div><div class="line">395</div><div class="line">396</div><div class="line">397</div><div class="line">398</div><div class="line">399</div><div class="line">400</div><div class="line">401</div><div class="line">402</div><div class="line">403</div><div class="line">404</div><div class="line">405</div><div class="line">406</div><div class="line">407</div><div class="line">408</div><div class="line">409</div><div class="line">410</div><div class="line">411</div><div class="line">412</div><div class="line">413</div><div class="line">414</div><div class="line">415</div><div class="line">416</div><div class="line">417</div><div class="line">418</div><div class="line">419</div><div class="line">420</div><div class="line">421</div><div class="line">422</div><div class="line">423</div><div class="line">424</div><div class="line">425</div><div class="line">426</div><div class="line">427</div><div class="line">428</div><div class="line">429</div><div class="line">430</div><div class="line">431</div><div class="line">432</div><div class="line">433</div><div class="line">434</div><div class="line">435</div><div class="line">436</div><div class="line">437</div><div class="line">438</div><div class="line">439</div><div class="line">440</div><div class="line">441</div><div class="line">442</div><div class="line">443</div><div class="line">444</div><div class="line">445</div><div class="line">446</div><div class="line">447</div><div class="line">448</div><div class="line">449</div><div class="line">450</div><div class="line">451</div><div class="line">452</div><div class="line">453</div><div class="line">454</div><div class="line">455</div><div class="line">456</div><div class="line">457</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> __PARSE_INI_H__</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> __PARSE_INI_H__</span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fstream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> INI_KEY_LINE			1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> INI_SECTION_LINE		2</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> INI_COMMENT_LINE		3</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> INI_NC_KEY_LINE			4</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> INI_WORNG_SYNTAX		0</span></div><div class="line"></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">CParseIniA</span> &#123;</span></div><div class="line"></div><div class="line"><span class="keyword">public</span>:</div><div class="line">	CParseIniA() &#123;&#125;</div><div class="line">	~CParseIniA() &#123;&#125;</div><div class="line"></div><div class="line">	<span class="function">BOOL <span class="title">Open</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span> &amp;IniPath;, BOOL OpenAlways = TRUE)</span></span>;</div><div class="line">	<span class="function"><span class="built_in">vector</span> <span class="title">EnumSectionNames</span><span class="params">()</span></span>;</div><div class="line">	<span class="function"><span class="built_in">vector</span> <span class="title">EnumKeyNamesInSection</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span> &amp;SectionName;)</span></span>;</div><div class="line">	<span class="function"><span class="built_in">string</span> <span class="title">GetSectionKeyValue</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span> &amp;SectionName;, <span class="keyword">const</span> <span class="built_in">string</span> &amp;KeyName;, <span class="keyword">const</span> <span class="built_in">string</span> &amp;DefaultValue;)</span></span>;</div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">GetSectionKeyValueInt</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span> &amp;SectionName;, <span class="keyword">const</span> <span class="built_in">string</span> &amp;KeyName;, <span class="keyword">int</span> DefaultValue)</span></span>;</div><div class="line">    <span class="function">BOOL <span class="title">SetSectionKeyValueInt</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span> &amp;SectionName;, <span class="keyword">const</span> <span class="built_in">string</span> &amp;KeyName;, <span class="keyword">int</span> value, BOOL CreateNew = TRUE)</span></span>;</div><div class="line">	<span class="function">BOOL <span class="title">SetSectionKeyValue</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span> &amp;SectionName;, <span class="keyword">const</span> <span class="built_in">string</span> &amp;KeyName;, <span class="keyword">const</span> <span class="built_in">string</span> &amp;Value;, BOOL CreateNew = TRUE)</span></span>;</div><div class="line">	<span class="function">BOOL <span class="title">Flush</span><span class="params">()</span></span>;</div><div class="line">	<span class="function">VOID <span class="title">Close</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line"><span class="keyword">private</span>:</div><div class="line">	<span class="function">ULONG <span class="title">SyntaxCheck</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span> &amp;KeyLine;)</span></span>;</div><div class="line">	<span class="built_in">vector</span>::<span class="function">iterator <span class="title">CreateSection</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span> &amp;SectionName;)</span></span>;</div><div class="line">	<span class="function">VOID <span class="title">CreateKeyValue</span><span class="params">(<span class="built_in">vector</span>::iterator it, <span class="keyword">const</span> <span class="built_in">string</span> &amp;KeyName;, <span class="keyword">const</span> <span class="built_in">string</span> &amp;Value;)</span></span>;</div><div class="line">	<span class="function">BOOL <span class="title">IsSection</span><span class="params">(<span class="built_in">string</span> &amp;Line;)</span></span>;</div><div class="line">	<span class="function">BOOL <span class="title">SetKeyValue</span><span class="params">(<span class="built_in">string</span> &amp;Line;, <span class="keyword">const</span> <span class="built_in">string</span> &amp;Value;)</span></span>;</div><div class="line">	<span class="function"><span class="built_in">string</span> <span class="title">GetKeyValue</span><span class="params">(<span class="built_in">string</span> &amp;Line;)</span></span>;</div><div class="line">	<span class="function"><span class="built_in">string</span> <span class="title">GetSectionName</span><span class="params">(<span class="built_in">string</span> &amp;Line;)</span></span>;</div><div class="line">	<span class="function"><span class="built_in">string</span> <span class="title">GetKeyName</span><span class="params">(<span class="built_in">string</span> &amp;Line;)</span></span>;</div><div class="line">	<span class="function"><span class="built_in">string</span> <span class="title">trim</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp; s ,<span class="keyword">const</span> <span class="built_in">string</span>&amp; drop = <span class="string">" "</span>)</span></span>;</div><div class="line">	<span class="built_in">vector</span> m_IniContext; </div><div class="line">	<span class="built_in">string</span> m_IniPath;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> BOOL CParseIniA::Open( <span class="keyword">const</span> <span class="built_in">string</span> &amp;IniPath;, BOOL OpenAlways)</div><div class="line">&#123;</div><div class="line">	ifstream IniFile(IniPath.c_str());</div><div class="line">	INT FileSize;</div><div class="line">	<span class="built_in">vector</span>::iterator it;</div><div class="line">	</div><div class="line"></div><div class="line">	<span class="keyword">if</span> (!IniFile.is_open()) &#123;</div><div class="line"></div><div class="line">		<span class="keyword">if</span> (!OpenAlways) &#123;</div><div class="line"></div><div class="line">			<span class="keyword">return</span> FALSE;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		m_IniPath = IniPath;</div><div class="line"></div><div class="line">		<span class="keyword">return</span> TRUE;</div><div class="line"></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	m_IniPath = IniPath;</div><div class="line"></div><div class="line">	IniFile.seekg(<span class="number">0</span>, <span class="built_in">std</span>::ios_base::end);</div><div class="line">	FileSize = IniFile.tellg();</div><div class="line">	IniFile.seekg(<span class="number">0</span>, <span class="built_in">std</span>::ios_base::beg);</div><div class="line">	<span class="keyword">if</span> (FileSize == <span class="number">0</span>) &#123;</div><div class="line"></div><div class="line">		<span class="keyword">return</span> TRUE;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line"></div><div class="line">	<span class="keyword">while</span> (IniFile) &#123;</div><div class="line">		<span class="built_in">string</span> IniLine;</div><div class="line">		getline(IniFile, IniLine);</div><div class="line"></div><div class="line">		m_IniContext.push_back(IniLine);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	it = m_IniContext.end();</div><div class="line">    it--;</div><div class="line">	<span class="keyword">while</span> (trim(*it).empty()) &#123;</div><div class="line"></div><div class="line">		m_IniContext.pop_back();</div><div class="line">		it = m_IniContext.end();</div><div class="line">        it--;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="keyword">return</span> TRUE;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> BOOL CParseIniA::IsSection( <span class="built_in">string</span> &amp;Line; )</div><div class="line">&#123;</div><div class="line">	<span class="built_in">string</span> SectionLine = trim(Line);</div><div class="line">	BOOL Ret = FALSE;</div><div class="line">	</div><div class="line">	<span class="keyword">if</span> (SectionLine[<span class="number">0</span>] == <span class="string">'['</span> &amp;&amp; SectionLine[SectionLine.length() - <span class="number">1</span>] == <span class="string">']'</span>) &#123;</div><div class="line"></div><div class="line">		Ret = TRUE;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> Ret;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> <span class="built_in">vector</span> CParseIniA::EnumSectionNames()</div><div class="line">&#123;</div><div class="line">	<span class="built_in">vector</span> SectionNames;</div><div class="line">	<span class="built_in">vector</span>::iterator it;</div><div class="line"></div><div class="line">	<span class="keyword">for</span> (it = m_IniContext.begin(); it != m_IniContext.end(); ++it) &#123;</div><div class="line"></div><div class="line">		<span class="keyword">if</span> (IsSection(*it)) &#123;</div><div class="line"></div><div class="line">			SectionNames.push_back(GetSectionName(*it));</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> SectionNames;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> <span class="built_in">vector</span> CParseIniA::EnumKeyNamesInSection(<span class="keyword">const</span> <span class="built_in">string</span> &amp;SectionName; )</div><div class="line">&#123;</div><div class="line">	<span class="built_in">vector</span>::iterator it;</div><div class="line">	<span class="built_in">vector</span> KeyNames;</div><div class="line">	ULONG ScanState = <span class="number">0</span>;</div><div class="line"></div><div class="line">	<span class="keyword">for</span> (it = m_IniContext.begin(); it != m_IniContext.end(); ++it) &#123;</div><div class="line"></div><div class="line">		<span class="keyword">if</span> (ScanState == <span class="number">0</span>) &#123;</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (!IsSection(*it) || GetSectionName(*it) != SectionName) &#123;</div><div class="line"></div><div class="line">				<span class="keyword">continue</span>;</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			ScanState = <span class="number">1</span>;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (ScanState == <span class="number">1</span>) &#123;</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (IsSection(*it)) &#123;</div><div class="line"></div><div class="line">				<span class="keyword">break</span>;</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			KeyNames.push_back(GetKeyName(*it));</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> KeyNames;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> <span class="built_in">string</span> CParseIniA::GetSectionName( <span class="built_in">string</span> &amp;Line; )</div><div class="line">&#123;</div><div class="line">	INT Count = Line.length();</div><div class="line">	INT i;</div><div class="line">	BOOL Start = FALSE;</div><div class="line">	<span class="built_in">string</span> SectionName;</div><div class="line"></div><div class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; Count; i++) &#123;</div><div class="line"></div><div class="line">		<span class="keyword">if</span> (Line[i] == <span class="string">'['</span>) &#123;</div><div class="line"></div><div class="line">			Start = TRUE;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (Line[i] == <span class="string">']'</span>) &#123;</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (Start) &#123;</div><div class="line"></div><div class="line">				<span class="keyword">break</span>;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">else</span> &#123;</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (Start) &#123;</div><div class="line"></div><div class="line">				SectionName += Line[i];</div><div class="line">				<span class="keyword">continue</span>;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> SectionName;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> <span class="built_in">string</span> CParseIniA::GetKeyName( <span class="built_in">string</span> &amp;Line; )</div><div class="line">&#123;</div><div class="line">	<span class="built_in">string</span> KeyName;</div><div class="line"></div><div class="line">	KeyName = Line.substr(<span class="number">0</span>, Line.find_first_of(<span class="string">'='</span>));</div><div class="line"></div><div class="line">	<span class="keyword">return</span> trim(KeyName);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> <span class="built_in">string</span> CParseIniA::trim(<span class="keyword">const</span> <span class="built_in">string</span>&amp; s, <span class="keyword">const</span> <span class="built_in">string</span>&amp; drop)</div><div class="line">&#123;</div><div class="line">	<span class="function"><span class="built_in">string</span> <span class="title">t</span><span class="params">(s)</span></span>;</div><div class="line">	<span class="built_in">string</span> r = t.erase(t.find_last_not_of(drop) + <span class="number">1</span>);</div><div class="line">	<span class="keyword">return</span> r.erase(<span class="number">0</span>,r.find_first_not_of(drop));</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">inline</span> <span class="keyword">int</span> CParseIniA::GetSectionKeyValueInt( <span class="keyword">const</span> <span class="built_in">string</span> &amp;SectionName;, <span class="keyword">const</span> <span class="built_in">string</span> &amp;KeyName;, <span class="keyword">int</span> DefaultValue )</div><div class="line">&#123;</div><div class="line">    <span class="keyword">char</span> DefaultValueString[<span class="number">32</span>] = &#123;<span class="number">0</span>&#125;;</div><div class="line">    sprintf_s(DefaultValueString, <span class="string">"%d"</span>, DefaultValue);</div><div class="line">    <span class="built_in">string</span> ValueString = GetSectionKeyValue(SectionName, KeyName, DefaultValueString);</div><div class="line">    <span class="keyword">return</span> atoi(ValueString.c_str());</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> <span class="built_in">string</span> CParseIniA::GetSectionKeyValue(<span class="keyword">const</span> <span class="built_in">string</span> &amp;SectionName;, <span class="keyword">const</span> <span class="built_in">string</span> &amp;KeyName;, <span class="keyword">const</span> <span class="built_in">string</span> &amp;DefaultValue; )</div><div class="line">&#123;</div><div class="line">	<span class="built_in">vector</span>::iterator it;</div><div class="line">	ULONG ScanState = <span class="number">0</span>;</div><div class="line">	<span class="built_in">string</span> Value = DefaultValue;</div><div class="line"></div><div class="line">	<span class="keyword">for</span> (it = m_IniContext.begin(); it != m_IniContext.end(); ++it) &#123;</div><div class="line"></div><div class="line">		<span class="keyword">if</span> (ScanState == <span class="number">0</span>) &#123;</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (!IsSection(*it) || GetSectionName(*it) != SectionName) &#123;</div><div class="line"></div><div class="line">				<span class="keyword">continue</span>;</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			ScanState = <span class="number">1</span>;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (ScanState == <span class="number">1</span>) &#123;</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (IsSection(*it)) &#123;</div><div class="line"></div><div class="line">				<span class="keyword">break</span>;</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (SyntaxCheck(*it) != INI_KEY_LINE) &#123;</div><div class="line"></div><div class="line">				<span class="keyword">continue</span>;</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (GetKeyName(*it) == KeyName) &#123;</div><div class="line"></div><div class="line">				Value = GetKeyValue(*it);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> Value;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> <span class="built_in">string</span> CParseIniA::GetKeyValue( <span class="built_in">string</span> &amp;Line; )</div><div class="line">&#123;</div><div class="line">	<span class="built_in">string</span> KeyName;</div><div class="line"></div><div class="line">	KeyName = Line.substr(Line.find_first_of(<span class="string">'='</span>) + <span class="number">1</span>);</div><div class="line"> </div><div class="line">	<span class="keyword">return</span> trim(KeyName);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> BOOL CParseIniA::SetKeyValue( <span class="built_in">string</span> &amp;Line;, <span class="keyword">const</span> <span class="built_in">string</span> &amp;Value; )</div><div class="line">&#123;</div><div class="line">	INT Pos = Line.find_first_of(<span class="string">'='</span>);</div><div class="line"></div><div class="line">	<span class="keyword">if</span> (Pos == <span class="built_in">string</span>::npos) &#123;</div><div class="line"></div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	Pos = Line.find_first_not_of(<span class="string">' '</span>, Pos + <span class="number">1</span>);</div><div class="line"></div><div class="line">	<span class="keyword">if</span> (Pos == <span class="built_in">string</span>::npos) &#123;</div><div class="line"></div><div class="line">		Pos = Line.find_first_of(<span class="string">'='</span>) + <span class="number">1</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	Line.erase(Pos);</div><div class="line">	Line += Value;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> TRUE;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> BOOL CParseIniA::SetSectionKeyValueInt( <span class="keyword">const</span> <span class="built_in">string</span> &amp;SectionName;, <span class="keyword">const</span> <span class="built_in">string</span> &amp;KeyName;, <span class="keyword">int</span> Value, BOOL CreateNew <span class="comment">/*= TRUE*/</span> )</div><div class="line">&#123;</div><div class="line">    <span class="keyword">char</span> ValueString[<span class="number">32</span>] = &#123;<span class="number">0</span>&#125;;</div><div class="line">    sprintf_s(ValueString, <span class="string">"%d"</span>, Value);</div><div class="line">    <span class="keyword">return</span> SetSectionKeyValue(SectionName, KeyName, ValueString, CreateNew);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> BOOL CParseIniA::SetSectionKeyValue( <span class="keyword">const</span> <span class="built_in">string</span> &amp;SectionName;, <span class="keyword">const</span> <span class="built_in">string</span> &amp;KeyName;, <span class="keyword">const</span> <span class="built_in">string</span> &amp;Value;, BOOL CreateNew )</div><div class="line">&#123;</div><div class="line">	<span class="built_in">vector</span>::iterator it;</div><div class="line">	ULONG ScanState = <span class="number">0</span>;</div><div class="line">	BOOL Ret = FALSE;</div><div class="line"></div><div class="line">	<span class="keyword">for</span> (it = m_IniContext.begin(); it != m_IniContext.end(); ++it) &#123;</div><div class="line"></div><div class="line">		<span class="keyword">if</span> (ScanState == <span class="number">0</span>) &#123;</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (!IsSection(*it) || GetSectionName(*it) != SectionName) &#123;</div><div class="line"></div><div class="line">				<span class="keyword">continue</span>;</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			ScanState = <span class="number">1</span>;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (ScanState == <span class="number">1</span>) &#123;</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (IsSection(*it)) &#123;</div><div class="line"></div><div class="line">				<span class="keyword">break</span>;</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (SyntaxCheck(*it) == INI_KEY_LINE || SyntaxCheck(*it) == INI_NC_KEY_LINE) &#123;</div><div class="line"></div><div class="line">				<span class="keyword">if</span> (GetKeyName(*it) == KeyName) &#123;</div><div class="line"></div><div class="line">					Ret = SetKeyValue(*it, Value);</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">if</span> (CreateNew &amp;&amp; !Ret) &#123;</div><div class="line"></div><div class="line">		<span class="keyword">if</span> (ScanState == <span class="number">0</span>) &#123;</div><div class="line"></div><div class="line">			it = CreateSection(SectionName);</div><div class="line">			CreateKeyValue(it, KeyName, Value);</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (ScanState == <span class="number">1</span>) &#123;</div><div class="line"></div><div class="line">			it--;</div><div class="line">			CreateKeyValue(it, KeyName, Value);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		Ret = TRUE;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> Ret;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> BOOL CParseIniA::Flush()</div><div class="line">&#123;</div><div class="line">	ofstream IniFile(m_IniPath.c_str());</div><div class="line">	<span class="built_in">vector</span>::iterator it;</div><div class="line"></div><div class="line">	<span class="keyword">if</span> (!IniFile.is_open()) &#123;</div><div class="line"></div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">for</span> (it = m_IniContext.begin(); it != m_IniContext.end(); ++it) &#123;</div><div class="line"></div><div class="line">		IniFile &lt;&lt; it-&gt;c_str() &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> TRUE;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> VOID CParseIniA::Close()</div><div class="line">&#123;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> <span class="built_in">vector</span>::iterator CParseIniA::CreateSection( <span class="keyword">const</span> <span class="built_in">string</span> &amp;SectionName; )</div><div class="line">&#123;</div><div class="line">	<span class="built_in">string</span> FullSectionName;</div><div class="line">	<span class="built_in">vector</span>::iterator it;</div><div class="line"></div><div class="line">	FullSectionName += <span class="string">'['</span>;</div><div class="line">	FullSectionName += SectionName;</div><div class="line">	FullSectionName += <span class="string">']'</span>;</div><div class="line"></div><div class="line">	m_IniContext.push_back(FullSectionName);</div><div class="line">	it = m_IniContext.begin() + m_IniContext.size() - <span class="number">1</span>;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> it;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> VOID CParseIniA::CreateKeyValue( <span class="built_in">vector</span>::iterator it, <span class="keyword">const</span> <span class="built_in">string</span> &amp;KeyName;, <span class="keyword">const</span> <span class="built_in">string</span> &amp;Value; )</div><div class="line">&#123;</div><div class="line">	<span class="built_in">string</span> KeyInfo;</div><div class="line"></div><div class="line">	KeyInfo += KeyName;</div><div class="line">	KeyInfo += <span class="string">" = "</span>;</div><div class="line">	KeyInfo += Value;</div><div class="line">	<span class="keyword">while</span> (it != m_IniContext.begin()) &#123;</div><div class="line"></div><div class="line">		<span class="keyword">if</span> (!trim(*it).empty()) &#123;</div><div class="line"></div><div class="line">			<span class="keyword">break</span>;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		it--;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	m_IniContext.insert(it + <span class="number">1</span>, KeyInfo);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">inline</span> ULONG CParseIniA::SyntaxCheck( <span class="keyword">const</span> <span class="built_in">string</span> &amp;KeyLine; )</div><div class="line">&#123;</div><div class="line">	<span class="built_in">string</span> Line = trim(KeyLine);</div><div class="line">	INT Pos, CommentPos1, CommentPos2;</div><div class="line">	<span class="built_in">string</span> KeyName;</div><div class="line">	<span class="built_in">string</span> Value;</div><div class="line">	</div><div class="line">	<span class="keyword">if</span> (IsSection(Line)) &#123;</div><div class="line"></div><div class="line">		<span class="keyword">return</span> INI_SECTION_LINE;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (Line[<span class="number">0</span>] == <span class="string">';'</span> || Line[<span class="number">0</span>] == <span class="string">'#'</span>) &#123;</div><div class="line"></div><div class="line">		<span class="keyword">return</span> INI_COMMENT_LINE;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">else</span> &#123;</div><div class="line"></div><div class="line">		Pos = Line.find_first_of(<span class="string">'='</span>);</div><div class="line">		<span class="keyword">if</span> (<span class="built_in">string</span>::npos == Pos) &#123;</div><div class="line"></div><div class="line">			<span class="keyword">return</span> INI_WORNG_SYNTAX;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		KeyName = trim(Line.substr(<span class="number">0</span>, Pos));</div><div class="line">		<span class="keyword">if</span> (KeyName.empty()) &#123;</div><div class="line"></div><div class="line">			<span class="keyword">return</span> INI_WORNG_SYNTAX;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		Value = trim(Line.substr(Pos + <span class="number">1</span>));</div><div class="line">		<span class="keyword">if</span> (Value.empty()) &#123;</div><div class="line"></div><div class="line">			<span class="keyword">return</span> INI_NC_KEY_LINE;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		CommentPos1 = Value.find_first_of(<span class="string">';'</span>);</div><div class="line">		CommentPos2 = Value.find_first_of(<span class="string">'#'</span>);</div><div class="line">		<span class="keyword">if</span> (CommentPos1 == <span class="built_in">string</span>::npos &amp;&amp; CommentPos2 == <span class="built_in">string</span>::npos) &#123;</div><div class="line"></div><div class="line">			<span class="keyword">return</span> INI_KEY_LINE;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		CommentPos1 = CommentPos1 &lt; CommentPos2 ? CommentPos1 : CommentPos2;</div><div class="line"></div><div class="line">		<span class="keyword">if</span> (Value.erase(CommentPos1).empty()) &#123;</div><div class="line"></div><div class="line">			<span class="keyword">return</span> INI_NC_KEY_LINE;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		<span class="keyword">return</span> INI_KEY_LINE;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line"> </div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2015/03/17/e4b880e4b8aae8a7a3e69e90inie69687e4bbb6e79a84e7b1bb/" data-id="cj6etakv1005cfcg9mgwn1npz" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    <a class="extend prev" rel="prev" href="/page/3/">&laquo; __('prev')</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/5/">__('next') &raquo;</a>
+  </nav>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 0CCh<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

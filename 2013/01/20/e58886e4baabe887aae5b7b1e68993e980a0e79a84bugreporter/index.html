@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>分享自己打造的BugReporter | 0CCh Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="这份代码应该是将近一年前写的吧，应该是去年年初了。不像ntfsstudy和dia_study，这个工具应该比较的实用吧，实用场合可以比较多。所以也把源代码发出来。看工具名称基本上已经知道了是报告bug用的。其实这种工具倒是挺多的。不过我个人感觉自己写一个用起来顺手，而且代码量小，容易修改自定义。 工具代码有三个工程，分别是minidump_generator，dump_minidump，BugRe">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分享自己打造的BugReporter">
+<meta property="og:url" content="http://0cch.com/2013/01/20/e58886e4baabe887aae5b7b1e68993e980a0e79a84bugreporter/index.html">
+<meta property="og:site_name" content="0CCh Blog">
+<meta property="og:description" content="这份代码应该是将近一年前写的吧，应该是去年年初了。不像ntfsstudy和dia_study，这个工具应该比较的实用吧，实用场合可以比较多。所以也把源代码发出来。看工具名称基本上已经知道了是报告bug用的。其实这种工具倒是挺多的。不过我个人感觉自己写一个用起来顺手，而且代码量小，容易修改自定义。 工具代码有三个工程，分别是minidump_generator，dump_minidump，BugRe">
+<meta property="og:image" content="http://0cch.com/uploads/2013/01/20130120193015.png">
+<meta property="og:updated_time" content="2017-08-16T09:35:44.031Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="分享自己打造的BugReporter">
+<meta name="twitter:description" content="这份代码应该是将近一年前写的吧，应该是去年年初了。不像ntfsstudy和dia_study，这个工具应该比较的实用吧，实用场合可以比较多。所以也把源代码发出来。看工具名称基本上已经知道了是报告bug用的。其实这种工具倒是挺多的。不过我个人感觉自己写一个用起来顺手，而且代码量小，容易修改自定义。 工具代码有三个工程，分别是minidump_generator，dump_minidump，BugRe">
+<meta name="twitter:image" content="http://0cch.com/uploads/2013/01/20130120193015.png">
+  
+    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0CCh Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-e58886e4baabe887aae5b7b1e68993e980a0e79a84bugreporter" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/01/20/e58886e4baabe887aae5b7b1e68993e980a0e79a84bugreporter/" class="article-date">
+  <time datetime="2013-01-20T04:18:44.000Z" itemprop="datePublished">2013-01-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      分享自己打造的BugReporter
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这份代码应该是将近一年前写的吧，应该是去年年初了。不像ntfsstudy和dia_study，这个工具应该比较的实用吧，实用场合可以比较多。所以也把源代码发出来。看工具名称基本上已经知道了是报告bug用的。其实这种工具倒是挺多的。不过我个人感觉自己写一个用起来顺手，而且代码量小，容易修改自定义。</p>
+<p>工具代码有三个工程，分别是minidump_generator，dump_minidump，BugReporter。<br>minidump_generator是一个dll，当然也可以编译成静态库，他需要加入到你想使用BugReporter的工程里面。<br>dump_minidump是一个dump文件的解析库，他是BugReporter工程的依赖库。<br>BugReporter是一个窗口程序，在你融合了minidump_generator的程序崩溃的时候会弹出窗口。就像图中那样。  </p>
+<p><a href="/uploads/2013/01/20130120193015.png"><img src="/uploads/2013/01/20130120193015.png" alt="20130120193015"></a></p>
+<p>勾选send bug report并且点击ok，窗口里的完整log和dump文件会打包为zip文件储存，储存的地方可以由程序指定，也可以写注册表键值，reporter会去都键值然后存储到相应的位置。具体什么键值，看源代码吧。不完整和遗憾的地方也有，就是还没有http上传到提交dump收集服务器的代码。因为确实不会写php啥的。另外这个工程也用了不少开源代码，这里也感谢一下，其中包括反汇编引擎和ZIP代码。</p>
+<p>下载源代码：<a href="/uploads/2013/01/BugReporter.zip">BugReporter</a></p>
+<p>以下是完整的dump log：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line">SYSTEM INFORMATIONS</div><div class="line">---------------</div><div class="line">ProcessorArchitecture : x86</div><div class="line">Number Of Processors : 16</div><div class="line">OS Version : 6.1</div><div class="line">BuildNumber : 7600</div><div class="line">CSDVersion :</div><div class="line">Platform : Windows Server 2003, Windows XP, or Windows 2000</div><div class="line"></div><div class="line">EXCEPTION INFORMATIONS</div><div class="line">---------------</div><div class="line">Thread id : 5744</div><div class="line">ExceptionCode : c00000fd</div><div class="line">ExceptionFlags : 00000000</div><div class="line">ExceptionRecord : 0000000000000000</div><div class="line">ExceptionAddress : 0000000000dea637</div><div class="line">ExceptionInformation0 = 0000000000000000</div><div class="line">ExceptionInformation1 = 0000000000102000</div><div class="line">Thread Context :</div><div class="line">EAX = 00102000 ECX = 00102050 EDX = 5eea2408 EBX = 7efde000</div><div class="line">ESP = 00103120 EBP = 00103128 ESI = 001ff9c8 EDI = 00104210</div><div class="line">EFLAGS = 00010206</div><div class="line"></div><div class="line">MODULE INFORMATIONS</div><div class="line">---------------</div><div class="line">Base Size Name FileVersion ProductVersion</div><div class="line">0000000000de0000 0001a000 D:\crashme\Debug\crashme.exe 0 0</div><div class="line">00000000772b0000 00180000 C:\Windows\SysWOW64\ntdll.dll 600011db040af 600011db040af</div><div class="line">0000000075ef0000 00100000 C:\Windows\SysWOW64\kernel32.dll 600011db04001 600011db04001</div><div class="line">00000000750f0000 00046000 C:\Windows\SysWOW64\KERNELBASE.dll 600011db04001 600011db04001</div><div class="line">000000005ed90000 00124000 C:\Windows\winsxs\x86_microsoft.vc90.debugcrt_1fc8b3b9a1e18e3b_9.0.30729.4148_none_2a4cbfc25558bcd3\msvcr90d.dll 9000078091034 9000078091034</div><div class="line">0000000074330000 000eb000 C:\Windows\System32\dbghelp.dll 600011db04001 600011db04001</div><div class="line">0000000076e00000 000ac000 C:\Windows\SysWOW64\msvcrt.dll 700001db04001 6000121be4001</div><div class="line">0000000076d10000 000f0000 C:\Windows\SysWOW64\rpcrt4.dll 600011db04001 600011db04001</div><div class="line">0000000074e20000 00060000 C:\Windows\SysWOW64\sspicli.dll 600011db04064 600011db04064</div><div class="line">0000000074e10000 0000c000 C:\Windows\SysWOW64\CRYPTBASE.dll 600011db04001 600011db04001</div><div class="line">00000000761e0000 00019000 C:\Windows\SysWOW64\sechost.dll 600011db04001 600011db04001</div><div class="line">00000000763e0000 000a0000 C:\Windows\SysWOW64\advapi32.dll 600011db04001 600011db04001</div><div class="line">000000006e810000 00025000 C:\Windows\System32\powrprof.dll 600011db04001 600011db04001</div><div class="line">00000000768e0000 0019d000 C:\Windows\SysWOW64\setupapi.dll 600011db04001 600011db04001</div><div class="line">0000000074f70000 00027000 C:\Windows\SysWOW64\cfgmgr32.dll 600011db04001 600011db04001</div><div class="line">0000000076c80000 00090000 C:\Windows\SysWOW64\gdi32.dll 600011db04001 600011db04001</div><div class="line">0000000076a80000 00100000 C:\Windows\SysWOW64\user32.dll 600011db04001 600011db04001</div><div class="line">0000000077280000 0000a000 C:\Windows\SysWOW64\lpk.dll 600011db04001 600011db04001</div><div class="line">0000000075140000 0009d000 C:\Windows\SysWOW64\usp10.dll 102721db04001 102721db04001</div><div class="line">0000000076150000 0008f000 C:\Windows\SysWOW64\oleaut32.dll 600011db04001 600011db04001</div><div class="line">0000000075ff0000 0015c000 C:\Windows\SysWOW64\ole32.dll 600011db04001 600011db04001</div><div class="line">0000000074fa0000 00012000 C:\Windows\SysWOW64\devobj.dll 600011db04001 600011db04001</div><div class="line">0000000074f10000 00060000 C:\Windows\System32\imm32.dll 600011db04001 600011db04001</div><div class="line">0000000075020000 000cc000 C:\Windows\SysWOW64\msctf.dll 600011db04001 600011db04001</div><div class="line">000000006fa00000 0003e000 C:\Program Files (x86)\Sophos\Sophos Anti-Virus\sophos_detoured.dll 900000000235f 9000000000000</div><div class="line">00000000763d0000 00005000 C:\Windows\SysWOW64\psapi.dll 600011db04001 600011db04001</div><div class="line"></div><div class="line">Crash IP Disasm :</div><div class="line">test dword ptr [eax], eax</div></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/01/20/e58886e4baabe887aae5b7b1e68993e980a0e79a84bugreporter/" data-id="cj6etaks40018fcg90uni3ngm" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2013/01/23/hive_study-e6b3a8e5868ce8a1a8e69687e4bbb6e6a0bce5bc8fe8a7a3e69e90e5b7a5e585b7/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Récent</strong>
+      <div class="article-nav-title">
+        
+          hive_study —— 注册表文件格式解析工具
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2013/01/20/dia_study-pdbe69fa5e79c8be5b7a5e585b7/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">Dia_study —— PDB查看工具</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 0CCh<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

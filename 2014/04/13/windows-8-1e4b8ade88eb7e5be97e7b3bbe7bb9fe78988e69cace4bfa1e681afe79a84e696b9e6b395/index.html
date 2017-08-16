@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Windows 8.1中获得系统版本信息的方法 | 0CCh Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在Windows 8.1之前的系统版本上，我们一直可以使用 GetVersionEx.aspx) 这个函数来获取当前系统的MajorVersion和MinorVersion。但是当Windows系统来到8.1时代，这个API似乎就不好用了。如果在Windows 8.1上调用这个函数，我们更有可能获得的版本号是Windows 8的版本6.2，而不是我们想要的6.3。在MSDN上提供了这样一段说明：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows 8.1中获得系统版本信息的方法">
+<meta property="og:url" content="http://0cch.com/2014/04/13/windows-8-1e4b8ade88eb7e5be97e7b3bbe7bb9fe78988e69cace4bfa1e681afe79a84e696b9e6b395/index.html">
+<meta property="og:site_name" content="0CCh Blog">
+<meta property="og:description" content="在Windows 8.1之前的系统版本上，我们一直可以使用 GetVersionEx.aspx) 这个函数来获取当前系统的MajorVersion和MinorVersion。但是当Windows系统来到8.1时代，这个API似乎就不好用了。如果在Windows 8.1上调用这个函数，我们更有可能获得的版本号是Windows 8的版本6.2，而不是我们想要的6.3。在MSDN上提供了这样一段说明：">
+<meta property="og:image" content="http://0cch.com/uploads/2014/04/20140413233019.png">
+<meta property="og:updated_time" content="2017-08-16T09:35:44.067Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Windows 8.1中获得系统版本信息的方法">
+<meta name="twitter:description" content="在Windows 8.1之前的系统版本上，我们一直可以使用 GetVersionEx.aspx) 这个函数来获取当前系统的MajorVersion和MinorVersion。但是当Windows系统来到8.1时代，这个API似乎就不好用了。如果在Windows 8.1上调用这个函数，我们更有可能获得的版本号是Windows 8的版本6.2，而不是我们想要的6.3。在MSDN上提供了这样一段说明：">
+<meta name="twitter:image" content="http://0cch.com/uploads/2014/04/20140413233019.png">
+  
+    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0CCh Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-windows-8-1e4b8ade88eb7e5be97e7b3bbe7bb9fe78988e69cace4bfa1e681afe79a84e696b9e6b395" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/04/13/windows-8-1e4b8ade88eb7e5be97e7b3bbe7bb9fe78988e69cace4bfa1e681afe79a84e696b9e6b395/" class="article-date">
+  <time datetime="2014-04-13T07:34:49.000Z" itemprop="datePublished">2014-04-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Windows 8.1中获得系统版本信息的方法
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在Windows 8.1之前的系统版本上，我们一直可以使用 <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms724451(v=vs.85" target="_blank" rel="external">GetVersionEx</a>.aspx) 这个函数来获取当前系统的MajorVersion和MinorVersion。但是当Windows系统来到8.1时代，这个API似乎就不好用了。如果在Windows 8.1上调用这个函数，我们更有可能获得的版本号是Windows 8的版本6.2，而不是我们想要的6.3。在MSDN上提供了这样一段说明：</p>
+<blockquote>With the release of Windows 8.1, the behavior of the <strong>GetVersionEx</strong> API has changed in the value it will return for the operating system version. The value returned by the <strong>GetVersionEx</strong> function now depends on how the application is manifested.<br><br>Applications not manifested for Windows 8.1 will return the Windows 8 OS version value (6.2). Once an application is manifested for a given operating system version, <strong>GetVersionEx</strong> will always return the version that the application is manifested for in future releases.</blockquote>
+
+
+<p>好了，既然微软都这么说了，也没办法，还好微软也给我们提供了另一套函数，叫做<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/dn424972(v=vs.85" target="_blank" rel="external">Version Helper functions</a>.aspx) ，看起来是一套很不错的API，能帮助我们方便的判断系统版本。但是，仔细一看，这套函数需要头文件VersionHelpers.h，而这个文件是 Windows 8.1 software development kit 的一部分。对于使用低版本的VS还得装新版SDK，岂不麻烦。那么我们希望能找到一套更好的解决方法。</p>
+<p>我第一个能想到了，当然就是万能的WMI，使用Win32_OperatingSystem class中的Version可以获得一个形如6.3.9600的字符串，我们就能通过解析这个获得系统的版本了。但是说实话，不到万不得已我不太喜欢用WMI这套API，总感觉为了一个小功能，牵扯了一堆东西。</p>
+<p>那么第二套方案，是我觉得比较满意的，那就是调用<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms725493(v=vs.85" target="_blank" rel="external">VerSetConditionMask</a>.aspx)和<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms725492(v=vs.85" target="_blank" rel="external">VerifyVersionInfo</a>.aspx)来完成对系统版本的判断。具体做法如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function">BOOL <span class="title">IsWindows8Point1</span><span class="params">()</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">	OSVERSIONINFOEX version_info = &#123;<span class="number">0</span>&#125;;</div><div class="line">	version_info.dwOSVersionInfoSize = <span class="keyword">sizeof</span>(OSVERSIONINFOEX);</div><div class="line">	version_info.dwMajorVersion = <span class="number">6</span>;</div><div class="line">	version_info.dwMinorVersion = <span class="number">3</span>;</div><div class="line">	ULONGLONG mask = VerSetConditionMask(<span class="number">0</span>, VER_MAJORVERSION, VER_EQUAL);</div><div class="line">	mask = VerSetConditionMask(mask, VER_MINORVERSION, VER_EQUAL);</div><div class="line">	<span class="keyword">return</span> VerifyVersionInfo(&amp;version;_info, VER_MAJORVERSION | VER_MINORVERSION, mask);</div><div class="line">&#125;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+<p>那么，我们就可以用这个函数来判断系统是否是Windows 8.1，如果不是，我们就可以用老办法，GetVersionEx来获得系统的版本号作判断了。当然了，大家看到这估计也能看出，我们自己也能用这两个函数实现一套所谓的Version Helper functions。举个例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="function">BOOL WINAPI <span class="title">IsWindowsVersionOrGreater</span><span class="params">(</span></span></div><div class="line"><span class="function"><span class="params">	WORD wMajorVersion,</span></span></div><div class="line"><span class="function"><span class="params">	WORD wMinorVersion,</span></span></div><div class="line"><span class="function"><span class="params">	WORD wServicePackMajor</span></span></div><div class="line"><span class="function"><span class="params">	)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">	OSVERSIONINFOEX version_info = &#123; <span class="number">0</span> &#125;;</div><div class="line">	version_info.dwOSVersionInfoSize = <span class="keyword">sizeof</span>(OSVERSIONINFOEX);</div><div class="line">	version_info.dwMajorVersion = wMajorVersion;</div><div class="line">	version_info.dwMinorVersion = wMinorVersion;</div><div class="line">	version_info.wServicePackMajor = wServicePackMajor;</div><div class="line"></div><div class="line">	ULONGLONG mask = VerSetConditionMask(<span class="number">0</span>, VER_MAJORVERSION, VER_GREATER_EQUAL);</div><div class="line">	mask = VerSetConditionMask(mask, VER_MINORVERSION, VER_GREATER_EQUAL);</div><div class="line">	mask = VerSetConditionMask(mask, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);</div><div class="line"></div><div class="line">	<span class="keyword">return</span> VerifyVersionInfo(&amp;version;_info, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, mask);</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
+<p>怎么样，是不是达到了以假乱真的效果了。那么最后，咱再看看这么写出来的API的效果如何：</p>
+<p><a href="/uploads/2014/04/20140413233019.png"><img src="/uploads/2014/04/20140413233019.png" alt="20140413233019"></a></p>
+<p>===============想睡觉的分割线====================</p>
+<p>更新另外一个方法，在网上看到的，感觉也还行。只不过需要引入其他DLL，可以作为备选方案。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function">ULONG <span class="title">MyGetVersion</span><span class="params">()</span></span></div><div class="line"><span class="function"></span>&#123;	</div><div class="line">	LPBYTE raw_data;</div><div class="line">	ULONG retval = <span class="number">0</span>;</div><div class="line">	<span class="keyword">if</span> (NetWkstaGetInfo(<span class="literal">NULL</span>, <span class="number">100</span>, &amp;raw;_data) == NERR_Success) &#123;</div><div class="line">		WKSTA_INFO_100 * ws_info = <span class="keyword">reinterpret_cast</span>(raw_data);</div><div class="line">		retval = (ws_info-&gt;wki100_ver_major &lt;&lt; <span class="number">16</span>) | ws_info-&gt;wki100_ver_minor;</div><div class="line">		NetApiBufferFree(raw_data);</div><div class="line">		<span class="keyword">return</span> retval;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> retval;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2014/04/13/windows-8-1e4b8ade88eb7e5be97e7b3bbe7bb9fe78988e69cace4bfa1e681afe79a84e696b9e6b395/" data-id="cj6etaku80046fcg9a6kxs89y" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2014/04/20/e4b880e4b8aae69fa5e689bee68c87e5ae9ae6a088e59b9ee6baafe7aca6e58fb7e5b9b6e689a7e8a18ce591bde4bba4e79a84windbge8849ae69cac/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Récent</strong>
+      <div class="article-nav-title">
+        
+          一个查找指定栈回溯符号并执行命令的Windbg脚本
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2014/04/05/global-loggere68993e5bc80e5bc80e69cbae590afe58aa8etwe697a5e5bf97/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">Global Logger打开开机启动ETW日志</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 0CCh<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>使用Windbg Logexts监控程序API调用 | 0CCh Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在我们调试BUG和逆向程序的时候，往往需要监控一些API的调用。这个时候我们可以借助调试器和第三方工具完成这样的任务。例如调试器可以下断点查看栈状态得到相关信息，或者使用第三方工具如API Monitor可以方便的监控API的调用。不过，这篇文章中想说的是另一个工具，Windbg的扩展程序Logexts.dll。闲话少说，我们先看一看监控的效果如何吧。  上图是Windbg输出的信息，再看看使用l">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Windbg Logexts监控程序API调用">
+<meta property="og:url" content="http://0cch.com/2013/09/14/e4bdbfe794a8windbg-logextse79b91e68ea7e7a88be5ba8fapie8b083e794a8/index.html">
+<meta property="og:site_name" content="0CCh Blog">
+<meta property="og:description" content="在我们调试BUG和逆向程序的时候，往往需要监控一些API的调用。这个时候我们可以借助调试器和第三方工具完成这样的任务。例如调试器可以下断点查看栈状态得到相关信息，或者使用第三方工具如API Monitor可以方便的监控API的调用。不过，这篇文章中想说的是另一个工具，Windbg的扩展程序Logexts.dll。闲话少说，我们先看一看监控的效果如何吧。  上图是Windbg输出的信息，再看看使用l">
+<meta property="og:image" content="http://0cch.com/uploads/2013/09/20130914230701.png">
+<meta property="og:image" content="http://0cch.com/uploads/2013/09/20130914234812.png">
+<meta property="og:updated_time" content="2017-08-16T09:35:44.056Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Windbg Logexts监控程序API调用">
+<meta name="twitter:description" content="在我们调试BUG和逆向程序的时候，往往需要监控一些API的调用。这个时候我们可以借助调试器和第三方工具完成这样的任务。例如调试器可以下断点查看栈状态得到相关信息，或者使用第三方工具如API Monitor可以方便的监控API的调用。不过，这篇文章中想说的是另一个工具，Windbg的扩展程序Logexts.dll。闲话少说，我们先看一看监控的效果如何吧。  上图是Windbg输出的信息，再看看使用l">
+<meta name="twitter:image" content="http://0cch.com/uploads/2013/09/20130914230701.png">
+  
+    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0CCh Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-e4bdbfe794a8windbg-logextse79b91e68ea7e7a88be5ba8fapie8b083e794a8" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/09/14/e4bdbfe794a8windbg-logextse79b91e68ea7e7a88be5ba8fapie8b083e794a8/" class="article-date">
+  <time datetime="2013-09-14T09:13:22.000Z" itemprop="datePublished">2013-09-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>►<a class="article-category-link" href="/categories/Debugging/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用Windbg Logexts监控程序API调用
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在我们调试BUG和逆向程序的时候，往往需要监控一些API的调用。这个时候我们可以借助调试器和第三方工具完成这样的任务。例如调试器可以下断点查看栈状态得到相关信息，或者使用第三方工具如API Monitor可以方便的监控API的调用。不过，这篇文章中想说的是另一个工具，Windbg的扩展程序Logexts.dll。闲话少说，我们先看一看监控的效果如何吧。</p>
+<p><a href="/uploads/2013/09/20130914230701.png"><img src="/uploads/2013/09/20130914230701.png" alt="20130914230701"></a></p>
+<p>上图是Windbg输出的信息，再看看使用logviewer.exe查看的效果。</p>
+<p><a href="/uploads/2013/09/20130914234812.png"><img src="/uploads/2013/09/20130914234812.png" alt="20130914234812"></a></p>
+<p>怎么样，是不是相当的不错！那么下面我就来简单介绍一下，这个扩展的用法。</p>
+<p>!logexts.logi<br>将Logger注入目标程序，初始化监控，但是并不开启它。</p>
+<p>!logexts.loge<br>开启监控，如果之前没有调用logexts.logi，这个扩展命令会先初始化监控，然后启动。</p>
+<p>!logexts.logd<br>停止监控。这个命令会摘掉所有的Hook，从而让程序自由运行。不过COM的Hook并不会被摘除。</p>
+<p>!logexts.logo<br>显示或者修改输出选项，这里有三种输出方式：1.在调试器中显示，2.输出到一个文本文件，3.输出到lgv文件。其中lgv文件会包含更多的信息，我们可以使用LogViewer进行查看。</p>
+<p>!logexts.logc<br>显示或者控制监控的API分类。</p>
+<p>!logexts.logb<br>显示或者刷新输出缓存。由于如果在监控过程中发生异常，那么扩展可能无法将记录的日志写入文件中，这个时候我们就需要这个命令，手动的将缓存中的数据写入文件。</p>
+<p>!logexts.logm<br>显示和创建模块的包含/排除列表。这可以帮助我们指定记录那些特定模块中的API调用。</p>
+<p>上面图中我所使用的命令是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;!logexts.loge D:\  </div><div class="line">!logexts.logc d *  </div><div class="line">!logexts.logc e 15 16 19  </div><div class="line">!logexts.logo e *  </div><div class="line">!logexts.logm i notepad.exe</div></pre></td></tr></table></figure>
+<p>其输出结果是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line">!logexts.loge D:\  </div><div class="line">Windows API Logging Extensions v3.01  </div><div class="line">Parsing the manifest files...  </div><div class="line">Location: C:\Program Files (x86)\Windows Kits\8.0\Debuggers\x64\winext\manifest\main.h  </div><div class="line">Parsing file &quot;main.h&quot; ...  </div><div class="line">Parsing file &quot;winerror.h&quot; ...  </div><div class="line">Parsing file &quot;kernel32.h&quot; ...  </div><div class="line">Parsing file &quot;debugging.h&quot; ...  </div><div class="line">Parsing file &quot;processes.h&quot; ...  </div><div class="line">Parsing file &quot;memory.h&quot; ...  </div><div class="line">Parsing file &quot;registry.h&quot; ...  </div><div class="line">Parsing file &quot;fileio.h&quot; ...  </div><div class="line">Parsing file &quot;strings.h&quot; ...  </div><div class="line">Parsing file &quot;user32.h&quot; ...  </div><div class="line">Parsing file &quot;clipboard.h&quot; ...  </div><div class="line">Parsing file &quot;hook.h&quot; ...  </div><div class="line">Parsing file &quot;gdi32.h&quot; ...  </div><div class="line">Parsing file &quot;winspool.h&quot; ...  </div><div class="line">Parsing file &quot;version.h&quot; ...  </div><div class="line">Parsing file &quot;winsock2.h&quot; ...  </div><div class="line">Parsing file &quot;advapi32.h&quot; ...  </div><div class="line">Parsing file &quot;uuids.h&quot; ...  </div><div class="line">Parsing file &quot;com.h&quot; ...  </div><div class="line">Parsing file &quot;shell.h&quot; ...  </div><div class="line">Parsing file &quot;ole32.h&quot; ...  </div><div class="line">Parsing file &quot;ddraw.h&quot; ...  </div><div class="line">Parsing file &quot;winmm.h&quot; ...  </div><div class="line">Parsing file &quot;avifile.h&quot; ...  </div><div class="line">Parsing file &quot;dplay.h&quot; ...  </div><div class="line">Parsing file &quot;d3d.h&quot; ...  </div><div class="line">Parsing file &quot;d3dtypes.h&quot; ...  </div><div class="line">Parsing file &quot;d3dcaps.h&quot; ...  </div><div class="line">Parsing file &quot;d3d8.h&quot; ...  </div><div class="line">Parsing file &quot;d3d8types.h&quot; ...  </div><div class="line">Parsing file &quot;d3d8caps.h&quot; ...  </div><div class="line">Parsing file &quot;dsound.h&quot; ...  </div><div class="line">Parsing completed.  </div><div class="line">Logexts injected. Output: &quot;D:\\LogExts\&quot;  </div><div class="line">Logging enabled.  </div><div class="line">0:000&gt; !logexts.logc d *  </div><div class="line">All categories disabled.  </div><div class="line">0:000&gt; !logexts.logc e 15 16 19  </div><div class="line">15 IOFunctions Enabled  </div><div class="line">16 MemoryManagementFunctions Enabled  </div><div class="line">19 ProcessesAndThreads Enabled  </div><div class="line">0:000&gt; !logexts.logo e *  </div><div class="line">Debugger Enabled  </div><div class="line">Text file Enabled  </div><div class="line">Verbose log Enabled  </div><div class="line">0:000&gt; !logexts.logm i notepad.exe  </div><div class="line">Included modules:  </div><div class="line">notepad.exe</div></pre></td></tr></table></figure>
+<p>简单说明一下这些命令：<br>!logexts.loge D:\<br>设置log的保持路径，并且开启监控  </p>
+<p>!logexts.logc d *<br>先关闭所有API分类的监控  </p>
+<p>!logexts.logc e 15 16 19<br>然后设置我们想监控分类，这里是IOFunctions，MemoryManagementFunctions和ProcessesAndThreads。至于如何查询分类对于的id，可以直接输入!logexts.logc进行查看。</p>
+<p>!logexts.logo e *<br>这里我开启了所有输出方式，注意：如果想要被监控的程序响应的更快，可以去掉Debugger的输出，因为显示花费的时间比较的多。</p>
+<p>!logexts.logm i notepad.exe<br>最后当然是设置inclusion list了。</p>
+<p>按下F5，让程序跑起来看看效果吧。先别着急惊叹，Logexts还有更惊艳的地方。那就是他的高度可配置性。如果你想监控他描述以外的API，那么你可以自己写这个API的“头文件”。这里用引号是因为，它并不是真正的头文件，只不过他的语法和C的头文件非常的相似。我们可以看一个例子：</p>
+<p>创建%windbg_dir%\winext\manifest\Context.h<br>并且写入这些内容</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">category ActivationContext:</div><div class="line"><span class="keyword">module</span> KERNEL32.DLL:</div><div class="line"></div><div class="line"><span class="function">FailOnFalse <span class="title">ActivateActCtx</span><span class="params">(HANDLE hActCtx, [out] PULONG_PTR lpCookie)</span></span>;</div><div class="line"><span class="function">FailOnFalse <span class="title">DeactivateActCtx</span><span class="params">(DWORD dwFlags, ULONG_PTR upCookie)</span></span>;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+<p>在%windbg_dir%\winext\manifest\main.h文件的最后加入一行 #include “Context.h”</p>
+<p>保存后，重启调试程序，输入!logexts.logc，可以看了多出了ActivationContext这一项。现在就可以选择这一项分类来监控ActivateActCtx和DeactivateActCtx了。</p>
+<p>最后，大家应该发现了这样一个问题，开启这个API监控还是比较麻烦的，需要输入好几条命令。为了更方便的使用这个功能，我写了一个脚本来解决这个问题，这样就可以用一行命令来开启监控。使用方法是：<br>Usage $$&gt;a<logger.wds output_dir="" categories="" include_modules="" e.g.="" $$="">a&lt;logger.wds “d:\” “15 16 19” “notepad.exe”  </logger.wds></p>
+<p>下载<a href="/uploads/2013/09/logger.zip">logger</a></p>
+<p>关于Logexts的更多详细信息请参考msdn：<a href="http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85" target="_blank" rel="external">http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85).aspx</a>.aspx)</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/09/14/e4bdbfe794a8windbg-logextse79b91e68ea7e7a88be5ba8fapie8b083e794a8/" data-id="cj6etaktm0038fcg9rgz9t9ak" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2013/09/21/floppy-disk-controllere7bc96e7a88b/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Récent</strong>
+      <div class="article-nav-title">
+        
+          Floppy Disk Controller编程
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2013/09/10/windows7e4b88be68ea7e588b6e58d95e4b8aae8bf9be7a88be99fb3e9878fe79a84e5b08fe68a80e5b7a7/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">Windows7下控制单个进程音量的小技巧</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 0CCh<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

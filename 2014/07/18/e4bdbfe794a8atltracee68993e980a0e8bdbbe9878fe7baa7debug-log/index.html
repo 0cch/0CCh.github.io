@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>使用ATLTRACE打造轻量级Debug Log | 0CCh Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="众所周知，Debug Log是非常好的调试手段。所以我经常也尝试各种各样的第三方Log库。Log库分很多类型，例如可以给服务器使用的功能完备Log，也有轻量级的Log库，只是为Debug所设计。作为客户端开发，我还是比较喜欢后者这种Log库。不过使用第三方库有一个这样的麻烦事，走到哪你都得下一个，然后添加到自己的代码里。对于Log这样的功能，几乎所有程序都是需要的，使用的极其频繁。所以我就想找到一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用ATLTRACE打造轻量级Debug Log">
+<meta property="og:url" content="http://0cch.com/2014/07/18/e4bdbfe794a8atltracee68993e980a0e8bdbbe9878fe7baa7debug-log/index.html">
+<meta property="og:site_name" content="0CCh Blog">
+<meta property="og:description" content="众所周知，Debug Log是非常好的调试手段。所以我经常也尝试各种各样的第三方Log库。Log库分很多类型，例如可以给服务器使用的功能完备Log，也有轻量级的Log库，只是为Debug所设计。作为客户端开发，我还是比较喜欢后者这种Log库。不过使用第三方库有一个这样的麻烦事，走到哪你都得下一个，然后添加到自己的代码里。对于Log这样的功能，几乎所有程序都是需要的，使用的极其频繁。所以我就想找到一">
+<meta property="og:updated_time" content="2017-08-16T09:35:44.070Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用ATLTRACE打造轻量级Debug Log">
+<meta name="twitter:description" content="众所周知，Debug Log是非常好的调试手段。所以我经常也尝试各种各样的第三方Log库。Log库分很多类型，例如可以给服务器使用的功能完备Log，也有轻量级的Log库，只是为Debug所设计。作为客户端开发，我还是比较喜欢后者这种Log库。不过使用第三方库有一个这样的麻烦事，走到哪你都得下一个，然后添加到自己的代码里。对于Log这样的功能，几乎所有程序都是需要的，使用的极其频繁。所以我就想找到一">
+  
+    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0CCh Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-e4bdbfe794a8atltracee68993e980a0e8bdbbe9878fe7baa7debug-log" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/07/18/e4bdbfe794a8atltracee68993e980a0e8bdbbe9878fe7baa7debug-log/" class="article-date">
+  <time datetime="2014-07-17T19:17:48.000Z" itemprop="datePublished">2014-07-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>►<a class="article-category-link" href="/categories/Debugging/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用ATLTRACE打造轻量级Debug Log
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>众所周知，Debug Log是非常好的调试手段。所以我经常也尝试各种各样的第三方Log库。Log库分很多类型，例如可以给服务器使用的功能完备Log，也有轻量级的Log库，只是为Debug所设计。作为客户端开发，我还是比较喜欢后者这种Log库。不过使用第三方库有一个这样的麻烦事，走到哪你都得下一个，然后添加到自己的代码里。对于Log这样的功能，几乎所有程序都是需要的，使用的极其频繁。所以我就想找到一种方法，它可以使用SDK现有功能，来完成一个轻量级Log的功能。对我来说，不需要这个Log有多么高效，完备，唯一需要的就是方便，拿来就可以用。</p>
+<p>结合这些目的，我第一个想到的就是ATL的ATLTRACE。但是，ATLTRACE输出的日志都是显示在Debug Output窗口。如果想将信息输出到文件或者控制台上，这就够呛了。那么，接下来就要想办法改变ATLTRACE的输出设备了。由于ATL是有代码的，所以很容易的可以看到代码运行的脉络。看完这份代码的第一个收获就是知道了ATLTRACE运行效率不会很高，不过这个对我来说并不重要。另外一个就是，找到了改变输出设备的方法。</p>
+<p>在没有定义_ATL_NO_DEBUG_CRT的情况下，ATLTRACE最终的输出是通过_CrtDbgReport实现的，而如果定义了这个宏，那么输出是直接调用OutputDebugString。但一般程序都不会使用_ATL_NO_DEBUG_CRT这个宏，所以大部分情况下ATLTRACE都是调用的_CrtDbgReport。那么办法就来了_CrtDbgReport输出的数据，是可以通过_CrtSetReportMode和_CrtSetReportFile来改变输出设备的。例如我们想输出到控制台，我们只需要这样：<br>_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);<br>_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);  </p>
+<p>如果要输出到文件也只需要这样：<br>HANDLE log_file;<br>log_file = CreateFile(“c:\log.txt”, GENERIC_WRITE,<br>    FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,<br>    FILE_ATTRIBUTE_NORMAL, NULL);<br>_CrtSetReportFile(_CRT_WARN, log_file);<br>CloseHandle(log_file);<br>或者<br>freopen( “c:\log2.txt”, “w”, stdout);<br>_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);<br>_CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDOUT);  </p>
+<p>好了，这样就能解决输出设备的问题。既然已经说到这里，继续介绍下ATLTRACE很少人知道的其他优点吧。<br>1.可以通过ATL/MFT TRACE Tool 随时设定Log的输出Filter，并且可以保持配置（工具用法很简单，具体直接用用就知道了）。<br>2.通过AtlDebugAPI的接口，可以给自己的代码中添加读取配置文件的函数。这样每次修改配置文件就能改变ATLTRACE的行为。<br>3.通过AtlDebugAPI的接口，可以直接制定输出内容，不用配置文件也可以。<br>这三条涉及到的接口有：<br>AtlTraceOpenProcess<br>AtlTraceModifyProcess<br>AtlTraceCloseProcess<br>AtlTraceLoadSettings  </p>
+<p>为了更方便使用，我这写了几个宏代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atlbase.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atltrace.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atldebugapi.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atlpath.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> TRACEHELPA(fmt, ...)	\</span></div><div class="line"><span class="keyword">do</span>								\</div><div class="line">&#123;								\</div><div class="line">	SYSTEMTIME tm;				\</div><div class="line">	GetLocalTime(&amp;tm;);			\</div><div class="line">	ATLTRACE(<span class="string">"%s: [%02d-%02d-%02d %02d:%02d:%02d:%03d] "</span>fmt, __FUNCTION__,							\</div><div class="line">	tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond, tm.wMilliseconds, __VA_ARGS__);	\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> TRACEHELPW(fmt, ...)	\</span></div><div class="line"><span class="keyword">do</span>								\</div><div class="line">&#123;								\</div><div class="line">	SYSTEMTIME tm;				\</div><div class="line">	GetLocalTime(&amp;tm;);			\</div><div class="line">	ATLTRACE(<span class="string">L"%S: [%02d-%02d-%02d %02d:%02d:%02d:%03d] "</span>fmt, __FUNCTION__,							\</div><div class="line">	tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond, tm.wMilliseconds, __VA_ARGS__);	\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> TRACEHELPEXA(category, level, fmt, ...)	\</span></div><div class="line"><span class="keyword">do</span>								\</div><div class="line">&#123;								\</div><div class="line">	SYSTEMTIME tm;				\</div><div class="line">	GetLocalTime(&amp;tm;);			\</div><div class="line">	ATLTRACE(category, level, <span class="string">"%s: [%02d-%02d-%02d %02d:%02d:%02d:%03d] "</span>fmt, __FUNCTION__,			\</div><div class="line">	tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond, tm.wMilliseconds, __VA_ARGS__);	\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> TRACEHELPEXW(category, level, fmt, ...)	\</span></div><div class="line"><span class="keyword">do</span>								\</div><div class="line">&#123;								\</div><div class="line">	SYSTEMTIME tm;				\</div><div class="line">	GetLocalTime(&amp;tm;);			\</div><div class="line">	ATLTRACE(category, level, <span class="string">L"%S: [%02d-%02d-%02d %02d:%02d:%02d:%03d] "</span>fmt, __FUNCTION__,		\</div><div class="line">	tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond, tm.wMilliseconds, __VA_ARGS__);	\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> SetAtlTraceOpt(level, enable, category, filename_lineno, report_type, report_file)	\</span></div><div class="line"><span class="keyword">do</span>																							\</div><div class="line">&#123;																							\</div><div class="line">	DWORD_PTR trace_process = AtlTraceOpenProcess(GetCurrentProcessId());					\</div><div class="line">	AtlTraceModifyProcess(trace_process, level, enable, category, filename_lineno);			\</div><div class="line">	AtlTraceCloseProcess(trace_process);													\</div><div class="line">	_CrtSetReportMode(level, report_type);													\</div><div class="line">	<span class="keyword">if</span> (report_type == _CRTDBG_MODE_FILE) &#123;													\</div><div class="line">		_CrtSetReportFile(level, report_file);												\</div><div class="line">	&#125;																						\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> LoadAtlDebugCfgExA(path)															\</span></div><div class="line"><span class="keyword">do</span>																							\</div><div class="line">&#123;																							\</div><div class="line">	DWORD_PTR trace_process = AtlTraceOpenProcess(GetCurrentProcessId());					\</div><div class="line">	AtlTraceLoadSettingsA(path, trace_process);												\</div><div class="line">	AtlTraceCloseProcess(trace_process);													\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> LoadAtlDebugCfgExW(path)															\</span></div><div class="line"><span class="keyword">do</span>																							\</div><div class="line">&#123;																							\</div><div class="line">	DWORD_PTR trace_process = AtlTraceOpenProcess(GetCurrentProcessId());					\</div><div class="line">	AtlTraceLoadSettingsU(path, trace_process);												\</div><div class="line">	AtlTraceCloseProcess(trace_process);													\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> LoadAtlDebugCfgA()																	\</span></div><div class="line"><span class="keyword">do</span>																							\</div><div class="line">&#123;																							\</div><div class="line">	CHAR debug_cfg_path[MAX_PATH] = &#123;<span class="number">0</span>&#125;;													\</div><div class="line">	GetModuleFileNameA(<span class="literal">NULL</span>, debug_cfg_path, MAX_PATH);										\</div><div class="line">	<span class="function">CPathA <span class="title">debug_cfg_path_obj</span><span class="params">(debug_cfg_path)</span></span>;												\</div><div class="line">	debug_cfg_path_obj.RemoveExtension();													\</div><div class="line">	debug_cfg_path_obj.AddExtension(<span class="string">".trc"</span>);												\</div><div class="line">	LoadAtlDebugCfgExA(debug_cfg_path_obj.m_strPath.GetString());							\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> LoadAtlDebugCfgW()																	\</span></div><div class="line"><span class="keyword">do</span>																							\</div><div class="line">&#123;																							\</div><div class="line">	WCHAR debug_cfg_path[MAX_PATH] = &#123;<span class="number">0</span>&#125;;													\</div><div class="line">	GetModuleFileNameW(<span class="literal">NULL</span>, debug_cfg_path, MAX_PATH);										\</div><div class="line">	<span class="function">CPathW <span class="title">debug_cfg_path_obj</span><span class="params">(debug_cfg_path)</span></span>;												\</div><div class="line">	debug_cfg_path_obj.RemoveExtension();													\</div><div class="line">	debug_cfg_path_obj.AddExtension(<span class="string">L".trc"</span>);												\</div><div class="line">	LoadAtlDebugCfgExW(debug_cfg_path_obj.m_strPath.GetString());							\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line"></div><div class="line">	SetAtlTraceOpt(_CRT_WARN, <span class="literal">true</span>, <span class="literal">true</span>, <span class="literal">true</span>, _CRTDBG_MODE_FILE, _CRTDBG_FILE_STDOUT);</div><div class="line">	LoadAtlDebugCfgW();</div><div class="line">	CTraceCategory MY_CATEGORY(_T("MyCategoryName"));</div><div class="line">	TRACEHELPEXA(MY_CATEGORY, <span class="number">0</span>, <span class="string">"test test test\n"</span>);</div><div class="line">	TRACEHELPEXW(MY_CATEGORY, <span class="number">0</span>, <span class="string">L"test test test\n"</span>);</div><div class="line">	<span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2014/07/18/e4bdbfe794a8atltracee68993e980a0e8bdbbe9878fe7baa7debug-log/" data-id="cj6etakuf004ifcg9dnsq0ogx" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2014/08/16/dump-stle79a84vectorefbc8clistefbc8cmape79a84e4b889e4b8aawindbge8849ae69cac/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Récent</strong>
+      <div class="article-nav-title">
+        
+          Dump stl的vector，list，map的三个windbg脚本
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2014/06/29/dumpe58fb3e994aee88f9ce58d95e79a84e5b08fe5b7a5e585b7-rightmenudump/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">Dump右键菜单的小工具——RightMenuDump</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 0CCh<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

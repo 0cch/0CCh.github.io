@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>使用PCI IDE Controller读写硬盘 - 0 | 0CCh Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前言依稀记得我一年半以前曾经写过一篇关于PIO读硬盘数据的文章，当时就提到了读写硬盘操作很复杂，完全可以拿来做一个系列来写。当时也是真有写出一个系列的冲动，不过不巧的是，由于那段时间换工作，新的工作和底层的关系不太大，也就没时间继续读相关文档来把这个系列写下来。我现在还很清楚的记得当时有关使用IDE接口读写硬盘的中文资料特别的少，虽然英文资料倒是挺全面，但是对于英语不好的我来说，看起来还是挺吃力的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用PCI IDE Controller读写硬盘 - 0">
+<meta property="og:url" content="http://0cch.com/2013/08/17/e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-0/index.html">
+<meta property="og:site_name" content="0CCh Blog">
+<meta property="og:description" content="前言依稀记得我一年半以前曾经写过一篇关于PIO读硬盘数据的文章，当时就提到了读写硬盘操作很复杂，完全可以拿来做一个系列来写。当时也是真有写出一个系列的冲动，不过不巧的是，由于那段时间换工作，新的工作和底层的关系不太大，也就没时间继续读相关文档来把这个系列写下来。我现在还很清楚的记得当时有关使用IDE接口读写硬盘的中文资料特别的少，虽然英文资料倒是挺全面，但是对于英语不好的我来说，看起来还是挺吃力的">
+<meta property="og:image" content="http://0cch.com/uploads/2013/08/hdd-sata-pata-ide-aussie-pc-fix.png">
+<meta property="og:image" content="http://0cch.com/uploads/2013/08/bios-sata-native-mode-ide-raid-ahci-ca184a.jpg">
+<meta property="og:image" content="http://0cch.com/uploads/2013/08/2013-08-18_142953.png">
+<meta property="og:image" content="http://0cch.com/uploads/2013/08/20130818152800.png">
+<meta property="og:updated_time" content="2015-06-25T02:03:49.871Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用PCI IDE Controller读写硬盘 - 0">
+<meta name="twitter:description" content="前言依稀记得我一年半以前曾经写过一篇关于PIO读硬盘数据的文章，当时就提到了读写硬盘操作很复杂，完全可以拿来做一个系列来写。当时也是真有写出一个系列的冲动，不过不巧的是，由于那段时间换工作，新的工作和底层的关系不太大，也就没时间继续读相关文档来把这个系列写下来。我现在还很清楚的记得当时有关使用IDE接口读写硬盘的中文资料特别的少，虽然英文资料倒是挺全面，但是对于英语不好的我来说，看起来还是挺吃力的">
+<meta name="twitter:image" content="http://0cch.com/uploads/2013/08/hdd-sata-pata-ide-aussie-pc-fix.png">
+  
+    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0CCh Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-0" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/08/17/e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-0/" class="article-date">
+  <time datetime="2013-08-17T07:51:35.000Z" itemprop="datePublished">2013-08-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/MiniKernel/">MiniKernel</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用PCI IDE Controller读写硬盘 - 0
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>依稀记得我一年半以前曾经写过一篇关于PIO读硬盘数据的文章，当时就提到了读写硬盘操作很复杂，完全可以拿来做一个系列来写。当时也是真有写出一个系列的冲动，不过不巧的是，由于那段时间换工作，新的工作和底层的关系不太大，也就没时间继续读相关文档来把这个系列写下来。我现在还很清楚的记得当时有关使用IDE接口读写硬盘的中文资料特别的少，虽然英文资料倒是挺全面，但是对于英语不好的我来说，看起来还是挺吃力的。一年半后，我又好奇的搜索的这方面的中文资料，结果依旧令人失望。于是，我就决定我把知道的IDE方面的知识写出来，一方面算是自己的一个学习笔记，另一方面也算是一种分享。我将这个系列定位为学习笔记，就是说，文章的很多地方都是自己的理解，不能保证所提到的知识都是正确的。所以如果这篇文章有幸被你看见，并且发现了问题，请使用email联系我。</p>
+<h1 id="IDE介绍"><a href="#IDE介绍" class="headerlink" title="IDE介绍"></a>IDE介绍</h1><p><a href="/uploads/2013/08/hdd-sata-pata-ide-aussie-pc-fix.png"><img src="/uploads/2013/08/hdd-sata-pata-ide-aussie-pc-fix.png" alt="hdd-sata-pata-ide-aussie-pc-fix"></a></p>
+<p>IDE是Integrated Drive Electronics的简称，wiki上翻译的中文是“集成驱动电子设备”。我们可以认为它是一种接口，可以管理控制IDE的驱动器，比如硬盘，光驱等等。事实上，现在所谓的ATA/ATAPI接口的第一个版本的名称就叫做IDE，所以现在人们通常认为IDE就是PATA。如果现在去买主板，我们会发现集成PATA/IDE的主板已经消失了，现在主流主板都是使用的SATA，这是一套新的接口。那么，我们干嘛要学习一个已经淘汰的技术呢？其实不然，虽然硬件的接口被淘汰了，但是IDE的驱动器的控制模式还是存在的。现在的BIOS设置中，通常有一种叫做“legacy mode”或者“IDE”的选项，开启这个选项，系统就能如同操作IDE/PATA一样操作SATA了。而对于我这有写迷你内核的人来说，学习IDE是非常好的，因为虚拟机bochs模拟的硬盘设备就是IDE/PATA的，另一方面，把迷你内核拿到真机上做实验的时候，开启“legacy mode”或者“IDE”也能够很顺利的进行实验。</p>
+<p><a href="/uploads/2013/08/bios-sata-native-mode-ide-raid-ahci-ca184a.jpg"><img src="/uploads/2013/08/bios-sata-native-mode-ide-raid-ahci-ca184a.jpg" alt="bios-sata-native-mode-ide-raid-ahci-ca184a"></a></p>
+<h1 id="IDE通道以及通道寄存器地址"><a href="#IDE通道以及通道寄存器地址" class="headerlink" title="IDE通道以及通道寄存器地址"></a>IDE通道以及通道寄存器地址</h1><p>IDE有2个通道，可以管理4个驱动器，分别是：<br>通道1：<br>第一主驱动器<br>第一从驱动器<br>通道2：<br>第二主驱动器<br>第二从驱动器  </p>
+<p>每个通道都有两套用于控制其主从驱动器的寄存器，他们分别是 Control Block Registers 和 Command Block Registers。这些寄存器首先是有一个基础地址，然后通过按顺序可以获得整套寄存器地址，而寄存器的基础地址可以通过PCI Configuration Space来获得，更多情况下，我们不妨直接使用下面这张表来配置寄存器的基础地址。</p>
+<p><a href="/uploads/2013/08/2013-08-18_142953.png"><img src="/uploads/2013/08/2013-08-18_142953.png" alt="2013-08-18_142953"></a></p>
+<p>事实上，这个基础地址是根据PCI IDE Controller模式不同而确定的。Compatibility模式下，寄存器的基础地址是固定的，但是在Native-PCI模式下，这个就需要读取具体的配置信息了。不过，大部分情况下，用上述地址不会有什么问题，所以这里就略过读取PCI Configuration Space的步骤了。</p>
+<p>现在既然知道了寄存器的Base Address，那么下一步就是获得每个寄存器的地址了，其实这也非常简单。</p>
+<p>Command Block Registers<br>1F0 （170）（读取和写入）：数据寄存器<br>1F1 （171）（读）：错误寄存器<br>1F1 （171）（写入）：特性寄存器<br>1F2 （172）（读取和写入）：扇区数寄存器<br>1F3 （173）（读取和写入）：低LBA寄存器<br>1F4 （174）（读取和写入）：中LBA寄存器<br>1F5 （175）（读取和写入）：高LBA寄存器<br>1F6 （176）（读取和写入）：驱动器/磁头寄存器<br>1F7 （177）（读）：状态寄存器<br>1F7 （177）（写入）：命令寄存器  </p>
+<p>Control Block Registers<br>3F6 （376）（读取）：备用状态寄存器<br>3F6 （376）（写入）：设备控制寄存器  </p>
+<p>另外还有一组寄存器叫做Bus Master IDE Register，我们使用DMA进行数据传输的时候会用到这类寄存器。现在就不去了解了，以免东西太多，造成不必要的混乱。</p>
+<p>判断驱动器类型</p>
+<p>前面说了很多的理论上的东西，现在我们看看怎么运用它们判断驱动器类型，比如是PATA还是SATA。当然，在做判断它们的类型之前，我们需要检测驱动器是否存在。判断方法很简单，先选择驱动器，对扇区数寄存器（1F2）和低LBA寄存器（1F3）写两个非0的数字，然后进行读取。如果读出的内容和写入的相同，那么我们可以认为驱动存在。就拿第一主驱动器举个例子：<br>mov dx, 1f6h ; 驱动器寄存器<br>xor al, al ; 选择驱动器，如果al第4位是0，那么选择0号设备，否则选择1号设备<br>out dx, al  </p>
+<p>mov dx, 1f2h<br>mov al, 55h ; 随意写一个数<br>out dx, al  </p>
+<p>mov dx, 1f3h<br>mov al, aah<br>out dx, al  </p>
+<p>mov dx, 1f2h<br>in al, dx ; 读取后比较<br>cmp al, 55h<br>jnz not_exist  </p>
+<p>mov dx, 1f3h<br>in al, dx<br>cmp al, aah<br>jnz not_exist  </p>
+<p>我用bochs测试的结果是，如果驱动器不存在，读出的数字总是0。接下来就可以获得驱动器的类型了，步骤是：1.选择驱动器（前面的操作以及做完这步了）2.软件复位驱动器。3.读取高LBA寄存器和中LBA寄存器。  </p>
+<p>mov dx, 3f6h ; 选择设备控制寄存器<br>mov al, 4h ; 设置第二位，表示软件复位<br>out dx, al  </p>
+<p>mov dx, 3f6h ; 选择设备控制寄存器<br>mov al, 0h<br>out dx, al  </p>
+<p>mov dx, 1f4h<br>in al, dx<br>mov id1, al  </p>
+<p>mov dx, 1f5h<br>in al, dx<br>mov id2, al  </p>
+<p>当ID1和ID2为不同的数值的时候，表示的设备不同，如下表所示<br><a href="/uploads/2013/08/20130818152800.png"><img src="/uploads/2013/08/20130818152800.png" alt="20130818152800"></a><br>我在bochs实验的得到的结果是PATA，虽然模拟的设备比较老，但是这正是我想要的。  </p>
+<p>这样，我们读写硬盘的第一步，环境检测已经完成了。这个系列的下一篇文章，我们就来了解下通过PIO的方式读写硬盘。  </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/08/17/e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-0/" data-id="cj6etakti0031fcg96k9o7srh" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2013/08/26/e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Récent</strong>
+      <div class="article-nav-title">
+        
+          使用PCI IDE Controller读写硬盘 – 1
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2013/08/04/e4bdbfe794a8e58fafe7bc96e7a88be997b4e99a94e5ae9ae697b6e599a8programmable-interval-timere7bc96e58699e7b3bbe7bb9fe697b6e9929f/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">使用可编程间隔定时器(Programmable Interval Timer)编写系统时钟</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 0CCh<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

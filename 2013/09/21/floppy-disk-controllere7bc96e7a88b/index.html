@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Floppy Disk Controller编程 | 0CCh Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="看的没错，这篇文章将描述一些关于Floppy Disk Controller的编程知识。我们知道，在当今的计算机硬件体系中，软盘驱动器是一个已经完全被淘汰的设备，那么为什么还要有这样一篇文章？原因很简单，如果想构建自己的操作系统，必须有相应的存储介质，而软盘正是这样一个好的存储介质。他的容量虽然很小，但是却完全足够应付我们的内核程序，另一方面软盘驱动器的控制相对于之前我所介绍的硬盘的控制要简单的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Floppy Disk Controller编程">
+<meta property="og:url" content="http://0cch.com/2013/09/21/floppy-disk-controllere7bc96e7a88b/index.html">
+<meta property="og:site_name" content="0CCh Blog">
+<meta property="og:description" content="看的没错，这篇文章将描述一些关于Floppy Disk Controller的编程知识。我们知道，在当今的计算机硬件体系中，软盘驱动器是一个已经完全被淘汰的设备，那么为什么还要有这样一篇文章？原因很简单，如果想构建自己的操作系统，必须有相应的存储介质，而软盘正是这样一个好的存储介质。他的容量虽然很小，但是却完全足够应付我们的内核程序，另一方面软盘驱动器的控制相对于之前我所介绍的硬盘的控制要简单的">
+<meta property="og:image" content="http://0cch.com/uploads/2013/09/N82077AA.jpg">
+<meta property="og:image" content="http://0cch.com/uploads/2013/09/floppy_types.png">
+<meta property="og:image" content="http://0cch.com/uploads/2013/09/cmos_floppytype.png">
+<meta property="og:image" content="http://0cch.com/uploads/2013/09/floppy_regs.png">
+<meta property="og:updated_time" content="2017-08-16T09:35:44.058Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Floppy Disk Controller编程">
+<meta name="twitter:description" content="看的没错，这篇文章将描述一些关于Floppy Disk Controller的编程知识。我们知道，在当今的计算机硬件体系中，软盘驱动器是一个已经完全被淘汰的设备，那么为什么还要有这样一篇文章？原因很简单，如果想构建自己的操作系统，必须有相应的存储介质，而软盘正是这样一个好的存储介质。他的容量虽然很小，但是却完全足够应付我们的内核程序，另一方面软盘驱动器的控制相对于之前我所介绍的硬盘的控制要简单的">
+<meta name="twitter:image" content="http://0cch.com/uploads/2013/09/N82077AA.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0CCh Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-floppy-disk-controllere7bc96e7a88b" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/09/21/floppy-disk-controllere7bc96e7a88b/" class="article-date">
+  <time datetime="2013-09-21T00:39:56.000Z" itemprop="datePublished">2013-09-21</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/MiniKernel/">MiniKernel</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Floppy Disk Controller编程
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="/uploads/2013/09/N82077AA.jpg"><img src="/uploads/2013/09/N82077AA.jpg" alt="N82077AA"></a></p>
+<p>看的没错，这篇文章将描述一些关于Floppy Disk Controller的编程知识。我们知道，在当今的计算机硬件体系中，软盘驱动器是一个已经完全被淘汰的设备，那么为什么还要有这样一篇文章？原因很简单，如果想构建自己的操作系统，必须有相应的存储介质，而软盘正是这样一个好的存储介质。他的容量虽然很小，但是却完全足够应付我们的内核程序，另一方面软盘驱动器的控制相对于之前我所介绍的硬盘的控制要简单的多，而且关于软盘驱动器控制的教程和文章在互联网上也非常的多（虽然绝大部分都是英文的）。基于以上几点，我认为还是有必要把自己学到的知识写下了分享。</p>
+<p>Floppy Disk Controller，中文称为：软盘控制器，简称：FDC，是一个用来控制软盘驱动器的芯片。在1980年代到1990年代，软盘控制器普遍使用于个人电脑以及与IBM PC兼容的机型上，如 8272A、82078、82077SL以及82077AA，其中82077AA是最先进的一款芯片（1991年开始生产）。除了软盘控制器，软驱本身也在几十年的历史中留下了许多机型，如图所示：<br><a href="/uploads/2013/09/floppy_types.png"><img src="/uploads/2013/09/floppy_types.png" alt="floppy_types"></a><br>实际上，我从刚刚接触软盘到最后软盘被淘汰，只使用过3.5英寸1.44MB的软盘，其他型号完全没有接触过。</p>
+<p>对于CPU还运行在实模式下的启动引导程序和内核程序，我们可以调用BIOS提供的函数来完成软盘的访问，其中中断号是13h（INT13h），功能号为2（AH=2）是读取操作，功能号为3（AH=3）时是写入操作。实模式下通过中断读写软盘的资料很多（包括中文资料），如果想了解更多的实模式下访问软盘的知识，可以上网google一下，我这里就不做详细的介绍了。</p>
+<p>虽然调用中断访问软盘简单，但是我们不能让自己的内核总是跑在实模式下啊。所以我们需要写一个能跑在保护模式下的软驱驱动，要完成这样的驱动，就必须对FDC进行编程了。不过在此之前，我们需要知道，到底PC上有没有软驱。要获得这个信息，我们需要读取CMOS，然后解析读取的信息即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">mov dx, 70h</div><div class="line">mov al, 10h</div><div class="line">out dx, al</div><div class="line"></div><div class="line">mov dx, 71h</div><div class="line">in  al, dx</div><div class="line"></div><div class="line">mov f_b, al</div><div class="line">and f_b, 0fh</div><div class="line">shr al, 4</div><div class="line">mov f_a, al</div><div class="line"></div><div class="line">f_a db	0h</div><div class="line">f_b db	0h</div><div class="line"> </div></pre></td></tr></table></figure>
+<p>要从CMOS中获得软盘信息，我们需要先给对应的端口设置正确的索引，然后再去数据端口读取数据。具体做法是设置0x70端口为0x10，然后读取0x71端口。读取到的信息都放在一个字节中，需要把字节分为两个部分，高四位是驱动器A的类型索引号，低四位是驱动器B的类型索引号。索引号与软盘类型的对应关系如下图所示：<br><a href="/uploads/2013/09/cmos_floppytype.png"><img src="/uploads/2013/09/cmos_floppytype.png" alt="cmos_floppytype"></a></p>
+<p>在确认了软驱存在的情况下，接下来就可以对FDC进行编程了。先来看看FDC的几个基本知识。</p>
+<p><strong>寻址方式</strong><br>软盘驱动器使用CHS寻址方式。软盘介质总是有两个头（面），但磁道数和每个磁道的扇区扇区数是不一定的。通常情况下，1.44mb的软盘，他有80个磁道和每个磁道有18个扇区。另外值得注意的是，磁道和磁头是从0开始计算，但是扇区是从1开始计数的。即，有效的磁道通常为0到79，磁头为0或1，而扇区号是1到18的。如果访问0号扇区，那么一定会引起访问错误的。</p>
+<p><strong>数据传输方式</strong><br>和硬盘的数据传输方式一样，软盘也支持PIO和DMA两种数据传输方式。<br>软盘使用的通常是ISA DMA方式（这和 PCI BusMastering DMA完全是两码事）。使用DMA传输的方法，简单来说就是这是DMA的通道2，如传输的字节数以及对应的物理地址。物理地址必须是以64k为边界的。当然，还需要设置IRQ6，当数据传输结束的时候，控制器将发送一个IRQ6的中断。用DMA传输数据，这个过程是不需要占用CPU时间的，对于多任务的系统是比较好的选择。缺点是ISA DMA这种古老的DMA比PIO还要慢。<br>PIO数据传输既可以使用轮询，也能使用中断。使用PIO模式传输数据的速度比DMA传输快10％，但这会消耗CPU周期，是一个巨大的成本问题。然而，如果我们的操作系统或应用程序是单任务的，那么没有别的程序需要CPU，这样你就也可以使用PIO模式。使用PIO的要点是，在设置好了各种命令后，需要等待中断或者轮询状态结果，最后还需要使用IO的方式，读取数据，也就是这部分需要消耗额外的CPU周期。<br>值得注意的是，bochs并不支持PIO模式，使用PIO模式的时候bochs会报错，提示没有完全实现PIO模式。所以我在实验代码中也没有写PIO的代码。毕竟我的实验环境是bochs。</p>
+<p><strong>ISA DMA</strong><br>ISA DMA全称Industry Standard Architecture Direct Memory Access，是一种古老的DMA方式，速度比PIO还要慢，但是编程相对于PCI BusMastering DMA要简单一点。这里我并不打算详细介绍ISA DMA，因为说明它需要的篇幅不亚于这篇。后面的代码中，在必要的地方我会加入一些解释。</p>
+<p><strong>3种模式</strong><br>这三种模式是：PC-AT模式，PS/2模式，Mode 30模式。现在最有可能看到硬件上仍然运行模式是30模式。</p>
+<p>FDC寄存器<br><a href="/uploads/2013/09/floppy_regs.png"><img src="/uploads/2013/09/floppy_regs.png" alt="floppy_regs"></a></p>
+<p>如上图所示，上面的寄存器我们不会都用到，一般情况下大概只会用到一半的样子，其他的我们可以暂时不去理会。另外我在这里不会列出每个寄存器的详细参数，因为这些参数很多而且复杂，不仅单调乏味，而且容易让初学者望而却步。我采取的做法是，先列出控制FDC的代码，然后在需要讲解的地方详细的说明。</p>
+<p><strong>实践</strong><br>下面就是一段控制FDC读取软盘数据的代码。需要说明的是这份代码为了保持简洁易学，它没有任何的错误检测，另外代码也假设了你已经初始化了PIC，并且设置好了IRQ6。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div></pre></td><td class="code"><pre><div class="line">; MASM的宏应该不陌生吧，就不做解释了。</div><div class="line">outb macro port:req, b:req</div><div class="line">    mov dx, port</div><div class="line">    mov al, b</div><div class="line">    out dx, al</div><div class="line">endm</div><div class="line"></div><div class="line">inb macro port:req</div><div class="line">    mov dx, port</div><div class="line">    in al, dx</div><div class="line">endm</div><div class="line"></div><div class="line">wait_status macro</div><div class="line">    inb 3f4h</div><div class="line">@@:</div><div class="line">    test al, 80h</div><div class="line">    jz @B</div><div class="line">endm</div><div class="line"></div><div class="line">; ISA DMA 初始化部分， 由于ISA DMA不是这篇文章的重点</div><div class="line">; 所以这里只说明大概的用途。</div><div class="line">outb 0dh, 0ffh      ; 重置DMA控制器</div><div class="line">outb 0ah, 6h        ; 选择设置2号DMA通道</div><div class="line">outb 0ch, 0ffh      ; 重置Flipflop寄存器</div><div class="line">outb 4h, 0h         ; 设置DMA的物理地址，需要设置两次</div><div class="line">outb 4h, 0f0h       ; 我这里设置的是0xf000</div><div class="line">outb 81h, 0h        ; 设置地址24bit的高8bit为0，也就是0x00f000</div><div class="line">outb 0ch, 0ffh      ; 重置Flipflop寄存器</div><div class="line">outb 5h, 0ffh       ; 设置物理内存大小，其大小为Length-1</div><div class="line">outb 5h, 0fh        ; 我这里的内存大小是0x1000，所以设置为0xfff</div><div class="line">outb 0ah, 2h        ; 选择清除2号DMA通道</div><div class="line"></div><div class="line">; FDC的初始化过程</div><div class="line">outb 3f2h, 0h       ; 1.重置数字输出寄存器</div><div class="line">outb 3f2h, 0ch</div><div class="line">call WaitIrq</div><div class="line"></div><div class="line">mov ecx, 4</div><div class="line">check_int:</div><div class="line">wait_status</div><div class="line">outb 3f5h, 8h       ; 发送8号命令，该命令清除控制器触发的中断</div><div class="line">wait_status         ; 并且返回结果，这里重复4次，是为了清除4个软驱的状态</div><div class="line">inb 3f5h</div><div class="line">wait_status</div><div class="line">inb 3f5h</div><div class="line">wait_status</div><div class="line">loop check_int</div><div class="line"></div><div class="line">outb 3f7h, 0h       ; 2.设置传输速度为500kb/s</div><div class="line">wait_status</div><div class="line">outb 3f5h, 3h       ; 3.设置FDC里面三个时钟以及DMA。</div><div class="line">wait_status</div><div class="line">outb 3f5h, 0dfh</div><div class="line">wait_status</div><div class="line">outb 3f5h, 2h</div><div class="line"></div><div class="line">outb 3f2h, 1ch      ; 开启软驱电动机</div><div class="line">wait_status</div><div class="line">outb 3f5h, 7h       ; 发送校验命令</div><div class="line">wait_status</div><div class="line">outb 3f5h, 0h       ; 选择0号软驱</div><div class="line">wait_status</div><div class="line">outb 3f5h, 8h       ; 发送清楚中断命令，获得结果</div><div class="line">wait_status</div><div class="line">inb 3f5h</div><div class="line">wait_status</div><div class="line">inb 3f5h</div><div class="line">outb 3f2h, 4h       ; 关闭电动机</div><div class="line"></div><div class="line">; 接下来是软盘的读取操作</div><div class="line">outb 3f2h, 1ch      ; 开启电动机</div><div class="line">wait_status</div><div class="line">outb 3f5h, 0fh      ; 4.发送0f寻道命令</div><div class="line">wait_status</div><div class="line">outb 3f5h, 0h</div><div class="line">wait_status</div><div class="line">outb 3f5h, 0h</div><div class="line">wait_status</div><div class="line">outb 3f5h, 8h       ; 发送清楚中断命令，获得结果</div><div class="line">wait_status</div><div class="line">inb 3f5h</div><div class="line">wait_status</div><div class="line">inb 3f5h</div><div class="line"></div><div class="line">; 设置ISA DMA为读取</div><div class="line">outb 0ah, 6h</div><div class="line">outb 0bh, 46h</div><div class="line">outb 0ah, 2h</div><div class="line"></div><div class="line">wait_status</div><div class="line">outb 3f5h, 0e6h     ; 5.发送读取扇区命令</div><div class="line">wait_status</div><div class="line">outb 3f5h, 0h       ; 设置磁头和驱动器号</div><div class="line">wait_status</div><div class="line">outb 3f5h, 0h       ; 设置磁道</div><div class="line">wait_status</div><div class="line">outb 3f5h, 0h       ; 设置磁头</div><div class="line">wait_status</div><div class="line">outb 3f5h, 1h       ; 设置扇区号</div><div class="line">wait_status</div><div class="line">outb 3f5h, 2h       ; 设置扇区大小</div><div class="line">wait_status</div><div class="line">outb 3f5h, 8h       ; 设置读取扇区数量</div><div class="line">wait_status</div><div class="line">outb 3f5h, 1bh      ; 设置磁盘为3.5英寸</div><div class="line">wait_status</div><div class="line">outb 3f5h, 0ffh     ; 设置读取长度，总是0xff</div><div class="line"></div><div class="line">call WaitIrq</div><div class="line"></div><div class="line">mov ecx, 7</div><div class="line">loop_ret:</div><div class="line">wait_status</div><div class="line">inb 3f5h</div><div class="line">loop loop_ret</div><div class="line"></div><div class="line">wait_status</div><div class="line">outb 3f5h, 8h       ; 发送清楚中断命令，获得结果</div><div class="line">wait_status</div><div class="line">inb 3f5h</div><div class="line">wait_status</div><div class="line">inb 3f5h</div><div class="line">outb 3f2h, 4h       ; 关闭电动机</div><div class="line"> </div></pre></td></tr></table></figure>
+<p>1.重置数字输出寄存器<br>这是一个只写寄存器，可以用来控制FDC，例如控制软驱电动机，重置控制器，选择目标软驱，设置数据模式，以下是他的详细参数<br>Bits 0-1<br>00 - 软驱 0<br>01 - 软驱 1<br>10 - 软驱 2<br>11 - 软驱 3<br>Bit 2 重置<br>0 - 重置控制器<br>1 - 开启控制器<br>Bit 3 模式<br>0 - IRQ 模式<br>1 - DMA 模式<br>Bits 4 - 7 电动机控制器 (软驱 0 - 3)<br>0 - 停止电动机<br>1 - 开启电动机  </p>
+<p>我这里设置的是0Ch也就是说，选择了0号软驱，开启了控制器和DMA模式。</p>
+<p>2.设置传输速度为500kb/s<br>这个寄存器只有前两位有效，下面两位不同的组合表达了不同的速度，如下表：<br>00 500 Kbps<br>10 250 Kbps<br>01 300 Kbps<br>11 1 Mbps  </p>
+<p>3.设置FDC里面三个时钟以及DMA<br>三个时钟分别是步进速率时钟、磁头卸载时钟和磁头装入时钟。数据格式如下：<br>S S S S H H H H - S=步进速率时钟 H=磁头卸载时钟<br>H H H H H H H NDMA - H=磁头装入时钟 NDMA=0 (DMA模式) 或者 1 (非DMA模式)<br>实际上这个大家可以随意设置，我设置的是步进速率时钟=3ms, 磁头卸载时钟=240ms, 磁头装入时钟=16ms  </p>
+<p>4.发送寻道命令进行寻道<br>寻道命令的参数是两个自己，分别代表磁头、柱面和驱动器号，格式如下<br>x x x x x HD DR1 DR0 - HD=磁头 DR1/DR0 = 驱动器<br>C C C C C C C C - C=柱面  </p>
+<p>5.发送读取扇区命令<br>读取和写入命令一样，有8个参数和7个返回值！<br>第1个参数字节 = (磁头号 &lt;&lt; 2) | 驱动器号 (驱动器号必须是当前选择的驱动器)<br>第2个参数字节 = 柱面号<br>第3个参数字节 = 磁头号 (没错，重复了 = =)<br>第4个参数字节 = 开始的扇区号<br>第5个参数字节 = 2 (总是2，代表软盘扇区大小总是512字节)<br>第6个参数字节 = 操作扇区数<br>第7个参数字节 = 0x1b (软盘大小是3.5in)<br>第8个参数字节 = 0xff (总是0xff)<br>这里不关心返回值，如果有兴趣可以自己查找资料。  </p>
+<p>读取就是这样，如果要写入安排，只需要更改命令即可，这里就不再赘述了。最后按照国际惯例，提供一些深入学习的链接：<br><a href="http://wiki.osdev.org/Floppy" target="_blank" rel="external">http://wiki.osdev.org/Floppy</a><br><a href="http://en.wikipedia.org/wiki/Floppy" target="_blank" rel="external">http://en.wikipedia.org/wiki/Floppy</a><br><a href="http://www.isdaman.com/alsos/hardware/fdc/floppy.htm" target="_blank" rel="external">http://www.isdaman.com/alsos/hardware/fdc/floppy.htm</a><br><a href="http://www.osdever.net/documents/82077AA_FloppyControllerDatasheet.pdf?the_id=41" target="_blank" rel="external">http://www.osdever.net/documents/82077AA_FloppyControllerDatasheet.pdf</a>  </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/09/21/floppy-disk-controllere7bc96e7a88b/" data-id="cj6etaktp003efcg9ju6afixb" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2013/09/28/e8a7a3e69e90youkue8a786e9a291e59cb0e59d80e79a84pythone8849ae69cac/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Récent</strong>
+      <div class="article-nav-title">
+        
+          解析youku视频地址的python脚本
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2013/09/14/e4bdbfe794a8windbg-logextse79b91e68ea7e7a88be5ba8fapie8b083e794a8/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">使用Windbg Logexts监控程序API调用</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 0CCh<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

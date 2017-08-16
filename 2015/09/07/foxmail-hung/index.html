@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Foxmail无法响应 | 0CCh Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Foxmail是一款不错的邮件客户端软件，小巧实用，我在公司就是用的它。早上一如既往的先打开Foxmail，然后去倒杯水，回来发现Foxmail还在收取邮件的状态，“这也太慢了”，我心想。用鼠标点了点，出现了程序挂起的特征，标题栏上显示无法响应，程序界面变白。经验告诉我挂起的问题70%都还是比较容易调的，好吧，就让我看看这是怎么回事。 打开Windbg，Attach到Foxmail上，习惯做的第一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Foxmail无法响应">
+<meta property="og:url" content="http://0cch.com/2015/09/07/foxmail-hung/index.html">
+<meta property="og:site_name" content="0CCh Blog">
+<meta property="og:description" content="Foxmail是一款不错的邮件客户端软件，小巧实用，我在公司就是用的它。早上一如既往的先打开Foxmail，然后去倒杯水，回来发现Foxmail还在收取邮件的状态，“这也太慢了”，我心想。用鼠标点了点，出现了程序挂起的特征，标题栏上显示无法响应，程序界面变白。经验告诉我挂起的问题70%都还是比较容易调的，好吧，就让我看看这是怎么回事。 打开Windbg，Attach到Foxmail上，习惯做的第一">
+<meta property="og:image" content="http://0cch.com/uploads/2015/09/20150908002438.png">
+<meta property="og:updated_time" content="2017-08-16T09:35:44.094Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Foxmail无法响应">
+<meta name="twitter:description" content="Foxmail是一款不错的邮件客户端软件，小巧实用，我在公司就是用的它。早上一如既往的先打开Foxmail，然后去倒杯水，回来发现Foxmail还在收取邮件的状态，“这也太慢了”，我心想。用鼠标点了点，出现了程序挂起的特征，标题栏上显示无法响应，程序界面变白。经验告诉我挂起的问题70%都还是比较容易调的，好吧，就让我看看这是怎么回事。 打开Windbg，Attach到Foxmail上，习惯做的第一">
+<meta name="twitter:image" content="http://0cch.com/uploads/2015/09/20150908002438.png">
+  
+    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0CCh Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-foxmail-hung" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/09/07/foxmail-hung/" class="article-date">
+  <time datetime="2015-09-07T15:06:45.000Z" itemprop="datePublished">2015-09-07</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/debugging/">debugging</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Foxmail无法响应
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Foxmail是一款不错的邮件客户端软件，小巧实用，我在公司就是用的它。早上一如既往的先打开Foxmail，然后去倒杯水，回来发现Foxmail还在收取邮件的状态，“这也太慢了”，我心想。用鼠标点了点，出现了程序挂起的特征，标题栏上显示无法响应，程序界面变白。经验告诉我挂起的问题70%都还是比较容易调的，好吧，就让我看看这是怎么回事。</p>
+<p>打开Windbg，Attach到Foxmail上，习惯做的第一件事情就是保存Full dump</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">.dump /ma /u e:\foxmail.dmp</div></pre></td></tr></table></figure>
+<p>由于程序的主界面出现了挂起的现象，而一般情况下主线程就是程序的界面线程，所以此时根本没必要去查看所有线程的情况，直接看看主线程的栈信息吧。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">0:000&gt; k</div><div class="line">ChildEBP RetAddr  </div><div class="line">0018f454 770fd993 ntdll!ZwWaitForSingleObject+0x15</div><div class="line">0018f4b8 770fd877 ntdll!RtlpWaitOnCriticalSection+0x13e</div><div class="line">0018f4e0 770f84ca ntdll!RtlEnterCriticalSection+0x150</div><div class="line">0018f514 76734e8c ntdll!RtlLockHeap+0x3d</div><div class="line">0018f558 004091af KERNELBASE!GlobalAlloc+0x92</div><div class="line">WARNING: Stack unwind information not available. Following frames may be wrong.</div><div class="line">0018f578 0042bf97 Foxmail+0x91af</div><div class="line">0018f588 0042c115 Foxmail+0x2bf97</div><div class="line">0018f5a4 007c5f25 Foxmail+0x2c115</div><div class="line">0018f9fc 007c50ce Foxmail+0x3c5f25</div><div class="line">0018fa34 007c516a Foxmail+0x3c50ce</div><div class="line">0018fa44 007c9e57 Foxmail+0x3c516a</div><div class="line">0018faac 007ca28b Foxmail+0x3c9e57</div><div class="line">0018fae0 007c9370 Foxmail+0x3ca28b</div><div class="line">0018fb10 007ca3fb Foxmail+0x3c9370</div><div class="line">0018fb1c 00dd8a96 Foxmail+0x3ca3fb</div><div class="line">0018fb44 007c93bb Foxmail+0x9d8a96</div><div class="line">0018fb64 007c9479 Foxmail+0x3c93bb</div><div class="line">0018fba8 00dd0492 Foxmail+0x3c9479</div><div class="line">0018fcd4 00dd019d Foxmail+0x9d0492</div><div class="line">0018fd00 00dd454a Foxmail+0x9d019d</div><div class="line">0018fd44 00dcf20d Foxmail+0x9d454a</div><div class="line">0018fd60 007ca59d Foxmail+0x9cf20d</div><div class="line">0018fd84 0044e9d6 Foxmail+0x3ca59d</div><div class="line">0018fd94 0044e844 Foxmail+0x4e9d6</div><div class="line">0018fdbc 00434a96 Foxmail+0x4e844</div><div class="line">0018fdd4 74aa62fa Foxmail+0x34a96</div><div class="line">0018fe00 74aa6d3a user32!InternalCallWinProc+0x23</div><div class="line">0018fe78 74aa77c4 user32!UserCallWinProcCheckWow+0x109</div><div class="line">0018fed8 74aa7bca user32!DispatchMessageWorker+0x3bc</div><div class="line">0018fee8 00dc5e7a user32!DispatchMessageA+0xf</div><div class="line">0018ff04 00dc5ee4 Foxmail+0x9c5e7a</div><div class="line">0018ff2c 00dc61bf Foxmail+0x9c5ee4</div><div class="line">0018ff5c 00ded3a0 Foxmail+0x9c61bf</div><div class="line">0018ff88 75b9336a Foxmail+0x9ed3a0</div><div class="line">0018ff94 770f9882 kernel32!BaseThreadInitThunk+0xe</div><div class="line">0018ffd4 770f9855 ntdll!__RtlUserThreadStart+0x70</div><div class="line">0018ffec 00000000 ntdll!_RtlUserThreadStart+0x1b</div></pre></td></tr></table></figure>
+<p>可以看到界面线程调用GlobalAlloc的时候在等HeapLock被释放。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">0:000&gt; kb L5</div><div class="line">ChildEBP RetAddr  Args to Child              </div><div class="line">0018f454 770fd993 00000698 00000000 00000000 ntdll!ZwWaitForSingleObject+0x15</div><div class="line">0018f4b8 770fd877 00000000 00000000 00000000 ntdll!RtlpWaitOnCriticalSection+0x13e</div><div class="line">0018f4e0 770f84ca 014d0138 0044e9b8 0018f4ac ntdll!RtlEnterCriticalSection+0x150</div><div class="line">0018f514 76734e8c 014d0000 4d5402d1 00000000 ntdll!RtlLockHeap+0x3d</div><div class="line">0018f558 004091af 00000002 00002000 0042c07c KERNELBASE!GlobalAlloc+0x92</div></pre></td></tr></table></figure>
+<p>那么014d0138比如是默认堆的Critical Section了。来看看这个cs的数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">0:000&gt; !cs 014d0138 </div><div class="line">*************************************************************************</div><div class="line">***                                                                   ***</div><div class="line">***                                                                   ***</div><div class="line">***    Either you specified an unqualified symbol, or your debugger   ***</div><div class="line">***    doesn&apos;t have full symbol information.  Unqualified symbol      ***</div><div class="line">***    resolution is turned off by default. Please either specify a   ***</div><div class="line">***    fully qualified symbol module!symbolname, or enable resolution ***</div><div class="line">***    of unqualified symbols by typing &quot;.symopt- 100&quot;. Note that   ***</div><div class="line">***    enabling unqualified symbol resolution with network symbol     ***</div><div class="line">***    server shares in the symbol path may cause the debugger to     ***</div><div class="line">***    appear to hang for long periods of time when an incorrect      ***</div><div class="line">***    symbol name is typed or the network symbol server is down.     ***</div><div class="line">***                                                                   ***</div><div class="line">***    For some commands to work properly, your symbol path           ***</div><div class="line">***    must point to .pdb files that have full type information.      ***</div><div class="line">***                                                                   ***</div><div class="line">***    Certain .pdb files (such as the public OS symbols) do not      ***</div><div class="line">***    contain the required information.  Contact the group that      ***</div><div class="line">***    provided you with these symbols if you need this command to    ***</div><div class="line">***    work.                                                          ***</div><div class="line">***                                                                   ***</div><div class="line">***    Type referenced: ntdll!_RTL_CRITICAL_SECTION                   ***</div><div class="line">***                                                                   ***</div><div class="line">*************************************************************************</div><div class="line">Bad symbols for NTDLL (error 3). Aborting.</div></pre></td></tr></table></figure>
+<p>嗯，ntdll的符号文件的结构体信息没有了！这个问题发生在2015年7月份的，安装KB3071756和KB3060716补丁后产生的。详情可以查看<br><a href="http://www.osronline.com/showthread.cfm?link=269221" target="_blank" rel="external">http://www.osronline.com/showthread.cfm?link=269221</a></p>
+<p>既然新的符号不让用，那就只有用老的了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">0:000&gt; .reload /f /i E:\WorkSpace\MySymbols\ntdll.dll\49900AFA96000\ntdll.dll=77ffe000   </div><div class="line">0:000&gt; lm m ntdll*</div><div class="line">start    end        module name</div><div class="line">770c0000 77240000   ntdll      (pdb symbols)          e:\workspace\mysymbols\wntdll.pdb\FA9C48F9C11D4E0894B8970DECD92C972\wntdll.pdb</div><div class="line">77ffe000 78094000   ntdll_77ffe000   (pdb symbols)          e:\workspace\mysymbols\ntdll.pdb\6992F4DAF4B144068D78669D6CB5D2072\ntdll.pdb</div><div class="line">0:000&gt; dt ntdll_77ffe000!_RTL_CRITICAL_SECTION 014d0138</div><div class="line">   +0x000 DebugInfo        : 0x771c4960 _RTL_CRITICAL_SECTION_DEBUG</div><div class="line">   +0x004 LockCount        : 0n-30</div><div class="line">   +0x008 RecursionCount   : 0n1</div><div class="line">   +0x00c OwningThread     : 0x00001730 Void</div><div class="line">   +0x010 LockSemaphore    : 0x00000698 Void</div><div class="line">   +0x014 SpinCount        : 0xfa0</div><div class="line"></div></pre></td></tr></table></figure>
+<p>好了，这样就够用了。可以看到TID=1730的线程正在占用这个cs，马上去看看这个线程在干什么。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">0:041&gt; k</div><div class="line">ChildEBP RetAddr  </div><div class="line">06e1f214 770fd993 ntdll!ZwWaitForSingleObject+0x15</div><div class="line">06e1f278 770fd877 ntdll!RtlpWaitOnCriticalSection+0x13e</div><div class="line">06e1f2a0 770f84ca ntdll!RtlEnterCriticalSection+0x150</div><div class="line">06e1f2d4 7717fd7d ntdll!RtlLockHeap+0x3d</div><div class="line">06e1f3bc 7714de8e ntdll!RtlpQueryExtendedHeapInformation+0xbd</div><div class="line">06e1f3fc 7716476b ntdll!RtlQueryHeapInformation+0x4a</div><div class="line">06e1f4a0 77143320 ntdll!RtlQueryProcessHeapInformation+0x288</div><div class="line">06e1f51c 75c15f4b ntdll!RtlQueryProcessDebugInformation+0x28a</div><div class="line">Unable to load image D:\Program Files\Foxmail 7.2\libeay32.dll, Win32 error 0n2</div><div class="line">*** ERROR: Symbol file could not be found.  Defaulted to export symbols for libeay32.dll - </div><div class="line">06e1f54c 0606ad6a kernel32!Heap32Next+0x4d</div><div class="line">WARNING: Stack unwind information not available. Following frames may be wrong.</div><div class="line">06e1fab0 06069c77 libeay32!RAND_poll+0x5fa</div><div class="line">06e1facc 06023db7 libeay32!RAND_SSLeay+0x447</div><div class="line">06e1fb00 06069f71 libeay32!CRYPTO_set_ex_data_implementation+0x387</div><div class="line">00000000 00000000 libeay32!RAND_SSLeay+0x741</div><div class="line"></div></pre></td></tr></table></figure>
+<p>从栈的信息看来，这个线程是OpenSSL的一个线程，正在做随机数处理，而枚举Heap的信息应该也是随机数的一个组成部分。在枚举Heap的时候也处于等待一个HeapLock的情况，来具体看看</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">0:041&gt; kb L5</div><div class="line">ChildEBP RetAddr  Args to Child              </div><div class="line">06e1f214 770fd993 00000b10 00000000 00000000 ntdll!ZwWaitForSingleObject+0x15</div><div class="line">06e1f278 770fd877 00000000 00000000 06e1f428 ntdll!RtlpWaitOnCriticalSection+0x13e</div><div class="line">06e1f2a0 770f84ca 04560138 00000000 00000000 ntdll!RtlEnterCriticalSection+0x150</div><div class="line">06e1f2d4 7717fd7d 04560000 71edefe5 06e1f468 ntdll!RtlLockHeap+0x3d</div><div class="line">06e1f3bc 7714de8e 06e1f428 771640d3 00000000 ntdll!RtlpQueryExtendedHeapInformation+0xbd</div></pre></td></tr></table></figure>
+<p>看来正在等一个基地址是04560000的Heap的cs。顺藤摸瓜看看这个cs又被谁占用了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">0:041&gt; dt ntdll_77ffe000!_RTL_CRITICAL_SECTION 04560138 </div><div class="line">   +0x000 DebugInfo        : 0x0151df40 _RTL_CRITICAL_SECTION_DEBUG</div><div class="line">   +0x004 LockCount        : 0n-6</div><div class="line">   +0x008 RecursionCount   : 0n1</div><div class="line">   +0x00c OwningThread     : 0x00001994 Void</div><div class="line">   +0x010 LockSemaphore    : 0x00000b10 Void</div><div class="line">   +0x014 SpinCount        : 0xfa0</div></pre></td></tr></table></figure>
+<p>继续看看0x00001994这个线程在做什么事情</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div></pre></td><td class="code"><pre><div class="line">0:002&gt; kb</div><div class="line">ChildEBP RetAddr  Args to Child              </div><div class="line">0438d2c4 770fd993 00000698 00000000 00000000 ntdll!ZwWaitForSingleObject+0x15</div><div class="line">0438d328 770fd877 00000000 00000000 014d0000 ntdll!RtlpWaitOnCriticalSection+0x13e</div><div class="line">0438d350 770fdaf8 014d0138 7334c875 00078000 ntdll!RtlEnterCriticalSection+0x150</div><div class="line">0438d42c 770f2fe3 000001f8 00000200 00000000 ntdll!RtlpAllocateHeap+0x159</div><div class="line">0438d4b0 770f7bfb 014d0000 00800000 000001f8 ntdll!RtlAllocateHeap+0x23a</div><div class="line">0438d4fc 770f70f1 00000028 7334c9d5 07240048 ntdll!RtlpAllocateUserBlock+0xae</div><div class="line">0438d58c 770ee0e2 07240048 07240048 00000000 ntdll!RtlpLowFragHeapAllocFromContext+0x802</div><div class="line">0438d600 770f8129 014d0000 00000000 00000020 ntdll!RtlAllocateHeap+0x206</div><div class="line">0438d610 770f3f21 04560000 07240048 00000000 ntdll!RtlpAllocateDebugInfo+0x28</div><div class="line">0438d64c 770f4262 07240048 00000000 00000000 ntdll!RtlInitializeCriticalSectionEx+0x93</div><div class="line">0438d660 771031e2 07240048 07240048 04560000 ntdll!RtlInitializeCriticalSection+0x12</div><div class="line">0438d674 771031b0 00000000 00000800 04560000 ntdll!RtlpInitializeLowFragHeap+0x28</div><div class="line">0438d684 77102f5a 7334cae5 045600cc 04560000 ntdll!RtlpCreateLowFragHeap+0x28</div><div class="line">0438d6bc 77103002 04560000 04560194 0438d7a8 ntdll!RtlpActivateLowFragmentationHeap+0xc9</div><div class="line">0438d6cc 77102fce 04560000 7334cbf1 00000000 ntdll!RtlpPerformHeapMaintenance+0x2a</div><div class="line">0438d7a8 770f2fe3 00000008 00000010 04560194 ntdll!RtlpAllocateHeap+0x172</div><div class="line">0438d82c 6fef1e62 04560000 00000008 00000008 ntdll!RtlAllocateHeap+0x23a</div><div class="line">0438d844 6fef20f9 0438d858 04560984 00000007 nlaapi!NlapAllocNlaDataSet+0x18</div><div class="line">0438d85c 6fef2096 00000007 00000003 045608f0 nlaapi!QueryCtxtDeserializeTuplesToTrieMap+0x20</div><div class="line">0438d888 6fef23a7 045608f0 000003c8 04560958 nlaapi!QueryCtxtDeserializeEntityToTrieMap+0x38</div><div class="line">0438d924 6fef58e0 7972514e 00000001 00000000 nlaapi!NLA_QUERY_HANDLE_completion_internal+0x21f</div><div class="line">0438d944 6fef5cd7 00000000 00000000 0c7507d0 nlaapi!NlaRegisterQuery+0x7d</div><div class="line">0438d99c 6fef5bac 044907d0 4e3f415a 014587b0 nlaapi!GetNlaV2Handle+0x7e</div><div class="line">0438d9d0 769d59b1 01435244 0438db88 044907d0 nlaapi!WSM_NSPLookupServiceBegin_v2+0xc9</div><div class="line">0438d9ec 769d598d 01435208 0438db88 00000000 ws2_32!NSPROVIDER::NSPLookupServiceBegin+0x1b</div><div class="line">0438da08 769d591c 01458960 0438db88 00000000 ws2_32!NSPROVIDERSTATE::LookupServiceBegin+0x1d</div><div class="line">0438da6c 769d57cc 014587b0 0438db88 00000ff0 ws2_32!NSQUERY::LookupServiceBegin+0x18d</div><div class="line">0438dabc 0fd7fca2 0438db88 00000ff0 0438dbd0 ws2_32!WSALookupServiceBeginW+0x7f</div><div class="line">WARNING: Stack unwind information not available. Following frames may be wrong.</div><div class="line">0438dd18 0fd0c6a1 0fa9df49 03ac9c20 03b5da80 libcef!cef_time_delta+0x3ddc22</div><div class="line">0438e2f0 0fa9ec71 0438e698 03a91e00 0438e310 libcef!cef_time_delta+0x36a621</div><div class="line">0438e37c 0fa8d58f 0438e698 03ac9c00 03b5da80 libcef!cef_time_delta+0xfcbf1</div><div class="line">0438eb88 0fa9915f 0438ebc8 fffffffe ffffffff libcef!cef_time_delta+0xeb50f</div><div class="line">0438ebe8 0fb3605d 03b5da80 fffffffe 03ac9d20 libcef!cef_time_delta+0xf70df</div><div class="line">0438ec04 0fb3744d 03b5da80 fffffffe fffffffe libcef!cef_time_delta+0x193fdd</div><div class="line">0438ecd8 0fb37ad2 00000003 fffffffe 00000000 libcef!cef_time_delta+0x1953cd</div><div class="line">0438edc0 0fb37f5d 03ac9400 11c9bee1 03ac9400 libcef!cef_time_delta+0x195a52</div><div class="line">0438edfc 0fa9ab19 03ac9400 03ac9c38 03ac9c00 libcef!cef_time_delta+0x195edd</div><div class="line">0438f20c 0fa9b466 03ac9400 00000000 03ac9c38 libcef!cef_time_delta+0xf8a99</div><div class="line">0438f220 0fb3c815 00000000 03ac9400 0fb3aee5 libcef!cef_time_delta+0xf93e6</div><div class="line">0438f2e8 0fb3d2e3 00000000 03b53384 03ac9c38 libcef!cef_time_delta+0x19a795</div><div class="line">0438f690 0fb3ad7b 0438f600 03b53384 03b2ddc0 libcef!cef_time_delta+0x19b263</div><div class="line">0438f8ac 0f985613 0438fb64 03b53384 00000001 libcef!cef_time_delta+0x198cfb</div><div class="line">0438fbec 0f98016a ffffffff ffffffff 03b53368 libcef!cef_string_multimap_free+0x18b63</div><div class="line">0438fc28 0fa208a4 03b53340 03ac0dd0 03a87b00 libcef!cef_string_multimap_free+0x136ba</div><div class="line">0438fd70 0fa223ba 0438fdd0 03a878c0 03ac0d00 libcef!cef_time_delta+0x7e824</div><div class="line">0438fe0c 0fa4edfc 00000000 03a878c0 03ac0dd0 libcef!cef_time_delta+0x8033a</div><div class="line">0438fe3c 0fa4ec2e 00000000 03ac0dd0 03ac0dd0 libcef!cef_time_delta+0xacd7c</div><div class="line">0438fe5c 0fa2177f 03ac0dd0 0438ff34 03ac0dd0 libcef!cef_time_delta+0xacbae</div><div class="line">0438ff24 0fa3a323 03a8d7d0 0fa1fc56 03ac0dd0 libcef!cef_time_delta+0x7f6ff</div><div class="line">0438ff50 0fa39b9b 0438ff74 0fa39c6a 03ac0dd0 libcef!cef_time_delta+0x982a3</div><div class="line">0438ff58 0fa39c6a 03ac0dd0 03a80f40 03a8d7d0 libcef!cef_time_delta+0x97b1b</div><div class="line">0438ff74 0fa22ad8 00000000 00000000 03a80f40 libcef!cef_time_delta+0x97bea</div><div class="line">0438ff88 75b9336a 000001a8 0438ffd4 770f9882 libcef!cef_time_delta+0x80a58</div><div class="line">0438ff94 770f9882 03a80f40 7334e38d 00000000 kernel32!BaseThreadInitThunk+0xe</div><div class="line">0438ffd4 770f9855 0fa22a80 03a80f40 00000000 ntdll!__RtlUserThreadStart+0x70</div><div class="line">0438ffec 00000000 0fa22a80 03a80f40 00000000 ntdll!_RtlUserThreadStart+0x1b</div><div class="line"></div></pre></td></tr></table></figure>
+<p>这个线程正在为04560000这个heap创建LowFragHeap，但是在获取014d0138的cs的时候被卡住了。这里就发现问题所在了！014d0138不正是我们主线程在等待的cs么，这个线程的10f0和1994都在等待1730的cs=014d0138，而1730却在等待1994的cs=04560138。</p>
+<p><a href="/uploads/2015/09/20150908002438.png"><img src="/uploads/2015/09/20150908002438.png" alt="20150908002438"></a></p>
+<p>反汇编RtlpQueryExtendedHeapInformation就能知道这里造成死锁的真正原因。实际上Heap32Next函数枚举所有Heap信息的时候，先统一锁住进程里面所有的Heap，然后做枚举工作，最后再统一释放锁。所以它在正在锁住所有HeapLock过程中的时候，例如锁住了一半，正在尝试锁住另一半，另外一个线程正好拥有他没锁住的HeapLock，但是不巧的时候他在给这个Heap创建LowFragHeap，而创建LowFragHeap需要初始化HeapLock，其中HeapLock的DebugInfo又是用默认Heap去分配内存的，默认堆的锁正好在第一个线程被锁住的那一半里，这就是事情的真相！</p>
+<p>那么微软为什么要提供一个会造成死锁的API，而且不去修复呢？按照Raymond的说法，这个系列的函数目的只是诊断，性能很低，不应该用于普通程序中。<br><a href="http://blogs.msdn.com/b/oldnewthing/archive/2012/03/23/10286665.aspx" target="_blank" rel="external">http://blogs.msdn.com/b/oldnewthing/archive/2012/03/23/10286665.aspx</a><br>但是，我觉得既然是文档化的接口，而且文档里面没有提到会造成死锁，那么它就应该是安全的。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2015/09/07/foxmail-hung/" data-id="cj6etakvq0065fcg9ylusy2fn" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/10/05/0cchext/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Récent</strong>
+      <div class="article-nav-title">
+        
+          Windbg插件0cchext
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/08/27/3-interesting-API/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">介绍三个有趣的API</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 0CCh<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

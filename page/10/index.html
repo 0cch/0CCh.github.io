@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>0CCh Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="0CCh Blog">
+<meta property="og:url" content="http://0cch.com/page/10/index.html">
+<meta property="og:site_name" content="0CCh Blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="0CCh Blog">
+  
+    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0CCh Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-e69687e4bbb6e6909ce7b4a2e5b7a5e585b7everythingse5b7a5e4bd9ce58e9fe79086e7ae80e4bb8b" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/04/08/e69687e4bbb6e6909ce7b4a2e5b7a5e585b7everythingse5b7a5e4bd9ce58e9fe79086e7ae80e4bb8b/" class="article-date">
+  <time datetime="2013-04-08T10:20:42.000Z" itemprop="datePublished">2013-04-08</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/04/08/e69687e4bbb6e6909ce7b4a2e5b7a5e585b7everythingse5b7a5e4bd9ce58e9fe79086e7ae80e4bb8b/">文件搜索工具everythings工作原理简介</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>everythings是一个非常强大而且好用的文件搜索工具。他搜索文件的速度非常之快，基本上刚刚输入要查找的文件名，文件已经搜索了出来。这里就简单介绍一下他的工作原理。</p>
+<p>有一点已经非常明显，everythings在查找工作开始之前会建立全盘文件索引的数据库，那么这个数据库必然就是搜索文件快速的最重要的原因。而这个数据库的建立的用时似乎非常之短，是普通方法下遍历整个卷所不能及的。</p>
+<p>实际上，建立数据库的方法确实比较特殊。简单来说就是遍历目标卷NTFS文件系统的Master File Table（简称MFT）的记录，这也解释了为什么everythings只能工作在是NTFS的文件系统的卷上。MFT可以看成ntfs中文件的索引，MFT中的每条记录都是指向卷中的一个文件。遍历这个索引的速度可要比按照目录递归整个卷的速度要快得多了。不过可惜的是，Windows并没有提供能够直接访问MFT的API，除非你直接解析NTFS磁盘格式（参考<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="external">这篇文章</a>）。而且就算让你直接遍历的MFT，要监控文件的变化并且写入数据库也是一个不好办的工作。不过可喜的是，微软提供了一种间接遍历MFT记录的方式，并且通过这样的方式可以监控卷上文件的变化，他就是Change Journal（<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa363798(v=vs.85" target="_blank" rel="external">官方文档</a>.aspx)）。</p>
+<p>Change Journal实际上是Windows 2000的NTFS文件系统就提供了的功能。其目的就是如同名字一样，记录文件改变的日志，方便NTFS文件系统对文件的恢复，这确实是个不错的特性。如何使用这个功能去遍历和监控MFT的记录，我这里就不做详细介绍了。因为有一片更加好的文章已经写的非常的清楚，我的demo也参考了他的很多代码。这篇文章叫做《<a href="http://www.microsoft.com/msj/0999/journal/journal.aspx" target="_blank" rel="external">Keeping an Eye on Your NTFS Drives: the Windows 2000 Change Journal Explained</a>》是1999年9月份的msdn杂志发表的。</p>
+<p>我这里假设你已经阅读了这篇文章。我们已经知道了遍历和监控MFT记录的方法，并且通过这个方法获得了每个文件的文件名，file reference和parent reference（可以理解为文件id和其父目录id）。那么这里就可以把这三个元素作为一条记录存储在我们制定的数据库中。</p>
+<p>下面简单说下如何利用这个数据库，当需要查找文件的时候：<br>1.获得用户输入的文件名。<br>2.通过文件名A可以从数据库中筛选出一些记录，而这些记录中就包括了文件的parent reference。<br>3.通过parent reference再次查找数据库的file reference字段，获得对应的文件名B，这个文件名B就是文件A的父目录了。重复这一步直到根目录为止。<br>这样就能找到文件的详细路径了。  </p>
+<p>我写demo的时候并没有考虑怎么构建这个数据库，直接用了sqlite。不过如果能自己设计一个专门为存储这些数据的小数据库，也应该有更高的效率吧。everythings的数据库就是经过bzip压缩的自定义的文件。</p>
+<p>DEMO——构建文件索引数据库：<br><a href="/uploads/2013/04/20130409003609.png"><img src="/uploads/2013/04/20130409003609.png" alt="20130409003609"></a></p>
+<p>DEMO——查找文件<br><a href="/uploads/2013/04/20130409003752.png"><img src="/uploads/2013/04/20130409003752.png" alt="20130409003752"></a></p>
+<p>P.S 如果采用sqlite作为文件数据库的话，建立索引的插入数据操作一定要利用sqlite的事务机制，否则会在插入数据上花费很多时间。</p>
+<p>P.S.2 everythings之所以需要管理员权限才能工作，是因为他需要打开本地卷的句柄，这个就需要管理员权限了。</p>
+<p>最后说一点这种方法的不足吧。那就是这种方法对于有多个hardlinks的文件，只能枚举出一个路径。关于hardlink的介绍可以参考<a href="http://0cch.net/wordpress/?p=179" target="_blank" rel="external">这篇文章</a>。由于这个不足，你在查找system32下的文件的时候，往往搜索不到，搜索到的又往往在其他目录，出现尤其多的应该是Winsxs目录了（而关于Winsxs可以看看<a href="http://sysdbg.com/index.php/2013/04/08/everything-you-never-wanted-to-know-about-winsxs/" target="_blank" rel="external">这篇翻译</a>，翻译质量很不错）。例如我们搜索C盘下的notepad.exe，everythings搜索的结果是这样的：<br><a href="/uploads/2013/04/20130409021029.png"><img src="/uploads/2013/04/20130409021029.png" alt="20130409021029"></a></p>
+<p>可以注意到并没有system32下notepad.exe的身影。我们的demo同样也会遇到这样的情况：<br><a href="/uploads/2013/04/20130409021252.png"><img src="/uploads/2013/04/20130409021252.png" alt="20130409021252"></a></p>
+<p>下图显示的是同一个notepad.exe的4个存储位置。<br><a href="/uploads/2013/04/20130409021829.png"><img src="/uploads/2013/04/20130409021829.png" alt="20130409021829"></a></p>
+<p>虽然everythings有这样的一个不足，但是瑕不掩瑜，他的的确确是一个非常非常优秀的工具！我这里探讨的也仅仅是他的大概原理。实际上这个工具如此优秀，必然是在很多细节上做的非常好才行的。强烈推荐大家使用！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/04/08/e69687e4bbb6e6909ce7b4a2e5b7a5e585b7everythingse5b7a5e4bd9ce58e9fe79086e7ae80e4bb8b/" data-id="cj6etaksp001wfcg9pv25hb4r" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-proc_dump_study-e8bf9be7a88bdumpe5b7a5e585b7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/04/06/proc_dump_study-e8bf9be7a88bdumpe5b7a5e585b7/" class="article-date">
+  <time datetime="2013-04-06T01:00:41.000Z" itemprop="datePublished">2013-04-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>►<a class="article-category-link" href="/categories/Debugging/NTInternals/">NTInternals</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/04/06/proc_dump_study-e8bf9be7a88bdumpe5b7a5e585b7/">proc_dump_study —— 进程dump工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>proc_dump_study是逆向sysinternals的Procdump的一个工具。在功能上几乎和procdump一模一样。有一点差距就是目前没有支持clr的异常，也就是procdump的-g参数。其他的usage基本上相同，这里也不细说了。想说的一点是，proc_dump_study和procdump一样，功能比较强大，参数也比较多。所以为了方便使用，我把用的比较多的功能总结了一下，写了一个带UI shell程序。这样就方便测试人员或者不想深入理解命令行程序的人员使用。</p>
+<p><a href="/uploads/2013/04/20130404013936.png"><img src="/uploads/2013/04/20130404013936.png" alt="20130404013936"></a></p>
+<p>简单介绍一下使用方法<br>1.选择要监控或者dump的进程，确定生成dump的文件位置。<br>2.选择dump类型，包括mini dump，full dump以及effective dump，dump的大小分别为小，大，中等。<br>3.选择是否监控进程的cpu使用率<br>4.选择是否监控进程的内存提交数量<br>5.选择是否监控进程窗口是否挂起<br>6.选择是否监控进程发生异常<br>7.选择是否监控进程推出<br>8.最后点击dump按钮  </p>
+<p>这样，一旦监控的时候任何监控点达到要求，就会产生dump文件了。如果不需要监控任何进程窗口，程序会立刻dump进程。实际上直接使用proc_dump_study会有更多的功能可以使用，不过这个UI版本应该可以应付大多数的情况了吧。</p>
+<p>下载<a href="/uploads/2013/04/proc_dump_ui.zip">proc_dump_ui</a></p>
+<p>最后放一张测试图<br><a href="/uploads/2013/04/20130402230714.png"><img src="/uploads/2013/04/20130402230714.png" alt="20130402230714"></a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/04/06/proc_dump_study-e8bf9be7a88bdumpe5b7a5e585b7/" data-id="cj6etaksz0025fcg90bbwsy7q" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-find_links_study-e4bbbffindlinkse79a84e69687e4bbb6e7a1ace993bee68ea5e69fa5e689bee5b7a5e585b7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/03/16/find_links_study-e4bbbffindlinkse79a84e69687e4bbb6e7a1ace993bee68ea5e69fa5e689bee5b7a5e585b7/" class="article-date">
+  <time datetime="2013-03-16T06:34:42.000Z" itemprop="datePublished">2013-03-16</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/03/16/find_links_study-e4bbbffindlinkse79a84e69687e4bbb6e7a1ace993bee68ea5e69fa5e689bee5b7a5e585b7/">find_links_study —— 仿FindLinks的文件硬链接查找工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在上一篇讨论<a href="http://0cch.net/wordpress/?p=179" target="_blank" rel="external">hardlink</a>的文章中，我在最后提到要写一个查找hardlinks的工具。正如上一篇文章中介绍这种工具的工作原理一样，他的代码比较简单。所以前几天find_links_study就已经写完了，只是一直没空发出来。这个工具的使用和FindLinks一模一样，这里也不多做介绍了。下图是工具的工作效果：</p>
+<p><a href="/uploads/2013/03/20130316214417.png"><img src="/uploads/2013/03/20130316214417.png" alt="20130316214417"></a></p>
+<p>从图中我们可以发现，原来我们在系统中看到的多个notepad文件实际上就是一个文件而已，只不过他利用了hardlink的技术，产生了多个路径罢了。我感觉hardlink还是一个非常实用的技术，具体用在哪大家可以发挥想象力。就我个人看来，在某些情况下，用hardlink来备份文件，倒是一种不错的选择。</p>
+<p>下载<a href="/uploads/2013/03/find_links_study.zip">find_links_study</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/03/16/find_links_study-e4bbbffindlinkse79a84e69687e4bbb6e7a1ace993bee68ea5e69fa5e689bee5b7a5e585b7/" data-id="cj6etakso001ufcg9h6p2ttu4" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e4bdbfe794a8ntfs_studye68ea2e5afbbhardlinke79a84e69cace8b4a8" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/03/12/e4bdbfe794a8ntfs_studye68ea2e5afbbhardlinke79a84e69cace8b4a8/" class="article-date">
+  <time datetime="2013-03-12T05:26:45.000Z" itemprop="datePublished">2013-03-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/03/12/e4bdbfe794a8ntfs_studye68ea2e5afbbhardlinke79a84e69cace8b4a8/">使用ntfs_study探寻hardlink的本质</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在推出<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="external">ntfs_study的博文</a>中，我谈到过要用一些例子来简单介绍这个工具的用法，本文就算是这个工具的使用介绍以及hardlink在ntfs文件系统底层的简单探讨。</p>
+<p>MSDN中写到，hardlink是在文件系统中，用多个在同一个卷的路径表示同一个文件的方法。那么在ntfs格式中这些被link的文件是怎么存在的呢？下面进行一些简单的探讨。</p>
+<p>首先，我们需要去创建hardlink的文件。<br><a href="/uploads/2013/03/20130312202150.png"><img src="/uploads/2013/03/20130312202150.png" alt="20130312202150"></a></p>
+<p>图中，第一个命令，在target_file.txt的同目录下，创建了hardlink文件link_file.txt。第二个命令，在不同目录（otherdir）下创建了第二个hardlink文件，link_file_in_otherdir.txt。第三个命令返回了错误，原因是我试图在不同卷里面来创建hardlink文件。失败的原因文章后面会介绍。</p>
+<p>现在，让我们用ntfs_study来查看ntfs对这三个文件的处理到底是怎么样的。<br><a href="/uploads/2013/03/20130312202324.png"><img src="/uploads/2013/03/20130312202324.png" alt="20130312202324"></a></p>
+<p>在这张图中，我们可以清楚的看到，这三个文件的file reference，也就是在主文件表（MFT）的id都是一样的！有一点我们必须明白，一个文件的存在不是因为在目录里面显示了文件名，而是他在MFT中有自己的位置，另外文件名只是文件的一个属性而已，没什么特别的。这也就解释了，看似三个文件为什么会指向同一个文件，因为在目录的记录中，他们指向了同一个id。</p>
+<p>为了更加深入的探讨这个问题，我们来看一看id为0xB4A6这个具体情况。首先看看他的file record的数据。</p>
+<p><a href="/uploads/2013/03/20130312202509.png"><img src="/uploads/2013/03/20130312202509.png" alt="20130312202509"></a></p>
+<p>这里可以看到hardlinks的值是4！看到这里，应该就感到奇怪了，我们明明只创建了两个hardlink的文件，为什么这里写的是4呢？实际上，对于ntfs的文件而已，文件名以及他们在那个目录，这些都是属性而已，没有本体和hardlink之分，也就是说，我们原始创建的target_file.txt对于文件本身，也是一个hardlink。那么这个问题还是没解决啊，就算加上本身，最多也就是3个hardlinks，但是这里明明写的是4个！</p>
+<p>让我们更加具体的看一看到底是什么回事吧。</p>
+<p><a href="/uploads/2013/03/20130312202536.png"><img src="/uploads/2013/03/20130312202536.png" alt="20130312202536"></a></p>
+<p>首先，我们看到了这个文件的属性中，居然有4个文件名，其中有三个实际上我们已经能够猜到，他们应该分别是target_file，link_file和link_file_in_otherdir这三个名称，那么第四个又是什么呢？只能再进一步看了。</p>
+<p><a href="/uploads/2013/03/20130312202616.png"><img src="/uploads/2013/03/20130312202616.png" alt="20130312202616"></a></p>
+<p>看了这幅图，估计大家就明白了，这个是为了兼容8.3文件名而产生的一个hardlink，只不过在我们现在的系统上隐藏了这个文件hardlink而已。其他三个文件名，如我们刚刚所料，就是那三个文件的名字。</p>
+<p>现在解释下为什么hardlink只能在同一个卷里了。原因很显而易见，hardlink实际上是依赖于ntfs的MFT的，而不同的卷，会有不同的MFT，所以不能在不同卷之间创建hardlink也是理所当然的。</p>
+<p>SysinternalsSuite中有一个工具叫做findlinks，用来找到一个文件所有的hardlink。其中实现的方法在不同的系统中有所不同，在vista以下的系统中程序调用GetFileInformationByHandle获得文件的MFT id，然后查找整个卷的文件，打开他们获得句柄，再调用GetFileInformationByHandle得到这些文件的id，与之前的id进行比对。可以说，这是非常费时的。而在vista中，这个耗时的问题得到了解决，调用FindFirstFileNameW和FindNextFileNameW就能够文件所有的hardlinks了。</p>
+<p>我也计划过两天写一个find_links_study。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/03/12/e4bdbfe794a8ntfs_studye68ea2e5afbbhardlinke79a84e69cace8b4a8/" data-id="cj6etakss001yfcg9aoqkmfkh" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-access_enum_study-e4bbbfaccessenume79a84e5b7a5e585b7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/03/09/access_enum_study-e4bbbfaccessenume79a84e5b7a5e585b7/" class="article-date">
+  <time datetime="2013-03-09T07:27:03.000Z" itemprop="datePublished">2013-03-09</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/03/09/access_enum_study-e4bbbfaccessenume79a84e5b7a5e585b7/">access_enum_study —— 仿AccessEnum的工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>access_enum_study 是我逆向AccessEnum所写的程序。写这个逆向加上写这个程序大概用了1个多星期的时间吧。不过说实话，逆向算法还是比较麻烦的事情，所以这个程序里面有一些算法是我自己想的。不过果然不出我所料，效率比起Mark的正牌工具差了不少。这下，真的只能当作玩具玩玩了。</p>
+<p><a href="/uploads/2013/03/20130309230748.png"><img src="/uploads/2013/03/20130309230748.png" alt="20130309230748"></a></p>
+<p>下载<a href="/uploads/2013/03/access_enum_study.zip">access_enum_study</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/03/09/access_enum_study-e4bbbfaccessenume79a84e5b7a5e585b7/" data-id="cj6etaksk001qfcg9tfprft9s" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-ntfs_info_study-e4bbbfntfsinfoe5b7a5e585b7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/02/27/ntfs_info_study-e4bbbfntfsinfoe5b7a5e585b7/" class="article-date">
+  <time datetime="2013-02-27T08:00:25.000Z" itemprop="datePublished">2013-02-27</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/02/27/ntfs_info_study-e4bbbfntfsinfoe5b7a5e585b7/">ntfs_info_study —— 仿NtfsInfo工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>ntfs_info_study 这个工具可以显示ntfs卷的一些信息。主要也是学习NtfsInfo的功能，而仿造的一个小工具。ntfs_info_study能显示的信息包括卷大小，扇区数量，簇数量，扇区字节数，簇字节数，主文件表每条记录字节数以及主文件表的一些信息。当然它还可以显示部分NTFS系统文件的信息，例如：$Volume。</p>
+<p>实际上ntfs_info_study稍微修复了NtfsInfo的一个问题。原来的NtfsInfo已经无法显示NTFS系统文件的信息了。原因是这个工具调用FindFirstFile这样的函数来查找NTFS系统文件。我不知道什么版本的Windows可以这么做，至少现在Windows 7上，这个方法是行不通的。所以在我从写的工具里，是先打开系统文件，然后查询文件信息，但是普通的CreateFile是打不开这些文件的，这里我的方法是调用OpenFileById。不过实际上，我还没找到正规而且完美显示所有NTFS系统文件的方法，因为部分系统文件在打开的时候会提示访问拒绝。</p>
+<p>当然不正规的但是却比较完美的查看NTFS系统文件的方法也有，就是直接打开卷，解析NTFS文件系统数据结构。这个功能已经在<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="external">ntfs_study</a>中实现了，具体可以移步这个<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="external">链接</a>。</p>
+<p><a href="/uploads/2013/02/20130227235402.png"><img src="/uploads/2013/02/20130227235402.png" alt="20130227235402"></a></p>
+<p>以上是一副对比图，其他功能是一样的，唯一的区别就是最后一项中，ntfs_info_study能够显示部分NTFS系统文件信息。</p>
+<blockquote>
+<p>Usage: ntfs_info_study.exe <drive letter=""></drive></p>
+</blockquote>
+<p>使用方法自然也不必说明了，有兴趣的各位可以下载玩玩。</p>
+<p>下载<a href="/uploads/2013/02/ntfs_info_study.zip">ntfs_info_study</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/02/27/ntfs_info_study-e4bbbfntfsinfoe5b7a5e585b7/" data-id="cj6etaksh001nfcg93whatwvw" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-pipe_list_study-e4bbbfpipeliste79a84e5b08fe5b7a5e585b7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/02/21/pipe_list_study-e4bbbfpipeliste79a84e5b08fe5b7a5e585b7/" class="article-date">
+  <time datetime="2013-02-20T21:40:31.000Z" itemprop="datePublished">2013-02-21</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/02/21/pipe_list_study-e4bbbfpipeliste79a84e5b08fe5b7a5e585b7/">pipe_list_study —— 仿PipeList的小工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>昨天在家看完笑傲江湖,没事可做，看了sysinternals的一个很简单的小工具PipeList，然后逆了下，山寨了一个，并且加按照管道名筛选的功能。工具很简单，一共也就200行代码。使用方法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Usage: pipe_list_study.exe [search_pipe_name]</div><div class="line"></div><div class="line">search_pipe_name  ---  List the pipes that has search_pipe_name in the pipe name string.</div><div class="line">                       Without this argument pipe_list_study will list all pipes.</div></pre></td></tr></table></figure>
+<p><a href="/uploads/2013/02/20130221114347.png"><img src="/uploads/2013/02/20130221114347.png" alt="20130221114347"></a></p>
+<p>下载<a href="/uploads/2013/02/pipe_list_study.zip">pipe_list_study</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/02/21/pipe_list_study-e4bbbfpipeliste79a84e5b08fe5b7a5e585b7/" data-id="cj6etakse001jfcg9r11hnfhi" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e6b2a1e69c89e4b896e7958ce69cabe697a5efbc8ce7949fe6b4bbe8bf98e8a681e7bba7e7bbad" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/02/17/e6b2a1e69c89e4b896e7958ce69cabe697a5efbc8ce7949fe6b4bbe8bf98e8a681e7bba7e7bbad/" class="article-date">
+  <time datetime="2013-02-17T08:28:09.000Z" itemprop="datePublished">2013-02-17</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/02/17/e6b2a1e69c89e4b896e7958ce69cabe697a5efbc8ce7949fe6b4bbe8bf98e8a681e7bba7e7bbad/">又是总结和展望：没有世界末日，生活还要继续</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天总算是有时间，有心情写一篇总结去年生活，展望今年的文章了。</p>
+<p>过去的2012年对我来说并不是末日，恰恰相反，他更像是一个新的开始。年初加入新公司，感觉选择还是比较正确的。在新的公司工作，工作不算忙，考勤也比较人性化，环境也还不错。主要是新同事们都还不错，别的不说，侃大山的能力还是很让人钦佩的。所以工作之余也非常娱乐。他们负责娱，我负责乐就行了，哈哈哈哈。刚刚说到工作不算忙，说起来本人也确实在这个环境中挺酱油的，不过俺也不是偷懒，主要是工作上合适我的活不算多。我去小组之后，发现本来打打杀杀的软件，现在要做良民了，不过其实这个做产品的思路是正确的，我也落得点清闲，实在不错。</p>
+<p>当然了，本人实际上不甘于清闲。没事的时候还是跟哥们研究了许多编译器和系统底层的机制。除此之外，今年最大的一个收获是把COM这套东西了解一下，这样不仅对今后的工作有所帮助，而且自己本身对代码应该如何写方面也有一些收获。了解了COM当然要了解ATL，因为ATL过于强大，大部分代码我也没有去读，现在而言主要停留在能合理的使用，对于这点我也比较满意，实际上没打算把ATL搞得太清楚。至于编译器，学的也不多，刚刚把语法分析那块弄得一知半解吧。系统底层倒是一直在研究，尤其是文件系统，注册表等。关于系统底层这些，可以看我去年发的几篇blog，都是一些研究后自己写的工具。包括ntfs文件系统学习工具，注册表格式学习工具，pdb的解析工具等等。</p>
+<p>回头再看看去年定的目标。。。我只能说“呵呵”。。。没有一个完成的啊有木有！！！果然奇迹没有发生啊有木有！！！那么，我又要给今年定目标了。。。</p>
+<p>1.写一个study系列的工具，可以从山寨sysinternals的工具开始做起。</p>
+<p>没了，对！就这一条！！！我就不信这一条我也搞不定！！！！！</p>
+<p>去年写了总结后，同学们说我生活上的写的太少了，好吧那我简单总结下生活上的开心事！最开心的是，哥开始健身了！！！每周固定和一哥们去三次健身房，每次25分钟跑4k多米，并且锻炼腹肌和肱二头肌。现在人感觉就像回到高中状态。更让人欣慰的事情是能看到一点点腹肌了！另外精神方面，更多的相信“念念不忘，必有回响”，也有称这个为宇宙神秘力量的，不是迷信，而是一种信念，是一种相信只要你不断努力，不断追求就一定能达到目标的执念。不过可惜，我一直念念不忘年会大奖，可惜大宇宙送了我两个字——“呵呵”。。。关于练字，总是断断续续，貌似没啥进步。关于英语，嗯，没了。关于更八卦的生活详情~呵呵~你们以为我会写么！</p>
+<p>那么今年生活上的目标呢？！还是健身，练字，英语和嘿嘿~~~</p>
+<p>最后还是送祝福时间：祝福我的家人，朋友和我自己，新春快乐，健康平安，家庭和睦温馨！！！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/02/17/e6b2a1e69c89e4b896e7958ce69cabe697a5efbc8ce7949fe6b4bbe8bf98e8a681e7bba7e7bbad/" data-id="cj6etaksc001gfcg99vnl84fk" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-proc_study-e4bbbfpsliste79a84e8bf9be7a88be69fa5e79c8be5b7a5e585b7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/02/04/proc_study-e4bbbfpsliste79a84e8bf9be7a88be69fa5e79c8be5b7a5e585b7/" class="article-date">
+  <time datetime="2013-02-04T04:45:01.000Z" itemprop="datePublished">2013-02-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/02/04/proc_study-e4bbbfpsliste79a84e8bf9be7a88be69fa5e79c8be5b7a5e585b7/">proc_study —— 仿PsList的进程查看工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>proc_study 是我通过逆向PsList而写出来的小工具，如果在本地查看进程，这个工具和pslist没有任何区别。因为实现查看进程的方式也是和pslist一模一样的。另一方面，他缺乏pslist的查看远程计算机的进程的功能。没有实现这个并不是不知道怎么实现，是我半天也没搭建出这样的一个远程环境，真够郁闷的。这个应该是年前的最后一个study系列的工具了。期待蛇年有时间山寨更多工具，嘿嘿~~~</p>
+<p><a href="/uploads/2013/02/20130204204101.png"><img src="/uploads/2013/02/20130204204101.png" alt="20130204204101"></a></p>
+<p>这个工具的使用方法和命令行参数可以直接参看PsList的。因为整个Usage我都是直接山寨过来的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">Usage: proc_study [-d][-m][-x][-t][name|pid]</div><div class="line">-d      Show thread detail.</div><div class="line">-m     Show memory detail.</div><div class="line">-x      Show processes, memory information and threads.</div><div class="line">-t       Show process tree.</div><div class="line">name Show information about processes that begin with the name</div><div class="line">specified.</div><div class="line">-e      Exact match the process name.</div><div class="line">pid Show information about specified process.</div><div class="line"></div><div class="line">All memory values are displayed in KB.</div><div class="line">Abbreviation key:</div><div class="line">Pri Priority</div><div class="line">Thd Number of Threads</div><div class="line">Hnd Number of Handles</div><div class="line">VM Virtual Memory</div><div class="line">WS Working Set</div><div class="line">Priv Private Virtual Memory</div><div class="line">Priv Pk Private Virtual Memory Peak</div><div class="line">Faults Page Faults</div><div class="line">NonP Non-Paged Pool</div><div class="line">Page Paged Pool</div><div class="line">Cswtch Context Switches</div></pre></td></tr></table></figure>
+<p>下载<a href="/uploads/2013/02/proc_study.zip">proc_study</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/02/04/proc_study-e4bbbfpsliste79a84e8bf9be7a88be69fa5e79c8be5b7a5e585b7/" data-id="cj6etaks8001dfcg9l3f9cjwa" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-hive_study-e6b3a8e5868ce8a1a8e69687e4bbb6e6a0bce5bc8fe8a7a3e69e90e5b7a5e585b7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/01/23/hive_study-e6b3a8e5868ce8a1a8e69687e4bbb6e6a0bce5bc8fe8a7a3e69e90e5b7a5e585b7/" class="article-date">
+  <time datetime="2013-01-23T02:21:18.000Z" itemprop="datePublished">2013-01-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/01/23/hive_study-e6b3a8e5868ce8a1a8e69687e4bbb6e6a0bce5bc8fe8a7a3e69e90e5b7a5e585b7/">hive_study —— 注册表文件格式解析工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这几天又写了个小工具，刚下班就在这发了算了。</p>
+<p>hive_study 是一个注册表文件格式解析工具。功能也比较的简单，主要是dump出注册表里面的数据信息。例如显示子项，子键，显示键值以及他们的安全描述符。当然了，还是那样，注册表的hive文件实际上是不可读的，因为内核独占他了。想要获得可以读的hive文件，可以用ntfsstudy把hive文件dump出来，然后去读这个新的hive文件。以下是他的Usage。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Usage : hive_study.exe -f hive_path [-options]</div><div class="line"></div><div class="line">Options:</div><div class="line">[-k key_path] Specifies key path (e.g.: -k &quot;ControlSet001\Control\Session Manager&quot;)</div><div class="line">[-v value_name] Specifies value name (e.g.: -v BootExecute)</div><div class="line">[-l] List subkeys information</div><div class="line">[-e] List values information</div><div class="line">[-s] Show key security description information</div><div class="line">[-w output_file] Dump attribute to a file</div></pre></td></tr></table></figure>
+<p><a href="/uploads/2013/01/20130123181723.png"><img src="/uploads/2013/01/20130123181723.png" alt="20130123181723"></a></p>
+<p>下载<a href="/uploads/2013/01/hive_study.zip">hive_study</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/01/23/hive_study-e6b3a8e5868ce8a1a8e69687e4bbb6e6a0bce5bc8fe8a7a3e69e90e5b7a5e585b7/" data-id="cj6etaks7001bfcg9d1gkv2sq" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    <a class="extend prev" rel="prev" href="/page/9/">&laquo; __('prev')</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/11/">__('next') &raquo;</a>
+  </nav>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 0CCh<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

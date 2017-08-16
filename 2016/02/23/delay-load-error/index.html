@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>c06d007f异常的解决方法 | 0CCh Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="c06d007f这个异常通常是在PE的延迟加载dll的时候发生的，加载器找不到对应的dll就会抛出这个异常。如果我们对这个异常不熟悉，按照常规方式去找上下文，那么结果肯定会让你失望。例如3.2526.1373.0版本的libcef在XP上运行的情况。 12345678910111213141516171819202122232425260:000&amp;gt; kb # ChildEBP RetAddr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c06d007f异常的解决方法">
+<meta property="og:url" content="http://0cch.com/2016/02/23/delay-load-error/index.html">
+<meta property="og:site_name" content="0CCh Blog">
+<meta property="og:description" content="c06d007f这个异常通常是在PE的延迟加载dll的时候发生的，加载器找不到对应的dll就会抛出这个异常。如果我们对这个异常不熟悉，按照常规方式去找上下文，那么结果肯定会让你失望。例如3.2526.1373.0版本的libcef在XP上运行的情况。 12345678910111213141516171819202122232425260:000&amp;gt; kb # ChildEBP RetAddr">
+<meta property="og:image" content="http://0cch.com/uploads/2016/02/20160223003624.png">
+<meta property="og:image" content="http://0cch.com/uploads/2016/02/20160223003711.png">
+<meta property="og:updated_time" content="2017-08-16T09:35:44.101Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="c06d007f异常的解决方法">
+<meta name="twitter:description" content="c06d007f这个异常通常是在PE的延迟加载dll的时候发生的，加载器找不到对应的dll就会抛出这个异常。如果我们对这个异常不熟悉，按照常规方式去找上下文，那么结果肯定会让你失望。例如3.2526.1373.0版本的libcef在XP上运行的情况。 12345678910111213141516171819202122232425260:000&amp;gt; kb # ChildEBP RetAddr">
+<meta name="twitter:image" content="http://0cch.com/uploads/2016/02/20160223003624.png">
+  
+    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0CCh Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-delay-load-error" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/02/23/delay-load-error/" class="article-date">
+  <time datetime="2016-02-22T16:55:58.000Z" itemprop="datePublished">2016-02-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/debugging/">debugging</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      c06d007f异常的解决方法
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>c06d007f这个异常通常是在PE的延迟加载dll的时候发生的，加载器找不到对应的dll就会抛出这个异常。如果我们对这个异常不熟悉，按照常规方式去找上下文，那么结果肯定会让你失望。例如3.2526.1373.0版本的libcef在XP上运行的情况。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">0:000&gt; kb</div><div class="line"> # ChildEBP RetAddr  Args to Child              </div><div class="line">00 0012f218 7c92d9ac 7c86449d d0000144 00000004 ntdll!KiFastSystemCallRet</div><div class="line">01 0012f21c 7c86449d d0000144 00000004 00000000 ntdll!ZwRaiseHardError+0xc</div><div class="line">02 0012f4a0 7c843892 0012f4c8 7c839b21 0012f4d0 kernel32!UnhandledExceptionFilter+0x628</div><div class="line">03 0012f4a8 7c839b21 0012f4d0 00000000 0012f4d0 kernel32!BaseProcessStart+0x39</div><div class="line">04 0012f4d0 7c9232a8 0012f5bc 0012ffe0 0012f5d4 kernel32!_except_handler3+0x61</div><div class="line">05 0012f4f4 7c92327a 0012f5bc 0012ffe0 0012f5d4 ntdll!ExecuteHandler2+0x26</div><div class="line">06 0012f5a4 7c92e46a 00000000 0012f5d4 0012f5bc ntdll!ExecuteHandler+0x24</div><div class="line">07 0012f5a4 00000000 00000000 0012f5d4 0012f5bc ntdll!KiUserExceptionDispatcher+0xe</div><div class="line">WARNING: Frame IP not in any known module. Following frames may be wrong.</div><div class="line">08 0012fff4 004a991e 00000000 78746341 00000020 0x0</div><div class="line">09 0012fff8 00000000 78746341 00000020 00000001 cefclient!pre_c_init+0xb9 [f:\dd\vctools\crt_bld\self_x86\crt\src\crtexe.c @ 261]</div><div class="line"></div><div class="line">0:000&gt; .cxr 0012f5d4;k</div><div class="line">eax=0012f8a4 ebx=1314a58c ecx=00000000 edx=00000001 esi=0012f954 edi=68d60000</div><div class="line">eip=00000000 esp=0012fff8 ebp=00000000 iopl=0         nv up ei pl nz na po nc</div><div class="line">cs=001b  ss=0023  ds=0023  es=0023  fs=003b  gs=0000             efl=00000202</div><div class="line">00000000 ??              ???</div><div class="line">  *** Stack trace for last set context - .thread/.cxr resets it</div><div class="line"> # ChildEBP RetAddr  </div><div class="line">WARNING: Frame IP not in any known module. Following frames may be wrong.</div><div class="line">00 0012fff4 004a991e 0x0</div><div class="line">01 0012fff8 00000000 cefclient!pre_c_init+0xb9 [f:\dd\vctools\crt_bld\self_x86\crt\src\crtexe.c @ 261]</div><div class="line"></div></pre></td></tr></table></figure>
+<p>直接看栈回溯或者通过设置cxr看栈回溯，并没有帮助我们找到什么有用的信息。</p>
+<p>这里要使用的方法是，利用异常的参数来找到具体延迟加载谁的时候发生了异常。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">0:000&gt; .exr 0012f5bc </div><div class="line">ExceptionAddress: 7c812aeb (kernel32!RaiseException+0x00000053)</div><div class="line">   ExceptionCode: c06d007f</div><div class="line">  ExceptionFlags: 00000000</div><div class="line">NumberParameters: 1</div><div class="line">   Parameter[0]: 0012f918</div><div class="line">   </div></pre></td></tr></table></figure>
+<p>这里的参数0，就是我们要找的目标，记录了出错时候ebp-0x30的数据，也就是含有关键信息的地方。让我们仔细看看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">0:000&gt; dds 0012f918</div><div class="line">0012f918  00000024</div><div class="line">0012f91c  1314a58c libcef!_DELAY_IMPORT_DESCRIPTOR_dbghelp_dll</div><div class="line">0012f920  13181dbc libcef!_imp__SymGetSearchPathW</div><div class="line">0012f924  12ebdd20 libcef!_sz_dbghelp_dll</div><div class="line">0012f928  00000001</div><div class="line">0012f92c  1314ac8e libcef!dxva2_NULL_THUNK_DATA_DLN+0x7e</div><div class="line">0012f930  68d60000 dbghelp!_imp__CryptAcquireContextA &lt;PERF&gt; (dbghelp+0x0)</div><div class="line">0012f934  00000000</div><div class="line">0012f938  0000007f</div><div class="line">0012f93c  1314c138 libcef!dxva2_NULL_THUNK_DATA_DLN+0x1528</div><div class="line">0012f940  00000003</div><div class="line">0012f944  00000000</div><div class="line">0012f948  0012f9f8</div><div class="line">0012f94c  11d17587 libcef!_tailMerge_dbghelp_dll+0xd</div><div class="line">0012f950  0012f918</div><div class="line">0012f954  13181dbc libcef!_imp__SymGetSearchPathW</div><div class="line">0012f958  00000008</div><div class="line">0012f95c  7c9301bb ntdll!RtlAllocateHeap+0xeac</div><div class="line">0012f960  1019014e libcef!base::debug::`anonymous namespace&apos;::InitializeSymbols+0x9e [f:\stnts\browser\cef\ws\src\chromium\src\base\debug\stack_trace_win.cc @ 79]</div><div class="line">0012f964  ffffffff</div><div class="line">0012f968  00170880</div><div class="line"></div></pre></td></tr></table></figure>
+<p>我们可以清楚的看到加载器延迟加载SymGetSearchPathW的时候发生了问题。让我们进一步用depends工具验证一下</p>
+<p><a href="/uploads/2016/02/20160223003624.png"><img src="/uploads/2016/02/20160223003624.png" alt="20160223003624"></a></p>
+<p>如上图所示，XP自带的dbghelp里没有SymGetSearchPathW这个导出函数。要解决这个异常，实际上就需要在运行目录里添加一个稍微新一点的dbghelp文件，我这里替换的是6.2.9200.16384的dbghelp，替换过后问题已经不再出现了。</p>
+<p><a href="/uploads/2016/02/20160223003711.png"><img src="/uploads/2016/02/20160223003711.png" alt="20160223003711"></a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2016/02/23/delay-load-error/" data-id="cj6etakw1006mfcg9qc7fdr1u" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/17/msg-wnd-view/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Récent</strong>
+      <div class="article-nav-title">
+        
+          查看消息窗口工具
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/02/02/app-cpr-event/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">调试器最早的中断应用程序的方法</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 0CCh<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

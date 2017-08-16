@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>0CCh Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="0CCh Blog">
+<meta property="og:url" content="http://0cch.com/page/11/index.html">
+<meta property="og:site_name" content="0CCh Blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="0CCh Blog">
+  
+    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0CCh Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-e58886e4baabe887aae5b7b1e68993e980a0e79a84bugreporter" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/01/20/e58886e4baabe887aae5b7b1e68993e980a0e79a84bugreporter/" class="article-date">
+  <time datetime="2013-01-20T04:18:44.000Z" itemprop="datePublished">2013-01-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/01/20/e58886e4baabe887aae5b7b1e68993e980a0e79a84bugreporter/">分享自己打造的BugReporter</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这份代码应该是将近一年前写的吧，应该是去年年初了。不像ntfsstudy和dia_study，这个工具应该比较的实用吧，实用场合可以比较多。所以也把源代码发出来。看工具名称基本上已经知道了是报告bug用的。其实这种工具倒是挺多的。不过我个人感觉自己写一个用起来顺手，而且代码量小，容易修改自定义。</p>
+<p>工具代码有三个工程，分别是minidump_generator，dump_minidump，BugReporter。<br>minidump_generator是一个dll，当然也可以编译成静态库，他需要加入到你想使用BugReporter的工程里面。<br>dump_minidump是一个dump文件的解析库，他是BugReporter工程的依赖库。<br>BugReporter是一个窗口程序，在你融合了minidump_generator的程序崩溃的时候会弹出窗口。就像图中那样。  </p>
+<p><a href="/uploads/2013/01/20130120193015.png"><img src="/uploads/2013/01/20130120193015.png" alt="20130120193015"></a></p>
+<p>勾选send bug report并且点击ok，窗口里的完整log和dump文件会打包为zip文件储存，储存的地方可以由程序指定，也可以写注册表键值，reporter会去都键值然后存储到相应的位置。具体什么键值，看源代码吧。不完整和遗憾的地方也有，就是还没有http上传到提交dump收集服务器的代码。因为确实不会写php啥的。另外这个工程也用了不少开源代码，这里也感谢一下，其中包括反汇编引擎和ZIP代码。</p>
+<p>下载源代码：<a href="/uploads/2013/01/BugReporter.zip">BugReporter</a></p>
+<p>以下是完整的dump log：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line">SYSTEM INFORMATIONS</div><div class="line">---------------</div><div class="line">ProcessorArchitecture : x86</div><div class="line">Number Of Processors : 16</div><div class="line">OS Version : 6.1</div><div class="line">BuildNumber : 7600</div><div class="line">CSDVersion :</div><div class="line">Platform : Windows Server 2003, Windows XP, or Windows 2000</div><div class="line"></div><div class="line">EXCEPTION INFORMATIONS</div><div class="line">---------------</div><div class="line">Thread id : 5744</div><div class="line">ExceptionCode : c00000fd</div><div class="line">ExceptionFlags : 00000000</div><div class="line">ExceptionRecord : 0000000000000000</div><div class="line">ExceptionAddress : 0000000000dea637</div><div class="line">ExceptionInformation0 = 0000000000000000</div><div class="line">ExceptionInformation1 = 0000000000102000</div><div class="line">Thread Context :</div><div class="line">EAX = 00102000 ECX = 00102050 EDX = 5eea2408 EBX = 7efde000</div><div class="line">ESP = 00103120 EBP = 00103128 ESI = 001ff9c8 EDI = 00104210</div><div class="line">EFLAGS = 00010206</div><div class="line"></div><div class="line">MODULE INFORMATIONS</div><div class="line">---------------</div><div class="line">Base Size Name FileVersion ProductVersion</div><div class="line">0000000000de0000 0001a000 D:\crashme\Debug\crashme.exe 0 0</div><div class="line">00000000772b0000 00180000 C:\Windows\SysWOW64\ntdll.dll 600011db040af 600011db040af</div><div class="line">0000000075ef0000 00100000 C:\Windows\SysWOW64\kernel32.dll 600011db04001 600011db04001</div><div class="line">00000000750f0000 00046000 C:\Windows\SysWOW64\KERNELBASE.dll 600011db04001 600011db04001</div><div class="line">000000005ed90000 00124000 C:\Windows\winsxs\x86_microsoft.vc90.debugcrt_1fc8b3b9a1e18e3b_9.0.30729.4148_none_2a4cbfc25558bcd3\msvcr90d.dll 9000078091034 9000078091034</div><div class="line">0000000074330000 000eb000 C:\Windows\System32\dbghelp.dll 600011db04001 600011db04001</div><div class="line">0000000076e00000 000ac000 C:\Windows\SysWOW64\msvcrt.dll 700001db04001 6000121be4001</div><div class="line">0000000076d10000 000f0000 C:\Windows\SysWOW64\rpcrt4.dll 600011db04001 600011db04001</div><div class="line">0000000074e20000 00060000 C:\Windows\SysWOW64\sspicli.dll 600011db04064 600011db04064</div><div class="line">0000000074e10000 0000c000 C:\Windows\SysWOW64\CRYPTBASE.dll 600011db04001 600011db04001</div><div class="line">00000000761e0000 00019000 C:\Windows\SysWOW64\sechost.dll 600011db04001 600011db04001</div><div class="line">00000000763e0000 000a0000 C:\Windows\SysWOW64\advapi32.dll 600011db04001 600011db04001</div><div class="line">000000006e810000 00025000 C:\Windows\System32\powrprof.dll 600011db04001 600011db04001</div><div class="line">00000000768e0000 0019d000 C:\Windows\SysWOW64\setupapi.dll 600011db04001 600011db04001</div><div class="line">0000000074f70000 00027000 C:\Windows\SysWOW64\cfgmgr32.dll 600011db04001 600011db04001</div><div class="line">0000000076c80000 00090000 C:\Windows\SysWOW64\gdi32.dll 600011db04001 600011db04001</div><div class="line">0000000076a80000 00100000 C:\Windows\SysWOW64\user32.dll 600011db04001 600011db04001</div><div class="line">0000000077280000 0000a000 C:\Windows\SysWOW64\lpk.dll 600011db04001 600011db04001</div><div class="line">0000000075140000 0009d000 C:\Windows\SysWOW64\usp10.dll 102721db04001 102721db04001</div><div class="line">0000000076150000 0008f000 C:\Windows\SysWOW64\oleaut32.dll 600011db04001 600011db04001</div><div class="line">0000000075ff0000 0015c000 C:\Windows\SysWOW64\ole32.dll 600011db04001 600011db04001</div><div class="line">0000000074fa0000 00012000 C:\Windows\SysWOW64\devobj.dll 600011db04001 600011db04001</div><div class="line">0000000074f10000 00060000 C:\Windows\System32\imm32.dll 600011db04001 600011db04001</div><div class="line">0000000075020000 000cc000 C:\Windows\SysWOW64\msctf.dll 600011db04001 600011db04001</div><div class="line">000000006fa00000 0003e000 C:\Program Files (x86)\Sophos\Sophos Anti-Virus\sophos_detoured.dll 900000000235f 9000000000000</div><div class="line">00000000763d0000 00005000 C:\Windows\SysWOW64\psapi.dll 600011db04001 600011db04001</div><div class="line"></div><div class="line">Crash IP Disasm :</div><div class="line">test dword ptr [eax], eax</div></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/01/20/e58886e4baabe887aae5b7b1e68993e980a0e79a84bugreporter/" data-id="cj6etaks40018fcg90uni3ngm" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-dia_study-pdbe69fa5e79c8be5b7a5e585b7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/01/20/dia_study-pdbe69fa5e79c8be5b7a5e585b7/" class="article-date">
+  <time datetime="2013-01-20T01:17:01.000Z" itemprop="datePublished">2013-01-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/01/20/dia_study-pdbe69fa5e79c8be5b7a5e585b7/">Dia_study —— PDB查看工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>没事在家翻代码，发现大半年前的一份代码，写的是一个调用DIA SDK查看PDB文件的小工具。仔细想想我觉得还有点用处，而且使用方式简单，所以现在就发到blog上来吧。</p>
+<p>简单介绍一下这个小工具。它可以dump出pdb的函数和数据结构的信息。下面两张图分别dump的是数据结构和函数的信息。</p>
+<p>图一中，命令行为 dia_study.exe -p xxx.pdb -n <em>processor</em> -t 其实 -p是指pdb路径，-n是要获得的符号（支持通配符），-t说明要看的是数据结构而不是函数。然后所有带有processor的数据结构就会dump出来了。</p>
+<p><a href="/uploads/2013/01/20130120165712.png"><img src="/uploads/2013/01/20130120165712.png" alt="20130120165712"></a></p>
+<p>图二中，命令行为 dia_study.exe -p xxx.pdb -n <em>processor</em> -f 唯一的区别就是-t变成了-f。指明要dump的是函数而非数据结构。</p>
+<p><a href="/uploads/2013/01/20130120165737.png"><img src="/uploads/2013/01/20130120165737.png" alt="20130120165737"></a></p>
+<p>ok，使用方式就是如此简单。注意一点，请自备vs2010的c runtime 以及 msdia100.dll（需要注册），否则程序无法运行。</p>
+<p>下载 <a href="/uploads/2013/01/dia_study.zip">dia_study</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/01/20/dia_study-pdbe69fa5e79c8be5b7a5e585b7/" data-id="cj6etaks30015fcg98yyau4mk" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-ntfsstudy-ntfse7a381e79b98e6a0bce5bc8fe5ada6e4b9a0e5b7a5e585b7" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/01/19/ntfsstudy-ntfse7a381e79b98e6a0bce5bc8fe5ada6e4b9a0e5b7a5e585b7/" class="article-date">
+  <time datetime="2013-01-18T23:52:28.000Z" itemprop="datePublished">2013-01-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/01/19/ntfsstudy-ntfse7a381e79b98e6a0bce5bc8fe5ada6e4b9a0e5b7a5e585b7/">NtfsStudy —— ntfs磁盘格式学习工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>经过将近一个月业余时间的开发，终于完成了NtfsStudy这个小工具的第一版。</p>
+<p>简单介绍一下这个工具，NtfsStudy这个工具是我在学习Ntfs文件系统磁盘格式的时候，为了自己更加方便快捷的查看磁盘格式而开发的工具。可以说这个工具从开始写到现在发布，实际上也是一个学习ntfs的过程。我一边研究理解这个格式，一边把理解的东西写成代码，加入这个工具，然后再用这些功能去理解新的内容。反复这样做，这个工具就也不知不觉成型了。</p>
+<p>NtfsStudy这个工具的主要功能是：枚举目录文件，查看和dump文件属性。这些功能都没用调用windows 文件操作类的API完成，而是依靠直接读取磁盘信息，并且解析磁盘信息来完成的。例如，如果尝试去复制注册表的系统hive文件，那是一定会被系统拒绝的，这个文件是系统读写独占的，但是通过这个工具就能绕过“ntfsstudy.exe -f c:\ -r e0a2 -w 3 d:\system.hiv”， 这个命令行的意思是把volume C上的引用数为0xe0a2文件中的3号属性的内容写到d:\system.hiv文件中。其实id为3的属性正好就是data属性，也就是文件本身的内容。这样就可以dump不能读的注册表hive文件了。下面是“ntfsstudy.exe -f c:\ -r e0a2 -d 8”的结果：</p>
+<p><a href="/uploads/2013/01/ntfs_hive.png"><img src="/uploads/2013/01/ntfs_hive.png" alt="ntfs_hive"></a></p>
+<p>更多的详细用法和例子等我有空会在blog里面写一些。</p>
+<p>下面就是他的Usage，也是目前该工具具有的功能。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">NtfsStudy v1.0 - Ntfs format study tool.</div><div class="line">Copyright (C) 2012-2013 nightxie</div><div class="line">0CCh - www.0cch.net</div><div class="line"></div><div class="line">Usage : NtfsStudy.exe [options] -f file_path_name</div><div class="line">-f file_path_name Specifies the target file path to parse.</div><div class="line"></div><div class="line">options:</div><div class="line"></div><div class="line"></div><div class="line">[-r file_reference]   Specifies the target file reference.</div><div class="line">NtfsStudy will parse the REFERENCE rather than the path which</div><div class="line">Specifies by -f. NtfsStudy will just use the path root.</div><div class="line">[-a] Show the file record information of the target file.</div><div class="line">[-l]   List the files in the directory.</div><div class="line">[-w attribute_id output_file_path] Write target attribute to a file.</div><div class="line">(The attribute size must less than 128mb)</div><div class="line">[-v attribute_type] Show detail attribute information specified by attribute_type.</div><div class="line">[-d attribute_type [start_offset range]] Show binary information specified by attribute_type.</div><div class="line">[-s secure_id] Show the security descriptor specified by secure_id.</div><div class="line">[-c] Show the attributes definition columns.</div><div class="line"></div><div class="line"></div><div class="line">About attribute type:</div><div class="line"></div><div class="line"></div><div class="line">$STANDARD_INFORMATION         = 1</div><div class="line">$ATTRIBUTE_LIST               = 2</div><div class="line">$FILE_NAME                    = 3</div><div class="line">$OBJECT_ID                    = 4</div><div class="line">$SECURITY_DESCRIPTOR          = 5</div><div class="line">$VOLUME_NAME                  = 6</div><div class="line">$VOLUME_INFORMATION           = 7</div><div class="line">$DATA                         = 8</div><div class="line">$INDEX_ROOT                   = 9</div><div class="line">$INDEX_ALLOCATION             = 10</div><div class="line">$BITMAP                       = 11</div><div class="line">$REPARSE_POINT                = 12</div><div class="line">$EA_INFORMATION               = 13</div><div class="line">$EA                           = 14</div><div class="line">$LOGGED_UTILITY_STREAM        = 16</div><div class="line"></div><div class="line">About secure id:</div><div class="line"></div><div class="line">To get the secure id of target file.</div><div class="line">Use &apos;-v 1&apos; command, secure id will displayed in STANDARD_INFORMATION.</div></pre></td></tr></table></figure>
+<p>另外我还会继续完善这个工具。如果发现bug请与我联系。</p>
+<p>下载<a href="/uploads/2013/01/NtfsStudy.zip">NtfsStudy</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/01/19/ntfsstudy-ntfse7a381e79b98e6a0bce5bc8fe5ada6e4b9a0e5b7a5e585b7/" data-id="cj6etaks10011fcg9ill01ogn" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e8aebee7bdaee7babfe7a88be5908d" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/01/12/e8aebee7bdaee7babfe7a88be5908d/" class="article-date">
+  <time datetime="2013-01-11T23:04:10.000Z" itemprop="datePublished">2013-01-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/01/12/e8aebee7bdaee7babfe7a88be5908d/">设置线程名</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>给线程命名的作用主要还是为了调试方便。其他的好处也没有了，至少我没想出来。这里说一下MS_VC_EXCEPTION这个异常，调试器（vs，windbg）默认情况下应该会在收到这个异常的时候，他会自动处理这个异常，具体操作应该是记录下线程对应的名称，然后将异常设置为Handle状态。什么意思呢？就是说，即使下面这段代码中的RaiseException不在try-except中，在调试器attach的情况下也能顺畅执行，调试器不会因为异常把执行中断下了，而是默默设置了线程名之后继续后面的代码。而下面的代码之所以要放在try-except中，是因为希望没有调试器的情况下，也能顺利执行不被中断。另外一点，windbg可以设置让这个异常中断下来（命令 sxe vcpp），而vs貌似没有这样的方法，可能是我vs调试器用的比较少，没找到吧。对于托管代码，设置这个就更简单了，详见 <a href="http://msdn.microsoft.com/en-us/library/581hfskb(v=vs.100" target="_blank" rel="external">http://msdn.microsoft.com/en-us/library/581hfskb(v=vs.100).aspx</a>.aspx)</p>
+<p><a href="/uploads/2013/01/QQ截图20130112151544.png"><img src="/uploads/2013/01/QQ截图20130112151544.png" alt=""></a></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> </span></div><div class="line"><span class="keyword">const</span> DWORD MS_VC_EXCEPTION=<span class="number">0x406D1388</span>;</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">pragma</span> pack(push,8)</span></div><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">tagTHREADNAME_INFO</span></span></div><div class="line"><span class="class">&#123;</span></div><div class="line">    DWORD dwType; <span class="comment">// Must be 0x1000.</span></div><div class="line">    LPCSTR szName; <span class="comment">// Pointer to name (in user addr space).</span></div><div class="line">    DWORD dwThreadID; <span class="comment">// Thread ID (-1=caller thread).</span></div><div class="line">    DWORD dwFlags; <span class="comment">// Reserved for future use, must be zero.</span></div><div class="line">&#125; THREADNAME_INFO;</div><div class="line"><span class="meta">#<span class="meta-keyword">pragma</span> pack(pop)</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">SetThreadName</span><span class="params">( DWORD dwThreadID, <span class="keyword">char</span>* threadName)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    THREADNAME_INFO info;</div><div class="line">    info.dwType = <span class="number">0x1000</span>;</div><div class="line">    info.szName = threadName;</div><div class="line">    info.dwThreadID = dwThreadID;</div><div class="line">    info.dwFlags = <span class="number">0</span>;</div><div class="line"></div><div class="line">    __try</div><div class="line">    &#123;</div><div class="line">        RaiseException( MS_VC_EXCEPTION, <span class="number">0</span>, <span class="keyword">sizeof</span>(info)/<span class="keyword">sizeof</span>(ULONG_PTR), (ULONG_PTR*)&amp;info; );</div><div class="line">    &#125;</div><div class="line">    __except(EXCEPTION_EXECUTE_HANDLER)</div><div class="line">    &#123;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2013/01/12/e8aebee7bdaee7babfe7a88be5908d/" data-id="cj6etakrz000yfcg9dpalb8h3" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-r3e58db8e8bdbde4bbbbe6848fe6b688e681afe992a9e5ad90" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2012/12/26/r3e58db8e8bdbde4bbbbe6848fe6b688e681afe992a9e5ad90/" class="article-date">
+  <time datetime="2012-12-26T06:03:49.000Z" itemprop="datePublished">2012-12-26</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2012/12/26/r3e58db8e8bdbde4bbbbe6848fe6b688e681afe992a9e5ad90/">R3卸载任意消息钩子</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这是工作中遇到的一个问题。一个程序每次起来后会去挂鼠标键盘低级钩子，这类钩子恶心的地方是如果你用调试工具attach上去，鼠标键盘就会急剧的延时，就跟挂起差不多了，根本无法使用键盘鼠标。MSDN上面指明，设置LowLevelHooksTimeout可以帮助解决这个问题。但是无奈的是，似乎没起什么作用，渣英语，不知道是不是我的理解有误。</p>
+<p>其他比较好的解决方案也有。比较好的一个就是用远程调试的方式，这种方式可以在hook存在的情况下调试程序，甚至调试hook的函数。另一个办法就是attach之前，卸载低级钩子。对于调试和钩子无关地方的时候，第二个选择也还是不错的。所以，Xuetr的卸载消息钩子的功能派上了用场。每次调试此程序之前，都先卸载钩子。但是还是有问题，我们都有这样的经验，在进行调试的时候经常需要restart程序，并且重新开始调试。这样可就恶心了，每次都要卸载一次钩子。于是，我就写了一个程序，循环查询低级鼠标键盘钩子，发现后立刻卸载，这样调试这个程序就会比较轻松了。</p>
+<p>虽然说用驱动写这个功能看起来比较轻松，实际上R3实现也很简单。这里用到的关键之时是Desktop Heap会在GUI进程中映射到用户态内存上，这也就给了我们可乘之机。简单介绍一些Desktop Heap是什么。我们都知道一个桌面都有个Desktop Object的对象，而实际上美国Desktop Object都会有一个对应他的Desktop Heap。Desktop Heap主要存储用户交互对象（user interface objects），这其中就包括Window，Menu，Hook等等。既然Hook存储在Desktop heap，而且Desktop heap又刚好映射到R3内存，那么我们就可以顺利的读取他了。这里，可能会有一个疑问，怎么知道Hook存储在Desktop Heap，而不是Share Heap或者其他。实际上Windows的Win32k中有一个Handle Information Table，指明了每种Object的存储类型。</p>
+<p>现在是已经知道了可以去读Hook对象，但是上哪去读就是要解决的问题了。这里就要提到老生常谈的Sharedinfo了。用户态的Sharedinfo获取方法很多，顺手就行。与上面问题相关的就是Sharedinfo里面会有一个Handle Entry Table，里面存储的就是包括Hook在内的User Object。Entry的结构如下（来自reactos）：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">HANDLEENTRY</span></span></div><div class="line"><span class="class">&#123;</span></div><div class="line">PHEAD pHead;</div><div class="line">PVOID pOwner;</div><div class="line">BYTE bType;</div><div class="line">BYTE bFlags;</div><div class="line">WORD wUniq;</div><div class="line">&#125; HANDLEENTRY, *PHE, *PHANDLEENTRY;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+<p>其中pHead指向Object，bType表示object类型。HOOK的bType是5。所以这里我们只需要在bType为5的时候继续下面的操作。</p>
+<p>pHead肯定是指向的内核内存，所以我们无法直接访问HOOK的内部情况。我们需要找到这个Object映射到R3的内存地址才行。幸运的是这种关系也比较简单明了。在Teb-&gt;Win32ClientInfo.ulClientDelta就存放了对应的关系Delta值。计算方法如下</p>
+<p>ObjectInR3 = HANDLEENTRY.pHead - Teb-&gt;Win32ClientInfo.ulClientDelta。</p>
+<p><a href="/uploads/2012/12/20121226220202.png"><img src="/uploads/2012/12/20121226220202.png" alt="20121226220202"></a></p>
+<p>这样也就得到了HOOK Object。接下来的事情就好办了，HOOK Object的第一项就是HHOOK。只需要UnhookWindowsHookEx((HHOOK)Hook-&gt;head.h);就能卸载钩子了。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2012/12/26/r3e58db8e8bdbde4bbbbe6848fe6b688e681afe992a9e5ad90/" data-id="cj6etakry000vfcg9uyx31o6t" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e585b3e4ba8ee695b4e59e8be695b0e7aca6e58fb7e4bd8de689a9e5b195e79a84e4b880e782b9e5bf83e5be97" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2012/11/13/e585b3e4ba8ee695b4e59e8be695b0e7aca6e58fb7e4bd8de689a9e5b195e79a84e4b880e782b9e5bf83e5be97/" class="article-date">
+  <time datetime="2012-11-13T08:56:17.000Z" itemprop="datePublished">2012-11-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2012/11/13/e585b3e4ba8ee695b4e59e8be695b0e7aca6e58fb7e4bd8de689a9e5b195e79a84e4b880e782b9e5bf83e5be97/">关于整型数符号位扩展的一点心得</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近写的程序中遇到了整型数符号位扩展的小问题。稍稍看了下，写在这里备忘。</p>
+<p>这里举个例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// case 1</span></div><div class="line"><span class="keyword">long</span> i = <span class="number">-1</span>;</div><div class="line"><span class="keyword">long</span> <span class="keyword">long</span> q = i;</div><div class="line"> </div></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// case 2</span></div><div class="line"><span class="keyword">long</span> i = <span class="number">-1</span>;</div><div class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> q = i;</div><div class="line"> </div></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// case 3</span></div><div class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> i = <span class="number">0xffffffff</span>;</div><div class="line"><span class="keyword">long</span> <span class="keyword">long</span> q = i;</div><div class="line"> </div></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// case 4</span></div><div class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> i = <span class="number">0xffffffff</span>;</div><div class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> q = i;</div><div class="line"> </div></pre></td></tr></table></figure>
+<p>那么这4肿情况中q都是多少呢？<br>实验结果是case 1 和 2，他们的q的值（这里都表示为无符号）0xffffffff<code>ffffffff，而case 3 和 4 中q的值为0x00000000</code>ffffffff。<br>看到这里，大概就能推测c++的转换策略。即以源操作数的类型为依据，对其进行扩展，然后赋值到目标操作数，他并不在乎目标的类型有无符号。</p>
+<p>看了相关编译完成后的汇编代码可以确认这一点，case 1和2的汇编代码完全相同，而3和4也是一样。更具体一点来说。有符号的情况下调用了cdq对符号位进行扩展，然后将edx赋值到q的高位，而无符号的情况下，简单xor了寄存器，然后赋值到q的高位。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2012/11/13/e585b3e4ba8ee695b4e59e8be695b0e7aca6e58fb7e4bd8de689a9e5b195e79a84e4b880e782b9e5bf83e5be97/" data-id="cj6etakrw000rfcg9xozw778y" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-dbgluaefbc8ce8aea9luae8849ae69cace4b99fe883bde68ea7e588b6windbge8bf9be8a18ce8b083e8af95" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2012/08/15/dbgluaefbc8ce8aea9luae8849ae69cace4b99fe883bde68ea7e588b6windbge8bf9be8a18ce8b083e8af95/" class="article-date">
+  <time datetime="2012-08-15T09:09:50.000Z" itemprop="datePublished">2012-08-15</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2012/08/15/dbgluaefbc8ce8aea9luae8849ae69cace4b99fe883bde68ea7e588b6windbge8bf9be8a18ce8b083e8af95/">dbgLua，让lua脚本也能控制windbg进行调试(更新1.0.1.1)</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>关于dbgLua：<br>这是一个让windbg支持lua脚步的扩展程序。写这个程序的主要目的是希望能简单的取代windbg本身的脚本。因为我确实不喜欢windbg那种形式的脚本。</p>
+<p>使用方法：将dbgLua.dll拷贝到windbg的winext下，编写lua脚本。调试的时候，在输入框中输入“!dbgLua.run d:\sample.lua”其中“d:\sample.lua”是你的脚步路径。</p>
+<p>以下是1.0.0.1版本所支持的lua函数（后续可能会慢慢添加更多，看需求了）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">dbgLua 1.0.1.1 API</div><div class="line"></div><div class="line">dprint 输出信息到windbg command窗口，例如dprint(&quot;hello&quot;)</div><div class="line">exec 执行一条windbg命令，例如exec(&quot;bp kernel32!CreateFileW&quot;)</div><div class="line">getreg 获得当前被调试对象的寄存器数据，例如eax_val = getreg(&quot;eax&quot;)</div><div class="line">setreg 设置当前被调试对象的寄存器数据，例如setreg(&quot;eax&quot;, 123456)</div><div class="line">readbyte 读取当前被调试对象的内存器数据，大小1字节</div><div class="line">readword 同上，大小为2字节</div><div class="line">readdword 同上，大小为4字节，例如mem_val = readxxxx(0x410000)</div><div class="line">writebyte 写入当前被调试对象的内存器数据，大小1自己</div><div class="line">writeword 同上，大小为2字节</div><div class="line">writedword 同上，大小为4字节，例如writexxxx(0x410000, 654321)</div><div class="line">readunicode 读取一个unicode字符串，例如str = readunicode(0x410000)</div><div class="line">readascii 读取一个ascii字符串，例如str = readascii(0x410000)</div><div class="line">wait 等待事件，例如exec(&quot;bp kernel32!CreateFileW;g&quot;);wait();</div><div class="line">evalmasm masm表达式求值，例如val = evalmasm(&quot;11+2*3&quot;)</div><div class="line">evalcpp cpp表达式求值，例如val = evalcpp(&quot;sizeof(char)&quot;)</div><div class="line">getmoduleinfo 通过模块名获得模块基址和大学，例如base,size = getmoduleinfo(&quot;kernel32&quot;)</div><div class="line">search 二进制查找，例如found = search(base, size, &quot;cc 89 75 fc eb &quot;)&lt;/blockquote&gt;</div></pre></td></tr></table></figure>
+<p>具体的结合这些函数进行调试的例子还没有准备好，等有机会了，我会准备好调试案例放到这里来。</p>
+<p>另外这是一个初始版本，不保证没有bug，如果你在使用中发现了bug，或者有好的想法，例如添加什么函数功能，不妨联系我。</p>
+<p>下载：</p>
+<p><a href="/uploads/2012/08/dbgLua1.zip">dbgLua</a>(v1.0.1.1)</p>
+<p><a href="/uploads/2012/08/dbgLua.zip">dbgLua</a>(v1.0.0.1)</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2012/08/15/dbgluaefbc8ce8aea9luae8849ae69cace4b99fe883bde68ea7e588b6windbge8bf9be8a18ce8b083e8af95/" data-id="cj6etakrv000qfcg94nwlgikn" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e585b3e4ba8ee588a4e696ade69687e4bbb6e698afe590a6e5ad98e59ca8e69c80e9ab98e69588e79a84e587bde695b0" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2012/08/01/e585b3e4ba8ee588a4e696ade69687e4bbb6e698afe590a6e5ad98e59ca8e69c80e9ab98e69588e79a84e587bde695b0/" class="article-date">
+  <time datetime="2012-07-31T22:08:16.000Z" itemprop="datePublished">2012-08-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2012/08/01/e585b3e4ba8ee588a4e696ade69687e4bbb6e698afe590a6e5ad98e59ca8e69c80e9ab98e69588e79a84e587bde695b0/">关于判断文件是否存在最高效的函数</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>判断文件存在方法有很多，例如CreateFile，FindFirstFile，GetFileAttributes，PathFileExists等等。但是哪一种更加高效呢？其实作为常识，可能都能判断出GetFileAttributes和PathFileExists会比较快（而实际上PathFileExists就是调用的GetFileAttributes）。</p>
+<p>下面是google一份开源代码中提到的统计结果</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// <span class="doctag">NOTE:</span> This is the fastest implementation I found. The results were:</span></div><div class="line"><span class="comment">// CreateFile 1783739 avg ticks/call</span></div><div class="line"><span class="comment">// FindFirstFile 634148 avg ticks/call</span></div><div class="line"><span class="comment">// GetFileAttributes 428714 avg ticks/call</span></div><div class="line"><span class="comment">// GetFileAttributesEx 396324 avg ticks/call&lt;/blockquote&gt;</span></div></pre></td></tr></table></figure>
+<p>为什么会这样呢？大概了看了下，原因应该是这样的。</p>
+<p>1.CreateFile会创建句柄，需要一个完整IO流程，所以需要的时间比如非常长。<br>2.FindFirstFile回去查询文件夹的文件，虽然不会真正的打开文件句柄，并且在文件已经被缓存的情况下，走的是fastio流程，所以查询时间大幅下降，但是操作略微繁琐，导致他不是最好的选择。  </p>
+<ol>
+<li>GetFileAttributes 和GetFileAttributesEx 也设置了QueryOnly标志，不需要获得真正的句柄，并且能够走fastio流程，也没有文件夹查询等工作，所以速度最快。  </li>
+</ol>
+<p>那么为什么GetFileAttributesEx 会快那么一点点呢？因为这个函数少了一个获取BasicInformation，也就是少了一个fastio流程。所以速度更快。这样看来，自己实现一个PathFileExistsEx效率可以高过PathFileExists了。（其实没多大实际意义）</p>
+<p>google就是这样做的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">bool</span> File::Exists(<span class="keyword">const</span> TCHAR* file_name) &#123;</div><div class="line">ASSERT1(file_name &amp;&amp; *file_name);</div><div class="line">ASSERT1(lstrlen(file_name) &gt; <span class="number">0</span>);</div><div class="line"></div><div class="line"><span class="comment">// <span class="doctag">NOTE:</span> This is the fastest implementation I found. The results were:</span></div><div class="line"><span class="comment">// CreateFile 1783739 avg ticks/call</span></div><div class="line"><span class="comment">// FindFirstFile 634148 avg ticks/call</span></div><div class="line"><span class="comment">// GetFileAttributes 428714 avg ticks/call</span></div><div class="line"><span class="comment">// GetFileAttributesEx 396324 avg ticks/call</span></div><div class="line">WIN32_FILE_ATTRIBUTE_DATA attrs = &#123;<span class="number">0</span>&#125;;</div><div class="line"><span class="keyword">return</span> <span class="number">0</span> != ::GetFileAttributesEx(file_name, ::GetFileExInfoStandard, &amp;attrs);</div><div class="line">&#125;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2012/08/01/e585b3e4ba8ee588a4e696ade69687e4bbb6e698afe590a6e5ad98e59ca8e69c80e9ab98e69588e79a84e587bde695b0/" data-id="cj6etakrt000mfcg9ub838dbi" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-pioe8afbbide" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2012/02/12/pioe8afbbide/" class="article-date">
+  <time datetime="2012-02-11T23:26:09.000Z" itemprop="datePublished">2012-02-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/MiniKernel/">MiniKernel</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2012/02/12/pioe8afbbide/">PIO读IDE</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="/uploads/2012/02/read.jpg"><img src="/uploads/2012/02/read.jpg" alt=""></a></p>
+<p>经过各种代码的东拼西凑、改来改去，总算是把PIO读取硬盘信息的代码“写”好了，上图是读取硬盘的前512字节的效果图。目前看来还是很挫，原因有两点：</p>
+<p>1.只支持LBA48的读取方法，不支持CHS，LBA28，虽然这两个方法的读取范围很有限，但是感觉至少要把LBA28给支持了才行。<br>2.很郁闷的一点，这个读取代码读取成功了，但是IO后返回的状态值是错误的。不知道哪里出了问题，会不会是虚拟硬盘太小而不能用LBA48的问题呢？没有头绪。  </p>
+<hr>
+<p>补充1.通过IDENTIFY DEVICE命令发现，可能由于设置的虚拟硬盘比较小的原因，虚拟硬盘不支持48bit的地址。IDENTIFY DEVICE会通过PIO方式返回一个256字（512字节）的数据。其中第83个字的第10位表示是否支持48bit的地址。如下图（来自ATA官方手册AT Attachment with Packet Interface - 6）。<br><a href="/uploads/2012/02/48bitaddress.jpg"><img src="/uploads/2012/02/48bitaddress.jpg" alt=""></a><br>补充2.由于不支持LBA48，我还是实现了LBA28。不过这个只能访问128G的硬盘了。至于CHS目前还是不考虑实现。<br>补充3.PIO写的方式大概也是差不多的。准备慢慢实现，还有DMA读写硬盘也需要了解下。不过好消息是现在基本能看懂ATA的手册了。<br>补充4.MiniKernel的代码依然写得很挫，暂时不准备共享出来，因为共享出来也没啥用，想学写系统的也看不懂那种烂代码。<br>补充5.感觉读写硬盘是一个挺有意思地方，完全可以单独拿出来写一个系列的blog。只是有没有时间和懒不懒的问题。<br>补充6.补充5的最后一句是P话，时间肯定是有的，就是懒而已。。。  </p>
+<p>一个月一篇文章。。。多一点都没有。。。我果然是个需要被监督的人。。。  </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2012/02/12/pioe8afbbide/" data-id="cj6etakrr000lfcg9jnvw0urz" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/IDE/">IDE</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OS/">OS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PIO/">PIO</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-e680bbe7bb932011efbc8ce5b195e69c9b2012" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2011/12/31/e680bbe7bb932011efbc8ce5b195e69c9b2012/" class="article-date">
+  <time datetime="2011-12-31T09:47:26.000Z" itemprop="datePublished">2011-12-31</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2011/12/31/e680bbe7bb932011efbc8ce5b195e69c9b2012/">总结2011，展望2012</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>2011还是过去了，2012来了。觉得有点必要写点东西，总结一下过去，展望一下未来。如果要用几个词来总结我的2011，那应该是天真，失望，浮躁。可以说我对我的2011是比较不满意的。</p>
+<p>天真，我自认为自己还算是个性情中人，所以很多事情对我来说就是讲得就是个胃口。我是很愿意把结识的人当作朋友处。但是，在工作中，有些“朋友”确实是建立在利益基础上的。如果把所有说过“我们是朋友”的人当作朋友，很有可能吃亏是自己。工作也是一样，代入太多感情色彩也是很天真的一种做法。为了讲胃口，有时候退一步，多干一些活。做的好当然没事，但是做的不尽如人意有时候给你带来的真的会是麻烦。</p>
+<p>失望，在去年对一些人失望了，对工作的事情也失望，对自己也挺失望的。有些事情自己也不想拿出来说，也不想以后看到在想起，能快点忘记就忘记。但是对自己失望需要深刻的自我剖析检讨了。技术上提高真的不大，基本上都看不出自己做成了什么厉害的事情，决定的事情大部分没有坚持下来，空余的时间大部分花在娱乐上。</p>
+<p>浮躁，一整年，都是浮躁的。买的书一本一本的增多，耐心看完的，甚至说看了一大半的都没几本。想学习的东西很多很多，但是没有一个耐心去学习的。给自己开的代码项目很多，也没见过几个写成的。做事情的思路大概是这样的：哎哟，这个东西挺好玩，去实现一个呗；恩，找点资料吧；我靠，资料不是很多嘛；晕，环境怎么这么难搭建；耐心点，慢慢来；好，环境搭建好了，可以开始了；哎，细节问题好多啊，一个人写这个真的大丈夫么；妈的，确实很难写，比想的难好多啊；不行了，弄不下去了；哎哟，弄这个意义大么；意义不是很多大吧，哎，还是弄点别的吧……</p>
+<p>所以我觉得，我的2011基本上就是失败的。但是，我的字典里面没有后悔，因为后悔不能改变任何事情。而且不也不会激励自己明年一定要怎么样。因为貌似这种自我暗示已经被我免疫了。当然如果从过得怎么样的角度来看，我的2011还是相当精彩和快乐的。只不过说，这个人有点贱，快乐的事情总是记不住。</p>
+<p>虽然说我现在已经不喜欢那些所谓的立志大湿，但是还是应该给自己一个2012的展望。怎么说呢？继续浮躁吧，想做的事情很多很多。</p>
+<p>1.写完自己的mini kernel。</p>
+<p>2.看完几本书，包括：nt 文件系统的后半部分，编译原理，算法导论。说实话，我还是感觉自己能看完其中两本就算不错了。</p>
+<p>3.完善自己的BaseLib，加上自己实现各种算法。</p>
+<p>4.实现一个简单的脚本语言。</p>
+<p>5.最后多看两眼wrk吧。</p>
+<p>看吧，我真的很浮躁很浮躁，如果明年的这个时候的总结（当然，前提是别2012-12-21就结束了），其中有三条圆满完成，我就觉得很奇迹了。</p>
+<p>最后，无论怎么说，2011已经过去，过去的事情无论好坏都过去了。期待2012自己的改变吧。祝福我的家人，朋友和我自己，新年快乐，健康平安，家庭和睦温馨。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2011/12/31/e680bbe7bb932011efbc8ce5b195e69c9b2012/" data-id="cj6etakrp000hfcg9c3bllnbe" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    <a class="extend prev" rel="prev" href="/page/10/">&laquo; __('prev')</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/12/">__('next') &raquo;</a>
+  </nav>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
+          </li>
+        
+          <li>
+            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 0CCh<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
