@@ -74,44 +74,6 @@
     <div class="columns">
         <div class="column two-thirds">
             
-                  <article id="post-insert-163-music" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <p>真心喜欢古风歌曲</p>
-
-<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="450" src="//music.163.com/outchain/player?type=1&id=3164957&auto=1&height=430"></iframe>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2017-07-25T08:11:42.000Z" itemprop="datePublished">2017-07-25</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
                   <article id="post-tip-about-com" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
@@ -710,6 +672,45 @@ __fastfail(
         <span class="meta-info">
           <span class="octicon octicon-calendar"></span>
            <time datetime="2016-12-13T02:36:42.000Z" itemprop="datePublished">2016-12-13</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-luadbg-windbg-ext" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2016/11/15/luadbg-windbg-ext/">windbg的lua脚本扩展luadbg</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <p>2012年的时候，我在blog上写到过开发了一个windbg的lua扩展<a href="https://0cch.com/debugging/2012/08/16/dbglua-ef-bc-8c-e8-ae-a9lua-e8-84-9a-e6-9c-ac-e4-b9-9f-e8-83-bd-e6-8e-a7-e5-88-b6windbg-e8-bf-9b-e8-a1-8c-e8-b0-83-e8-af-95.html">dbglua</a>，当时觉得windbg的原生脚本语法太奇怪了，而且太不容易使用。现在来看，依旧如此，只不过我已经很熟悉这个原生脚本了。而这个lua扩展反倒是没什么用，因为用起来也不太方便，比如访问结构体。</p>
+<p>最近无意之中看了一眼pykd，他用重载.操作符的方式访问符号和结构体深深的吸引了我，感觉非常有趣。而python本身依赖比较多，这也促使我拿起之前的代码看了看，并且决定在github上重新建立这个项目叫做<a href="https://github.com/0cch/luadbg" target="_blank" rel="external">luadbg</a>，这次我决定长期维护这个项目，想到新的功能就往里面写，就像我一直维护的<a href="https://github.com/0cch/0cchext" target="_blank" rel="external">0cchext</a>一样。luadbg除了兼容了老dbglua的函数以外，还添加了几个我觉得很方便的类，主要是用重载.操作符的方式来访问模块和结构体的数据，效果如下图所示：</p>
+<p><a href="/uploads/2016/11/20161116113129.png"><img src="/uploads/2016/11/20161116113129.png" alt="20161116113129"></a></p>
+<p>当然，也可以用!luacmd命令进入input模式，从而一条一条的输入语句来测试正确性。</p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2016-11-15T02:50:37.000Z" itemprop="datePublished">2016-11-15</time>
         </span>
 
         

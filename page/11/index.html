@@ -74,101 +74,6 @@
     <div class="columns">
         <div class="column two-thirds">
             
-                  <article id="post-e58886e4baabe887aae5b7b1e68993e980a0e79a84bugreporter" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2013/01/20/e58886e4baabe887aae5b7b1e68993e980a0e79a84bugreporter/">分享自己打造的BugReporter</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <p>这份代码应该是将近一年前写的吧，应该是去年年初了。不像ntfsstudy和dia_study，这个工具应该比较的实用吧，实用场合可以比较多。所以也把源代码发出来。看工具名称基本上已经知道了是报告bug用的。其实这种工具倒是挺多的。不过我个人感觉自己写一个用起来顺手，而且代码量小，容易修改自定义。</p>
-<p>工具代码有三个工程，分别是minidump_generator，dump_minidump，BugReporter。<br>minidump_generator是一个dll，当然也可以编译成静态库，他需要加入到你想使用BugReporter的工程里面。<br>dump_minidump是一个dump文件的解析库，他是BugReporter工程的依赖库。<br>BugReporter是一个窗口程序，在你融合了minidump_generator的程序崩溃的时候会弹出窗口。就像图中那样。  </p>
-<p><a href="/uploads/2013/01/20130120193015.png"><img src="/uploads/2013/01/20130120193015.png" alt="20130120193015"></a></p>
-<p>勾选send bug report并且点击ok，窗口里的完整log和dump文件会打包为zip文件储存，储存的地方可以由程序指定，也可以写注册表键值，reporter会去都键值然后存储到相应的位置。具体什么键值，看源代码吧。不完整和遗憾的地方也有，就是还没有http上传到提交dump收集服务器的代码。因为确实不会写php啥的。另外这个工程也用了不少开源代码，这里也感谢一下，其中包括反汇编引擎和ZIP代码。</p>
-<p>下载源代码：<a href="/uploads/2013/01/BugReporter.zip">BugReporter</a></p>
-<p>以下是完整的dump log：</p>
-<pre><code>SYSTEM INFORMATIONS
----------------
-ProcessorArchitecture : x86
-Number Of Processors : 16
-OS Version : 6.1
-BuildNumber : 7600
-CSDVersion :
-Platform : Windows Server 2003, Windows XP, or Windows 2000
-
-EXCEPTION INFORMATIONS
----------------
-Thread id : 5744
-ExceptionCode : c00000fd
-ExceptionFlags : 00000000
-ExceptionRecord : 0000000000000000
-ExceptionAddress : 0000000000dea637
-ExceptionInformation0 = 0000000000000000
-ExceptionInformation1 = 0000000000102000
-Thread Context :
-EAX = 00102000 ECX = 00102050 EDX = 5eea2408 EBX = 7efde000
-ESP = 00103120 EBP = 00103128 ESI = 001ff9c8 EDI = 00104210
-EFLAGS = 00010206
-
-MODULE INFORMATIONS
----------------
-Base Size Name FileVersion ProductVersion
-0000000000de0000 0001a000 D:\crashme\Debug\crashme.exe 0 0
-00000000772b0000 00180000 C:\Windows\SysWOW64\ntdll.dll 600011db040af 600011db040af
-0000000075ef0000 00100000 C:\Windows\SysWOW64\kernel32.dll 600011db04001 600011db04001
-00000000750f0000 00046000 C:\Windows\SysWOW64\KERNELBASE.dll 600011db04001 600011db04001
-000000005ed90000 00124000 C:\Windows\winsxs\x86_microsoft.vc90.debugcrt_1fc8b3b9a1e18e3b_9.0.30729.4148_none_2a4cbfc25558bcd3\msvcr90d.dll 9000078091034 9000078091034
-0000000074330000 000eb000 C:\Windows\System32\dbghelp.dll 600011db04001 600011db04001
-0000000076e00000 000ac000 C:\Windows\SysWOW64\msvcrt.dll 700001db04001 6000121be4001
-0000000076d10000 000f0000 C:\Windows\SysWOW64\rpcrt4.dll 600011db04001 600011db04001
-0000000074e20000 00060000 C:\Windows\SysWOW64\sspicli.dll 600011db04064 600011db04064
-0000000074e10000 0000c000 C:\Windows\SysWOW64\CRYPTBASE.dll 600011db04001 600011db04001
-00000000761e0000 00019000 C:\Windows\SysWOW64\sechost.dll 600011db04001 600011db04001
-00000000763e0000 000a0000 C:\Windows\SysWOW64\advapi32.dll 600011db04001 600011db04001
-000000006e810000 00025000 C:\Windows\System32\powrprof.dll 600011db04001 600011db04001
-00000000768e0000 0019d000 C:\Windows\SysWOW64\setupapi.dll 600011db04001 600011db04001
-0000000074f70000 00027000 C:\Windows\SysWOW64\cfgmgr32.dll 600011db04001 600011db04001
-0000000076c80000 00090000 C:\Windows\SysWOW64\gdi32.dll 600011db04001 600011db04001
-0000000076a80000 00100000 C:\Windows\SysWOW64\user32.dll 600011db04001 600011db04001
-0000000077280000 0000a000 C:\Windows\SysWOW64\lpk.dll 600011db04001 600011db04001
-0000000075140000 0009d000 C:\Windows\SysWOW64\usp10.dll 102721db04001 102721db04001
-0000000076150000 0008f000 C:\Windows\SysWOW64\oleaut32.dll 600011db04001 600011db04001
-0000000075ff0000 0015c000 C:\Windows\SysWOW64\ole32.dll 600011db04001 600011db04001
-0000000074fa0000 00012000 C:\Windows\SysWOW64\devobj.dll 600011db04001 600011db04001
-0000000074f10000 00060000 C:\Windows\System32\imm32.dll 600011db04001 600011db04001
-0000000075020000 000cc000 C:\Windows\SysWOW64\msctf.dll 600011db04001 600011db04001
-000000006fa00000 0003e000 C:\Program Files (x86)\Sophos\Sophos Anti-Virus\sophos_detoured.dll 900000000235f 9000000000000
-00000000763d0000 00005000 C:\Windows\SysWOW64\psapi.dll 600011db04001 600011db04001
-
-Crash IP Disasm :
-test dword ptr [eax], eax</code></pre>
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2013-01-20T04:18:44.000Z" itemprop="datePublished">2013-01-20</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Debugging/' title=''>Debugging</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
                   <article id="post-dia_study-pdbe69fa5e79c8be5b7a5e585b7" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
@@ -684,6 +589,49 @@ return 0 != ::GetFileAttributesEx(file_name, ::GetFileExInfoStandard, &amp;attrs
         
       
         <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-e68891e69cace69da5e4b88de683b3e58699kernelefbc8ce79bb4e588b0e68891e79a84e8869de79b96e4b8ade4ba86e4b880e7aead" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2011/12/11/e68891e69cace69da5e4b88de683b3e58699kernelefbc8ce79bb4e588b0e68891e79a84e8869de79b96e4b8ade4ba86e4b880e7aead/">我本来不想写kernel，直到我的膝盖中了一箭</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <p>最近中箭体很火，我也凑个热闹。话说自从delete那篇文章过后，又有一个多月没写了。其实不是不想写，是不知道些什么才好。简单的东西不想写，难的东西写不出来。</p>
+<p>正像标题写的，恩，我开始写kernel玩了。其实写一个简单，功能单一的kernel并不难。麻烦的只是搭建环境等等。kernel的编写资料也很多，但是可惜的是，绝大部分都是应用在linux环境。我是那种看到linux就头晕的人。所以还是坚持用windows和vc来开发kernel。令人惊喜的是grub能够帮助我们map kernel到内存中，所以boot loader这一步可以想放下。等kernel写了个大概再来写boot loader也不迟。</p>
+<p>环境和工具：<br>环境正如我上面提到了windows xp 和 vs 2008。其他工具包括winimage，virtual pc，bochsdbg（+ IDA）。当然还有grub4dos。</p>
+<p>要高效的起步，先要了解mulitBoot的一些知识。还有就是写一套能够在text mode下打印信息的函数，例如printf。这样在不用调试的情况下，就能了解一些信息。说实在的bochsdbg的调试功能真心不好用，但是加上IDA可能是一个比较好的做法。具备以上条件后，就可以开始kernel之旅了。</p>
+<p><a href="/uploads/2011/12/20111211174748.png"><img src="/uploads/2011/12/20111211174748.png" alt=""></a></p>
+<p>可以看出内存的基本状况已经可以从boot_info中获取了。接下来要做的事情也很明了。就是需要一个物理内存管理器，实现最基本的物理内存管理器也不算难，不过那就是下篇文章的事情了。现在的kernel大小为7168字节，慢慢玩，看我能坚持多久。</p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2011-12-11T02:32:55.000Z" itemprop="datePublished">2011-12-11</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/MiniKernel/' title=''>MiniKernel</a>
+          </span>
+        
+      
+        <!--
+          
+            <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Windows/">Windows</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/grub/">grub</a></li></ul>
           
         -->
 

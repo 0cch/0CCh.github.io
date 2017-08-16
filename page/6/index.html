@@ -74,61 +74,6 @@
     <div class="columns">
         <div class="column two-thirds">
             
-                  <article id="post-e588a9e794a8windbge8849ae69cace79b91e68ea7dlle58aa0e8bdbde78ab6e68081" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2014/10/27/e588a9e794a8windbge8849ae69cace79b91e68ea7dlle58aa0e8bdbde78ab6e68081/">利用Windbg脚本监控DLL加载状态</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <p>开发过大型程序的人都遇到过这样的问题，一个版本Release后，发现有的功能怎么也不对。但是每个模块在开发人员单独的环境下又是正常运行。那么遇到这样的问题，其中一个能想到的就是DLL模块没有加载正确。一般情况下，这种时候我们可以使用depends这样的工具查看模块的依赖情况，以判断出哪个模块是出问题的那个。但是如果如果真的遇上大型的程序，DLL模块很多，而且动态静态加载不一，这样光靠depends这样的工具是不能满足需求的。所以我这里写了个Windbg脚本来监控DLL加载状态，因为是动态调试，所以很轻松的就能找到加载问题，无论DLL是静态加载还是动态加载。</p>
-<p>以下脚本是Windows 7 32Bit，对于64bit，稍微修改下就行。不过如果是Windows 8，DLL的加载细节已经发生变化，所以这个脚本就不适用了。希望能抛砖引玉一下，期待更多系统的脚本分享出来。</p>
-<pre><code>bp ntdll!LdrpFindOrMapDll &quot;
-.push &#x2F;r &#x2F;q
-r @$t0 = poi(@esp+4)
-r @$t1 = poi(@esp+8)
-
-g @$ra
-
-.printf \&quot;name         = %msu\\n\&quot;, @$t0
-.printf \&quot;path         = %msu\\n\&quot;, @$t1
-.printf \&quot;Load status  = %08X\&quot;, @eax
-
-.if((@eax&amp;0xffffffff) != 0) {.printf &#x2F;D \&quot; WARNNING\\n\&quot;} .else {.printf \&quot;\\n\&quot;}
-
-.pop &#x2F;r &#x2F;q
-g
-&quot;
- </code></pre>
-<p>最后看看脚本的效果吧，如果加载失败了，那么返回的状态值就不是0。<br><a href="/uploads/2014/10/20141027164220.png"><img src="/uploads/2014/10/20141027164220.png" alt="20141027164220"></a><br><a href="/uploads/2014/10/20141027164424.png"><img src="/uploads/2014/10/20141027164424.png" alt="20141027164424"></a></p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2014-10-27T07:29:27.000Z" itemprop="datePublished">2014-10-27</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
                   <article id="post-e794a8windows-evente79b91e68ea7e5898de58fb0e7aa97e58fa3e58f98e58c96" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
@@ -920,6 +865,47 @@ $$ Blog: 0cch.net
         <span class="meta-info">
           <span class="octicon octicon-calendar"></span>
            <time datetime="2014-04-13T07:34:49.000Z" itemprop="datePublished">2014-04-13</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-global-loggere68993e5bc80e5bc80e69cbae590afe58aa8etwe697a5e5bf97" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2014/04/05/global-loggere68993e5bc80e5bc80e69cbae590afe58aa8etwe697a5e5bf97/">Global Logger打开开机启动ETW日志</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <p>在我看来XP确实应该寿终正寝了，因为确实在很多机制方面不如新的系统，比如ETW。而微软的XPERF也没有能在XP上直接安装的。当然，老版本的XPERF还能在XP上运行，只是监控能力有限，到了新版本的XPERF，在XP上就运行不了了。但是，XP却在中国还活的好好的，所以优化其性能必不可少。于是，在没有XPERF支持的情况下，要做到开启ETW日志，我们就需要微软提供的Global Logger机制，打开开机启动的Trace Session。</p>
+<p>微软对打开Global Logger的方法做了详细的说明：<a href="http://msdn.microsoft.com/en-us/library/windows/hardware/ff546686(v=vs.85" target="_blank" rel="external">http://msdn.microsoft.com/en-us/library/windows/hardware/ff546686(v=vs.85).aspx </a>.aspx )，我这里没必要再赘述了，只有一个地方需要注意，要说明一下<strong>EnableKernelFlags</strong>这个变量，他是一个REG_BINARY类型，他的值是EVENT_TRACE_PROPERTIES的EnableFlags。但是EnableFlags是一个DWORD，而<strong>EnableKernelFlags</strong>是一个32字节的数组。如果你设置的时候，只是设置了一个DWORD，那么你会发现ETW 日志不会开启。</p>
+<p>话说到这，<strong>EnableKernelFlags</strong>中前4字节的DWORD是EVENT_TRACE_PROPERTIES的组合，那么后面还有28字节是干什么的呢？实际上ETW能记录的标志还有很多，只是没有在EVENT_TRACE_PROPERTIES中说明，他们都被分到8个分组里面去了，这也是为什么有32个字节的Flags。具体怎么分组，还有哪些标志位，可以参考WRK的代码。</p>
+<p>我这里写了个小工具可以用来设置Global Flags，不过如果你能找到XP上可以用的XPERF当然是最好的选择了！</p>
+<p><a href="/uploads/2014/04/20140405104746.png"><img src="/uploads/2014/04/20140405104746.png" alt="20140405104746"></a></p>
+<p>下载:<a href="/uploads/2014/04/GlobalLog.zip">GlobalLog</a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2014-04-04T18:49:44.000Z" itemprop="datePublished">2014-04-05</time>
         </span>
 
         

@@ -74,87 +74,6 @@
     <div class="columns">
         <div class="column two-thirds">
             
-                  <article id="post-app-cpr-event" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2016/02/02/app-cpr-event/">调试器最早的中断应用程序的方法</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <p>这篇Blog分享一个Windbg的小技巧，就是让被调试程序更早的中断到调试器。熟悉Windbg的朋友都知道，用调试器运行程序，默认情况下都会中断到ntdll!LdrpDoDebuggerBreak。但是有时候我们会想去调试程序加载的过程，这个时候就需要我们更早的中断下来。那么这里就用利用到调试器最早接受到的调试事件了。CREATE_PROCESS_DEBUG_EVENT，这个调试事件是创建进程的时候进程发给调试器的，在这个时候，你甚至连ntdll都没有完成加载，这也导致ntdll的符号无法加载，很多有用的功能用不上。但幸运的是，虽然ntdll没有完成加载，但是已经加载到了内存，另外我们可以用手动加载符号的方法，把符号文件加载到ntdll的内存上去。</p>
-<p>演示如下：</p>
-<p>windbg.EXE -xe cpr -xe ld notepad.exe</p>
-<p>这里设置中断系统事件cpr，也就是CREATE_PROCESS_DEBUG_EVENT</p>
-<pre><code>
-0:000&gt; lm
-start             end                 module name
-00007ff7`3f6e0000 00007ff7`3f721000   notepad    (deferred)             
-0:000&gt; !teb
-TEB at 000000d995d21000
-error InitTypeRead( TEB )...
-</code></pre>
-<p>中断下来后我们可以看到，!teb是没法用的</p>
-<pre><code>
-0:000&gt; .imgscan
-MZ at 00007ff7`3f6e0000, prot 00000002, type 01000000 - size 41000
-  Name: notepad.exe
-MZ at 00007ffb`7c7b0000, prot 00000002, type 01000000 - size 1c1000
-  Name: ntdll.dll
-0:000&gt; .reload &#x2F;f ntdll.dll=00007ffb`7c7b0000
-</code></pre>
-<p>我们需要找到ntdll的模块，然后手动加载符号，然后就可以使用和ntdll有关系的命令了。</p>
-<pre><code>
-0:000&gt; lm
-start             end                 module name
-00007ff7`3f6e0000 00007ff7`3f721000   notepad    (deferred)             
-00007ffb`7c7b0000 00007ffb`7c971000   ntdll      (pdb symbols)          e:\workspace\mysymbols\ntdll.pdb\F296699DB5314A06935E88564D8CD2731\ntdll.pdb
-
-0:000&gt; !teb
-TEB at 000000d995d21000
-    ExceptionList:        0000000000000000
-    StackBase:            000000d995af0000
-    StackLimit:           000000d995adf000
-    SubSystemTib:         0000000000000000
-    FiberData:            0000000000001e00
-    ArbitraryUserPointer: 0000000000000000
-    Self:                 000000d995d21000
-    EnvironmentPointer:   0000000000000000
-    ClientId:             0000000000001c8c . 00000000000017c4
-    RpcHandle:            0000000000000000
-    Tls Storage:          0000000000000000
-    PEB Address:          000000d995d20000
-    LastErrorValue:       0
-    LastStatusValue:      0
-    Count Owned Locks:    0
-    HardErrorMode:        0
-</code></pre>
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2016-02-01T21:15:03.000Z" itemprop="datePublished">2016-02-02</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/debugging/' title=''>debugging</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
                   <article id="post-2016-zjzw" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
@@ -1097,6 +1016,69 @@ SHOpenWithDialog(NULL, &amp;Info);</code></pre>
         <span class="meta-info">
           <span class="octicon octicon-calendar"></span>
            <time datetime="2015-07-12T16:20:57.000Z" itemprop="datePublished">2015-07-13</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-dump-pe-with-windbg-script" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2015/07/01/dump-pe-with-windbg-script/">用Windbg script将内存中的PE文件dump出来</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <p>最近看到有些恶意程序，从网络上下载PE文件后，直接放在内存里重定位和初始化，为了能将其dump出来，所以写了这个Windbg脚本。</p>
+<pre><code>.foreach( place  { !address &#x2F;f:VAR,MEM_PRIVATE,MEM_COMMIT &#x2F;c:&quot;s -[1]a %1 %2 \&quot;MZ\&quot;&quot; } ) 
+{
+	ad *
+	.catch {
+		r @$t2 = place;
+		r @$t0 = place;
+		r @$t1 = @@C++(((ntdll!_IMAGE_DOS_HEADER *)@$t0)-&gt;e_lfanew);
+		r @$t0 = @$t0 + @$t1;
+		r @$t1 = $vvalid(@$t0, 4);
+
+		.if (@@C++(@$t1 &amp;&amp; @@C++(((ntdll!_IMAGE_NT_HEADERS *)@$t0)-&gt;Signature) == 0x00004550))
+		{
+			r @$t1 = @@C++(((ntdll!_IMAGE_NT_HEADERS *)@$t0)-&gt;OptionalHeader.SizeOfImage);
+			.printf &quot;%08x  %08x\n&quot;, @$t2, @$t1;
+			aS &#x2F;x start_addr @$t2
+			aS &#x2F;x dump_size @$t1
+			.block {
+				aS target_file e:\\${start_addr}.dll
+			}
+			
+			.block {
+				.printf &quot;${target_file}&quot;
+				.writemem &quot;${target_file}&quot; ${start_addr} L?${dump_size}
+			}
+		}
+	}
+}
+</code></pre>
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2015-06-30T16:11:15.000Z" itemprop="datePublished">2015-07-01</time>
         </span>
 
         

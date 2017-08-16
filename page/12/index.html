@@ -74,49 +74,6 @@
     <div class="columns">
         <div class="column two-thirds">
             
-                  <article id="post-e68891e69cace69da5e4b88de683b3e58699kernelefbc8ce79bb4e588b0e68891e79a84e8869de79b96e4b8ade4ba86e4b880e7aead" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2011/12/11/e68891e69cace69da5e4b88de683b3e58699kernelefbc8ce79bb4e588b0e68891e79a84e8869de79b96e4b8ade4ba86e4b880e7aead/">我本来不想写kernel，直到我的膝盖中了一箭</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <p>最近中箭体很火，我也凑个热闹。话说自从delete那篇文章过后，又有一个多月没写了。其实不是不想写，是不知道些什么才好。简单的东西不想写，难的东西写不出来。</p>
-<p>正像标题写的，恩，我开始写kernel玩了。其实写一个简单，功能单一的kernel并不难。麻烦的只是搭建环境等等。kernel的编写资料也很多，但是可惜的是，绝大部分都是应用在linux环境。我是那种看到linux就头晕的人。所以还是坚持用windows和vc来开发kernel。令人惊喜的是grub能够帮助我们map kernel到内存中，所以boot loader这一步可以想放下。等kernel写了个大概再来写boot loader也不迟。</p>
-<p>环境和工具：<br>环境正如我上面提到了windows xp 和 vs 2008。其他工具包括winimage，virtual pc，bochsdbg（+ IDA）。当然还有grub4dos。</p>
-<p>要高效的起步，先要了解mulitBoot的一些知识。还有就是写一套能够在text mode下打印信息的函数，例如printf。这样在不用调试的情况下，就能了解一些信息。说实在的bochsdbg的调试功能真心不好用，但是加上IDA可能是一个比较好的做法。具备以上条件后，就可以开始kernel之旅了。</p>
-<p><a href="/uploads/2011/12/20111211174748.png"><img src="/uploads/2011/12/20111211174748.png" alt=""></a></p>
-<p>可以看出内存的基本状况已经可以从boot_info中获取了。接下来要做的事情也很明了。就是需要一个物理内存管理器，实现最基本的物理内存管理器也不算难，不过那就是下篇文章的事情了。现在的kernel大小为7168字节，慢慢玩，看我能坚持多久。</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2011-12-11T02:32:55.000Z" itemprop="datePublished">2011-12-11</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/MiniKernel/' title=''>MiniKernel</a>
-          </span>
-        
-      
-        <!--
-          
-            <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Windows/">Windows</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/grub/">grub</a></li></ul>
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
                   <article id="post-e4b8bae4bb80e4b988e5bf85e9a1bbe794a8deletee9878ae694bee695b0e7bb84" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
