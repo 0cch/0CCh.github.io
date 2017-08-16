@@ -1,237 +1,265 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
 <head>
   <meta charset="utf-8">
-  
-  <title>解析youku视频地址的python脚本 | 0CCh Blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="几个月前写的东西，偶然翻出来发现还能用，就贴出来吧。非专业python程序员，代码比较乱 :-(  12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879&apos;">
-<meta property="og:type" content="article">
-<meta property="og:title" content="解析youku视频地址的python脚本">
-<meta property="og:url" content="http://0cch.com/2013/09/28/e8a7a3e69e90youkue8a786e9a291e59cb0e59d80e79a84pythone8849ae69cac/index.html">
-<meta property="og:site_name" content="0CCh Blog">
-<meta property="og:description" content="几个月前写的东西，偶然翻出来发现还能用，就贴出来吧。非专业python程序员，代码比较乱 :-(  12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879&apos;">
-<meta property="og:image" content="http://0cch.com/uploads/2013/09/20130928134507.png">
-<meta property="og:updated_time" content="2017-08-16T09:35:44.060Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="解析youku视频地址的python脚本">
-<meta name="twitter:description" content="几个月前写的东西，偶然翻出来发现还能用，就贴出来吧。非专业python程序员，代码比较乱 :-(  12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879&apos;">
-<meta name="twitter:image" content="http://0cch.com/uploads/2013/09/20130928134507.png">
-  
-    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  <link rel="stylesheet" href="/css/style.css">
-  
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
+  <link rel="icon" href="/favicon.ico">
+  
+  <title>0CCh Blog | 解析youku视频地址的python脚本</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
+  <!--在这里倒入jquery 方便处理部分页面的jquery-->
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script>
 </head>
 
 <body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">0CCh Blog</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
+	<header class="site-header navfixed-false">
+  <div class="container">
+      <h1><a href="/" title="0CCh Blog"><span class="octicon octicon-mark-github"></span> 0CCh Blog</a></h1>
+      <nav class="site-header-nav" role="navigation">
         
-          <a class="main-nav-link" href="/">Home</a>
+              
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
-          <a class="main-nav-link" href="/archives">Archives</a>
+              
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+        
+              
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+        
+              
+              <a href="/message/"  class=" site-header-nav-item hvr-underline-from-center" title="Message">Message</a>
         
       </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
-      </div>
-    </div>
   </div>
 </header>
-      <div class="outer">
-        <section id="main"><article id="post-e8a7a3e69e90youkue8a786e9a291e59cb0e59d80e79a84pythone8849ae69cac" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2013/09/28/e8a7a3e69e90youkue8a786e9a291e59cb0e59d80e79a84pythone8849ae69cac/" class="article-date">
-  <time datetime="2013-09-27T21:48:02.000Z" itemprop="datePublished">2013-09-28</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Tips/">Tips</a>
-  </div>
 
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      解析youku视频地址的python脚本
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>几个月前写的东西，偶然翻出来发现还能用，就贴出来吧。非专业python程序员，代码比较乱 :-(</p>
-<p><a href="/uploads/2013/09/20130928134507.png"><img src="/uploads/2013/09/20130928134507.png" alt="20130928134507"></a></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div></pre></td><td class="code"><pre><div class="line"><span class="string">'''</span></div><div class="line"><span class="string">Created on 2013-3-6</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">@author: nightxie</span></div><div class="line"><span class="string">'''</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">import</span> urllib.request</div><div class="line"><span class="keyword">import</span> urllib.parse</div><div class="line"><span class="keyword">import</span> json</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetKeyString</span><span class="params">(seed)</span>:</span></div><div class="line">    base_string = <span class="string">'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/\\:._-1234567890'</span>;</div><div class="line">    target_string = <span class="string">''</span>;</div><div class="line">    <span class="keyword">while</span> len(base_string) != <span class="number">0</span> :</div><div class="line">        seed = (seed * <span class="number">211</span> + <span class="number">30031</span>) % <span class="number">65536</span>;</div><div class="line">        index = (seed / <span class="number">65536</span> * len(base_string));</div><div class="line">        target_string += base_string[int(index)];</div><div class="line">        base_string = base_string[:int(index)] + base_string[int(index)+<span class="number">1</span>:];</div><div class="line">    <span class="keyword">return</span> target_string;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetFildId</span><span class="params">(daye_str, seed)</span>:</span></div><div class="line"></div><div class="line">    new_list = daye_str.split(<span class="string">'*'</span>);</div><div class="line">    target_string = <span class="string">''</span>;</div><div class="line">    base_string = GetKeyString(seed);</div><div class="line">    length = len(new_list);</div><div class="line">    i = <span class="number">0</span>;</div><div class="line">    <span class="keyword">while</span> i &lt; length - <span class="number">1</span>:</div><div class="line">        index = int(new_list[i]);</div><div class="line">        target_string += base_string[index];</div><div class="line">        i += <span class="number">1</span>;</div><div class="line">    <span class="keyword">return</span> target_string;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetFlvPath</span><span class="params">(videoids, flv_type)</span>:</span></div><div class="line">    url = <span class="string">'http://v.youku.com/player/getPlayList/VideoIDS/'</span> + videoids + <span class="string">'/timezone/+08/version/5/source/video'</span></div><div class="line">    req = urllib.request.Request(url);</div><div class="line">    req.add_header(<span class="string">'Referer'</span>, <span class="string">'http://static.youku.com/v1.0.0307/v/swf/player_yk.swf'</span>);</div><div class="line">    req.add_header(<span class="string">'User-Agent'</span>, <span class="string">'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.56 Safari/537.17'</span>);</div><div class="line">    play_list = urllib.request.urlopen(req).read().decode(<span class="string">"utf8"</span>);</div><div class="line">   </div><div class="line">    play_list_data = json.loads(play_list)[<span class="string">'data'</span>][<span class="number">0</span>];</div><div class="line">    seed = play_list_data[<span class="string">'seed'</span>];</div><div class="line">    streamfileids = play_list_data[<span class="string">'streamfileids'</span>];</div><div class="line">    regs = play_list_data[<span class="string">'segs'</span>];</div><div class="line">    </div><div class="line">    type_fileid = streamfileids[flv_type];</div><div class="line">    type_list = regs[flv_type];</div><div class="line">    url_type = flv_type;</div><div class="line">    <span class="keyword">if</span> url_type == <span class="string">'hd2'</span>:</div><div class="line">        url_type = <span class="string">'flv'</span></div><div class="line">    </div><div class="line">    type_list_count = len(type_list);</div><div class="line">    i = <span class="number">0</span>;</div><div class="line">    <span class="keyword">while</span> i &lt; type_list_count :</div><div class="line">        fileid = GetFildId(type_fileid, seed);</div><div class="line">        fileid = fileid[:<span class="number">8</span>] + (<span class="string">"%0.2X"</span> % i) + fileid[<span class="number">10</span>:];</div><div class="line">        fileid += <span class="string">'?k='</span>;</div><div class="line">        fileid += type_list[i][<span class="string">'k'</span>];</div><div class="line">        flv_path = <span class="string">'http://f.youku.com/player/getFlvPath/sid/00_00/st/'</span>+url_type+<span class="string">'/fileid/'</span> + fileid;</div><div class="line">        print(flv_path);</div><div class="line">        i += <span class="number">1</span>;</div><div class="line">        </div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetVideoIdsFromUrl</span><span class="params">(url)</span>:</span></div><div class="line">    url_object = urllib.parse.urlparse(url);</div><div class="line">    url_path = url_object.path;</div><div class="line">    <span class="keyword">return</span> url_path[<span class="number">11</span>:<span class="number">-5</span>]</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetFlvPathFromUrl</span><span class="params">(url, video_type)</span>:</span></div><div class="line">    video_ids = GetVideoIdsFromUrl(url);</div><div class="line">    GetFlvPath(video_ids, video_type);</div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    <span class="keyword">if</span> len(sys.argv) == <span class="number">3</span>:</div><div class="line">        GetFlvPathFromUrl(sys.argv[<span class="number">1</span>], sys.argv[<span class="number">2</span>]);</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        print(<span class="string">"youku.py  "</span>);</div><div class="line">   </div><div class="line"></div></pre></td></tr></table></figure>
-
-      
+	
+<section class="collection-head geopattern" data-pattern-id="解析youku视频地址的python脚本" >
+    <div class="container">
+        <div class="collection-title">
+            <h1 class="collection-header">
+                解析youku视频地址的python脚本
+            </h1>
+            
+                <div class="collection-info">
+                    <span class="meta-info">
+                        <span class="octicon octicon-calendar"></span>
+                        <time datetime="2013-09-27T21:48:02.000Z" itemprop="datePublished">2013-09-28</time>
+                    </span>
+                    
+                        <span class="meta-info">
+                            <span class="octicon octicon-file-directory"></span>
+                            <a href='/categories/Tips/' title=''>Tips</a>
+                        </span>
+                    
+                </div>
+            
+        </div>
     </div>
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2013/09/28/e8a7a3e69e90youkue8a786e9a291e59cb0e59d80e79a84pythone8849ae69cac/" data-id="cj6etaktr003hfcg9cy3uyd7l" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2013/10/07/windbge58685e6a0b8e8b083e8af95e69fa5e79c8be7aa97e58fa3e58fa5e69f84e4bfa1e681afe79a84e8849ae69cac/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Récent</strong>
-      <div class="article-nav-title">
-        
-          Windbg内核调试查看窗口句柄信息的脚本
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2013/09/21/floppy-disk-controllere7bc96e7a88b/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ancien</strong>
-      <div class="article-nav-title">Floppy Disk Controller编程</div>
-    </a>
-  
-</nav>
-
-  
-</article>
-
 </section>
-        
-          <aside id="sidebar">
-  
+	<section class="container">
+    <div class="columns">
+        <div class="column  three-fourths " >
+            <article class="article-content markdown-body">
+                <p>几个月前写的东西，偶然翻出来发现还能用，就贴出来吧。非专业python程序员，代码比较乱 :-(</p>
+<p><a href="/uploads/2013/09/20130928134507.png"><img src="/uploads/2013/09/20130928134507.png" alt="20130928134507"></a></p>
+<pre><code>&#39;&#39;&#39;
+Created on 2013-3-6
+
+@author: nightxie
+&#39;&#39;&#39;
+
+import sys
+import urllib.request
+import urllib.parse
+import json
+
+def GetKeyString(seed):
+    base_string = &#39;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&#x2F;\\:._-1234567890&#39;;
+    target_string = &#39;&#39;;
+    while len(base_string) != 0 :
+        seed = (seed * 211 + 30031) % 65536;
+        index = (seed &#x2F; 65536 * len(base_string));
+        target_string += base_string[int(index)];
+        base_string = base_string[:int(index)] + base_string[int(index)+1:];
+    return target_string;
+
+def GetFildId(daye_str, seed):
+
+    new_list = daye_str.split(&#39;*&#39;);
+    target_string = &#39;&#39;;
+    base_string = GetKeyString(seed);
+    length = len(new_list);
+    i = 0;
+    while i &lt; length - 1:
+        index = int(new_list[i]);
+        target_string += base_string[index];
+        i += 1;
+    return target_string;
+
+def GetFlvPath(videoids, flv_type):
+    url = &#39;http:&#x2F;&#x2F;v.youku.com&#x2F;player&#x2F;getPlayList&#x2F;VideoIDS&#x2F;&#39; + videoids + &#39;&#x2F;timezone&#x2F;+08&#x2F;version&#x2F;5&#x2F;source&#x2F;video&#39;
+    req = urllib.request.Request(url);
+    req.add_header(&#39;Referer&#39;, &#39;http:&#x2F;&#x2F;static.youku.com&#x2F;v1.0.0307&#x2F;v&#x2F;swf&#x2F;player_yk.swf&#39;);
+    req.add_header(&#39;User-Agent&#39;, &#39;Mozilla&#x2F;5.0 (Windows NT 6.1) AppleWebKit&#x2F;537.17 (KHTML, like Gecko) Chrome&#x2F;24.0.1312.56 Safari&#x2F;537.17&#39;);
+    play_list = urllib.request.urlopen(req).read().decode(&quot;utf8&quot;);
+   
+    play_list_data = json.loads(play_list)[&#39;data&#39;][0];
+    seed = play_list_data[&#39;seed&#39;];
+    streamfileids = play_list_data[&#39;streamfileids&#39;];
+    regs = play_list_data[&#39;segs&#39;];
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">Catégories</h3>
-    <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
-    </div>
-  </div>
-
-
-  
+    type_fileid = streamfileids[flv_type];
+    type_list = regs[flv_type];
+    url_type = flv_type;
+    if url_type == &#39;hd2&#39;:
+        url_type = &#39;flv&#39;
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
-    <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
+    type_list_count = len(type_list);
+    i = 0;
+    while i &lt; type_list_count :
+        fileid = GetFildId(type_fileid, seed);
+        fileid = fileid[:8] + (&quot;%0.2X&quot; % i) + fileid[10:];
+        fileid += &#39;?k=&#39;;
+        fileid += type_list[i][&#39;k&#39;];
+        flv_path = &#39;http:&#x2F;&#x2F;f.youku.com&#x2F;player&#x2F;getFlvPath&#x2F;sid&#x2F;00_00&#x2F;st&#x2F;&#39;+url_type+&#39;&#x2F;fileid&#x2F;&#39; + fileid;
+        print(flv_path);
+        i += 1;
+        
+def GetVideoIdsFromUrl(url):
+    url_object = urllib.parse.urlparse(url);
+    url_path = url_object.path;
+    return url_path[11:-5]
+
+def GetFlvPathFromUrl(url, video_type):
+    video_ids = GetVideoIdsFromUrl(url);
+    GetFlvPath(video_ids, video_type);
+
+if __name__ == &#39;__main__&#39;:
+    if len(sys.argv) == 3:
+        GetFlvPathFromUrl(sys.argv[1], sys.argv[2]);
+    else:
+        print(&quot;youku.py  &quot;);
+   
+</code></pre>
+
+            </article>
+            
+                <div class="share">
+                    <!--开启分享-->
+<div class="share-component" data-disabled="google,twitter,facebook" data-description=""></div>
+
+<script src="/js/share.min.js"></script>
+
+                </div>    
+            
+
+            
+            
+                
+<div class="comments">
+    <div id="container"></div>
+        <script src="/js/gitment.browser.js"></script>
+         <script>
+            var gitment = new Gitment({
+                id: '/2013/09/28/e8a7a3e69e90youkue8a786e9a291e59cb0e59d80e79a84pythone8849ae69cac/',
+                owner: '',
+                repo: '',
+                oauth: {
+                    client_id: "",
+                    client_secret: "",
+                }
+            })
+        gitment.render('container')
+        </script>
+</div>
+
+            
+
+        </div>
+        <div class="column one-fourth">
+            
+                
+                
+
+
+<h3>Post Directory</h3>
+
+<div id="post-directory-module">
+	<section class="post-directory">
+		<p><strong class="toc-title">文章目录</strong></p>
+		
+	</section>
+</div>
+            
+        </div>
     </div>
-  </div>
+</section>
 
+<footer class="container">
+    <div class="site-footer" role="contentinfo">
+        <div class="copyright left mobile-block">
+                © 2016
+                <span title="yumemor">yumemor</span>
+                <a href="javascript:window.scrollTo(0,0)" class="right mobile-visible">TOP</a>
+        </div>
 
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
+        <ul class="site-footer-links right mobile-hidden">
+            <li>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+            </li>
+        </ul>
+
+        <a href="https://github.com/yumemor/hexo-theme-primer" target="_blank" aria-label="view source code">
+            <span class="mega-octicon octicon-mark-github" title="GitHub"></span>
+        </a>
+
+        <ul class="site-footer-links mobile-hidden">
+            
+                  
+                  <li>
+                    <a href="/"  title="Home">Home</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/categories/"  title="Category">Category</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/message/"  title="Message">Message</a>
+                  </li>
+            
+            <li>
+                <a href="/atom.xml">
+                    <span class="octicon octicon-rss" style="color:orange;"></span>
+                </a>
+            </li>
+        </ul>
     </div>
-  </div>
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
-          </li>
-        
-          <li>
-            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
-          </li>
-        
-          <li>
-            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
-          </li>
-        
-          <li>
-            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
-          </li>
-        
-          <li>
-            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2017 0CCh<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
 </footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+		<script src="/js/geopattern.js"></script>
+		<script src="/js/highlight.pack.js"></script>
+		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 
+		
+			<script src="/js/toc.js"></script>
+		
 
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+		<script src="/js/index.js"></script>
 
+		 <script src="/js/popular_repo.js"></script> 
 
-<script src="/js/script.js"></script>
-
-  </div>
-</body>
+	</body>
 </html>

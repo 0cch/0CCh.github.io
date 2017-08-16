@@ -1,101 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
 <head>
   <meta charset="utf-8">
-  
-  <title>使用PCI IDE Controller读写硬盘 – 2 | 0CCh Blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="上一篇文章简单介绍了用PIO的方式读写硬盘数据，那么这篇文章就来介绍另一种数据传输的方式——DMA。 DMA全称是Direct memory access，以下依旧是wiki上的一段简短的介绍：“直接存储器访问（Direct Memory Access，DMA）是计算机科学中的一种内存访问技术。它允许某些电脑内部的硬件子系统（电脑外设），可以独立地直接读写系统存储器，而不需绕道中央处理器（CPU">
-<meta property="og:type" content="article">
-<meta property="og:title" content="使用PCI IDE Controller读写硬盘 – 2">
-<meta property="og:url" content="http://0cch.com/2013/08/31/e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-2/index.html">
-<meta property="og:site_name" content="0CCh Blog">
-<meta property="og:description" content="上一篇文章简单介绍了用PIO的方式读写硬盘数据，那么这篇文章就来介绍另一种数据传输的方式——DMA。 DMA全称是Direct memory access，以下依旧是wiki上的一段简短的介绍：“直接存储器访问（Direct Memory Access，DMA）是计算机科学中的一种内存访问技术。它允许某些电脑内部的硬件子系统（电脑外设），可以独立地直接读写系统存储器，而不需绕道中央处理器（CPU">
-<meta property="og:image" content="http://0cch.com/uploads/2013/09/20130901011808.png">
-<meta property="og:image" content="http://0cch.com/uploads/2013/09/20130828165621.jpg">
-<meta property="og:image" content="http://0cch.com/uploads/2013/09/20130829115331.png">
-<meta property="og:image" content="http://0cch.com/uploads/2013/09/20130829120041.png">
-<meta property="og:image" content="http://0cch.com/uploads/2013/09/20130829120248.png">
-<meta property="og:updated_time" content="2017-08-16T09:35:44.054Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="使用PCI IDE Controller读写硬盘 – 2">
-<meta name="twitter:description" content="上一篇文章简单介绍了用PIO的方式读写硬盘数据，那么这篇文章就来介绍另一种数据传输的方式——DMA。 DMA全称是Direct memory access，以下依旧是wiki上的一段简短的介绍：“直接存储器访问（Direct Memory Access，DMA）是计算机科学中的一种内存访问技术。它允许某些电脑内部的硬件子系统（电脑外设），可以独立地直接读写系统存储器，而不需绕道中央处理器（CPU">
-<meta name="twitter:image" content="http://0cch.com/uploads/2013/09/20130901011808.png">
-  
-    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  <link rel="stylesheet" href="/css/style.css">
-  
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
+  <link rel="icon" href="/favicon.ico">
+  
+  <title>0CCh Blog | 使用PCI IDE Controller读写硬盘 – 2</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
+  <!--在这里倒入jquery 方便处理部分页面的jquery-->
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script>
 </head>
 
 <body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">0CCh Blog</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
+	<header class="site-header navfixed-false">
+  <div class="container">
+      <h1><a href="/" title="0CCh Blog"><span class="octicon octicon-mark-github"></span> 0CCh Blog</a></h1>
+      <nav class="site-header-nav" role="navigation">
         
-          <a class="main-nav-link" href="/">Home</a>
+              
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
-          <a class="main-nav-link" href="/archives">Archives</a>
+              
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+        
+              
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+        
+              
+              <a href="/message/"  class=" site-header-nav-item hvr-underline-from-center" title="Message">Message</a>
         
       </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
-      </div>
-    </div>
   </div>
 </header>
-      <div class="outer">
-        <section id="main"><article id="post-e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-2" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2013/08/31/e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-2/" class="article-date">
-  <time datetime="2013-08-31T09:24:36.000Z" itemprop="datePublished">2013-08-31</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/MiniKernel/">MiniKernel</a>
-  </div>
 
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      使用PCI IDE Controller读写硬盘 – 2
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><a href="/uploads/2013/09/20130901011808.png"><img src="/uploads/2013/09/20130901011808.png" alt="20130901011808"></a></p>
+	
+<section class="collection-head geopattern" data-pattern-id="使用PCI IDE Controller读写硬盘 – 2" >
+    <div class="container">
+        <div class="collection-title">
+            <h1 class="collection-header">
+                使用PCI IDE Controller读写硬盘 – 2
+            </h1>
+            
+                <div class="collection-info">
+                    <span class="meta-info">
+                        <span class="octicon octicon-calendar"></span>
+                        <time datetime="2013-08-31T09:24:36.000Z" itemprop="datePublished">2013-08-31</time>
+                    </span>
+                    
+                        <span class="meta-info">
+                            <span class="octicon octicon-file-directory"></span>
+                            <a href='/categories/MiniKernel/' title=''>MiniKernel</a>
+                        </span>
+                    
+                </div>
+            
+        </div>
+    </div>
+</section>
+	<section class="container">
+    <div class="columns">
+        <div class="column  three-fourths " >
+            <article class="article-content markdown-body">
+                <p><a href="/uploads/2013/09/20130901011808.png"><img src="/uploads/2013/09/20130901011808.png" alt="20130901011808"></a></p>
 <p>上一篇文章简单介绍了用PIO的方式读写硬盘数据，那么这篇文章就来介绍另一种数据传输的方式——DMA。</p>
 <p>DMA全称是Direct memory access，以下依旧是wiki上的一段简短的介绍：<br>“直接存储器访问（Direct Memory Access，DMA）是计算机科学中的一种内存访问技术。它允许某些电脑内部的硬件子系统（电脑外设），可以独立地直接读写系统存储器，而不需绕道中央处理器（CPU）。很多硬件的系统会使用DMA，包含硬盘控制器、绘图显卡、网卡和声卡。”</p>
 <p>结合以上的描述和上一篇PIO的介绍，我们就可以发现DMA的优势，他最大的优势之一就是解放了CPU，让CPU不用重复的执行IO端口的操作读写数据。使用DMA的时候，CPU可以做其他的计算，读写数据的操作完全交由CPU外部的DMA芯片进行操作。当读写操作结束后CPU收到通知，然后再来处理读写之后的工作。DMA的另一个优势，就是速度快，不过这么说也不是完全正确的。因为古老的ISA DMA的速度只有4MB/s，现代CPU跑起PIO来，传输速度应该会比这个快。幸运的是，硬盘使用的DMA并不是ISA DMA，而是PCI DMA。PCI DMA的速度通常都超过了100MB/s，所以说速度也算是DMA的一个优势了吧。这里在顺便提一点，ISA DMA也不是完全没有用处的。软盘使用的DMA就是ISA DMA，虽然说软盘在现代的PC上已经消失了，但是如果要写自己的Mini Kernel，那么支持软盘以及ISA DMA还是很有必要的。</p>
@@ -109,147 +79,181 @@
 <p><strong>总线主控IDE状态寄存器（Bus Master IDE Status Register）</strong><br><a href="/uploads/2013/09/20130829120248.png"><img src="/uploads/2013/09/20130829120248.png" alt="20130829120248"></a></p>
 <p><strong>描述符指针寄存器（Descriptor Table Pointer Register）</strong><br>用于设置物理区域描述符表的地址</p>
 <p>对于初学者理论知识不用了解的过细，最好还是在代码中边写边学习，还是一边堆代码，一边解释吧。<br>（关于下面代码的补充说明：由于使用DMA必须处理中断以获得DMA处理结束的信号，而配置中断又涉及到许多理论知识和额外代码（8259A &amp;IDT），所以下面的代码就不涉及配置中断了，我这里就假设CPU已经进入保护模式，但没有开启分页并且IDE的中断已经配置完毕了。以下代码依旧为了保持最简洁，忽略了状态和结果的检查，在试验中够用即可）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line">mov dx, 0C000h ; 设置开始停止位为0，停止DMA</div><div class="line">mov al, 0h</div><div class="line">out dx, al</div><div class="line"></div><div class="line">mov dx, 0C002h ; 清除中断位和错误位，这里清除方式比较特别，设置1后清除</div><div class="line">mov al, 6h</div><div class="line">out dx, al</div><div class="line"></div><div class="line">; 配置描述符表，表地址为10000h，且只有一个描述符</div><div class="line">; 描述符描述的物理基址是20000h，大小为512字节，且设置了第7位，</div><div class="line">; 说明自己就是最后一个描述符</div><div class="line">mov dword ptr [10000h], 20000h</div><div class="line">mov dowrd ptr [10004h], 200h | 80000000h</div><div class="line">mov dx, 0C004h</div><div class="line">mov eax, 10000h</div><div class="line">out dx, eax</div><div class="line"></div><div class="line">mov dx, 3f6h   ; 这里不再设置nIEN，DMA需要中断</div><div class="line">mov al, 0h</div><div class="line">out dx, al</div><div class="line"></div><div class="line">mov dx, 1f1h   ; 下面代码基本上和PIO一致，</div><div class="line">mov al, 0      ; 详细注释请看上一篇文章</div><div class="line">out dx, al</div><div class="line"></div><div class="line">mov dx, 1f2h</div><div class="line">mov al, 1</div><div class="line">out dx, al</div><div class="line"></div><div class="line">mov dx, 1f3h</div><div class="line">mov al, 11h</div><div class="line">out dx, al</div><div class="line"></div><div class="line">mov dx, 1f4h</div><div class="line">mov al, 22h</div><div class="line">out dx, al</div><div class="line"></div><div class="line">mov dx, 1f5h</div><div class="line">mov al, 33h</div><div class="line">out dx, al</div><div class="line"></div><div class="line">mov dx, 1f6h</div><div class="line">mov al, 44h</div><div class="line">out dx, al</div><div class="line"></div><div class="line">mov dx, 1f7h   ; 设置读取扇区的命令C8h，不同于20h，这个是DMA读取扇区的命令</div><div class="line">mov al, C8h</div><div class="line">out dx, al</div><div class="line"></div><div class="line">mov dx, 0C000h ; 设置开始停止位为1，开始DMA，并且指定为读取硬盘操作</div><div class="line">mov al, 9h     ; （对硬盘而言是写出，所以设置bit3）</div><div class="line">out dx, al</div><div class="line"></div><div class="line">call wait_int  ; 等待中断</div><div class="line"></div><div class="line">mov dx, 0C000h ; 中断返回，设置开始停止位为0，停止DMA</div><div class="line">mov al, 0h     ; 如果一切都顺利，那么20000h开始的512个字节</div><div class="line">out dx, al     ; 就应该是读出的硬盘数据了</div><div class="line"> </div></pre></td></tr></table></figure>
+<pre><code>mov dx, 0C000h ; 设置开始停止位为0，停止DMA
+mov al, 0h
+out dx, al
+
+mov dx, 0C002h ; 清除中断位和错误位，这里清除方式比较特别，设置1后清除
+mov al, 6h
+out dx, al
+
+; 配置描述符表，表地址为10000h，且只有一个描述符
+; 描述符描述的物理基址是20000h，大小为512字节，且设置了第7位，
+; 说明自己就是最后一个描述符
+mov dword ptr [10000h], 20000h
+mov dowrd ptr [10004h], 200h | 80000000h
+mov dx, 0C004h
+mov eax, 10000h
+out dx, eax
+
+mov dx, 3f6h   ; 这里不再设置nIEN，DMA需要中断
+mov al, 0h
+out dx, al
+
+mov dx, 1f1h   ; 下面代码基本上和PIO一致，
+mov al, 0      ; 详细注释请看上一篇文章
+out dx, al
+
+mov dx, 1f2h
+mov al, 1
+out dx, al
+
+mov dx, 1f3h
+mov al, 11h
+out dx, al
+
+mov dx, 1f4h
+mov al, 22h
+out dx, al
+
+mov dx, 1f5h
+mov al, 33h
+out dx, al
+
+mov dx, 1f6h
+mov al, 44h
+out dx, al
+
+mov dx, 1f7h   ; 设置读取扇区的命令C8h，不同于20h，这个是DMA读取扇区的命令
+mov al, C8h
+out dx, al
+
+mov dx, 0C000h ; 设置开始停止位为1，开始DMA，并且指定为读取硬盘操作
+mov al, 9h     ; （对硬盘而言是写出，所以设置bit3）
+out dx, al
+
+call wait_int  ; 等待中断
+
+mov dx, 0C000h ; 中断返回，设置开始停止位为0，停止DMA
+mov al, 0h     ; 如果一切都顺利，那么20000h开始的512个字节
+out dx, al     ; 就应该是读出的硬盘数据了
+ </code></pre>
 <p>上面的代码主要分为以下这几步：<br>1) 在系统内存中配置PRD Table。每个PRD是8个字节，其中包含着一个起始内存地址和一个内存大小传送，而且PRD必须是4字节对齐的。<br>2) 给PRD Table指针寄存器传入配置好的PRD Table的地址，设置读写控制位，清除中断和错误位。<br>3) 设置读写命令，包括读写的驱动器，逻辑地址等（这里基本上和PIO类似）。<br>4) 设置总线主控IDE命令寄存器的开始/停止位为1，控制器开始执行DMA操作。<br>5) 控制器DMA操作结束，IDE设备发起中断，收到中断后，设置开始/停止位为0（我们省略了读取状态寄存器来查看操作是否成功的步骤。）  </p>
 <p>如果只是从IDE方面来看，代码没有复杂多少，可惜的是他还需要配合其他计算机硬件，所以实际要用上的代码要比PIO多上了不少。最后还是给大家推荐一些深入理解DMA的资料吧。<br>ISA DMA：<a href="http://wiki.osdev.org/ISA_DMA" target="_blank" rel="external">http://wiki.osdev.org/ISA_DMA</a><br>PCI DMA：<a href="http://wiki.osdev.org/ATA/ATAPI_using_DMA" target="_blank" rel="external">http://wiki.osdev.org/ATA/ATAPI_using_DMA</a>  </p>
 
-      
+            </article>
+            
+                <div class="share">
+                    <!--开启分享-->
+<div class="share-component" data-disabled="google,twitter,facebook" data-description=""></div>
+
+<script src="/js/share.min.js"></script>
+
+                </div>    
+            
+
+            
+            
+                
+<div class="comments">
+    <div id="container"></div>
+        <script src="/js/gitment.browser.js"></script>
+         <script>
+            var gitment = new Gitment({
+                id: '/2013/08/31/e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-2/',
+                owner: '',
+                repo: '',
+                oauth: {
+                    client_id: "",
+                    client_secret: "",
+                }
+            })
+        gitment.render('container')
+        </script>
+</div>
+
+            
+
+        </div>
+        <div class="column one-fourth">
+            
+                
+                
+
+
+<h3>Post Directory</h3>
+
+<div id="post-directory-module">
+	<section class="post-directory">
+		<p><strong class="toc-title">文章目录</strong></p>
+		
+	</section>
+</div>
+            
+        </div>
     </div>
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2013/08/31/e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-2/" data-id="cj6etaktk0035fcg929voemes" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2013/09/10/windows7e4b88be68ea7e588b6e58d95e4b8aae8bf9be7a88be99fb3e9878fe79a84e5b08fe68a80e5b7a7/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Récent</strong>
-      <div class="article-nav-title">
-        
-          Windows7下控制单个进程音量的小技巧
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2013/08/26/e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-1/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ancien</strong>
-      <div class="article-nav-title">使用PCI IDE Controller读写硬盘 – 1</div>
-    </a>
-  
-</nav>
-
-  
-</article>
-
 </section>
-        
-          <aside id="sidebar">
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Catégories</h3>
-    <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
+
+<footer class="container">
+    <div class="site-footer" role="contentinfo">
+        <div class="copyright left mobile-block">
+                © 2016
+                <span title="yumemor">yumemor</span>
+                <a href="javascript:window.scrollTo(0,0)" class="right mobile-visible">TOP</a>
+        </div>
+
+        <ul class="site-footer-links right mobile-hidden">
+            <li>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+            </li>
+        </ul>
+
+        <a href="https://github.com/yumemor/hexo-theme-primer" target="_blank" aria-label="view source code">
+            <span class="mega-octicon octicon-mark-github" title="GitHub"></span>
+        </a>
+
+        <ul class="site-footer-links mobile-hidden">
+            
+                  
+                  <li>
+                    <a href="/"  title="Home">Home</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/categories/"  title="Category">Category</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/message/"  title="Message">Message</a>
+                  </li>
+            
+            <li>
+                <a href="/atom.xml">
+                    <span class="octicon octicon-rss" style="color:orange;"></span>
+                </a>
+            </li>
+        </ul>
     </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
-    <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
-    </div>
-  </div>
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
-          </li>
-        
-          <li>
-            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
-          </li>
-        
-          <li>
-            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
-          </li>
-        
-          <li>
-            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
-          </li>
-        
-          <li>
-            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2017 0CCh<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
 </footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+		<script src="/js/geopattern.js"></script>
+		<script src="/js/highlight.pack.js"></script>
+		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 
+		
+			<script src="/js/toc.js"></script>
+		
 
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+		<script src="/js/index.js"></script>
 
+		 <script src="/js/popular_repo.js"></script> 
 
-<script src="/js/script.js"></script>
-
-  </div>
-</body>
+	</body>
 </html>

@@ -1,268 +1,522 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
 <head>
   <meta charset="utf-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+  <link rel="icon" href="/favicon.ico">
   
   <title>0CCh Blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="0CCh Blog">
-<meta property="og:url" content="http://0cch.com/page/2/index.html">
-<meta property="og:site_name" content="0CCh Blog">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="0CCh Blog">
-  
-    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
   <link rel="stylesheet" href="/css/style.css">
-  
-
+  <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
+  <!--在这里倒入jquery 方便处理部分页面的jquery-->
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script>
 </head>
-
-<body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">0CCh Blog</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
+<body class="home">
+	<header class="site-header navfixed-false">
+  <div class="container">
+      <h1><a href="/" title="0CCh Blog"><span class="octicon octicon-mark-github"></span> 0CCh Blog</a></h1>
+      <nav class="site-header-nav" role="navigation">
         
-          <a class="main-nav-link" href="/">Home</a>
+              
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
-          <a class="main-nav-link" href="/archives">Archives</a>
+              
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+        
+              
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+        
+              
+              <a href="/message/"  class=" site-header-nav-item hvr-underline-from-center" title="Message">Message</a>
         
       </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
-      </div>
-    </div>
   </div>
 </header>
-      <div class="outer">
-        <section id="main">
-  
-    <article id="post-luadbg-windbg-ext" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/11/15/luadbg-windbg-ext/" class="article-date">
-  <time datetime="2016-11-15T02:50:37.000Z" itemprop="datePublished">2016-11-15</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>
-  </div>
 
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
+	<section class="banner-false">
+    <div class="collection-head">
+        <div class="container">
+            <div class="collection-title">
+                <h1 class="collection-header" id="site-description">
+                    
+                </h1>
+                <div class="collection-info">
+                    
+                    
+                        <span class="meta-info">
+                            
+                                <span class="octicon octicon-location">
+                                   
+                                        China
+                                    
+                                </span>
+                                
+                            
+                        </span>
+                    
+                        <span class="meta-info">
+                            
+                                <span class="octicon octicon-mark-github">
+                                   
+                                </span>
+                                
+                                    <a href="http://github.com/0cch" target="_blank">0cch</a>
+                                
+                            
+                        </span>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+	   <section class="container">
+    <div class="columns">
+        <div class="column two-thirds">
+            
+                  <article id="post-luadbg-windbg-ext" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
         
   
-    <h1 itemprop="name">
       <a class="article-title" href="/2016/11/15/luadbg-windbg-ext/">windbg的lua脚本扩展luadbg</a>
-    </h1>
   
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>2012年的时候，我在blog上写到过开发了一个windbg的lua扩展<a href="https://0cch.com/debugging/2012/08/16/dbglua-ef-bc-8c-e8-ae-a9lua-e8-84-9a-e6-9c-ac-e4-b9-9f-e8-83-bd-e6-8e-a7-e5-88-b6windbg-e8-bf-9b-e8-a1-8c-e8-b0-83-e8-af-95.html">dbglua</a>，当时觉得windbg的原生脚本语法太奇怪了，而且太不容易使用。现在来看，依旧如此，只不过我已经很熟悉这个原生脚本了。而这个lua扩展反倒是没什么用，因为用起来也不太方便，比如访问结构体。</p>
+      </h3>
+      <div class="repo-list-description">
+        
+          <p>2012年的时候，我在blog上写到过开发了一个windbg的lua扩展<a href="https://0cch.com/debugging/2012/08/16/dbglua-ef-bc-8c-e8-ae-a9lua-e8-84-9a-e6-9c-ac-e4-b9-9f-e8-83-bd-e6-8e-a7-e5-88-b6windbg-e8-bf-9b-e8-a1-8c-e8-b0-83-e8-af-95.html">dbglua</a>，当时觉得windbg的原生脚本语法太奇怪了，而且太不容易使用。现在来看，依旧如此，只不过我已经很熟悉这个原生脚本了。而这个lua扩展反倒是没什么用，因为用起来也不太方便，比如访问结构体。</p>
 <p>最近无意之中看了一眼pykd，他用重载.操作符的方式访问符号和结构体深深的吸引了我，感觉非常有趣。而python本身依赖比较多，这也促使我拿起之前的代码看了看，并且决定在github上重新建立这个项目叫做<a href="https://github.com/0cch/luadbg" target="_blank" rel="external">luadbg</a>，这次我决定长期维护这个项目，想到新的功能就往里面写，就像我一直维护的<a href="https://github.com/0cch/0cchext" target="_blank" rel="external">0cchext</a>一样。luadbg除了兼容了老dbglua的函数以外，还添加了几个我觉得很方便的类，主要是用重载.操作符的方式来访问模块和结构体的数据，效果如下图所示：</p>
 <p><a href="/uploads/2016/11/20161116113129.png"><img src="/uploads/2016/11/20161116113129.png" alt="20161116113129"></a></p>
 <p>当然，也可以用!luacmd命令进入input模式，从而一条一条的输入语句来测试正确性。</p>
 
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2016-11-15T02:50:37.000Z" itemprop="datePublished">2016-11-15</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
+          </span>
+        
       
+        <!--
+          
+        -->
+
+      </p>
     </div>
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/11/15/luadbg-windbg-ext/" data-id="cj6etakwd0074fcg96zg5kzhx" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-auto-increase-build-number" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/10/18/auto-increase-build-number/" class="article-date">
-  <time datetime="2016-10-18T01:41:08.000Z" itemprop="datePublished">2016-10-18</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Tips/">Tips</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
+  </article>
+            
+                  <article id="post-auto-increase-build-number" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
         
   
-    <h1 itemprop="name">
       <a class="article-title" href="/2016/10/18/auto-increase-build-number/">编译时自动增加build number</a>
-    </h1>
   
 
-      </header>
+      </h3>
+      <div class="repo-list-description">
+        
+          <p>最近和朋友讨论版本号常用的几种规范，前三位&lt;主版本&gt;.&lt;子版本&gt;.&lt;修正版本&gt;基本上一致，不需要详说。主要区别产生在最后一位，有的是build number，有的是时间日期，还有的是git或者svn的revision。我习惯用build number，每次编译都会增加版本号最后一位的数字。但是手动去修改明显不科学也不可靠，所以给和我有一样习惯的朋友分享一个我早年写的python脚本，无论是自己的工具还是公司的产品我一直都在用这个。</p>
+<pre><code>用法就是在VS的工程属性Build Event -&gt; Pre Build Event里设置x:\incbuildnum.py $(ProjectDir)$(ProjectName).rc。
+</code></pre><pre><code>
+import re
+import os
+import sys
+import shutil
+
+if os.path.isfile(sys.argv[1] + &quot;.bak&quot;):
+	os.remove(sys.argv[1] + &quot;.bak&quot;)
+shutil.copy(sys.argv[1], sys.argv[1] + &quot;.bak&quot;)
+
+with open(sys.argv[1], &#39;r+&#39;) as content_file:
+    content = content_file.read()
     
-    <div class="article-entry" itemprop="articleBody">
+    
+    m = re.search(&quot;VALUE \&quot;FileVersion\&quot;, \&quot;(([\\d]+).[ ]*)*([\\d]+)\&quot;&quot;, content)
+    new_ver = str(int(m.group(3)) + 1)
+    content = re.sub(&quot;(VALUE \&quot;FileVersion\&quot;, \&quot;([\\d]+.[ ]*)*)[\\d]+\&quot;&quot;, &quot;\\g&lt;1&gt;&quot; + new_ver + &quot;\&quot;&quot;, content)
+
+    m = re.search(&quot;FILEVERSION (([\\d]+).[ ]*)*([\\d]+)&quot;, content)
+    new_ver = str(int(m.group(3)) + 1)
+    content = re.sub(&quot;(FILEVERSION ([\\d]+.[ ]*)*)([\\d]+)&quot;, &quot;\\g&lt;1&gt;&quot; + new_ver, content)
+
+    m = re.search(&quot;VALUE \&quot;ProductVersion\&quot;, \&quot;(([\\d]+).[ ]*)*([\\d]+)\&quot;&quot;, content)
+    new_ver = str(int(m.group(3)) + 1)
+    content = re.sub(&quot;(VALUE \&quot;ProductVersion\&quot;, \&quot;([\\d]+.[ ]*)*)[\\d]+\&quot;&quot;, &quot;\\g&lt;1&gt;&quot; + new_ver + &quot;\&quot;&quot;, content)
+
+    m = re.search(&quot;PRODUCTVERSION (([\\d]+).[ ]*)*([\\d]+)&quot;, content)
+    new_ver = str(int(m.group(3)) + 1)
+    content = re.sub(&quot;(PRODUCTVERSION ([\\d]+.[ ]*)*)([\\d]+)&quot;, &quot;\\g&lt;1&gt;&quot; + new_ver, content)
+    
+    content_file.seek(0)
+    content_file.write(content)
+    content_file.truncate()
+    content_file.close()
+    
+</code></pre>
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2016-10-18T01:41:08.000Z" itemprop="datePublished">2016-10-18</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
       
-        <p>最近和朋友讨论版本号常用的几种规范，前三位&lt;主版本&gt;.&lt;子版本&gt;.&lt;修正版本&gt;基本上一致，不需要详说。主要区别产生在最后一位，有的是build number，有的是时间日期，还有的是git或者svn的revision。我习惯用build number，每次编译都会增加版本号最后一位的数字。但是手动去修改明显不科学也不可靠，所以给和我有一样习惯的朋友分享一个我早年写的python脚本，无论是自己的工具还是公司的产品我一直都在用这个。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">用法就是在VS的工程属性Build Event -&gt; Pre Build Event里设置x:\incbuildnum.py $(ProjectDir)$(ProjectName).rc。</div></pre></td></tr></table></figure>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">import</span> re</div><div class="line"><span class="keyword">import</span> os</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">import</span> shutil</div><div class="line"></div><div class="line"><span class="keyword">if</span> os.path.isfile(sys.argv[<span class="number">1</span>] + <span class="string">".bak"</span>):</div><div class="line">	os.remove(sys.argv[<span class="number">1</span>] + <span class="string">".bak"</span>)</div><div class="line">shutil.copy(sys.argv[<span class="number">1</span>], sys.argv[<span class="number">1</span>] + <span class="string">".bak"</span>)</div><div class="line"></div><div class="line"><span class="keyword">with</span> open(sys.argv[<span class="number">1</span>], <span class="string">'r+'</span>) <span class="keyword">as</span> content_file:</div><div class="line">    content = content_file.read()</div><div class="line">    </div><div class="line">    </div><div class="line">    m = re.search(<span class="string">"VALUE \"FileVersion\", \"(([\\d]+).[ ]*)*([\\d]+)\""</span>, content)</div><div class="line">    new_ver = str(int(m.group(<span class="number">3</span>)) + <span class="number">1</span>)</div><div class="line">    content = re.sub(<span class="string">"(VALUE \"FileVersion\", \"([\\d]+.[ ]*)*)[\\d]+\""</span>, <span class="string">"\\g&lt;1&gt;"</span> + new_ver + <span class="string">"\""</span>, content)</div><div class="line"></div><div class="line">    m = re.search(<span class="string">"FILEVERSION (([\\d]+).[ ]*)*([\\d]+)"</span>, content)</div><div class="line">    new_ver = str(int(m.group(<span class="number">3</span>)) + <span class="number">1</span>)</div><div class="line">    content = re.sub(<span class="string">"(FILEVERSION ([\\d]+.[ ]*)*)([\\d]+)"</span>, <span class="string">"\\g&lt;1&gt;"</span> + new_ver, content)</div><div class="line"></div><div class="line">    m = re.search(<span class="string">"VALUE \"ProductVersion\", \"(([\\d]+).[ ]*)*([\\d]+)\""</span>, content)</div><div class="line">    new_ver = str(int(m.group(<span class="number">3</span>)) + <span class="number">1</span>)</div><div class="line">    content = re.sub(<span class="string">"(VALUE \"ProductVersion\", \"([\\d]+.[ ]*)*)[\\d]+\""</span>, <span class="string">"\\g&lt;1&gt;"</span> + new_ver + <span class="string">"\""</span>, content)</div><div class="line"></div><div class="line">    m = re.search(<span class="string">"PRODUCTVERSION (([\\d]+).[ ]*)*([\\d]+)"</span>, content)</div><div class="line">    new_ver = str(int(m.group(<span class="number">3</span>)) + <span class="number">1</span>)</div><div class="line">    content = re.sub(<span class="string">"(PRODUCTVERSION ([\\d]+.[ ]*)*)([\\d]+)"</span>, <span class="string">"\\g&lt;1&gt;"</span> + new_ver, content)</div><div class="line">    </div><div class="line">    content_file.seek(<span class="number">0</span>)</div><div class="line">    content_file.write(content)</div><div class="line">    content_file.truncate()</div><div class="line">    content_file.close()</div><div class="line">    </div><div class="line"></div></pre></td></tr></table></figure>
-      
+        <!--
+          
+        -->
+
+      </p>
     </div>
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/10/18/auto-increase-build-number/" data-id="cj6etakwc0072fcg9p090yhm9" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-verify-cert" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/09/21/verify-cert/" class="article-date">
-  <time datetime="2016-09-21T04:22:50.000Z" itemprop="datePublished">2016-09-21</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Tips/">Tips</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
+  </article>
+            
+                  <article id="post-verify-cert" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
         
   
-    <h1 itemprop="name">
       <a class="article-title" href="/2016/09/21/verify-cert/">验证文件签名</a>
-    </h1>
   
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
+      </h3>
+      <div class="repo-list-description">
+        
+          <p>Sysinternal(<a href="http://forum.sysinternals.com/howto-verify-the-digital-signature-of-a-file_topic19247.html)上有关于验证签名的代码，不过代码有点问题，他只能验证PE签名，无法验证文件签名，所以我这里稍作了点修改，记录一下" target="_blank" rel="external">http://forum.sysinternals.com/howto-verify-the-digital-signature-of-a-file_topic19247.html)上有关于验证签名的代码，不过代码有点问题，他只能验证PE签名，无法验证文件签名，所以我这里稍作了点修改，记录一下</a></p>
+<pre><code>
+#define ENCODING (X509_ASN_ENCODING | PKCS_7_ASN_ENCODING)
+
+BOOL CheckFileTrust(LPCTSTR filename, CString &amp;signer_file)
+{
+	HCATADMIN cat_admin_handle = NULL;
+	if (!CryptCATAdminAcquireContext(&amp;cat_admin_handle, NULL, 0))
+	{
+		return FALSE;
+	}
+
+	HANDLE hFile = CreateFileW(filename, GENERIC_READ, FILE_SHARE_READ,
+		NULL, OPEN_EXISTING, 0, NULL);
+	if (INVALID_HANDLE_VALUE == hFile)
+	{
+		CryptCATAdminReleaseContext(cat_admin_handle, 0);
+		return FALSE;
+	}
+
+	DWORD hash_count = 100;
+	BYTE hash_data[100];
+	CryptCATAdminCalcHashFromFileHandle(hFile, &amp;hash_count, hash_data, 0);
+	CloseHandle(hFile);
+
+	LPWSTR member_tag = new WCHAR[hash_count * 2 + 1];
+	for (DWORD dw = 0; dw &lt; hash_count; ++dw)
+	{
+		wsprintfW(&amp;member_tag[dw * 2], L&quot;%02X&quot;, hash_data[dw]);
+	}
+
+	WINTRUST_DATA wd = { 0 };
+	WINTRUST_FILE_INFO wfi = { 0 };
+	WINTRUST_CATALOG_INFO wci = { 0 };
+	CATALOG_INFO ci = { 0 };
+	HCATINFO cat_admin_info = CryptCATAdminEnumCatalogFromHash(cat_admin_handle,
+		hash_data, hash_count, 0, NULL);
+	if (NULL == cat_admin_info)
+	{
+		wfi.cbStruct = sizeof(WINTRUST_FILE_INFO);
+		wfi.pcwszFilePath = filename;
+		wfi.hFile = NULL;
+		wfi.pgKnownSubject = NULL;
+
+		wd.cbStruct = sizeof(WINTRUST_DATA);
+		wd.dwUnionChoice = WTD_CHOICE_FILE;
+		wd.pFile = &amp;wfi;
+		wd.dwUIChoice = WTD_UI_NONE;
+		wd.fdwRevocationChecks = WTD_REVOKE_NONE;
+		wd.dwStateAction = WTD_STATEACTION_IGNORE;
+		wd.dwProvFlags = WTD_SAFER_FLAG;
+		wd.hWVTStateData = NULL;
+		wd.pwszURLReference = NULL;
+		signer_file = filename;
+	}
+	else
+	{
+		CryptCATCatalogInfoFromContext(cat_admin_info, &amp;ci, 0);
+		wci.cbStruct = sizeof(WINTRUST_CATALOG_INFO);
+		wci.pcwszCatalogFilePath = ci.wszCatalogFile;
+		wci.pcwszMemberFilePath = filename;
+		wci.pcwszMemberTag = member_tag;
+		wci.pbCalculatedFileHash = hash_data;
+		wci.cbCalculatedFileHash = hash_count;
+
+		wd.cbStruct = sizeof(WINTRUST_DATA);
+		wd.dwUnionChoice = WTD_CHOICE_CATALOG;
+		wd.pCatalog = &amp;wci;
+		wd.dwUIChoice = WTD_UI_NONE;
+		wd.fdwRevocationChecks = WTD_REVOKE_WHOLECHAIN;
+		wd.dwProvFlags = 0;
+		wd.hWVTStateData = NULL;
+		wd.pwszURLReference = NULL;
+		signer_file = ci.wszCatalogFile;
+	}
+	GUID action = WINTRUST_ACTION_GENERIC_VERIFY_V2;
+	HRESULT hr = WinVerifyTrust(NULL, &amp;action, &amp;wd);
+	BOOL retval = SUCCEEDED(hr);
+
+	if (NULL != cat_admin_info) {
+		CryptCATAdminReleaseCatalogContext(cat_admin_handle, cat_admin_info, 0);
+	}
+	CryptCATAdminReleaseContext(cat_admin_handle, 0);
+	delete[] member_tag;
+	return retval;
+}
+
+BOOL GetCertificateInfo(PCCERT_CONTEXT cert_context, CString &amp;signer_name)
+{
+	LPTSTR name = NULL;
+	DWORD data;
+
+	if (!(data = CertGetNameString(cert_context,
+		CERT_NAME_SIMPLE_DISPLAY_TYPE,
+		0,
+		NULL,
+		NULL,
+		0))) {
+			return FALSE;
+	}
+
+	&#x2F;&#x2F; Allocate memory for subject name.
+	name = (LPTSTR)LocalAlloc(LPTR, data * sizeof(TCHAR));
+	if (!name) {
+		return FALSE;
+	}
+
+	&#x2F;&#x2F; Get subject name.
+	if (!(CertGetNameString(cert_context,
+		CERT_NAME_SIMPLE_DISPLAY_TYPE,
+		0,
+		NULL,
+		name,
+		data))) {
+
+			LocalFree(name);
+			return FALSE;
+	}
+	signer_name = name;
+	LocalFree(name);
+	return TRUE;
+}
+
+
+BOOL GetFileSigner(LPCTSTR szFileName, CString &amp;signer_name)
+{
+	HCERTSTORE store_handle = NULL;
+	HCRYPTMSG msg_handle = NULL;
+	PCCERT_CONTEXT cert_context = NULL;
+	BOOL retval = FALSE;
+	DWORD encoding, content_type, format_type;
+	PCMSG_SIGNER_INFO signer_info = NULL;
+	DWORD signer_info_size;
+	CERT_INFO cert_info;
+	do
+	{
+		&#x2F;&#x2F; Get message handle and store handle from the signed file.
+		retval = CryptQueryObject(CERT_QUERY_OBJECT_FILE,
+			szFileName,
+			CERT_QUERY_CONTENT_FLAG_PKCS7_SIGNED_EMBED,
+			CERT_QUERY_FORMAT_FLAG_BINARY,
+			0,
+			&amp;encoding,
+			&amp;content_type,
+			&amp;format_type,
+			&amp;store_handle,
+			&amp;msg_handle,
+			NULL);
+		if (!retval) {
+			break;
+		}
+
+		&#x2F;&#x2F; Get signer information size.
+		retval = CryptMsgGetParam(msg_handle,
+			CMSG_SIGNER_INFO_PARAM,
+			0,
+			NULL,
+			&amp;signer_info_size);
+		if (!retval) {
+			break;
+		}
+
+		&#x2F;&#x2F; Allocate memory for signer information.
+		signer_info = (PCMSG_SIGNER_INFO)LocalAlloc(LPTR, signer_info_size);
+		if (!signer_info) {
+			break;
+		}
+
+		&#x2F;&#x2F; Get Signer Information.
+		retval = CryptMsgGetParam(msg_handle,
+			CMSG_SIGNER_INFO_PARAM,
+			0,
+			(PVOID)signer_info,
+			&amp;signer_info_size);
+		if (!retval) {
+			break;
+		}
+
+
+		&#x2F;&#x2F; Search for the signer certificate in the temporary 
+		&#x2F;&#x2F; certificate store.
+		cert_info.Issuer = signer_info-&gt;Issuer;
+		cert_info.SerialNumber = signer_info-&gt;SerialNumber;
+
+		cert_context = CertFindCertificateInStore(store_handle,
+			ENCODING,
+			0,
+			CERT_FIND_SUBJECT_CERT,
+			(PVOID)&amp;cert_info,
+			NULL);
+		if (!cert_context) {
+			break;
+		}
+
+		retval = GetCertificateInfo(cert_context, signer_name);
+
+	} while (0);
+
+	if (signer_info != NULL) { 
+		LocalFree(signer_info); 
+	}
+	if (cert_context != NULL) {
+		CertFreeCertificateContext(cert_context);
+	}
+	if (store_handle != NULL) {
+		CertCloseStore(store_handle, 0);
+	}
+	if (msg_handle != NULL) {
+		CryptMsgClose(msg_handle);
+	}
+
+	return retval;
+}
+</code></pre>
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2016-09-21T04:22:50.000Z" itemprop="datePublished">2016-09-21</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
       
-        <p>Sysinternal(<a href="http://forum.sysinternals.com/howto-verify-the-digital-signature-of-a-file_topic19247.html)上有关于验证签名的代码，不过代码有点问题，他只能验证PE签名，无法验证文件签名，所以我这里稍作了点修改，记录一下" target="_blank" rel="external">http://forum.sysinternals.com/howto-verify-the-digital-signature-of-a-file_topic19247.html)上有关于验证签名的代码，不过代码有点问题，他只能验证PE签名，无法验证文件签名，所以我这里稍作了点修改，记录一下</a></p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> ENCODING (X509_ASN_ENCODING | PKCS_7_ASN_ENCODING)</span></div><div class="line"></div><div class="line"><span class="function">BOOL <span class="title">CheckFileTrust</span><span class="params">(LPCTSTR filename, CString &amp;signer_file)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">	HCATADMIN cat_admin_handle = <span class="literal">NULL</span>;</div><div class="line">	<span class="keyword">if</span> (!CryptCATAdminAcquireContext(&amp;cat_admin_handle, <span class="literal">NULL</span>, <span class="number">0</span>))</div><div class="line">	&#123;</div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	HANDLE hFile = CreateFileW(filename, GENERIC_READ, FILE_SHARE_READ,</div><div class="line">		<span class="literal">NULL</span>, OPEN_EXISTING, <span class="number">0</span>, <span class="literal">NULL</span>);</div><div class="line">	<span class="keyword">if</span> (INVALID_HANDLE_VALUE == hFile)</div><div class="line">	&#123;</div><div class="line">		CryptCATAdminReleaseContext(cat_admin_handle, <span class="number">0</span>);</div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	DWORD hash_count = <span class="number">100</span>;</div><div class="line">	BYTE hash_data[<span class="number">100</span>];</div><div class="line">	CryptCATAdminCalcHashFromFileHandle(hFile, &amp;hash_count, hash_data, <span class="number">0</span>);</div><div class="line">	CloseHandle(hFile);</div><div class="line"></div><div class="line">	LPWSTR member_tag = <span class="keyword">new</span> WCHAR[hash_count * <span class="number">2</span> + <span class="number">1</span>];</div><div class="line">	<span class="keyword">for</span> (DWORD dw = <span class="number">0</span>; dw &lt; hash_count; ++dw)</div><div class="line">	&#123;</div><div class="line">		wsprintfW(&amp;member_tag[dw * <span class="number">2</span>], <span class="string">L"%02X"</span>, hash_data[dw]);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	WINTRUST_DATA wd = &#123; <span class="number">0</span> &#125;;</div><div class="line">	WINTRUST_FILE_INFO wfi = &#123; <span class="number">0</span> &#125;;</div><div class="line">	WINTRUST_CATALOG_INFO wci = &#123; <span class="number">0</span> &#125;;</div><div class="line">	CATALOG_INFO ci = &#123; <span class="number">0</span> &#125;;</div><div class="line">	HCATINFO cat_admin_info = CryptCATAdminEnumCatalogFromHash(cat_admin_handle,</div><div class="line">		hash_data, hash_count, <span class="number">0</span>, <span class="literal">NULL</span>);</div><div class="line">	<span class="keyword">if</span> (<span class="literal">NULL</span> == cat_admin_info)</div><div class="line">	&#123;</div><div class="line">		wfi.cbStruct = <span class="keyword">sizeof</span>(WINTRUST_FILE_INFO);</div><div class="line">		wfi.pcwszFilePath = filename;</div><div class="line">		wfi.hFile = <span class="literal">NULL</span>;</div><div class="line">		wfi.pgKnownSubject = <span class="literal">NULL</span>;</div><div class="line"></div><div class="line">		wd.cbStruct = <span class="keyword">sizeof</span>(WINTRUST_DATA);</div><div class="line">		wd.dwUnionChoice = WTD_CHOICE_FILE;</div><div class="line">		wd.pFile = &amp;wfi;</div><div class="line">		wd.dwUIChoice = WTD_UI_NONE;</div><div class="line">		wd.fdwRevocationChecks = WTD_REVOKE_NONE;</div><div class="line">		wd.dwStateAction = WTD_STATEACTION_IGNORE;</div><div class="line">		wd.dwProvFlags = WTD_SAFER_FLAG;</div><div class="line">		wd.hWVTStateData = <span class="literal">NULL</span>;</div><div class="line">		wd.pwszURLReference = <span class="literal">NULL</span>;</div><div class="line">		signer_file = filename;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">else</span></div><div class="line">	&#123;</div><div class="line">		CryptCATCatalogInfoFromContext(cat_admin_info, &amp;ci, <span class="number">0</span>);</div><div class="line">		wci.cbStruct = <span class="keyword">sizeof</span>(WINTRUST_CATALOG_INFO);</div><div class="line">		wci.pcwszCatalogFilePath = ci.wszCatalogFile;</div><div class="line">		wci.pcwszMemberFilePath = filename;</div><div class="line">		wci.pcwszMemberTag = member_tag;</div><div class="line">		wci.pbCalculatedFileHash = hash_data;</div><div class="line">		wci.cbCalculatedFileHash = hash_count;</div><div class="line"></div><div class="line">		wd.cbStruct = <span class="keyword">sizeof</span>(WINTRUST_DATA);</div><div class="line">		wd.dwUnionChoice = WTD_CHOICE_CATALOG;</div><div class="line">		wd.pCatalog = &amp;wci;</div><div class="line">		wd.dwUIChoice = WTD_UI_NONE;</div><div class="line">		wd.fdwRevocationChecks = WTD_REVOKE_WHOLECHAIN;</div><div class="line">		wd.dwProvFlags = <span class="number">0</span>;</div><div class="line">		wd.hWVTStateData = <span class="literal">NULL</span>;</div><div class="line">		wd.pwszURLReference = <span class="literal">NULL</span>;</div><div class="line">		signer_file = ci.wszCatalogFile;</div><div class="line">	&#125;</div><div class="line">	GUID action = WINTRUST_ACTION_GENERIC_VERIFY_V2;</div><div class="line">	HRESULT hr = WinVerifyTrust(<span class="literal">NULL</span>, &amp;action, &amp;wd);</div><div class="line">	BOOL retval = SUCCEEDED(hr);</div><div class="line"></div><div class="line">	<span class="keyword">if</span> (<span class="literal">NULL</span> != cat_admin_info) &#123;</div><div class="line">		CryptCATAdminReleaseCatalogContext(cat_admin_handle, cat_admin_info, <span class="number">0</span>);</div><div class="line">	&#125;</div><div class="line">	CryptCATAdminReleaseContext(cat_admin_handle, <span class="number">0</span>);</div><div class="line">	<span class="keyword">delete</span>[] member_tag;</div><div class="line">	<span class="keyword">return</span> retval;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function">BOOL <span class="title">GetCertificateInfo</span><span class="params">(PCCERT_CONTEXT cert_context, CString &amp;signer_name)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">	LPTSTR name = <span class="literal">NULL</span>;</div><div class="line">	DWORD data;</div><div class="line"></div><div class="line">	<span class="keyword">if</span> (!(data = CertGetNameString(cert_context,</div><div class="line">		CERT_NAME_SIMPLE_DISPLAY_TYPE,</div><div class="line">		<span class="number">0</span>,</div><div class="line">		<span class="literal">NULL</span>,</div><div class="line">		<span class="literal">NULL</span>,</div><div class="line">		<span class="number">0</span>))) &#123;</div><div class="line">			<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// Allocate memory for subject name.</span></div><div class="line">	name = (LPTSTR)LocalAlloc(LPTR, data * <span class="keyword">sizeof</span>(TCHAR));</div><div class="line">	<span class="keyword">if</span> (!name) &#123;</div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// Get subject name.</span></div><div class="line">	<span class="keyword">if</span> (!(CertGetNameString(cert_context,</div><div class="line">		CERT_NAME_SIMPLE_DISPLAY_TYPE,</div><div class="line">		<span class="number">0</span>,</div><div class="line">		<span class="literal">NULL</span>,</div><div class="line">		name,</div><div class="line">		data))) &#123;</div><div class="line"></div><div class="line">			LocalFree(name);</div><div class="line">			<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line">	signer_name = name;</div><div class="line">	LocalFree(name);</div><div class="line">	<span class="keyword">return</span> TRUE;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="function">BOOL <span class="title">GetFileSigner</span><span class="params">(LPCTSTR szFileName, CString &amp;signer_name)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">	HCERTSTORE store_handle = <span class="literal">NULL</span>;</div><div class="line">	HCRYPTMSG msg_handle = <span class="literal">NULL</span>;</div><div class="line">	PCCERT_CONTEXT cert_context = <span class="literal">NULL</span>;</div><div class="line">	BOOL retval = FALSE;</div><div class="line">	DWORD encoding, content_type, format_type;</div><div class="line">	PCMSG_SIGNER_INFO signer_info = <span class="literal">NULL</span>;</div><div class="line">	DWORD signer_info_size;</div><div class="line">	CERT_INFO cert_info;</div><div class="line">	<span class="keyword">do</span></div><div class="line">	&#123;</div><div class="line">		<span class="comment">// Get message handle and store handle from the signed file.</span></div><div class="line">		retval = CryptQueryObject(CERT_QUERY_OBJECT_FILE,</div><div class="line">			szFileName,</div><div class="line">			CERT_QUERY_CONTENT_FLAG_PKCS7_SIGNED_EMBED,</div><div class="line">			CERT_QUERY_FORMAT_FLAG_BINARY,</div><div class="line">			<span class="number">0</span>,</div><div class="line">			&amp;encoding,</div><div class="line">			&amp;content_type,</div><div class="line">			&amp;format_type,</div><div class="line">			&amp;store_handle,</div><div class="line">			&amp;msg_handle,</div><div class="line">			<span class="literal">NULL</span>);</div><div class="line">		<span class="keyword">if</span> (!retval) &#123;</div><div class="line">			<span class="keyword">break</span>;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="comment">// Get signer information size.</span></div><div class="line">		retval = CryptMsgGetParam(msg_handle,</div><div class="line">			CMSG_SIGNER_INFO_PARAM,</div><div class="line">			<span class="number">0</span>,</div><div class="line">			<span class="literal">NULL</span>,</div><div class="line">			&amp;signer_info_size);</div><div class="line">		<span class="keyword">if</span> (!retval) &#123;</div><div class="line">			<span class="keyword">break</span>;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="comment">// Allocate memory for signer information.</span></div><div class="line">		signer_info = (PCMSG_SIGNER_INFO)LocalAlloc(LPTR, signer_info_size);</div><div class="line">		<span class="keyword">if</span> (!signer_info) &#123;</div><div class="line">			<span class="keyword">break</span>;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="comment">// Get Signer Information.</span></div><div class="line">		retval = CryptMsgGetParam(msg_handle,</div><div class="line">			CMSG_SIGNER_INFO_PARAM,</div><div class="line">			<span class="number">0</span>,</div><div class="line">			(PVOID)signer_info,</div><div class="line">			&amp;signer_info_size);</div><div class="line">		<span class="keyword">if</span> (!retval) &#123;</div><div class="line">			<span class="keyword">break</span>;</div><div class="line">		&#125;</div><div class="line"></div><div class="line"></div><div class="line">		<span class="comment">// Search for the signer certificate in the temporary </span></div><div class="line">		<span class="comment">// certificate store.</span></div><div class="line">		cert_info.Issuer = signer_info-&gt;Issuer;</div><div class="line">		cert_info.SerialNumber = signer_info-&gt;SerialNumber;</div><div class="line"></div><div class="line">		cert_context = CertFindCertificateInStore(store_handle,</div><div class="line">			ENCODING,</div><div class="line">			<span class="number">0</span>,</div><div class="line">			CERT_FIND_SUBJECT_CERT,</div><div class="line">			(PVOID)&amp;cert_info,</div><div class="line">			<span class="literal">NULL</span>);</div><div class="line">		<span class="keyword">if</span> (!cert_context) &#123;</div><div class="line">			<span class="keyword">break</span>;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		retval = GetCertificateInfo(cert_context, signer_name);</div><div class="line"></div><div class="line">	&#125; <span class="keyword">while</span> (<span class="number">0</span>);</div><div class="line"></div><div class="line">	<span class="keyword">if</span> (signer_info != <span class="literal">NULL</span>) &#123; </div><div class="line">		LocalFree(signer_info); </div><div class="line">	&#125;</div><div class="line">	<span class="keyword">if</span> (cert_context != <span class="literal">NULL</span>) &#123;</div><div class="line">		CertFreeCertificateContext(cert_context);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">if</span> (store_handle != <span class="literal">NULL</span>) &#123;</div><div class="line">		CertCloseStore(store_handle, <span class="number">0</span>);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">if</span> (msg_handle != <span class="literal">NULL</span>) &#123;</div><div class="line">		CryptMsgClose(msg_handle);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> retval;</div><div class="line">&#125;</div><div class="line"></div></pre></td></tr></table></figure>
-      
+        <!--
+          
+        -->
+
+      </p>
     </div>
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/09/21/verify-cert/" data-id="cj6etakwb0070fcg9h0zl6pai" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-create-file-in-metadata" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/08/23/create-file-in-metadata/" class="article-date">
-  <time datetime="2016-08-23T03:58:00.000Z" itemprop="datePublished">2016-08-23</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Tips/">Tips</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
+  </article>
+            
+                  <article id="post-create-file-in-metadata" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
         
   
-    <h1 itemprop="name">
       <a class="article-title" href="/2016/08/23/create-file-in-metadata/">在NTFS元文件目录里创建文件</a>
-    </h1>
   
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>说到Rootkit就不能提到他的文件隐藏，Rootkit隐藏文件的方式千奇百怪，这里说其中一个通过NTFS元文件目录无法被普通程序显示的特性隐藏文件的方法。</p>
+      </h3>
+      <div class="repo-list-description">
+        
+          <p>说到Rootkit就不能提到他的文件隐藏，Rootkit隐藏文件的方式千奇百怪，这里说其中一个通过NTFS元文件目录无法被普通程序显示的特性隐藏文件的方法。</p>
 <p>我们都知道NTFS是有元文件的，比如$MFT(NTFS主文件表)，这种文件是我们看不到的，但是系统能访问。同样还有一种元文件目录，这个目录也是看不到的，无论你是否打开了显示系统文件，隐藏文件的选项。那么如果我们把要隐藏的文件放在这种目录下，那么就达到了隐藏的效果。</p>
 <p>举个例子 $Extend\$RmMetadata 这个目录。我们可以通过Winhex解析NTFS来读取这个目录的情况，而普通程序不行。这里我们通过这样的代码来创建文件。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">define</span> GPA(x) *(FARPROC *)&amp;My##x = GetProcAddress(GetModuleHandle(<span class="meta-string">L"ntdll.dll"</span>), #x)	</span></div><div class="line">	GPA(NtCreateFile);</div><div class="line">	GPA(RtlInitUnicodeString);</div><div class="line">	IO_STATUS_BLOCK iob;</div><div class="line">	HANDLE h;</div><div class="line">	UNICODE_STRING uni_str;</div><div class="line">	MyRtlInitUnicodeString(&amp;uni_str, <span class="string">L"\\??\\Global\\D:\\$Extend\\$RmMetadata\\$0cch"</span>);</div><div class="line"></div><div class="line">	OBJECT_ATTRIBUTES oa;</div><div class="line">	InitializeObjectAttributes(&amp;oa, &amp;uni_str, OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE, <span class="literal">NULL</span>, <span class="literal">NULL</span>)</div><div class="line"></div><div class="line">	LONG l = MyNtCreateFile(&amp;h, </div><div class="line">	FILE_APPEND_DATA | SYNCHRONIZE, </div><div class="line">	&amp;oa, </div><div class="line">	&amp;iob, </div><div class="line">	<span class="number">0</span>, </div><div class="line">	FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM, </div><div class="line">	<span class="number">0</span>, </div><div class="line">	FILE_SUPERSEDE, </div><div class="line">	FILE_SYNCHRONOUS_IO_NONALERT | FILE_NON_DIRECTORY_FILE, </div><div class="line">	<span class="literal">NULL</span>, </div><div class="line">	<span class="number">0</span>);</div><div class="line">	</div><div class="line">	<span class="keyword">char</span> buffer[] = <span class="string">"0123456789"</span>;</div><div class="line">	WriteFile(h, buffer, <span class="built_in">strlen</span>(buffer), (ULONG *)&amp;l, <span class="literal">NULL</span>);</div><div class="line"></div><div class="line">	CloseHandle(h);</div></pre></td></tr></table></figure>
+<pre><code>#define GPA(x) *(FARPROC *)&amp;My##x = GetProcAddress(GetModuleHandle(L&quot;ntdll.dll&quot;), #x)	
+	GPA(NtCreateFile);
+	GPA(RtlInitUnicodeString);
+	IO_STATUS_BLOCK iob;
+	HANDLE h;
+	UNICODE_STRING uni_str;
+	MyRtlInitUnicodeString(&amp;uni_str, L&quot;\\??\\Global\\D:\\$Extend\\$RmMetadata\\$0cch&quot;);
+
+	OBJECT_ATTRIBUTES oa;
+	InitializeObjectAttributes(&amp;oa, &amp;uni_str, OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE, NULL, NULL)
+
+	LONG l = MyNtCreateFile(&amp;h, 
+	FILE_APPEND_DATA | SYNCHRONIZE, 
+	&amp;oa, 
+	&amp;iob, 
+	0, 
+	FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM, 
+	0, 
+	FILE_SUPERSEDE, 
+	FILE_SYNCHRONOUS_IO_NONALERT | FILE_NON_DIRECTORY_FILE, 
+	NULL, 
+	0);
+	
+	char buffer[] = &quot;0123456789&quot;;
+	WriteFile(h, buffer, strlen(buffer), (ULONG *)&amp;l, NULL);
+
+	CloseHandle(h);</code></pre>
 <p>值得注意的是我们必须用System用户权限去运行这个程序，才能创建文件到元文件目录，这里要用到psexec：</p>
 <p>psexec  -s C:\0cch\Test.exe</p>
 <p>然后我们看看效果</p>
 <p><a href="/uploads/2016/08/20160824115523.png"><img src="/uploads/2016/08/20160824115523.png" alt="20160824115523"></a></p>
 
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2016-08-23T03:58:00.000Z" itemprop="datePublished">2016-08-23</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
       
+        <!--
+          
+        -->
+
+      </p>
     </div>
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/08/23/create-file-in-metadata/" data-id="cj6etakwa006yfcg90a6k8wbg" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-something-about-windows-timer-resolution" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/07/24/something-about-windows-timer-resolution/" class="article-date">
-  <time datetime="2016-07-24T03:27:25.000Z" itemprop="datePublished">2016-07-24</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Tips/">Tips</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
+  </article>
+            
+                  <article id="post-something-about-windows-timer-resolution" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
         
   
-    <h1 itemprop="name">
       <a class="article-title" href="/2016/07/24/something-about-windows-timer-resolution/">关于Windows Timer精确度</a>
-    </h1>
   
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Windows Timer相比大家都用过，WM_TIMER, WM_SYSTIMER, Waitable Timer, Multimedia Timer, Timer Queue Timer，这么多种Timer，给我们变成提供了很大的方便，有窗口无窗口都能自如选择。所以尽量也不要自己再造轮子，用什么Sleep来写Timer。这种“自定义”的Timer肯定是没有由系统内核DPC触发的Timer效率高的。</p>
+      </h3>
+      <div class="repo-list-description">
+        
+          <p>Windows Timer相比大家都用过，WM_TIMER, WM_SYSTIMER, Waitable Timer, Multimedia Timer, Timer Queue Timer，这么多种Timer，给我们变成提供了很大的方便，有窗口无窗口都能自如选择。所以尽量也不要自己再造轮子，用什么Sleep来写Timer。这种“自定义”的Timer肯定是没有由系统内核DPC触发的Timer效率高的。</p>
 <p>OK，回到正题，关于Timer的精确度。首先看看SysInternal工具集的clockres的显示：</p>
 <p><a href="/uploads/2016/07/20160725102628.png"><img src="/uploads/2016/07/20160725102628.png" alt="20160725102628"></a></p>
 <p>从图中可以看出，我这个系统的最大精确度15.6毫秒，最小是0.5毫秒，当前是15.6毫秒。默认情况下，Windows会用最大精确度，因为这样可以减少CPU的消耗，而且高精度的定时器，绝大多数程序都不会用到。基于15.6毫秒这个精度，那么我们设置Timer间隔为15.6毫秒以下都是没有意义的，这里再提一下，Sleep函数在内核也是用的定时器，也就是说这个精确度下，Sleep(10)也是没有意义的，间隔会达到15-16毫秒。</p>
@@ -270,46 +524,41 @@
 <p>好了，再说下Windows时钟，Windows时钟更新时间总是用的最大精度，在我个系统上也就是每次更新时间都是间隔15.6毫秒。也就是说如果用GetTickCount来统计性能问题，最大精度也就是15-16毫秒。举个例子，一段代码运行时间不足15.6毫秒，要么统计结果是0，要么是15-16毫秒，时间精度不会影响Windows时钟更新。</p>
 <p>最后说下Windows高精度时钟查询的实现，在2000和XP时代，系统用TSC来演算时间，但是那个时候，多核并不支持TSC同步，这回带来一些问题。Vista系统采用了High Precision Event Timer (HPET)或者ACPI Power Management Timer (PM timer)，但是这种Timer的延时比较高，当然，这个延时是百纳秒级别的，可以说基本上不会对普通程序有什么影响。之后的系统就使用了固定频率的TSC，这样在多核状态下也能保证同步，而且延时很低。更详细的资料可以参考：<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx" target="_blank" rel="external">https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx</a></p>
 
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2016-07-24T03:27:25.000Z" itemprop="datePublished">2016-07-24</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
       
+        <!--
+          
+        -->
+
+      </p>
     </div>
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/07/24/something-about-windows-timer-resolution/" data-id="cj6etakw9006wfcg9xwz5owpo" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-win10-taskmgr-killproc" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/06/26/win10-taskmgr-killproc/" class="article-date">
-  <time datetime="2016-06-26T03:09:30.000Z" itemprop="datePublished">2016-06-26</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Tips/">Tips</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
+  </article>
+            
+                  <article id="post-win10-taskmgr-killproc" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
         
   
-    <h1 itemprop="name">
       <a class="article-title" href="/2016/06/26/win10-taskmgr-killproc/">Windows 10 任务管理器结束任务流程</a>
-    </h1>
   
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>从Win8开始，任务管理已经悄然发生变化了，这篇文章要说的就是结束任务这一个功能。以Win10的任务管理器为主来说明，没有了从窗口关闭进程的标签。取而代之的是一个区分前台和后台程序的进程树。通过这个界面结束进程也不再像以前一样调用User32的EndTask(<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms633492(v=vs.85).aspx)，而是重新规划了一套逻辑。" target="_blank" rel="external">https://msdn.microsoft.com/en-us/library/windows/desktop/ms633492(v=vs.85).aspx)，而是重新规划了一套逻辑。</a></p>
+      </h3>
+      <div class="repo-list-description">
+        
+          <p>从Win8开始，任务管理已经悄然发生变化了，这篇文章要说的就是结束任务这一个功能。以Win10的任务管理器为主来说明，没有了从窗口关闭进程的标签。取而代之的是一个区分前台和后台程序的进程树。通过这个界面结束进程也不再像以前一样调用User32的EndTask(<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms633492(v=vs.85).aspx)，而是重新规划了一套逻辑。" target="_blank" rel="external">https://msdn.microsoft.com/en-us/library/windows/desktop/ms633492(v=vs.85).aspx)，而是重新规划了一套逻辑。</a></p>
 <p>具体逻辑如下：  </p>
 <blockquote>
 <p>1.区分程序类型  </p>
@@ -319,308 +568,482 @@
 <p> 5.第五步是和之前结束任务最大的一个区别，以前的任务管理器，如果没能结束进程，例如一些僵尸进程，他就不会做其他动作了，而新的任务管理器为了释放这种进程所占用的内核资源，他还会做另外一些事情，那就是关闭目标进程的所有句柄。使用的方式就是DuplicateHandle+DUPLICATE_CLOSE_SOURCE。这样做的另外一个好处就是，如果顽固进程还在运行，句柄关闭会造成其崩溃而结束。</p>
 </blockquote>
 
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2016-06-26T03:09:30.000Z" itemprop="datePublished">2016-06-26</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
       
+        <!--
+          
+        -->
+
+      </p>
     </div>
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/06/26/win10-taskmgr-killproc/" data-id="cj6etakw7006ufcg9x568f3ze" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-win8-shell-long-filename" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/05/17/win8-shell-long-filename/" class="article-date">
-  <time datetime="2016-05-17T08:16:56.000Z" itemprop="datePublished">2016-05-17</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Tips/">Tips</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
+  </article>
+            
+                  <article id="post-win8-shell-long-filename" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
         
   
-    <h1 itemprop="name">
       <a class="article-title" href="/2016/05/17/win8-shell-long-filename/">Windows 8 Shell API对于长路径文件名的支持</a>
-    </h1>
   
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在Windows 8之前，Shell API对于长路径的文件名的支持并不理想。比如PathAppend这个函数，函数规定pszPath，也就是第一个参数，它的buffer大小必须要能够容纳MAX_PATH个字符。第二个参数pszMore也不能超过MAX_PATH的长度。这样的API不仅不能满足我们对长文件路径需求，同时也可能让我们的软件由于字符串检查不严格出现严重BUG和漏洞。</p>
+      </h3>
+      <div class="repo-list-description">
+        
+          <p>在Windows 8之前，Shell API对于长路径的文件名的支持并不理想。比如PathAppend这个函数，函数规定pszPath，也就是第一个参数，它的buffer大小必须要能够容纳MAX_PATH个字符。第二个参数pszMore也不能超过MAX_PATH的长度。这样的API不仅不能满足我们对长文件路径需求，同时也可能让我们的软件由于字符串检查不严格出现严重BUG和漏洞。</p>
 <p>还好，这个问题在Windows 8以及以后的系统上得到了解决。还是以路径拼接为例。微软向我们介绍了PathCchAppend和PathCchAppendEx函数。其中PathCchAppend函数，增加了cchPath参数，用来指定输出buffer的大小。用这样的方式来加强参数的检查，增加了函数的安全性。而PathCchAppendEx这个函数在PathCchAppend基础上，又加入了dwFlags，现在这个标志只有PATHCCH_ALLOW_LONG_PATHS，意思就是让我们的路径名超过MAX_PATH。</p>
 <p>不知道微软设计PathCchAppend和PathCchAppendEx这两个API的时候是怎么样的一个想法，我觉得完全没必要设计成两个函数，一个PathCchAppendEx就足够了。大家是不是也有这个疑问呢？</p>
 <p>最后，由于Windows 7现在的使用量还是非常大的，我们也不能因为要使用这些新的API而放弃兼容老版本的Windows。比较合适的做法还是动态导入这些函数，如果成功了就可以使用新的函数，失败就用老的函数。另外值得注意的是，PathCchAppend这类新的函数并不是放在shlwapi.dll里面，而是在kernelbase.dll，动态获取函数的时候需要注意这一点。</p>
 
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2016-05-17T08:16:56.000Z" itemprop="datePublished">2016-05-17</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
       
+        <!--
+          
+        -->
+
+      </p>
     </div>
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/05/17/win8-shell-long-filename/" data-id="cj6etakw6006sfcg90u25i157" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-get-desktop-icon-pos" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/12/get-desktop-icon-pos/" class="article-date">
-  <time datetime="2016-04-12T07:04:35.000Z" itemprop="datePublished">2016-04-12</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Tips/">Tips</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
+  </article>
+            
+                  <article id="post-get-desktop-icon-pos" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
         
   
-    <h1 itemprop="name">
       <a class="article-title" href="/2016/04/12/get-desktop-icon-pos/">获取桌面图标位置</a>
-    </h1>
   
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
+      </h3>
+      <div class="repo-list-description">
+        
+          <p>用来干什么就不用说了，反正不是什么好事情 =v=</p>
+<pre><code>
+typedef struct _DESKTOP_ICON_INFO {
+	LVITEMW item;
+	WCHAR item_text[MAX_PATH];
+	RECT rc;
+} DESKTOP_ICON_INFO, *PDESKTOP_ICON_INFO;
+
+BOOL GetDesktopIconInfo(LPCWSTR pattern, RECT &amp;rc, HWND &amp;desktop)
+{
+	HWND progman = FindWindow(TEXT(&quot;Progman&quot;), TEXT(&quot;Program Manager&quot;));
+	if (progman == NULL) {
+		return FALSE;
+	}
+	
+
+	HWND def_view = FindWindowEx(progman, NULL, TEXT(&quot;SHELLDLL_DefView&quot;), NULL);
+	if (def_view == NULL) {
+		return FALSE;
+	}
+
+	HWND list_view = FindWindowEx(def_view, NULL, TEXT(&quot;SysListView32&quot;), TEXT(&quot;FolderView&quot;));
+	if (list_view == NULL) {
+		return FALSE;
+	}
+	desktop = list_view;
+
+	ULONG process_id = 0;
+	GetWindowThreadProcessId(progman, &amp;process_id);
+	if (process_id == 0) {
+		return FALSE;
+	}
+
+	int count = (int)::SendMessage(list_view, LVM_GETITEMCOUNT, 0, 0);
+
+	HANDLE process_handle = OpenProcess(
+		PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_QUERY_INFORMATION, FALSE, process_id);
+	if (process_handle == NULL) {
+		return FALSE;
+	}
+
+	PUCHAR remote_addr = (PUCHAR)VirtualAllocEx(process_handle, NULL, 
+		sizeof(DESKTOP_ICON_INFO), MEM_COMMIT, PAGE_READWRITE);
+
+	DESKTOP_ICON_INFO icon_info;
+	icon_info.item.iItem = 0;
+	icon_info.item.iSubItem = 0;
+	icon_info.item.mask = LVIF_TEXT;
+	icon_info.item.pszText = (WCHAR *)(remote_addr + offsetof(DESKTOP_ICON_INFO, item_text));
+	icon_info.item.cchTextMax = MAX_PATH;
+
+	for (int i = 0; i &lt; count; i++) {
+		icon_info.rc.left = LVIR_BOUNDS;
+		ZeroMemory(icon_info.item_text, sizeof(icon_info.item_text));
+		if (WriteProcessMemory(process_handle, remote_addr, &amp;icon_info, sizeof(icon_info), NULL)) {
+			 ::SendMessage(list_view, LVM_GETITEMTEXT, (WPARAM)i, (LPARAM)(remote_addr + offsetof(DESKTOP_ICON_INFO, item)));
+			 ::SendMessage(list_view, LVM_GETITEMRECT, (WPARAM)i, (LPARAM)(remote_addr + offsetof(DESKTOP_ICON_INFO, rc)));
+			 ReadProcessMemory(process_handle, remote_addr, &amp;icon_info, sizeof(icon_info), NULL);
+
+			 if (_wcsicmp(icon_info.item_text, pattern) == 0) {
+				 rc = icon_info.rc;
+				 break;
+			 }
+		}
+	}
+
+	VirtualFreeEx(process_handle, remote_addr, 0, MEM_RELEASE);
+	CloseHandle(process_handle);
+	return TRUE;
+}
+
+ </code></pre>
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2016-04-12T07:04:35.000Z" itemprop="datePublished">2016-04-12</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
       
-        <p>用来干什么就不用说了，反正不是什么好事情 =v=</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">DESKTOP_ICON_INFO</span> &#123;</span></div><div class="line">	LVITEMW item;</div><div class="line">	WCHAR item_text[MAX_PATH];</div><div class="line">	RECT rc;</div><div class="line">&#125; DESKTOP_ICON_INFO, *PDESKTOP_ICON_INFO;</div><div class="line"></div><div class="line"><span class="function">BOOL <span class="title">GetDesktopIconInfo</span><span class="params">(LPCWSTR pattern, RECT &amp;rc, HWND &amp;desktop)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">	HWND progman = FindWindow(TEXT(<span class="string">"Progman"</span>), TEXT(<span class="string">"Program Manager"</span>));</div><div class="line">	<span class="keyword">if</span> (progman == <span class="literal">NULL</span>) &#123;</div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line"></div><div class="line">	HWND def_view = FindWindowEx(progman, <span class="literal">NULL</span>, TEXT(<span class="string">"SHELLDLL_DefView"</span>), <span class="literal">NULL</span>);</div><div class="line">	<span class="keyword">if</span> (def_view == <span class="literal">NULL</span>) &#123;</div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	HWND list_view = FindWindowEx(def_view, <span class="literal">NULL</span>, TEXT(<span class="string">"SysListView32"</span>), TEXT(<span class="string">"FolderView"</span>));</div><div class="line">	<span class="keyword">if</span> (list_view == <span class="literal">NULL</span>) &#123;</div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line">	desktop = list_view;</div><div class="line"></div><div class="line">	ULONG process_id = <span class="number">0</span>;</div><div class="line">	GetWindowThreadProcessId(progman, &amp;process_id);</div><div class="line">	<span class="keyword">if</span> (process_id == <span class="number">0</span>) &#123;</div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">int</span> count = (<span class="keyword">int</span>)::SendMessage(list_view, LVM_GETITEMCOUNT, <span class="number">0</span>, <span class="number">0</span>);</div><div class="line"></div><div class="line">	HANDLE process_handle = OpenProcess(</div><div class="line">		PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_QUERY_INFORMATION, FALSE, process_id);</div><div class="line">	<span class="keyword">if</span> (process_handle == <span class="literal">NULL</span>) &#123;</div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	PUCHAR remote_addr = (PUCHAR)VirtualAllocEx(process_handle, <span class="literal">NULL</span>, </div><div class="line">		<span class="keyword">sizeof</span>(DESKTOP_ICON_INFO), MEM_COMMIT, PAGE_READWRITE);</div><div class="line"></div><div class="line">	DESKTOP_ICON_INFO icon_info;</div><div class="line">	icon_info.item.iItem = <span class="number">0</span>;</div><div class="line">	icon_info.item.iSubItem = <span class="number">0</span>;</div><div class="line">	icon_info.item.mask = LVIF_TEXT;</div><div class="line">	icon_info.item.pszText = (WCHAR *)(remote_addr + offsetof(DESKTOP_ICON_INFO, item_text));</div><div class="line">	icon_info.item.cchTextMax = MAX_PATH;</div><div class="line"></div><div class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</div><div class="line">		icon_info.rc.left = LVIR_BOUNDS;</div><div class="line">		ZeroMemory(icon_info.item_text, <span class="keyword">sizeof</span>(icon_info.item_text));</div><div class="line">		<span class="keyword">if</span> (WriteProcessMemory(process_handle, remote_addr, &amp;icon_info, <span class="keyword">sizeof</span>(icon_info), <span class="literal">NULL</span>)) &#123;</div><div class="line">			 ::SendMessage(list_view, LVM_GETITEMTEXT, (WPARAM)i, (LPARAM)(remote_addr + offsetof(DESKTOP_ICON_INFO, item)));</div><div class="line">			 ::SendMessage(list_view, LVM_GETITEMRECT, (WPARAM)i, (LPARAM)(remote_addr + offsetof(DESKTOP_ICON_INFO, rc)));</div><div class="line">			 ReadProcessMemory(process_handle, remote_addr, &amp;icon_info, <span class="keyword">sizeof</span>(icon_info), <span class="literal">NULL</span>);</div><div class="line"></div><div class="line">			 <span class="keyword">if</span> (_wcsicmp(icon_info.item_text, pattern) == <span class="number">0</span>) &#123;</div><div class="line">				 rc = icon_info.rc;</div><div class="line">				 <span class="keyword">break</span>;</div><div class="line">			 &#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	VirtualFreeEx(process_handle, remote_addr, <span class="number">0</span>, MEM_RELEASE);</div><div class="line">	CloseHandle(process_handle);</div><div class="line">	<span class="keyword">return</span> TRUE;</div><div class="line">&#125;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
-      
+        <!--
+          
+        -->
+
+      </p>
     </div>
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/04/12/get-desktop-icon-pos/" data-id="cj6etakw5006qfcg9ba5p60dx" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-msg-wnd-view" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/03/17/msg-wnd-view/" class="article-date">
-  <time datetime="2016-03-17T04:00:45.000Z" itemprop="datePublished">2016-03-17</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Tips/">Tips</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
+  </article>
+            
+                  <article id="post-msg-wnd-view" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
         
   
-    <h1 itemprop="name">
       <a class="article-title" href="/2016/03/17/msg-wnd-view/">查看消息窗口工具</a>
-    </h1>
   
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>我们都知道用Spy++去查看窗口句柄的相关信息，但是这款工具无法找到消息窗口(Message-Only Windows)。所以写了个查看消息窗口的工具，帮我排查一些这方面的问题。</p>
+      </h3>
+      <div class="repo-list-description">
+        
+          <p>我们都知道用Spy++去查看窗口句柄的相关信息，但是这款工具无法找到消息窗口(Message-Only Windows)。所以写了个查看消息窗口的工具，帮我排查一些这方面的问题。</p>
 <p><a href="/uploads/2016/03/20160317120246.png"><img src="/uploads/2016/03/20160317120246.png" alt="20160317120246"></a></p>
 <p>下载：<a href="/uploads/2016/03/MsgOnlyWnd.zip">MsgOnlyWnd</a></p>
 
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2016-03-17T04:00:45.000Z" itemprop="datePublished">2016-03-17</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
       
+        <!--
+          
+        -->
+
+      </p>
     </div>
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/03/17/msg-wnd-view/" data-id="cj6etakw3006ofcg9m828ulmu" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-delay-load-error" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/02/23/delay-load-error/" class="article-date">
-  <time datetime="2016-02-22T16:55:58.000Z" itemprop="datePublished">2016-02-23</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/debugging/">debugging</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
+  </article>
+            
+                  <article id="post-delay-load-error" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
         
   
-    <h1 itemprop="name">
       <a class="article-title" href="/2016/02/23/delay-load-error/">c06d007f异常的解决方法</a>
-    </h1>
   
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>c06d007f这个异常通常是在PE的延迟加载dll的时候发生的，加载器找不到对应的dll就会抛出这个异常。如果我们对这个异常不熟悉，按照常规方式去找上下文，那么结果肯定会让你失望。例如3.2526.1373.0版本的libcef在XP上运行的情况。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">0:000&gt; kb</div><div class="line"> # ChildEBP RetAddr  Args to Child              </div><div class="line">00 0012f218 7c92d9ac 7c86449d d0000144 00000004 ntdll!KiFastSystemCallRet</div><div class="line">01 0012f21c 7c86449d d0000144 00000004 00000000 ntdll!ZwRaiseHardError+0xc</div><div class="line">02 0012f4a0 7c843892 0012f4c8 7c839b21 0012f4d0 kernel32!UnhandledExceptionFilter+0x628</div><div class="line">03 0012f4a8 7c839b21 0012f4d0 00000000 0012f4d0 kernel32!BaseProcessStart+0x39</div><div class="line">04 0012f4d0 7c9232a8 0012f5bc 0012ffe0 0012f5d4 kernel32!_except_handler3+0x61</div><div class="line">05 0012f4f4 7c92327a 0012f5bc 0012ffe0 0012f5d4 ntdll!ExecuteHandler2+0x26</div><div class="line">06 0012f5a4 7c92e46a 00000000 0012f5d4 0012f5bc ntdll!ExecuteHandler+0x24</div><div class="line">07 0012f5a4 00000000 00000000 0012f5d4 0012f5bc ntdll!KiUserExceptionDispatcher+0xe</div><div class="line">WARNING: Frame IP not in any known module. Following frames may be wrong.</div><div class="line">08 0012fff4 004a991e 00000000 78746341 00000020 0x0</div><div class="line">09 0012fff8 00000000 78746341 00000020 00000001 cefclient!pre_c_init+0xb9 [f:\dd\vctools\crt_bld\self_x86\crt\src\crtexe.c @ 261]</div><div class="line"></div><div class="line">0:000&gt; .cxr 0012f5d4;k</div><div class="line">eax=0012f8a4 ebx=1314a58c ecx=00000000 edx=00000001 esi=0012f954 edi=68d60000</div><div class="line">eip=00000000 esp=0012fff8 ebp=00000000 iopl=0         nv up ei pl nz na po nc</div><div class="line">cs=001b  ss=0023  ds=0023  es=0023  fs=003b  gs=0000             efl=00000202</div><div class="line">00000000 ??              ???</div><div class="line">  *** Stack trace for last set context - .thread/.cxr resets it</div><div class="line"> # ChildEBP RetAddr  </div><div class="line">WARNING: Frame IP not in any known module. Following frames may be wrong.</div><div class="line">00 0012fff4 004a991e 0x0</div><div class="line">01 0012fff8 00000000 cefclient!pre_c_init+0xb9 [f:\dd\vctools\crt_bld\self_x86\crt\src\crtexe.c @ 261]</div><div class="line"></div></pre></td></tr></table></figure>
+      </h3>
+      <div class="repo-list-description">
+        
+          <p>c06d007f这个异常通常是在PE的延迟加载dll的时候发生的，加载器找不到对应的dll就会抛出这个异常。如果我们对这个异常不熟悉，按照常规方式去找上下文，那么结果肯定会让你失望。例如3.2526.1373.0版本的libcef在XP上运行的情况。</p>
+<pre><code>
+0:000&gt; kb
+ # ChildEBP RetAddr  Args to Child              
+00 0012f218 7c92d9ac 7c86449d d0000144 00000004 ntdll!KiFastSystemCallRet
+01 0012f21c 7c86449d d0000144 00000004 00000000 ntdll!ZwRaiseHardError+0xc
+02 0012f4a0 7c843892 0012f4c8 7c839b21 0012f4d0 kernel32!UnhandledExceptionFilter+0x628
+03 0012f4a8 7c839b21 0012f4d0 00000000 0012f4d0 kernel32!BaseProcessStart+0x39
+04 0012f4d0 7c9232a8 0012f5bc 0012ffe0 0012f5d4 kernel32!_except_handler3+0x61
+05 0012f4f4 7c92327a 0012f5bc 0012ffe0 0012f5d4 ntdll!ExecuteHandler2+0x26
+06 0012f5a4 7c92e46a 00000000 0012f5d4 0012f5bc ntdll!ExecuteHandler+0x24
+07 0012f5a4 00000000 00000000 0012f5d4 0012f5bc ntdll!KiUserExceptionDispatcher+0xe
+WARNING: Frame IP not in any known module. Following frames may be wrong.
+08 0012fff4 004a991e 00000000 78746341 00000020 0x0
+09 0012fff8 00000000 78746341 00000020 00000001 cefclient!pre_c_init+0xb9 [f:\dd\vctools\crt_bld\self_x86\crt\src\crtexe.c @ 261]
+
+0:000&gt; .cxr 0012f5d4;k
+eax=0012f8a4 ebx=1314a58c ecx=00000000 edx=00000001 esi=0012f954 edi=68d60000
+eip=00000000 esp=0012fff8 ebp=00000000 iopl=0         nv up ei pl nz na po nc
+cs=001b  ss=0023  ds=0023  es=0023  fs=003b  gs=0000             efl=00000202
+00000000 ??              ???
+  *** Stack trace for last set context - .thread&#x2F;.cxr resets it
+ # ChildEBP RetAddr  
+WARNING: Frame IP not in any known module. Following frames may be wrong.
+00 0012fff4 004a991e 0x0
+01 0012fff8 00000000 cefclient!pre_c_init+0xb9 [f:\dd\vctools\crt_bld\self_x86\crt\src\crtexe.c @ 261]
+</code></pre>
 <p>直接看栈回溯或者通过设置cxr看栈回溯，并没有帮助我们找到什么有用的信息。</p>
 <p>这里要使用的方法是，利用异常的参数来找到具体延迟加载谁的时候发生了异常。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">0:000&gt; .exr 0012f5bc </div><div class="line">ExceptionAddress: 7c812aeb (kernel32!RaiseException+0x00000053)</div><div class="line">   ExceptionCode: c06d007f</div><div class="line">  ExceptionFlags: 00000000</div><div class="line">NumberParameters: 1</div><div class="line">   Parameter[0]: 0012f918</div><div class="line">   </div></pre></td></tr></table></figure>
+<pre><code>
+0:000&gt; .exr 0012f5bc 
+ExceptionAddress: 7c812aeb (kernel32!RaiseException+0x00000053)
+   ExceptionCode: c06d007f
+  ExceptionFlags: 00000000
+NumberParameters: 1
+   Parameter[0]: 0012f918
+   </code></pre>
 <p>这里的参数0，就是我们要找的目标，记录了出错时候ebp-0x30的数据，也就是含有关键信息的地方。让我们仔细看看：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">0:000&gt; dds 0012f918</div><div class="line">0012f918  00000024</div><div class="line">0012f91c  1314a58c libcef!_DELAY_IMPORT_DESCRIPTOR_dbghelp_dll</div><div class="line">0012f920  13181dbc libcef!_imp__SymGetSearchPathW</div><div class="line">0012f924  12ebdd20 libcef!_sz_dbghelp_dll</div><div class="line">0012f928  00000001</div><div class="line">0012f92c  1314ac8e libcef!dxva2_NULL_THUNK_DATA_DLN+0x7e</div><div class="line">0012f930  68d60000 dbghelp!_imp__CryptAcquireContextA &lt;PERF&gt; (dbghelp+0x0)</div><div class="line">0012f934  00000000</div><div class="line">0012f938  0000007f</div><div class="line">0012f93c  1314c138 libcef!dxva2_NULL_THUNK_DATA_DLN+0x1528</div><div class="line">0012f940  00000003</div><div class="line">0012f944  00000000</div><div class="line">0012f948  0012f9f8</div><div class="line">0012f94c  11d17587 libcef!_tailMerge_dbghelp_dll+0xd</div><div class="line">0012f950  0012f918</div><div class="line">0012f954  13181dbc libcef!_imp__SymGetSearchPathW</div><div class="line">0012f958  00000008</div><div class="line">0012f95c  7c9301bb ntdll!RtlAllocateHeap+0xeac</div><div class="line">0012f960  1019014e libcef!base::debug::`anonymous namespace&apos;::InitializeSymbols+0x9e [f:\stnts\browser\cef\ws\src\chromium\src\base\debug\stack_trace_win.cc @ 79]</div><div class="line">0012f964  ffffffff</div><div class="line">0012f968  00170880</div><div class="line"></div></pre></td></tr></table></figure>
+<pre><code>
+0:000&gt; dds 0012f918
+0012f918  00000024
+0012f91c  1314a58c libcef!_DELAY_IMPORT_DESCRIPTOR_dbghelp_dll
+0012f920  13181dbc libcef!_imp__SymGetSearchPathW
+0012f924  12ebdd20 libcef!_sz_dbghelp_dll
+0012f928  00000001
+0012f92c  1314ac8e libcef!dxva2_NULL_THUNK_DATA_DLN+0x7e
+0012f930  68d60000 dbghelp!_imp__CryptAcquireContextA &lt;PERF&gt; (dbghelp+0x0)
+0012f934  00000000
+0012f938  0000007f
+0012f93c  1314c138 libcef!dxva2_NULL_THUNK_DATA_DLN+0x1528
+0012f940  00000003
+0012f944  00000000
+0012f948  0012f9f8
+0012f94c  11d17587 libcef!_tailMerge_dbghelp_dll+0xd
+0012f950  0012f918
+0012f954  13181dbc libcef!_imp__SymGetSearchPathW
+0012f958  00000008
+0012f95c  7c9301bb ntdll!RtlAllocateHeap+0xeac
+0012f960  1019014e libcef!base::debug::`anonymous namespace&#39;::InitializeSymbols+0x9e [f:\stnts\browser\cef\ws\src\chromium\src\base\debug\stack_trace_win.cc @ 79]
+0012f964  ffffffff
+0012f968  00170880
+</code></pre>
 <p>我们可以清楚的看到加载器延迟加载SymGetSearchPathW的时候发生了问题。让我们进一步用depends工具验证一下</p>
 <p><a href="/uploads/2016/02/20160223003624.png"><img src="/uploads/2016/02/20160223003624.png" alt="20160223003624"></a></p>
 <p>如上图所示，XP自带的dbghelp里没有SymGetSearchPathW这个导出函数。要解决这个异常，实际上就需要在运行目录里添加一个稍微新一点的dbghelp文件，我这里替换的是6.2.9200.16384的dbghelp，替换过后问题已经不再出现了。</p>
 <p><a href="/uploads/2016/02/20160223003711.png"><img src="/uploads/2016/02/20160223003711.png" alt="20160223003711"></a></p>
 
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/02/23/delay-load-error/" data-id="cj6etakw1006mfcg9qc7fdr1u" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-
-
-  <nav id="page-nav">
-    <a class="extend prev" rel="prev" href="/">&laquo; __('prev')</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/3/">__('next') &raquo;</a>
-  </nav>
-</section>
-        
-          <aside id="sidebar">
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Catégories</h3>
-    <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
-    <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
-    </div>
-  </div>
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
-          </li>
-        
-          <li>
-            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
-          </li>
-        
-          <li>
-            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
-          </li>
-        
-          <li>
-            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
-          </li>
-        
-          <li>
-            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
         
       </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2017 0CCh<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2016-02-22T16:55:58.000Z" itemprop="datePublished">2016-02-23</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/debugging/' title=''>debugging</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
     </div>
-  </div>
-</footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
+  </article>
+            
+        </div>
+        <div class="column one-third">
+          <!--处理未安装 search 插件 默认 Google 搜索-->
+ 
+
+<h3>Search</h3>
+
+<div id="site_search">
+
+	<!-- Google -->
+	
+		<form action="http://www.google.com/search?" data-site="http://0cch.com">
+	    	<input type="text" id="search_box" name="q" placeholder="Search">
+	    	<button type="button" class="btn btn-default" id="site_search_do"><span class="octicon octicon-search"></span></button>
+	    </form>
+	
+
+	<!-- 本地搜索 -->
+	
+
+</div>
+
+<h3>Popular Repositories</h3>
+    <div class="popular-container"></div>
     
+    <script type="text/template" id="popular-list-template">
+        <a href="{%=clone_url%}" class="card text-center" target="_blank">
+            <div class="thumbnail">
+                <div class="card-image geopattern" data-pattern-id="{%=name%}">
+                    <div class="card-image-cell">
+                        <h3 class="card-title">
+                            {%=name%}
+                        </h3>
+                    </div>
+                </div>
+                <div class="caption">
+                    <div class="card-description">
+                        <p class="card-text">
+                            {%=description%}
+                        </p>
+                    </div>
+                    <div class="card-text">
+                        <span class="meta-info tooltipped tooltipped-n" aria-label="{%=stargazers_count%} stars">
+                            <span class="octicon octicon-star"></span> {%=stargazers_count%}
+                        </span>
+                        <span class="meta-info tooltipped tooltipped-n" aria-label="{%=forks_count%} forks">
+                            <span class="octicon octicon-git-branch"></span> {%=forks_count%}
+                        </span>
+                        <span class="meta-info tooltipped tooltipped-n" aria-label="最后更新时间：{%=updated_at%}">
+                            <span class="octicon octicon-clock"></span>
+                            <time datetime="{%=updated_at%}">{%=updated_at%}</time>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </script>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="/js/baiduTemplate.js"></script>
+    <script type="text/javascript">
+        var popular_repos = function(){
 
+            var baiduTpl = new Object();
 
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+            var handleTpl = function(){
+                baiduTpl.popular_list = baidu.template("popular-list-template");
+            };
 
+            var handleGithub = function(){
+                var popularContainer = $(".popular-container");
 
-<script src="/js/script.js"></script>
+                var repos = "0cchext".split(",");
+                for(var i in repos){
+                    var name = repos[i];
+                    $.get("https://api.github.com/repos/0cch/"+name,handle);
+                }
 
-  </div>
-</body>
+                function handle(result){
+                    result.updated_at = result.updated_at.split("T")[0];
+                    if(result){
+                        var html = baiduTpl.popular_list(result);
+                        popularContainer.append(html);
+                        $(".geopattern").each(function(){           
+                            $(this).geopattern($(this).data('pattern-id'));
+                        });
+                    }
+                }
+            };
+
+            return {
+                init:function(){
+                    handleTpl();
+                    handleGithub();
+                }
+            }
+        }; 
+        $(popular_repos().init);
+    </script>
+
+        </div>
+    </div>
+
+    
+      <div class="pagination text-align">
+          <div class="btn-group">
+              <a class="extend prev" rel="prev" href="/">&laquo;</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/3/">&raquo;</a>
+          </div>
+      </div>
+    
+</section>
+
+<footer class="container">
+    <div class="site-footer" role="contentinfo">
+        <div class="copyright left mobile-block">
+                © 2016
+                <span title="yumemor">yumemor</span>
+                <a href="javascript:window.scrollTo(0,0)" class="right mobile-visible">TOP</a>
+        </div>
+
+        <ul class="site-footer-links right mobile-hidden">
+            <li>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+            </li>
+        </ul>
+
+        <a href="https://github.com/yumemor/hexo-theme-primer" target="_blank" aria-label="view source code">
+            <span class="mega-octicon octicon-mark-github" title="GitHub"></span>
+        </a>
+
+        <ul class="site-footer-links mobile-hidden">
+            
+                  
+                  <li>
+                    <a href="/"  title="Home">Home</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/categories/"  title="Category">Category</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/message/"  title="Message">Message</a>
+                  </li>
+            
+            <li>
+                <a href="/atom.xml">
+                    <span class="octicon octicon-rss" style="color:orange;"></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</footer>
+
+		<script src="/js/geopattern.js"></script>
+		<script src="/js/highlight.pack.js"></script>
+		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+		
+
+		<script src="/js/index.js"></script>
+
+		 <script src="/js/popular_repo.js"></script> 
+
+	</body>
 </html>

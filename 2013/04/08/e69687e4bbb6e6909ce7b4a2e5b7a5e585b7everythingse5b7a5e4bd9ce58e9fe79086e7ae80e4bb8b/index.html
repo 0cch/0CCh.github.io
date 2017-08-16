@@ -1,101 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
 <head>
   <meta charset="utf-8">
-  
-  <title>文件搜索工具everythings工作原理简介 | 0CCh Blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="everythings是一个非常强大而且好用的文件搜索工具。他搜索文件的速度非常之快，基本上刚刚输入要查找的文件名，文件已经搜索了出来。这里就简单介绍一下他的工作原理。 有一点已经非常明显，everythings在查找工作开始之前会建立全盘文件索引的数据库，那么这个数据库必然就是搜索文件快速的最重要的原因。而这个数据库的建立的用时似乎非常之短，是普通方法下遍历整个卷所不能及的。 实际上，建立数据库">
-<meta property="og:type" content="article">
-<meta property="og:title" content="文件搜索工具everythings工作原理简介">
-<meta property="og:url" content="http://0cch.com/2013/04/08/e69687e4bbb6e6909ce7b4a2e5b7a5e585b7everythingse5b7a5e4bd9ce58e9fe79086e7ae80e4bb8b/index.html">
-<meta property="og:site_name" content="0CCh Blog">
-<meta property="og:description" content="everythings是一个非常强大而且好用的文件搜索工具。他搜索文件的速度非常之快，基本上刚刚输入要查找的文件名，文件已经搜索了出来。这里就简单介绍一下他的工作原理。 有一点已经非常明显，everythings在查找工作开始之前会建立全盘文件索引的数据库，那么这个数据库必然就是搜索文件快速的最重要的原因。而这个数据库的建立的用时似乎非常之短，是普通方法下遍历整个卷所不能及的。 实际上，建立数据库">
-<meta property="og:image" content="http://0cch.com/uploads/2013/04/20130409003609.png">
-<meta property="og:image" content="http://0cch.com/uploads/2013/04/20130409003752.png">
-<meta property="og:image" content="http://0cch.com/uploads/2013/04/20130409021029.png">
-<meta property="og:image" content="http://0cch.com/uploads/2013/04/20130409021252.png">
-<meta property="og:image" content="http://0cch.com/uploads/2013/04/20130409021829.png">
-<meta property="og:updated_time" content="2015-06-25T02:03:49.871Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="文件搜索工具everythings工作原理简介">
-<meta name="twitter:description" content="everythings是一个非常强大而且好用的文件搜索工具。他搜索文件的速度非常之快，基本上刚刚输入要查找的文件名，文件已经搜索了出来。这里就简单介绍一下他的工作原理。 有一点已经非常明显，everythings在查找工作开始之前会建立全盘文件索引的数据库，那么这个数据库必然就是搜索文件快速的最重要的原因。而这个数据库的建立的用时似乎非常之短，是普通方法下遍历整个卷所不能及的。 实际上，建立数据库">
-<meta name="twitter:image" content="http://0cch.com/uploads/2013/04/20130409003609.png">
-  
-    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  <link rel="stylesheet" href="/css/style.css">
-  
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
+  <link rel="icon" href="/favicon.ico">
+  
+  <title>0CCh Blog | 文件搜索工具everythings工作原理简介</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
+  <!--在这里倒入jquery 方便处理部分页面的jquery-->
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script>
 </head>
 
 <body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">0CCh Blog</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
+	<header class="site-header navfixed-false">
+  <div class="container">
+      <h1><a href="/" title="0CCh Blog"><span class="octicon octicon-mark-github"></span> 0CCh Blog</a></h1>
+      <nav class="site-header-nav" role="navigation">
         
-          <a class="main-nav-link" href="/">Home</a>
+              
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
-          <a class="main-nav-link" href="/archives">Archives</a>
+              
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+        
+              
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+        
+              
+              <a href="/message/"  class=" site-header-nav-item hvr-underline-from-center" title="Message">Message</a>
         
       </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
-      </div>
-    </div>
   </div>
 </header>
-      <div class="outer">
-        <section id="main"><article id="post-e69687e4bbb6e6909ce7b4a2e5b7a5e585b7everythingse5b7a5e4bd9ce58e9fe79086e7ae80e4bb8b" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2013/04/08/e69687e4bbb6e6909ce7b4a2e5b7a5e585b7everythingse5b7a5e4bd9ce58e9fe79086e7ae80e4bb8b/" class="article-date">
-  <time datetime="2013-04-08T10:20:42.000Z" itemprop="datePublished">2013-04-08</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/NTInternals/">NTInternals</a>
-  </div>
 
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      文件搜索工具everythings工作原理简介
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>everythings是一个非常强大而且好用的文件搜索工具。他搜索文件的速度非常之快，基本上刚刚输入要查找的文件名，文件已经搜索了出来。这里就简单介绍一下他的工作原理。</p>
+	
+<section class="collection-head geopattern" data-pattern-id="文件搜索工具everythings工作原理简介" >
+    <div class="container">
+        <div class="collection-title">
+            <h1 class="collection-header">
+                文件搜索工具everythings工作原理简介
+            </h1>
+            
+                <div class="collection-info">
+                    <span class="meta-info">
+                        <span class="octicon octicon-calendar"></span>
+                        <time datetime="2013-04-08T10:20:42.000Z" itemprop="datePublished">2013-04-08</time>
+                    </span>
+                    
+                        <span class="meta-info">
+                            <span class="octicon octicon-file-directory"></span>
+                            <a href='/categories/NTInternals/' title=''>NTInternals</a>
+                        </span>
+                    
+                </div>
+            
+        </div>
+    </div>
+</section>
+	<section class="container">
+    <div class="columns">
+        <div class="column  three-fourths " >
+            <article class="article-content markdown-body">
+                <p>everythings是一个非常强大而且好用的文件搜索工具。他搜索文件的速度非常之快，基本上刚刚输入要查找的文件名，文件已经搜索了出来。这里就简单介绍一下他的工作原理。</p>
 <p>有一点已经非常明显，everythings在查找工作开始之前会建立全盘文件索引的数据库，那么这个数据库必然就是搜索文件快速的最重要的原因。而这个数据库的建立的用时似乎非常之短，是普通方法下遍历整个卷所不能及的。</p>
 <p>实际上，建立数据库的方法确实比较特殊。简单来说就是遍历目标卷NTFS文件系统的Master File Table（简称MFT）的记录，这也解释了为什么everythings只能工作在是NTFS的文件系统的卷上。MFT可以看成ntfs中文件的索引，MFT中的每条记录都是指向卷中的一个文件。遍历这个索引的速度可要比按照目录递归整个卷的速度要快得多了。不过可惜的是，Windows并没有提供能够直接访问MFT的API，除非你直接解析NTFS磁盘格式（参考<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="external">这篇文章</a>）。而且就算让你直接遍历的MFT，要监控文件的变化并且写入数据库也是一个不好办的工作。不过可喜的是，微软提供了一种间接遍历MFT记录的方式，并且通过这样的方式可以监控卷上文件的变化，他就是Change Journal（<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa363798(v=vs.85" target="_blank" rel="external">官方文档</a>.aspx)）。</p>
 <p>Change Journal实际上是Windows 2000的NTFS文件系统就提供了的功能。其目的就是如同名字一样，记录文件改变的日志，方便NTFS文件系统对文件的恢复，这确实是个不错的特性。如何使用这个功能去遍历和监控MFT的记录，我这里就不做详细介绍了。因为有一片更加好的文章已经写的非常的清楚，我的demo也参考了他的很多代码。这篇文章叫做《<a href="http://www.microsoft.com/msj/0999/journal/journal.aspx" target="_blank" rel="external">Keeping an Eye on Your NTFS Drives: the Windows 2000 Change Journal Explained</a>》是1999年9月份的msdn杂志发表的。</p>
@@ -111,143 +81,119 @@
 <p>下图显示的是同一个notepad.exe的4个存储位置。<br><a href="/uploads/2013/04/20130409021829.png"><img src="/uploads/2013/04/20130409021829.png" alt="20130409021829"></a></p>
 <p>虽然everythings有这样的一个不足，但是瑕不掩瑜，他的的确确是一个非常非常优秀的工具！我这里探讨的也仅仅是他的大概原理。实际上这个工具如此优秀，必然是在很多细节上做的非常好才行的。强烈推荐大家使用！</p>
 
-      
+            </article>
+            
+                <div class="share">
+                    <!--开启分享-->
+<div class="share-component" data-disabled="google,twitter,facebook" data-description=""></div>
+
+<script src="/js/share.min.js"></script>
+
+                </div>    
+            
+
+            
+            
+                
+<div class="comments">
+    <div id="container"></div>
+        <script src="/js/gitment.browser.js"></script>
+         <script>
+            var gitment = new Gitment({
+                id: '/2013/04/08/e69687e4bbb6e6909ce7b4a2e5b7a5e585b7everythingse5b7a5e4bd9ce58e9fe79086e7ae80e4bb8b/',
+                owner: '',
+                repo: '',
+                oauth: {
+                    client_id: "",
+                    client_secret: "",
+                }
+            })
+        gitment.render('container')
+        </script>
+</div>
+
+            
+
+        </div>
+        <div class="column one-fourth">
+            
+                
+                
+
+
+<h3>Post Directory</h3>
+
+<div id="post-directory-module">
+	<section class="post-directory">
+		<p><strong class="toc-title">文章目录</strong></p>
+		
+	</section>
+</div>
+            
+        </div>
     </div>
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2013/04/08/e69687e4bbb6e6909ce7b4a2e5b7a5e585b7everythingse5b7a5e4bd9ce58e9fe79086e7ae80e4bb8b/" data-id="cj6etaksp001wfcg9pv25hb4r" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2013/04/19/e8aeb0vc6e4b8adstle79a84mape79a84e4b880e5a484bug/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Récent</strong>
-      <div class="article-nav-title">
-        
-          记VC6中STL的map的一处BUG
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2013/04/06/proc_dump_study-e8bf9be7a88bdumpe5b7a5e585b7/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ancien</strong>
-      <div class="article-nav-title">proc_dump_study —— 进程dump工具</div>
-    </a>
-  
-</nav>
-
-  
-</article>
-
 </section>
-        
-          <aside id="sidebar">
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Catégories</h3>
-    <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
+
+<footer class="container">
+    <div class="site-footer" role="contentinfo">
+        <div class="copyright left mobile-block">
+                © 2016
+                <span title="yumemor">yumemor</span>
+                <a href="javascript:window.scrollTo(0,0)" class="right mobile-visible">TOP</a>
+        </div>
+
+        <ul class="site-footer-links right mobile-hidden">
+            <li>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+            </li>
+        </ul>
+
+        <a href="https://github.com/yumemor/hexo-theme-primer" target="_blank" aria-label="view source code">
+            <span class="mega-octicon octicon-mark-github" title="GitHub"></span>
+        </a>
+
+        <ul class="site-footer-links mobile-hidden">
+            
+                  
+                  <li>
+                    <a href="/"  title="Home">Home</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/categories/"  title="Category">Category</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/message/"  title="Message">Message</a>
+                  </li>
+            
+            <li>
+                <a href="/atom.xml">
+                    <span class="octicon octicon-rss" style="color:orange;"></span>
+                </a>
+            </li>
+        </ul>
     </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
-    <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
-    </div>
-  </div>
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
-          </li>
-        
-          <li>
-            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
-          </li>
-        
-          <li>
-            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
-          </li>
-        
-          <li>
-            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
-          </li>
-        
-          <li>
-            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2017 0CCh<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
 </footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+		<script src="/js/geopattern.js"></script>
+		<script src="/js/highlight.pack.js"></script>
+		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 
+		
+			<script src="/js/toc.js"></script>
+		
 
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+		<script src="/js/index.js"></script>
 
+		 <script src="/js/popular_repo.js"></script> 
 
-<script src="/js/script.js"></script>
-
-  </div>
-</body>
+	</body>
 </html>

@@ -1,252 +1,284 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
 <head>
   <meta charset="utf-8">
-  
-  <title>关于JsonCpp的中文编码问题 | 0CCh Blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="最近工作中用到了jsoncpp来解析json文件。但是遇到了一个这样的问题，如果json代码中有中文，并且用“\u594E\u6258\u65AF”这样的方式表示，那么jsoncpp解析的时候，就会把他转换成UTF-8。到这一步还是OK的，然后我就试图把这段中文写回文件，问题就来了，jsoncpp不会把中文转换为“\u594E\u6258\u65AF”这样的形式在存储，而是直接存储为UTF-8格式">
-<meta property="og:type" content="article">
-<meta property="og:title" content="关于JsonCpp的中文编码问题">
-<meta property="og:url" content="http://0cch.com/2013/07/19/e585b3e4ba8ejsoncppe79a84e4b8ade69687e7bc96e7a081e997aee9a298/index.html">
-<meta property="og:site_name" content="0CCh Blog">
-<meta property="og:description" content="最近工作中用到了jsoncpp来解析json文件。但是遇到了一个这样的问题，如果json代码中有中文，并且用“\u594E\u6258\u65AF”这样的方式表示，那么jsoncpp解析的时候，就会把他转换成UTF-8。到这一步还是OK的，然后我就试图把这段中文写回文件，问题就来了，jsoncpp不会把中文转换为“\u594E\u6258\u65AF”这样的形式在存储，而是直接存储为UTF-8格式">
-<meta property="og:image" content="http://0cch.com/uploads/2013/07/20130719231900.png">
-<meta property="og:image" content="http://0cch.com/uploads/2013/07/20130719232025.png">
-<meta property="og:updated_time" content="2017-08-16T09:35:44.045Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于JsonCpp的中文编码问题">
-<meta name="twitter:description" content="最近工作中用到了jsoncpp来解析json文件。但是遇到了一个这样的问题，如果json代码中有中文，并且用“\u594E\u6258\u65AF”这样的方式表示，那么jsoncpp解析的时候，就会把他转换成UTF-8。到这一步还是OK的，然后我就试图把这段中文写回文件，问题就来了，jsoncpp不会把中文转换为“\u594E\u6258\u65AF”这样的形式在存储，而是直接存储为UTF-8格式">
-<meta name="twitter:image" content="http://0cch.com/uploads/2013/07/20130719231900.png">
-  
-    <link rel="alternate" href="/atom.xml" title="0CCh Blog" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  <link rel="stylesheet" href="/css/style.css">
-  
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
+  <link rel="icon" href="/favicon.ico">
+  
+  <title>0CCh Blog | 关于JsonCpp的中文编码问题</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
+  <!--在这里倒入jquery 方便处理部分页面的jquery-->
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script>
 </head>
 
 <body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">0CCh Blog</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
+	<header class="site-header navfixed-false">
+  <div class="container">
+      <h1><a href="/" title="0CCh Blog"><span class="octicon octicon-mark-github"></span> 0CCh Blog</a></h1>
+      <nav class="site-header-nav" role="navigation">
         
-          <a class="main-nav-link" href="/">Home</a>
+              
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
-          <a class="main-nav-link" href="/archives">Archives</a>
+              
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+        
+              
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+        
+              
+              <a href="/message/"  class=" site-header-nav-item hvr-underline-from-center" title="Message">Message</a>
         
       </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://0cch.com"></form>
-      </div>
-    </div>
   </div>
 </header>
-      <div class="outer">
-        <section id="main"><article id="post-e585b3e4ba8ejsoncppe79a84e4b8ade69687e7bc96e7a081e997aee9a298" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2013/07/19/e585b3e4ba8ejsoncppe79a84e4b8ade69687e7bc96e7a081e997aee9a298/" class="article-date">
-  <time datetime="2013-07-19T08:58:51.000Z" itemprop="datePublished">2013-07-19</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Tips/">Tips</a>
-  </div>
 
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      关于JsonCpp的中文编码问题
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>最近工作中用到了jsoncpp来解析json文件。但是遇到了一个这样的问题，如果json代码中有中文，并且用“\u594E\u6258\u65AF”这样的方式表示，那么jsoncpp解析的时候，就会把他转换成UTF-8。到这一步还是OK的，然后我就试图把这段中文写回文件，问题就来了，jsoncpp不会把中文转换为“\u594E\u6258\u65AF”这样的形式在存储，而是直接存储为UTF-8格式的文件。如图所示：</p>
+	
+<section class="collection-head geopattern" data-pattern-id="关于JsonCpp的中文编码问题" >
+    <div class="container">
+        <div class="collection-title">
+            <h1 class="collection-header">
+                关于JsonCpp的中文编码问题
+            </h1>
+            
+                <div class="collection-info">
+                    <span class="meta-info">
+                        <span class="octicon octicon-calendar"></span>
+                        <time datetime="2013-07-19T08:58:51.000Z" itemprop="datePublished">2013-07-19</time>
+                    </span>
+                    
+                        <span class="meta-info">
+                            <span class="octicon octicon-file-directory"></span>
+                            <a href='/categories/Tips/' title=''>Tips</a>
+                        </span>
+                    
+                </div>
+            
+        </div>
+    </div>
+</section>
+	<section class="container">
+    <div class="columns">
+        <div class="column  three-fourths " >
+            <article class="article-content markdown-body">
+                <p>最近工作中用到了jsoncpp来解析json文件。但是遇到了一个这样的问题，如果json代码中有中文，并且用“\u594E\u6258\u65AF”这样的方式表示，那么jsoncpp解析的时候，就会把他转换成UTF-8。到这一步还是OK的，然后我就试图把这段中文写回文件，问题就来了，jsoncpp不会把中文转换为“\u594E\u6258\u65AF”这样的形式在存储，而是直接存储为UTF-8格式的文件。如图所示：</p>
 <p><a href="/uploads/2013/07/20130719231900.png"><img src="/uploads/2013/07/20130719231900.png" alt="20130719231900"></a></p>
 <p>而我恰好是需要这种经过编码的形式的字符串，而非直接给我中文。在网上搜了搜，貌似也没有很好的解决方案，只好自己修改jsoncpp的代码以满足这个需求了。<br>简单读了下jsoncpp的read和write的代码。jsoncpp在read的时候会调用codePointToUTF8这个函数把\uXXXX这个形式的代码转换成UTF-8，但是write的时候就没有这样的转换了，虽然不是很了解作者这么写的思路，但是修改的思路倒是有了。我的做法是把所有需要两个和两个以上字节表示一个字符的UTF-8字符串全部转换成\uXXXX这个形式。那么就需要写一个转换函数。<a href="http://en.wikipedia.org/wiki/UTF-8" target="_blank" rel="external">http://en.wikipedia.org/wiki/UTF-8</a> 上很清楚的描述了这些转换关系，所以完全可以自己动手写一个这样的函数。以下是我自己的实现：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">UTF8TocodePoint</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *c, <span class="keyword">unsigned</span> <span class="keyword">int</span> *result)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line"><span class="keyword">int</span> count = <span class="number">0</span>;</div><div class="line"></div><div class="line"><span class="keyword">if</span> (((*c) &amp; <span class="number">0x80</span>) == <span class="number">0</span>) &#123;</div><div class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;(*c);</div><div class="line">count = <span class="number">1</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xe0</span>) == <span class="number">0xc0</span>) &#123;</div><div class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0x1f</span>) &lt;&lt; <span class="number">6</span>) | ((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>));</div><div class="line">count = <span class="number">2</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xf0</span>) == <span class="number">0xe0</span>) &#123;</div><div class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0xf</span>) &lt;&lt; <span class="number">12</span>) | (((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">6</span>) | (((*(c + <span class="number">2</span>)) &amp; <span class="number">0x3f</span>)));</div><div class="line">count = <span class="number">3</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xf8</span>) == <span class="number">0xf0</span>) &#123;</div><div class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0x7</span>) &lt;&lt; <span class="number">18</span>) | (((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">12</span>) | (((*(c + <span class="number">2</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">6</span>) | (((*(c + <span class="number">3</span>)) &amp; <span class="number">0x3f</span>)));</div><div class="line">count = <span class="number">4</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xfc</span>) == <span class="number">0xf8</span>) &#123;</div><div class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0x3</span>) &lt;&lt; <span class="number">24</span>) | (((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">18</span>) | (((*(c + <span class="number">2</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">12</span>) | (((*(c + <span class="number">3</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">6</span>) | (((*(c + <span class="number">4</span>)) &amp; <span class="number">0x3f</span>)));</div><div class="line">count = <span class="number">5</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xfe</span>) == <span class="number">0xfc</span>) &#123;</div><div class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0x1</span>) &lt;&lt; <span class="number">30</span>) | (((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">24</span>) | (((*(c + <span class="number">2</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">18</span>) | (((*(c + <span class="number">3</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">12</span>) | (((*(c + <span class="number">4</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">6</span>) | (((*(c + <span class="number">5</span>)) &amp; <span class="number">0x3f</span>)));</div><div class="line">count = <span class="number">6</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">return</span> count;</div><div class="line">&#125;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+<pre><code>static int UTF8TocodePoint(const char *c, unsigned int *result)
+{
+int count = 0;
+
+if (((*c) &amp; 0x80) == 0) {
+*result = static_cast&lt;unsigned int&gt;(*c);
+count = 1;
+}
+else if (((*c) &amp; 0xe0) == 0xc0) {
+*result = static_cast&lt;unsigned int&gt;((((*c) &amp; 0x1f) &lt;&lt; 6) | ((*(c + 1)) &amp; 0x3f));
+count = 2;
+}
+else if (((*c) &amp; 0xf0) == 0xe0) {
+*result = static_cast&lt;unsigned int&gt;((((*c) &amp; 0xf) &lt;&lt; 12) | (((*(c + 1)) &amp; 0x3f) &lt;&lt; 6) | (((*(c + 2)) &amp; 0x3f)));
+count = 3;
+}
+else if (((*c) &amp; 0xf8) == 0xf0) {
+*result = static_cast&lt;unsigned int&gt;((((*c) &amp; 0x7) &lt;&lt; 18) | (((*(c + 1)) &amp; 0x3f) &lt;&lt; 12) | (((*(c + 2)) &amp; 0x3f) &lt;&lt; 6) | (((*(c + 3)) &amp; 0x3f)));
+count = 4;
+}
+else if (((*c) &amp; 0xfc) == 0xf8) {
+*result = static_cast&lt;unsigned int&gt;((((*c) &amp; 0x3) &lt;&lt; 24) | (((*(c + 1)) &amp; 0x3f) &lt;&lt; 18) | (((*(c + 2)) &amp; 0x3f) &lt;&lt; 12) | (((*(c + 3)) &amp; 0x3f) &lt;&lt; 6) | (((*(c + 4)) &amp; 0x3f)));
+count = 5;
+}
+else if (((*c) &amp; 0xfe) == 0xfc) {
+*result = static_cast&lt;unsigned int&gt;((((*c) &amp; 0x1) &lt;&lt; 30) | (((*(c + 1)) &amp; 0x3f) &lt;&lt; 24) | (((*(c + 2)) &amp; 0x3f) &lt;&lt; 18) | (((*(c + 3)) &amp; 0x3f) &lt;&lt; 12) | (((*(c + 4)) &amp; 0x3f) &lt;&lt; 6) | (((*(c + 5)) &amp; 0x3f)));
+count = 6;
+}
+
+return count;
+}
+
+ </code></pre>
 <p>然后把这个函数的调用加入到valueToQuotedString中，将原始的代码：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">if</span> ( isControlCharacter( *c ) )</div><div class="line">&#123;</div><div class="line"><span class="built_in">std</span>::<span class="built_in">ostringstream</span> oss;</div><div class="line">oss &lt;&lt; <span class="string">"\\u"</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; <span class="built_in">std</span>::uppercase &lt;&lt; <span class="built_in">std</span>::setfill(<span class="string">'0'</span>) &lt;&lt; <span class="built_in">std</span>::setw(<span class="number">4</span>) &lt;&lt; <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(*c);</div><div class="line">result += oss.str();</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span></div><div class="line">&#123;</div><div class="line">result += *c;</div><div class="line">&#125;</div><div class="line"><span class="keyword">break</span>;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+<pre><code>
+if ( isControlCharacter( *c ) )
+{
+std::ostringstream oss;
+oss &lt;&lt; &quot;\\u&quot; &lt;&lt; std::hex &lt;&lt; std::uppercase &lt;&lt; std::setfill(&#39;0&#39;) &lt;&lt; std::setw(4) &lt;&lt; static_cast&lt;int&gt;(*c);
+result += oss.str();
+}
+else
+{
+result += *c;
+}
+break;
+
+ </code></pre>
 <p>修改为：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">if</span> ( isControlCharacter( *c ) )</div><div class="line">&#123;</div><div class="line"><span class="built_in">std</span>::<span class="built_in">ostringstream</span> oss;</div><div class="line">oss &lt;&lt; <span class="string">"\\u"</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; <span class="built_in">std</span>::uppercase &lt;&lt; <span class="built_in">std</span>::setfill(<span class="string">'0'</span>) &lt;&lt; <span class="built_in">std</span>::setw(<span class="number">4</span>) &lt;&lt; <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(*c);</div><div class="line">result += oss.str();</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> <span class="keyword">if</span> ((*c) &amp; <span class="number">0x80</span>) &#123;</div><div class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> num = <span class="number">0</span>;</div><div class="line">c += UTF8TocodePoint(c, &amp;num) - <span class="number">1</span>;</div><div class="line"><span class="built_in">std</span>::<span class="built_in">ostringstream</span> oss;</div><div class="line">oss &lt;&lt; <span class="string">"\\u"</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; <span class="built_in">std</span>::uppercase &lt;&lt; <span class="built_in">std</span>::setfill(<span class="string">'0'</span>) &lt;&lt; <span class="built_in">std</span>::setw(<span class="number">4</span>) &lt;&lt; <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(num);</div><div class="line">result += oss.str();</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span></div><div class="line">&#123;</div><div class="line">result += *c;</div><div class="line">&#125;</div><div class="line"><span class="keyword">break</span>;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+<pre><code>
+if ( isControlCharacter( *c ) )
+{
+std::ostringstream oss;
+oss &lt;&lt; &quot;\\u&quot; &lt;&lt; std::hex &lt;&lt; std::uppercase &lt;&lt; std::setfill(&#39;0&#39;) &lt;&lt; std::setw(4) &lt;&lt; static_cast&lt;int&gt;(*c);
+result += oss.str();
+}
+else if ((*c) &amp; 0x80) {
+unsigned int num = 0;
+c += UTF8TocodePoint(c, &amp;num) - 1;
+std::ostringstream oss;
+oss &lt;&lt; &quot;\\u&quot; &lt;&lt; std::hex &lt;&lt; std::uppercase &lt;&lt; std::setfill(&#39;0&#39;) &lt;&lt; std::setw(4) &lt;&lt; static_cast&lt;int&gt;(num);
+result += oss.str();
+}
+else
+{
+result += *c;
+}
+break;
+
+ </code></pre>
 <p>这样还没算结束，因为这个函数开头的地方还有一个判断，我们也需要修改一下，将原始代码：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">if</span> (<span class="built_in">strpbrk</span>(value, <span class="string">"\"\\\b\f\n\r\t"</span>) == <span class="literal">NULL</span> &amp;&amp; !containsControlCharacter( value ))</div><div class="line"><span class="keyword">return</span> <span class="built_in">std</span>::<span class="built_in">string</span>(<span class="string">"\""</span>) + value + <span class="string">"\""</span>;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+<pre><code>
+if (strpbrk(value, &quot;\&quot;\\\b\f\n\r\t&quot;) == NULL &amp;&amp; !containsControlCharacter( value ))
+return std::string(&quot;\&quot;&quot;) + value + &quot;\&quot;&quot;;
+
+ </code></pre>
 <p>修改为：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">if</span> (<span class="built_in">strpbrk</span>(value, <span class="string">"\"\\\b\f\n\r\t"</span>) == <span class="literal">NULL</span> &amp;&amp; !containsControlCharacter( value ) &amp;&amp; !containsMultiByte( value ))</div><div class="line"><span class="keyword">return</span> <span class="built_in">std</span>::<span class="built_in">string</span>(<span class="string">"\""</span>) + value + <span class="string">"\""</span>;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+<pre><code>
+if (strpbrk(value, &quot;\&quot;\\\b\f\n\r\t&quot;) == NULL &amp;&amp; !containsControlCharacter( value ) &amp;&amp; !containsMultiByte( value ))
+return std::string(&quot;\&quot;&quot;) + value + &quot;\&quot;&quot;;
+
+ </code></pre>
 <p>containsMultiByte的实现是这样的：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">containsMultiByte</span><span class="params">( <span class="keyword">const</span> <span class="keyword">char</span>* str )</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line"><span class="keyword">while</span> ( *str )</div><div class="line">&#123;</div><div class="line"><span class="keyword">if</span> ( ( *(str++) ) &amp; <span class="number">0x80</span> )</div><div class="line"><span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
+<pre><code>static bool containsMultiByte( const char* str )
+{
+while ( *str )
+{
+if ( ( *(str++) ) &amp; 0x80 )
+return true;
+}
+return false;
+}
+
+ </code></pre>
 <p>好了，万事俱备，现在试一试效果，结果如图：</p>
 <p><a href="/uploads/2013/07/20130719232025.png"><img src="/uploads/2013/07/20130719232025.png" alt="20130719232025"></a></p>
 <p>现在这个jsoncpp看起来已经满足了我的需求，但是不确定的是，不知道这样修改会不会引起其他问题。现在也只能说暂时不去管他，有问题再一步一步的修改吧。</p>
 
-      
+            </article>
+            
+                <div class="share">
+                    <!--开启分享-->
+<div class="share-component" data-disabled="google,twitter,facebook" data-description=""></div>
+
+<script src="/js/share.min.js"></script>
+
+                </div>    
+            
+
+            
+            
+                
+<div class="comments">
+    <div id="container"></div>
+        <script src="/js/gitment.browser.js"></script>
+         <script>
+            var gitment = new Gitment({
+                id: '/2013/07/19/e585b3e4ba8ejsoncppe79a84e4b8ade69687e7bc96e7a081e997aee9a298/',
+                owner: '',
+                repo: '',
+                oauth: {
+                    client_id: "",
+                    client_secret: "",
+                }
+            })
+        gitment.render('container')
+        </script>
+</div>
+
+            
+
+        </div>
+        <div class="column one-fourth">
+            
+                
+                
+
+
+<h3>Post Directory</h3>
+
+<div id="post-directory-module">
+	<section class="post-directory">
+		<p><strong class="toc-title">文章目录</strong></p>
+		
+	</section>
+</div>
+            
+        </div>
     </div>
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2013/07/19/e585b3e4ba8ejsoncppe79a84e4b8ade69687e7bc96e7a081e997aee9a298/" data-id="cj6etakte002vfcg9ulbtyvup" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2013/08/04/e4bdbfe794a8e58fafe7bc96e7a88be997b4e99a94e5ae9ae697b6e599a8programmable-interval-timere7bc96e58699e7b3bbe7bb9fe697b6e9929f/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Récent</strong>
-      <div class="article-nav-title">
-        
-          使用可编程间隔定时器(Programmable Interval Timer)编写系统时钟
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2013/07/05/e8b083e8af95e68c82e6adbbe79a84explorer/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ancien</strong>
-      <div class="article-nav-title">调试挂死的Explorer</div>
-    </a>
-  
-</nav>
-
-  
-</article>
-
 </section>
-        
-          <aside id="sidebar">
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Catégories</h3>
-    <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/">Debugging</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Debugging/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MiniKernel/">MiniKernel</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/">NTInternals</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/NTInternals/Tips/">Tips</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tips/">Tips</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/debugging/">debugging</a></li></ul>
+
+<footer class="container">
+    <div class="site-footer" role="contentinfo">
+        <div class="copyright left mobile-block">
+                © 2016
+                <span title="yumemor">yumemor</span>
+                <a href="javascript:window.scrollTo(0,0)" class="right mobile-visible">TOP</a>
+        </div>
+
+        <ul class="site-footer-links right mobile-hidden">
+            <li>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+            </li>
+        </ul>
+
+        <a href="https://github.com/yumemor/hexo-theme-primer" target="_blank" aria-label="view source code">
+            <span class="mega-octicon octicon-mark-github" title="GitHub"></span>
+        </a>
+
+        <ul class="site-footer-links mobile-hidden">
+            
+                  
+                  <li>
+                    <a href="/"  title="Home">Home</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/categories/"  title="Category">Category</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/message/"  title="Message">Message</a>
+                  </li>
+            
+            <li>
+                <a href="/atom.xml">
+                    <span class="octicon octicon-rss" style="color:orange;"></span>
+                </a>
+            </li>
+        </ul>
     </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
-    <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/File-System/">File System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDE/">IDE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTInternals/">NTInternals</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PIO/">PIO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/System/">System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Volume/">Volume</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/grub/">grub</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/File-System/" style="font-size: 10px;">File System</a> <a href="/tags/IDE/" style="font-size: 10px;">IDE</a> <a href="/tags/Kernel/" style="font-size: 20px;">Kernel</a> <a href="/tags/MiniKernel/" style="font-size: 10px;">MiniKernel</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/NTInternals/" style="font-size: 10px;">NTInternals</a> <a href="/tags/NTSTATUS/" style="font-size: 10px;">NTSTATUS</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/PIO/" style="font-size: 10px;">PIO</a> <a href="/tags/System/" style="font-size: 10px;">System</a> <a href="/tags/Volume/" style="font-size: 10px;">Volume</a> <a href="/tags/Windows/" style="font-size: 15px;">Windows</a> <a href="/tags/grub/" style="font-size: 10px;">grub</a> <a href="/tags/snapshot/" style="font-size: 10px;">snapshot</a>
-    </div>
-  </div>
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2017/07/25/insert-163-music/">测试插入网易云音乐</a>
-          </li>
-        
-          <li>
-            <a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
-          </li>
-        
-          <li>
-            <a href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
-          </li>
-        
-          <li>
-            <a href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
-          </li>
-        
-          <li>
-            <a href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2017 0CCh<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
 </footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+		<script src="/js/geopattern.js"></script>
+		<script src="/js/highlight.pack.js"></script>
+		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 
+		
+			<script src="/js/toc.js"></script>
+		
 
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+		<script src="/js/index.js"></script>
 
+		 <script src="/js/popular_repo.js"></script> 
 
-<script src="/js/script.js"></script>
-
-  </div>
-</body>
+	</body>
 </html>
