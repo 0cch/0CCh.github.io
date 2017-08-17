@@ -1,0 +1,1176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>0CCh Blog</title>
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://0cch.com/"/>
+  <updated>2017-08-17T03:03:03.493Z</updated>
+  <id>http://0cch.com/</id>
+  
+  <author>
+    <name>0CCh</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>测试math-plugin</title>
+    <link href="http://0cch.com/2017/08/17/test-math-plugin/"/>
+    <id>http://0cch.com/2017/08/17/test-math-plugin/</id>
+    <published>2017-08-17T02:28:17.000Z</published>
+    <updated>2017-08-17T03:03:03.493Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="Inline"><a href="#Inline" class="headerlink" title="Inline"></a>Inline</h2><p>Simple inline \(a = b + c\).</p>
+<p>This equation \(\cos 2\theta = \cos^2 \theta - \sin^2 \theta =  2 \cos^2 \theta - 1 \) is inline.</p>
+<h2 id="Block"><a href="#Block" class="headerlink" title="Block"></a>Block</h2><p>$$\frac{\partial u}{\partial t}<br>= h^2 \left( \frac{\partial^2 u}{\partial x^2} +<br>\frac{\partial^2 u}{\partial y^2} +<br>\frac{\partial^2 u}{\partial z^2}\right)$$</p>
+<span>$$\begin{aligned}
+\dot{x} &amp; = \sigma(y-x) \\
+\dot{y} &amp; = \rho x - y - xz \\
+\dot{z} &amp; = -\beta z + xy
+\end{aligned}$$</span><!-- Has MathJax -->]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;h2 id=&quot;Inline&quot;&gt;&lt;a href=&quot;#Inline&quot; class=&quot;
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+      <category term="Test" scheme="http://0cch.com/tags/Test/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>调试COM的一个tip</title>
+    <link href="http://0cch.com/2017/07/09/tip-about-com/"/>
+    <id>http://0cch.com/2017/07/09/tip-about-com/</id>
+    <published>2017-07-09T03:28:15.000Z</published>
+    <updated>2017-07-10T09:20:21.321Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近遇到朋友的一个程序崩溃，原因是接口没有释放的时候调用了CoUninitialize，接着才释放接口。这个应该是个很明显的问题，但是朋友告诉我以前代码就是这个样子的，没有崩溃过，最近修改了部分代码但并不是这一块的。为了看看究竟什么回事，我把没有崩溃的程序抓了dump，看了COM的初始化引用计数：</p>
+<pre><code>0:000&gt; dt _teb @$teb ReservedForOle
+ntdll!_TEB
+   +0x1758 ReservedForOle : 0x00000000`00271b00 Void
+
+0:000&gt; dt ole32!SOleTlsData 0x00000000`00271b00 cComInits pNativeApt
+   +0x028 cComInits  : 5
+   +0x080 pNativeApt : 0x00000000`00272680 CComApartment
+
+0:000&gt; dt 0x00000000`00272680 CComApartment _AptKind
+ole32!CComApartment
+   +0x010 _AptKind : 4 ( APTKIND_APARTMENTTHREADED )
+</code></pre><p>没有崩溃的时候，引用计数确实不为0，也能看出是个STA。后来朋友发现，之所以之前没有崩溃，是因为之前线程加载的某个dll中，有初始化COM的调用，所以引用计数不为0。后来移开了这个dll，问题就出现了。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;最近遇到朋友的一个程序崩溃，原因是接口没有释放的时候调用了CoUniniti
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>gotcha sdk 文件监控功能更新</title>
+    <link href="http://0cch.com/2017/07/02/gotcha-sdk-monitor-update/"/>
+    <id>http://0cch.com/2017/07/02/gotcha-sdk-monitor-update/</id>
+    <published>2017-07-02T07:56:54.000Z</published>
+    <updated>2017-07-03T07:56:59.473Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在15年的一篇blog中，我介绍了gotcha sdk。<a href="https://0cch.com/ntinternals/2015/11/25/gotcha-sdk.html">https://0cch.com/ntinternals/2015/11/25/gotcha-sdk.html</a></p>
+<p>当时gotcha sdk没有提供文件监控功能，也就是说当搜索文件发生变化的时候，这个变化不会体现到搜索结果列表中。其实这个功能一直在todo list中，只不过忙的时候没时间写这部分代码，闲的时候又忘了。前几天终于有时间把这部分代码补上，升级了sdk。</p>
+<p>gotcha sdk 代码SVN:<br><a href="http://code.taobao.org/svn/gotcha_sdk/" target="_blank" rel="external">http://code.taobao.org/svn/gotcha_sdk/</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;在15年的一篇blog中，我介绍了gotcha sdk。&lt;a href=&quot;h
+    
+    </summary>
+    
+      <category term="NTInternals" scheme="http://0cch.com/categories/NTInternals/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>切换到session 0</title>
+    <link href="http://0cch.com/2017/06/25/switch-to-session-0/"/>
+    <id>http://0cch.com/2017/06/25/switch-to-session-0/</id>
+    <published>2017-06-25T13:48:24.000Z</published>
+    <updated>2017-07-03T07:44:36.330Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这是一个小技巧，可以帮助我们从session 1切换到session 0，并且获得system权限。有了system权限，可以做一些admin做不了的事情，具体哪些事情大伙可以自己挖掘。</p>
+<pre><code>切换到session 0：    rundll32 winsta.dll WinStationSwitchToServicesSession
+切换会原session：    rundll32 winsta.dll WinStationRevertFromServicesSession
+</code></pre><p>但是如果直接切换到session 0，会发现一个问题，我们没有桌面程序，所以什么事情也做不了。解决方法也很简单，创建一个explorer就可以了。但是普通方法创建explorer，怎么会不能创建到session 0，于是这里可想而知，我们需要一个服务来创建explorer。专门写一个服务程序未免太麻烦，这里可以使用cmd来快速创建explorer。</p>
+<pre><code>sc create desktop0 binpath= &quot;cmd /c start explorer.exe&quot; type= own type= interact
+net start desktop0
+</code></pre><p>虽然cmd不是服务，但是也会被运行起来，只不过不能与服务管理器交互，所以在超时的时候会被结束。不过那个时候已经没关系了，因为explorer已经创建起来了。接下来就可以切换了session 0，用system权限管理电脑了。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;这是一个小技巧，可以帮助我们从session 1切换到session 0，并
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>0cchext插件实用命令dttoc</title>
+    <link href="http://0cch.com/2017/05/02/0cchext-dttoc-command/"/>
+    <id>http://0cch.com/2017/05/02/0cchext-dttoc-command/</id>
+    <published>2017-05-02T03:33:24.000Z</published>
+    <updated>2017-05-03T03:35:59.637Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近给<a href="https://github.com/0cch/0cchext/releases/tag/1.0.16.3.55" target="_blank" rel="external">0cchext</a>添加了一个实用的逆向命令，dttoc，这个命令可以把dt命令输出的结构体转化为C的结构，方便我们做逆向还原工作。</p>
+<pre><code>0:000&gt; !0cchext.dttoc nt!_peb
+struct _PEB {
+    BYTE InheritedAddressSpace;
+    BYTE ReadImageFileExecOptions;
+    BYTE BeingDebugged;
+    union {
+        BYTE BitField;
+        struct {
+            BYTE ImageUsesLargePages:1;
+            BYTE IsProtectedProcess:1;
+            BYTE IsImageDynamicallyRelocated:1;
+            BYTE SkipPatchingUser32Forwarders:1;
+            BYTE IsPackagedProcess:1;
+            BYTE IsAppContainer:1;
+            BYTE IsProtectedProcessLight:1;
+            BYTE IsLongPathAwareProcess:1;
+        };
+    };
+    VOID* Mutant;
+    VOID* ImageBaseAddress;
+    _PEB_LDR_DATA* Ldr;
+    _RTL_USER_PROCESS_PARAMETERS* ProcessParameters;
+    VOID* SubSystemData;
+    VOID* ProcessHeap;
+    _RTL_CRITICAL_SECTION* FastPebLock;
+    _SLIST_HEADER* AtlThunkSListPtr;
+    VOID* IFEOKey;
+    union {
+        DWORD CrossProcessFlags;
+        struct {
+            DWORD ProcessInJob:1;
+            DWORD ProcessInitializing:1;
+            DWORD ProcessUsingVEH:1;
+            DWORD ProcessUsingVCH:1;
+            DWORD ProcessUsingFTH:1;
+            DWORD ReservedBits0:27;
+        };
+    };
+    union {
+        VOID* KernelCallbackTable;
+        VOID* UserSharedInfoPtr;
+    };
+    DWORD SystemReserved[1];
+    _SLIST_HEADER* AtlThunkSListPtr32;
+    VOID* ApiSetMap;
+    DWORD TlsExpansionCounter;
+    VOID* TlsBitmap;
+    DWORD TlsBitmapBits[2];
+    VOID* ReadOnlySharedMemoryBase;
+    VOID* SparePvoid0;
+    VOID** ReadOnlyStaticServerData;
+    VOID* AnsiCodePageData;
+    VOID* OemCodePageData;
+    VOID* UnicodeCaseTableData;
+    DWORD NumberOfProcessors;
+    DWORD NtGlobalFlag;
+    _LARGE_INTEGER CriticalSectionTimeout;
+    DWORD HeapSegmentReserve;
+    DWORD HeapSegmentCommit;
+    DWORD HeapDeCommitTotalFreeThreshold;
+    DWORD HeapDeCommitFreeBlockThreshold;
+    DWORD NumberOfHeaps;
+    DWORD MaximumNumberOfHeaps;
+    VOID** ProcessHeaps;
+    VOID* GdiSharedHandleTable;
+    VOID* ProcessStarterHelper;
+    DWORD GdiDCAttributeList;
+    _RTL_CRITICAL_SECTION* LoaderLock;
+    DWORD OSMajorVersion;
+    DWORD OSMinorVersion;
+    WORD OSBuildNumber;
+    WORD OSCSDVersion;
+    DWORD OSPlatformId;
+    DWORD ImageSubsystem;
+    DWORD ImageSubsystemMajorVersion;
+    DWORD ImageSubsystemMinorVersion;
+    DWORD ActiveProcessAffinityMask;
+    DWORD GdiHandleBuffer[34];
+    void* PostProcessInitRoutine;
+    VOID* TlsExpansionBitmap;
+    DWORD TlsExpansionBitmapBits[32];
+    DWORD SessionId;
+    _ULARGE_INTEGER AppCompatFlags;
+    _ULARGE_INTEGER AppCompatFlagsUser;
+    VOID* pShimData;
+    VOID* AppCompatInfo;
+    _UNICODE_STRING CSDVersion;
+    _ACTIVATION_CONTEXT_DATA* ActivationContextData;
+    _ASSEMBLY_STORAGE_MAP* ProcessAssemblyStorageMap;
+    _ACTIVATION_CONTEXT_DATA* SystemDefaultActivationContextData;
+    _ASSEMBLY_STORAGE_MAP* SystemAssemblyStorageMap;
+    DWORD MinimumStackCommit;
+    _FLS_CALLBACK_INFO* FlsCallback;
+    _LIST_ENTRY FlsListHead;
+    VOID* FlsBitmap;
+    DWORD FlsBitmapBits[4];
+    DWORD FlsHighIndex;
+    VOID* WerRegistrationData;
+    VOID* WerShipAssertPtr;
+    VOID* pUnused;
+    VOID* pImageHeaderHash;
+    union {
+        DWORD TracingFlags;
+        struct {
+            QWORD HeapTracingEnabled:1;
+            QWORD CritSecTracingEnabled:1;
+            QWORD LibLoaderTracingEnabled:1;
+            QWORD SpareTracingBits:29;
+        };
+    };
+    QWORD CsrServerReadOnlySharedMemoryBase;
+    DWORD TppWorkerpListLock;
+    _LIST_ENTRY TppWorkerpList;
+    VOID* WaitOnAddressHashTable[128];
+};
+</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;最近给&lt;a href=&quot;https://github.com/0cch/0c
+    
+    </summary>
+    
+      <category term="Debugging" scheme="http://0cch.com/categories/Debugging/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Delphi异常0EEDFADE</title>
+    <link href="http://0cch.com/2017/04/04/delphi-exception/"/>
+    <id>http://0cch.com/2017/04/04/delphi-exception/</id>
+    <published>2017-04-04T02:03:16.000Z</published>
+    <updated>2017-04-05T02:29:06.826Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>0EEDFADE是Delphi内部异常代码，该异常通常有7个参数，我们用的上的是第二个参数，这个参数指向的是Exception的对象，通过这个对象，我们就可以查出异常的一些信息。</p>
+<p>以Delphi XE2为例,Class name的偏移为（不同的版本偏移有所不同）：  </p>
+<pre><code>x86_vmtClassName = -56(0x38);
+x64_vmtClassName = -112(0x70);
+</code></pre><p>我们可以用如下命令获取相关信息：  </p>
+<pre><code>x86: da poi(poi(exception_object)-38)+1;du /c 100 poi(exception_object+4)  
+x64: da poi(poi(exception_object)-70)+1;du /c 100 poi(exception_object+8)
+</code></pre><p>以上命令就能获取异常的类名，而exception_object+sizeof(pointer)则是Exception Message的所在偏移，这是一个unicode string。实际效果如下：</p>
+<pre><code>0:002&gt; da poi(poi(003a2800)-38)+1;du /c 100 poi(003a2800 +4)
+00b9ec47  &quot;TTransportExceptionUnknown&quot;
+00375b8c  &quot;ServerTransport.Accept() may not return NULL&quot;
+</code></pre><p>当然，我们也可以设置event filter去截获异常：  </p>
+<pre><code>x86: sxe -c &quot;da poi(poi(poi(@ebp+1c))-38)+1;du /c 100 poi(poi(@ebp+1c)+4)&quot; 0EEDFADE
+x64: sxe -c &quot;da poi(poi(poi(@rbp+48))-70)+1;du /c 100 poi(poi(@rbp+48)+8)&quot; 0EEDFADE
+</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;0EEDFADE是Delphi内部异常代码，该异常通常有7个参数，我们用的上
+    
+    </summary>
+    
+      <category term="Debugging" scheme="http://0cch.com/categories/Debugging/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Windows 10设置系统DPI</title>
+    <link href="http://0cch.com/2017/03/08/set-dpi/"/>
+    <id>http://0cch.com/2017/03/08/set-dpi/</id>
+    <published>2017-03-08T06:47:37.000Z</published>
+    <updated>2017-08-16T09:35:44.115Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>现在的显示器分辨率越来越高2K，4K甚至5K，而很多程序并不支持这一的高分辨率，所以这些程序在桌面上会显示的很小，好在Windows 8以后的系统中，我们可以设置DPI来放大程序的窗口，如下图所示：  </p>
+<p><a href="/uploads/2017/03/20170309145111.png"><img src="/uploads/2017/03/20170309145111.png" alt="20170309145111"></a></p>
+<p>但是，微软并没有把设置DPI的接口文档化。所以我把这个功能逆了一下，还原的代码如下：</p>
+<pre><code>
+&#x2F;*
+	BOOL ApplyDpiSetting(int val);
+	val 为DPI要设置的数字，例如0是100%，1是125%，以此类推，注意250%以后是300%。
+	另外上面的对应关系只是通常情况下的，还有可能有其他对应关系，例如0是300%，-1是250%等等。
+	具体怎么对应可以通过GetDpiForMonitor函数来获取
+*&#x2F;
+
+typedef struct _SET_DPI {
+	DISPLAYCONFIG_DEVICE_INFO_HEADER header;
+	ULONG val;
+} SET_DPI;
+
+BOOL ApplyDpiSetting(ULONG val)
+{
+	UINT32 num_of_paths = 0;
+	UINT32 num_of_modes = 0;
+	DISPLAYCONFIG_PATH_INFO* display_paths = NULL; 
+	DISPLAYCONFIG_MODE_INFO* display_modes = NULL;
+	BOOL retval = FALSE;
+
+	do 
+	{
+		if (GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, 
+			&amp;num_of_paths, 
+			&amp;num_of_modes) != ERROR_SUCCESS) {
+				break;
+		}
+
+
+		display_paths = (DISPLAYCONFIG_PATH_INFO*)calloc((int)num_of_paths, sizeof(DISPLAYCONFIG_PATH_INFO));
+		display_modes = (DISPLAYCONFIG_MODE_INFO*)calloc((int)num_of_modes, sizeof(DISPLAYCONFIG_MODE_INFO));
+		
+		if (QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, 
+			&amp;num_of_paths, 
+			display_paths, 
+			&amp;num_of_modes, 
+			display_modes, 
+			NULL) != ERROR_SUCCESS) {
+				break;
+		}
+
+		SET_DPI dpi;
+		dpi.header.type = (DISPLAYCONFIG_DEVICE_INFO_TYPE)0xFFFFFFFC;
+		dpi.header.size = sizeof(dpi);
+		dpi.header.adapterId = display_paths[0].sourceInfo.adapterId;
+		dpi.header.id = display_paths[0].sourceInfo.id;
+		dpi.val = val;
+
+		if (DisplayConfigSetDeviceInfo((DISPLAYCONFIG_DEVICE_INFO_HEADER*)&amp;dpi) == ERROR_SUCCESS) {
+			retval = TRUE;
+		}
+
+	} while (0);
+
+	if (display_paths) {
+		free(display_paths);
+	}
+	
+	if (display_modes) {
+		free(display_modes);
+	}
+
+	return retval;
+}
+
+
+</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;现在的显示器分辨率越来越高2K，4K甚至5K，而很多程序并不支持这一的高分辨
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>让编译器不推荐(deprecate)使用一个函数</title>
+    <link href="http://0cch.com/2017/02/12/deprecate-a-function/"/>
+    <id>http://0cch.com/2017/02/12/deprecate-a-function/</id>
+    <published>2017-02-12T02:41:34.000Z</published>
+    <updated>2017-02-13T03:02:49.772Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在开发一些公共库函数的时候，我们常常会对函数进行改写，这个时候我们会希望使用者用新的函数。为了提醒使用者，我们可以通过将函数声明为deprecated，这样编译器在编译的时候会抛出一个C4995或者C4996的警告。这个警告我们应该也经常看到过，比如使用strcpy，编译器会提示我们使用strcpy_s。  </p>
+<p>使用这个编译器特性有两种方法：  </p>
+<ol>
+<li>__declspec(deprecated)</li>
+<li>#pragma deprecated</li>
+</ol>
+<ul>
+<li>__declspec(deprecated)<br><a href="https://msdn.microsoft.com/en-us/library/044swk7y.aspx" target="_blank" rel="external">https://msdn.microsoft.com/en-us/library/044swk7y.aspx</a><br>这种方法直接声明在函数或者类之前，在使用函数的地方会抛出C4996的警告  <pre><code>__declspec(deprecated) void func1(int) {}
+</code></pre>当然我们还可以给警告自定义消息信息  <pre><code>__declspec(deprecated(&quot;** this is a deprecated function **&quot;)) void func2(int) {}
+</code></pre></li>
+</ul>
+<ul>
+<li>#pragma deprecated<br><a href="https://msdn.microsoft.com/en-us/library/c8xdzzhh.aspx" target="_blank" rel="external">https://msdn.microsoft.com/en-us/library/c8xdzzhh.aspx</a><br>这种方法可以一次性声明多个函数或者类，使用函数的地方会抛出C4995的警告  <pre><code>#pragma deprecated(func1, func2)
+</code></pre></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;在开发一些公共库函数的时候，我们常常会对函数进行改写，这个时候我们会希望使用
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>PDB 下载工具</title>
+    <link href="http://0cch.com/2017/01/02/pdbdownloader/"/>
+    <id>http://0cch.com/2017/01/02/pdbdownloader/</id>
+    <published>2017-01-02T04:06:25.000Z</published>
+    <updated>2017-01-03T04:15:17.169Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>前段时间微软的符号服务器特别不稳定，Windbg下载符号文件老是失败，所以就专门写了个pdb的下载工具(<a href="https://github.com/0cch/pdbdownloader" target="_blank" rel="external">pdbdownloader</a>)放到Github上。  </p>
+<p>P.S. 用WPF写界面确实是很有趣  </p>
+<p><a href="/uploads/2017/01/20170103120319.png"><img src="/uploads/2017/01/20170103120319.png" alt="20170103120319"></a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;前段时间微软的符号服务器特别不稳定，Windbg下载符号文件老是失败，所以就
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>快速抛出失败的方法 INT 29H</title>
+    <link href="http://0cch.com/2016/12/13/int29h/"/>
+    <id>http://0cch.com/2016/12/13/int29h/</id>
+    <published>2016-12-13T02:36:42.000Z</published>
+    <updated>2017-08-16T09:35:44.112Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>从Windows8开始，Windows设计了一个新的中断，INT 29H，用来快速的抛出失败。在sdk中，他被声明为 __fastfail:</p>
+<pre><code>
+
+#define FAST_FAIL_LEGACY_GS_VIOLATION          0
+#define FAST_FAIL_VTGUARD_CHECK_FAILURE        1
+#define FAST_FAIL_STACK_COOKIE_CHECK_FAILURE   2
+#define FAST_FAIL_CORRUPT_LIST_ENTRY           3
+#define FAST_FAIL_INCORRECT_STACK              4
+#define FAST_FAIL_INVALID_ARG                  5
+#define FAST_FAIL_GS_COOKIE_INIT               6
+#define FAST_FAIL_FATAL_APP_EXIT               7
+#define FAST_FAIL_RANGE_CHECK_FAILURE          8
+#define FAST_FAIL_UNSAFE_REGISTRY_ACCESS       9
+#define FAST_FAIL_GUARD_ICALL_CHECK_FAILURE    10
+#define FAST_FAIL_GUARD_WRITE_CHECK_FAILURE    11
+#define FAST_FAIL_INVALID_FIBER_SWITCH         12
+#define FAST_FAIL_INVALID_SET_OF_CONTEXT       13
+#define FAST_FAIL_INVALID_REFERENCE_COUNT      14
+#define FAST_FAIL_INVALID_JUMP_BUFFER          18
+#define FAST_FAIL_MRDATA_MODIFIED              19
+#define FAST_FAIL_CERTIFICATION_FAILURE        20
+#define FAST_FAIL_INVALID_EXCEPTION_CHAIN      21
+#define FAST_FAIL_CRYPTO_LIBRARY               22
+#define FAST_FAIL_INVALID_CALL_IN_DLL_CALLOUT  23
+#define FAST_FAIL_INVALID_IMAGE_BASE           24
+#define FAST_FAIL_DLOAD_PROTECTION_FAILURE     25
+#define FAST_FAIL_UNSAFE_EXTENSION_CALL        26
+#define FAST_FAIL_DEPRECATED_SERVICE_INVOKED   27
+#define FAST_FAIL_INVALID_BUFFER_ACCESS        28
+#define FAST_FAIL_INVALID_BALANCED_TREE        29
+#define FAST_FAIL_INVALID_NEXT_THREAD          30
+#define FAST_FAIL_GUARD_ICALL_CHECK_SUPPRESSED 31         &#x2F;&#x2F; Telemetry, nonfatal
+#define FAST_FAIL_APCS_DISABLED                32
+#define FAST_FAIL_INVALID_IDLE_STATE           33
+#define FAST_FAIL_MRDATA_PROTECTION_FAILURE    34
+#define FAST_FAIL_UNEXPECTED_HEAP_EXCEPTION    35
+#define FAST_FAIL_INVALID_FAST_FAIL_CODE       0xFFFFFFFF
+
+#if _MSC_VER &gt;= 1610
+
+DECLSPEC_NORETURN
+VOID
+__fastfail(
+    _In_ unsigned int Code
+    );
+
+#pragma intrinsic(__fastfail)
+
+#endif
+
+&#x2F;*
+	&#x2F;&#x2F; 汇编代码为
+	mov ecx, code
+	int 29h
+*&#x2F;
+</code></pre>
+<p>在中断代码执行后，操作系统会根据执行代码的环境来做出不同的处理。<br>如果<strong>fastfail发生在Ring0中，操作系统会抛出一个KERNEL_SECURITY_CHECK_FAILURE (0x139)的蓝屏。如果</strong>fastfail发生在Ring3，系统会抛出一个第二次机会的不可继续执行的异常，异常代码为0xC0000409，然后走进我们熟悉的Windows Error Reporting(WER)流程。另外，无论__fastfail发生在R0或者R3，如果有调试器正在调试系统或进程，都将得到一次中断到调试器的机会，这让我们能够看清楚具体发生了什么事情。但是正如我上面所说，这个是一个不可继续执行的异常，所以我们不能在调试器里处理了异常后让程序继续向前跑，当然也不能用try和except去捕获异常。</p>
+<p>我觉得__fastfail是个非常不错的设计，它让程序可以快速的进入内核异常处理流程，不需要执行额外的用户层的代码，也不需要额外的内存空间，提高了不可恢复的异常处理的性能，更重要的是，简单快速不依赖内存的执行方式也保证了系统的安全。所以在系统的安全检查失败处理中，大量使用了这个方式，减少被攻击的可能性。</p>
+<p>最后，如果INT 29H发生在Windows8以下的系统上，内核里会抛出一个常规的UNEXPECTED_KERNEL_MODE_TRAP的蓝屏，而用户层程序会抛出一个ACCESS VIOLATION的异常。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;从Windows8开始，Windows设计了一个新的中断，INT 29H，用
+    
+    </summary>
+    
+      <category term="Debugging" scheme="http://0cch.com/categories/Debugging/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>windbg的lua脚本扩展luadbg</title>
+    <link href="http://0cch.com/2016/11/15/luadbg-windbg-ext/"/>
+    <id>http://0cch.com/2016/11/15/luadbg-windbg-ext/</id>
+    <published>2016-11-15T02:50:37.000Z</published>
+    <updated>2016-11-16T03:45:52.915Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>2012年的时候，我在blog上写到过开发了一个windbg的lua扩展<a href="https://0cch.com/debugging/2012/08/16/dbglua-ef-bc-8c-e8-ae-a9lua-e8-84-9a-e6-9c-ac-e4-b9-9f-e8-83-bd-e6-8e-a7-e5-88-b6windbg-e8-bf-9b-e8-a1-8c-e8-b0-83-e8-af-95.html">dbglua</a>，当时觉得windbg的原生脚本语法太奇怪了，而且太不容易使用。现在来看，依旧如此，只不过我已经很熟悉这个原生脚本了。而这个lua扩展反倒是没什么用，因为用起来也不太方便，比如访问结构体。</p>
+<p>最近无意之中看了一眼pykd，他用重载.操作符的方式访问符号和结构体深深的吸引了我，感觉非常有趣。而python本身依赖比较多，这也促使我拿起之前的代码看了看，并且决定在github上重新建立这个项目叫做<a href="https://github.com/0cch/luadbg" target="_blank" rel="external">luadbg</a>，这次我决定长期维护这个项目，想到新的功能就往里面写，就像我一直维护的<a href="https://github.com/0cch/0cchext" target="_blank" rel="external">0cchext</a>一样。luadbg除了兼容了老dbglua的函数以外，还添加了几个我觉得很方便的类，主要是用重载.操作符的方式来访问模块和结构体的数据，效果如下图所示：</p>
+<p><a href="/uploads/2016/11/20161116113129.png"><img src="/uploads/2016/11/20161116113129.png" alt="20161116113129"></a></p>
+<p>当然，也可以用!luacmd命令进入input模式，从而一条一条的输入语句来测试正确性。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;2012年的时候，我在blog上写到过开发了一个windbg的lua扩展&lt;a
+    
+    </summary>
+    
+      <category term="Debugging" scheme="http://0cch.com/categories/Debugging/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>编译时自动增加build number</title>
+    <link href="http://0cch.com/2016/10/18/auto-increase-build-number/"/>
+    <id>http://0cch.com/2016/10/18/auto-increase-build-number/</id>
+    <published>2016-10-18T01:41:08.000Z</published>
+    <updated>2017-08-16T09:35:44.110Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近和朋友讨论版本号常用的几种规范，前三位&lt;主版本&gt;.&lt;子版本&gt;.&lt;修正版本&gt;基本上一致，不需要详说。主要区别产生在最后一位，有的是build number，有的是时间日期，还有的是git或者svn的revision。我习惯用build number，每次编译都会增加版本号最后一位的数字。但是手动去修改明显不科学也不可靠，所以给和我有一样习惯的朋友分享一个我早年写的python脚本，无论是自己的工具还是公司的产品我一直都在用这个。</p>
+<pre><code>用法就是在VS的工程属性Build Event -&gt; Pre Build Event里设置x:\incbuildnum.py $(ProjectDir)$(ProjectName).rc。
+</code></pre><pre><code>
+import re
+import os
+import sys
+import shutil
+
+if os.path.isfile(sys.argv[1] + &quot;.bak&quot;):
+	os.remove(sys.argv[1] + &quot;.bak&quot;)
+shutil.copy(sys.argv[1], sys.argv[1] + &quot;.bak&quot;)
+
+with open(sys.argv[1], &#39;r+&#39;) as content_file:
+    content = content_file.read()
+    
+    
+    m = re.search(&quot;VALUE \&quot;FileVersion\&quot;, \&quot;(([\\d]+).[ ]*)*([\\d]+)\&quot;&quot;, content)
+    new_ver = str(int(m.group(3)) + 1)
+    content = re.sub(&quot;(VALUE \&quot;FileVersion\&quot;, \&quot;([\\d]+.[ ]*)*)[\\d]+\&quot;&quot;, &quot;\\g&lt;1&gt;&quot; + new_ver + &quot;\&quot;&quot;, content)
+
+    m = re.search(&quot;FILEVERSION (([\\d]+).[ ]*)*([\\d]+)&quot;, content)
+    new_ver = str(int(m.group(3)) + 1)
+    content = re.sub(&quot;(FILEVERSION ([\\d]+.[ ]*)*)([\\d]+)&quot;, &quot;\\g&lt;1&gt;&quot; + new_ver, content)
+
+    m = re.search(&quot;VALUE \&quot;ProductVersion\&quot;, \&quot;(([\\d]+).[ ]*)*([\\d]+)\&quot;&quot;, content)
+    new_ver = str(int(m.group(3)) + 1)
+    content = re.sub(&quot;(VALUE \&quot;ProductVersion\&quot;, \&quot;([\\d]+.[ ]*)*)[\\d]+\&quot;&quot;, &quot;\\g&lt;1&gt;&quot; + new_ver + &quot;\&quot;&quot;, content)
+
+    m = re.search(&quot;PRODUCTVERSION (([\\d]+).[ ]*)*([\\d]+)&quot;, content)
+    new_ver = str(int(m.group(3)) + 1)
+    content = re.sub(&quot;(PRODUCTVERSION ([\\d]+.[ ]*)*)([\\d]+)&quot;, &quot;\\g&lt;1&gt;&quot; + new_ver, content)
+    
+    content_file.seek(0)
+    content_file.write(content)
+    content_file.truncate()
+    content_file.close()
+    
+</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;最近和朋友讨论版本号常用的几种规范，前三位&amp;lt;主版本&amp;gt;.&amp;lt;子
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>验证文件签名</title>
+    <link href="http://0cch.com/2016/09/21/verify-cert/"/>
+    <id>http://0cch.com/2016/09/21/verify-cert/</id>
+    <published>2016-09-21T04:22:50.000Z</published>
+    <updated>2017-08-16T09:35:44.108Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Sysinternal(<a href="http://forum.sysinternals.com/howto-verify-the-digital-signature-of-a-file_topic19247.html)上有关于验证签名的代码，不过代码有点问题，他只能验证PE签名，无法验证文件签名，所以我这里稍作了点修改，记录一下" target="_blank" rel="external">http://forum.sysinternals.com/howto-verify-the-digital-signature-of-a-file_topic19247.html)上有关于验证签名的代码，不过代码有点问题，他只能验证PE签名，无法验证文件签名，所以我这里稍作了点修改，记录一下</a></p>
+<pre><code>
+#define ENCODING (X509_ASN_ENCODING | PKCS_7_ASN_ENCODING)
+
+BOOL CheckFileTrust(LPCTSTR filename, CString &amp;signer_file)
+{
+	HCATADMIN cat_admin_handle = NULL;
+	if (!CryptCATAdminAcquireContext(&amp;cat_admin_handle, NULL, 0))
+	{
+		return FALSE;
+	}
+
+	HANDLE hFile = CreateFileW(filename, GENERIC_READ, FILE_SHARE_READ,
+		NULL, OPEN_EXISTING, 0, NULL);
+	if (INVALID_HANDLE_VALUE == hFile)
+	{
+		CryptCATAdminReleaseContext(cat_admin_handle, 0);
+		return FALSE;
+	}
+
+	DWORD hash_count = 100;
+	BYTE hash_data[100];
+	CryptCATAdminCalcHashFromFileHandle(hFile, &amp;hash_count, hash_data, 0);
+	CloseHandle(hFile);
+
+	LPWSTR member_tag = new WCHAR[hash_count * 2 + 1];
+	for (DWORD dw = 0; dw &lt; hash_count; ++dw)
+	{
+		wsprintfW(&amp;member_tag[dw * 2], L&quot;%02X&quot;, hash_data[dw]);
+	}
+
+	WINTRUST_DATA wd = { 0 };
+	WINTRUST_FILE_INFO wfi = { 0 };
+	WINTRUST_CATALOG_INFO wci = { 0 };
+	CATALOG_INFO ci = { 0 };
+	HCATINFO cat_admin_info = CryptCATAdminEnumCatalogFromHash(cat_admin_handle,
+		hash_data, hash_count, 0, NULL);
+	if (NULL == cat_admin_info)
+	{
+		wfi.cbStruct = sizeof(WINTRUST_FILE_INFO);
+		wfi.pcwszFilePath = filename;
+		wfi.hFile = NULL;
+		wfi.pgKnownSubject = NULL;
+
+		wd.cbStruct = sizeof(WINTRUST_DATA);
+		wd.dwUnionChoice = WTD_CHOICE_FILE;
+		wd.pFile = &amp;wfi;
+		wd.dwUIChoice = WTD_UI_NONE;
+		wd.fdwRevocationChecks = WTD_REVOKE_NONE;
+		wd.dwStateAction = WTD_STATEACTION_IGNORE;
+		wd.dwProvFlags = WTD_SAFER_FLAG;
+		wd.hWVTStateData = NULL;
+		wd.pwszURLReference = NULL;
+		signer_file = filename;
+	}
+	else
+	{
+		CryptCATCatalogInfoFromContext(cat_admin_info, &amp;ci, 0);
+		wci.cbStruct = sizeof(WINTRUST_CATALOG_INFO);
+		wci.pcwszCatalogFilePath = ci.wszCatalogFile;
+		wci.pcwszMemberFilePath = filename;
+		wci.pcwszMemberTag = member_tag;
+		wci.pbCalculatedFileHash = hash_data;
+		wci.cbCalculatedFileHash = hash_count;
+
+		wd.cbStruct = sizeof(WINTRUST_DATA);
+		wd.dwUnionChoice = WTD_CHOICE_CATALOG;
+		wd.pCatalog = &amp;wci;
+		wd.dwUIChoice = WTD_UI_NONE;
+		wd.fdwRevocationChecks = WTD_REVOKE_WHOLECHAIN;
+		wd.dwProvFlags = 0;
+		wd.hWVTStateData = NULL;
+		wd.pwszURLReference = NULL;
+		signer_file = ci.wszCatalogFile;
+	}
+	GUID action = WINTRUST_ACTION_GENERIC_VERIFY_V2;
+	HRESULT hr = WinVerifyTrust(NULL, &amp;action, &amp;wd);
+	BOOL retval = SUCCEEDED(hr);
+
+	if (NULL != cat_admin_info) {
+		CryptCATAdminReleaseCatalogContext(cat_admin_handle, cat_admin_info, 0);
+	}
+	CryptCATAdminReleaseContext(cat_admin_handle, 0);
+	delete[] member_tag;
+	return retval;
+}
+
+BOOL GetCertificateInfo(PCCERT_CONTEXT cert_context, CString &amp;signer_name)
+{
+	LPTSTR name = NULL;
+	DWORD data;
+
+	if (!(data = CertGetNameString(cert_context,
+		CERT_NAME_SIMPLE_DISPLAY_TYPE,
+		0,
+		NULL,
+		NULL,
+		0))) {
+			return FALSE;
+	}
+
+	&#x2F;&#x2F; Allocate memory for subject name.
+	name = (LPTSTR)LocalAlloc(LPTR, data * sizeof(TCHAR));
+	if (!name) {
+		return FALSE;
+	}
+
+	&#x2F;&#x2F; Get subject name.
+	if (!(CertGetNameString(cert_context,
+		CERT_NAME_SIMPLE_DISPLAY_TYPE,
+		0,
+		NULL,
+		name,
+		data))) {
+
+			LocalFree(name);
+			return FALSE;
+	}
+	signer_name = name;
+	LocalFree(name);
+	return TRUE;
+}
+
+
+BOOL GetFileSigner(LPCTSTR szFileName, CString &amp;signer_name)
+{
+	HCERTSTORE store_handle = NULL;
+	HCRYPTMSG msg_handle = NULL;
+	PCCERT_CONTEXT cert_context = NULL;
+	BOOL retval = FALSE;
+	DWORD encoding, content_type, format_type;
+	PCMSG_SIGNER_INFO signer_info = NULL;
+	DWORD signer_info_size;
+	CERT_INFO cert_info;
+	do
+	{
+		&#x2F;&#x2F; Get message handle and store handle from the signed file.
+		retval = CryptQueryObject(CERT_QUERY_OBJECT_FILE,
+			szFileName,
+			CERT_QUERY_CONTENT_FLAG_PKCS7_SIGNED_EMBED,
+			CERT_QUERY_FORMAT_FLAG_BINARY,
+			0,
+			&amp;encoding,
+			&amp;content_type,
+			&amp;format_type,
+			&amp;store_handle,
+			&amp;msg_handle,
+			NULL);
+		if (!retval) {
+			break;
+		}
+
+		&#x2F;&#x2F; Get signer information size.
+		retval = CryptMsgGetParam(msg_handle,
+			CMSG_SIGNER_INFO_PARAM,
+			0,
+			NULL,
+			&amp;signer_info_size);
+		if (!retval) {
+			break;
+		}
+
+		&#x2F;&#x2F; Allocate memory for signer information.
+		signer_info = (PCMSG_SIGNER_INFO)LocalAlloc(LPTR, signer_info_size);
+		if (!signer_info) {
+			break;
+		}
+
+		&#x2F;&#x2F; Get Signer Information.
+		retval = CryptMsgGetParam(msg_handle,
+			CMSG_SIGNER_INFO_PARAM,
+			0,
+			(PVOID)signer_info,
+			&amp;signer_info_size);
+		if (!retval) {
+			break;
+		}
+
+
+		&#x2F;&#x2F; Search for the signer certificate in the temporary 
+		&#x2F;&#x2F; certificate store.
+		cert_info.Issuer = signer_info-&gt;Issuer;
+		cert_info.SerialNumber = signer_info-&gt;SerialNumber;
+
+		cert_context = CertFindCertificateInStore(store_handle,
+			ENCODING,
+			0,
+			CERT_FIND_SUBJECT_CERT,
+			(PVOID)&amp;cert_info,
+			NULL);
+		if (!cert_context) {
+			break;
+		}
+
+		retval = GetCertificateInfo(cert_context, signer_name);
+
+	} while (0);
+
+	if (signer_info != NULL) { 
+		LocalFree(signer_info); 
+	}
+	if (cert_context != NULL) {
+		CertFreeCertificateContext(cert_context);
+	}
+	if (store_handle != NULL) {
+		CertCloseStore(store_handle, 0);
+	}
+	if (msg_handle != NULL) {
+		CryptMsgClose(msg_handle);
+	}
+
+	return retval;
+}
+</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;Sysinternal(&lt;a href=&quot;http://forum.sysi
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>在NTFS元文件目录里创建文件</title>
+    <link href="http://0cch.com/2016/08/23/create-file-in-metadata/"/>
+    <id>http://0cch.com/2016/08/23/create-file-in-metadata/</id>
+    <published>2016-08-23T03:58:00.000Z</published>
+    <updated>2017-08-16T09:35:44.105Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>说到Rootkit就不能提到他的文件隐藏，Rootkit隐藏文件的方式千奇百怪，这里说其中一个通过NTFS元文件目录无法被普通程序显示的特性隐藏文件的方法。</p>
+<p>我们都知道NTFS是有元文件的，比如$MFT(NTFS主文件表)，这种文件是我们看不到的，但是系统能访问。同样还有一种元文件目录，这个目录也是看不到的，无论你是否打开了显示系统文件，隐藏文件的选项。那么如果我们把要隐藏的文件放在这种目录下，那么就达到了隐藏的效果。</p>
+<p>举个例子 $Extend\$RmMetadata 这个目录。我们可以通过Winhex解析NTFS来读取这个目录的情况，而普通程序不行。这里我们通过这样的代码来创建文件。</p>
+<pre><code>#define GPA(x) *(FARPROC *)&amp;My##x = GetProcAddress(GetModuleHandle(L&quot;ntdll.dll&quot;), #x)	
+	GPA(NtCreateFile);
+	GPA(RtlInitUnicodeString);
+	IO_STATUS_BLOCK iob;
+	HANDLE h;
+	UNICODE_STRING uni_str;
+	MyRtlInitUnicodeString(&amp;uni_str, L&quot;\\??\\Global\\D:\\$Extend\\$RmMetadata\\$0cch&quot;);
+
+	OBJECT_ATTRIBUTES oa;
+	InitializeObjectAttributes(&amp;oa, &amp;uni_str, OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE, NULL, NULL)
+
+	LONG l = MyNtCreateFile(&amp;h, 
+	FILE_APPEND_DATA | SYNCHRONIZE, 
+	&amp;oa, 
+	&amp;iob, 
+	0, 
+	FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM, 
+	0, 
+	FILE_SUPERSEDE, 
+	FILE_SYNCHRONOUS_IO_NONALERT | FILE_NON_DIRECTORY_FILE, 
+	NULL, 
+	0);
+	
+	char buffer[] = &quot;0123456789&quot;;
+	WriteFile(h, buffer, strlen(buffer), (ULONG *)&amp;l, NULL);
+
+	CloseHandle(h);</code></pre>
+<p>值得注意的是我们必须用System用户权限去运行这个程序，才能创建文件到元文件目录，这里要用到psexec：</p>
+<p>psexec  -s C:\0cch\Test.exe</p>
+<p>然后我们看看效果</p>
+<p><a href="/uploads/2016/08/20160824115523.png"><img src="/uploads/2016/08/20160824115523.png" alt="20160824115523"></a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;说到Rootkit就不能提到他的文件隐藏，Rootkit隐藏文件的方式千奇百
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>关于Windows Timer精确度</title>
+    <link href="http://0cch.com/2016/07/24/something-about-windows-timer-resolution/"/>
+    <id>http://0cch.com/2016/07/24/something-about-windows-timer-resolution/</id>
+    <published>2016-07-24T03:27:25.000Z</published>
+    <updated>2016-07-25T03:30:17.887Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Windows Timer相比大家都用过，WM_TIMER, WM_SYSTIMER, Waitable Timer, Multimedia Timer, Timer Queue Timer，这么多种Timer，给我们变成提供了很大的方便，有窗口无窗口都能自如选择。所以尽量也不要自己再造轮子，用什么Sleep来写Timer。这种“自定义”的Timer肯定是没有由系统内核DPC触发的Timer效率高的。</p>
+<p>OK，回到正题，关于Timer的精确度。首先看看SysInternal工具集的clockres的显示：</p>
+<p><a href="/uploads/2016/07/20160725102628.png"><img src="/uploads/2016/07/20160725102628.png" alt="20160725102628"></a></p>
+<p>从图中可以看出，我这个系统的最大精确度15.6毫秒，最小是0.5毫秒，当前是15.6毫秒。默认情况下，Windows会用最大精确度，因为这样可以减少CPU的消耗，而且高精度的定时器，绝大多数程序都不会用到。基于15.6毫秒这个精度，那么我们设置Timer间隔为15.6毫秒以下都是没有意义的，这里再提一下，Sleep函数在内核也是用的定时器，也就是说这个精确度下，Sleep(10)也是没有意义的，间隔会达到15-16毫秒。</p>
+<p>当然，我们有的时候也是需要高精度的定时器的，这个时候我们需要设置时间精度。timeBeginPeriod这个函数就可以完成这个任务，这个函数调用了ntdll的NtSetTimerResolution函数，我们也可以直接调用这个ntdll函数，只不过我们需要动态获得这个函数的地址罢了。值得注意的是，并不是你想设置什么精确度都可以，Windows内部实际上维护了一份可以设置的精度列表，他会选择一个和你设置相近的的精度设置上去，这个列表保存在Hal里面。</p>
+<p>好了，再说下Windows时钟，Windows时钟更新时间总是用的最大精度，在我个系统上也就是每次更新时间都是间隔15.6毫秒。也就是说如果用GetTickCount来统计性能问题，最大精度也就是15-16毫秒。举个例子，一段代码运行时间不足15.6毫秒，要么统计结果是0，要么是15-16毫秒，时间精度不会影响Windows时钟更新。</p>
+<p>最后说下Windows高精度时钟查询的实现，在2000和XP时代，系统用TSC来演算时间，但是那个时候，多核并不支持TSC同步，这回带来一些问题。Vista系统采用了High Precision Event Timer (HPET)或者ACPI Power Management Timer (PM timer)，但是这种Timer的延时比较高，当然，这个延时是百纳秒级别的，可以说基本上不会对普通程序有什么影响。之后的系统就使用了固定频率的TSC，这样在多核状态下也能保证同步，而且延时很低。更详细的资料可以参考：<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx" target="_blank" rel="external">https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;Windows Timer相比大家都用过，WM_TIMER, WM_SYST
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Windows 10 任务管理器结束任务流程</title>
+    <link href="http://0cch.com/2016/06/26/win10-taskmgr-killproc/"/>
+    <id>http://0cch.com/2016/06/26/win10-taskmgr-killproc/</id>
+    <published>2016-06-26T03:09:30.000Z</published>
+    <updated>2016-06-27T03:16:29.503Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>从Win8开始，任务管理已经悄然发生变化了，这篇文章要说的就是结束任务这一个功能。以Win10的任务管理器为主来说明，没有了从窗口关闭进程的标签。取而代之的是一个区分前台和后台程序的进程树。通过这个界面结束进程也不再像以前一样调用User32的EndTask(<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms633492(v=vs.85).aspx)，而是重新规划了一套逻辑。" target="_blank" rel="external">https://msdn.microsoft.com/en-us/library/windows/desktop/ms633492(v=vs.85).aspx)，而是重新规划了一套逻辑。</a></p>
+<p>具体逻辑如下：  </p>
+<blockquote>
+<p>1.区分程序类型  </p>
+<p>2.如果是窗口程序，则给窗口发送WM_SYSCOMMAND+SC_CLOSE结束窗口来结束进程  </p>
+<p>3.如果是服务程序，则调用ControlService+SERVICE_CONTROL_STOP结束服务来结束进程  </p>
+<p>4.如果既没有窗口也不是服务的程序，或者说在第2，3步没有结束成功的进程，会调用TerminateProcess来强行结束进程。  </p>
+<p> 5.第五步是和之前结束任务最大的一个区别，以前的任务管理器，如果没能结束进程，例如一些僵尸进程，他就不会做其他动作了，而新的任务管理器为了释放这种进程所占用的内核资源，他还会做另外一些事情，那就是关闭目标进程的所有句柄。使用的方式就是DuplicateHandle+DUPLICATE_CLOSE_SOURCE。这样做的另外一个好处就是，如果顽固进程还在运行，句柄关闭会造成其崩溃而结束。</p>
+</blockquote>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;从Win8开始，任务管理已经悄然发生变化了，这篇文章要说的就是结束任务这一个
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Windows 8 Shell API对于长路径文件名的支持</title>
+    <link href="http://0cch.com/2016/05/17/win8-shell-long-filename/"/>
+    <id>http://0cch.com/2016/05/17/win8-shell-long-filename/</id>
+    <published>2016-05-17T08:16:56.000Z</published>
+    <updated>2016-05-18T08:33:58.072Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在Windows 8之前，Shell API对于长路径的文件名的支持并不理想。比如PathAppend这个函数，函数规定pszPath，也就是第一个参数，它的buffer大小必须要能够容纳MAX_PATH个字符。第二个参数pszMore也不能超过MAX_PATH的长度。这样的API不仅不能满足我们对长文件路径需求，同时也可能让我们的软件由于字符串检查不严格出现严重BUG和漏洞。</p>
+<p>还好，这个问题在Windows 8以及以后的系统上得到了解决。还是以路径拼接为例。微软向我们介绍了PathCchAppend和PathCchAppendEx函数。其中PathCchAppend函数，增加了cchPath参数，用来指定输出buffer的大小。用这样的方式来加强参数的检查，增加了函数的安全性。而PathCchAppendEx这个函数在PathCchAppend基础上，又加入了dwFlags，现在这个标志只有PATHCCH_ALLOW_LONG_PATHS，意思就是让我们的路径名超过MAX_PATH。</p>
+<p>不知道微软设计PathCchAppend和PathCchAppendEx这两个API的时候是怎么样的一个想法，我觉得完全没必要设计成两个函数，一个PathCchAppendEx就足够了。大家是不是也有这个疑问呢？</p>
+<p>最后，由于Windows 7现在的使用量还是非常大的，我们也不能因为要使用这些新的API而放弃兼容老版本的Windows。比较合适的做法还是动态导入这些函数，如果成功了就可以使用新的函数，失败就用老的函数。另外值得注意的是，PathCchAppend这类新的函数并不是放在shlwapi.dll里面，而是在kernelbase.dll，动态获取函数的时候需要注意这一点。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;在Windows 8之前，Shell API对于长路径的文件名的支持并不理想
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>获取桌面图标位置</title>
+    <link href="http://0cch.com/2016/04/12/get-desktop-icon-pos/"/>
+    <id>http://0cch.com/2016/04/12/get-desktop-icon-pos/</id>
+    <published>2016-04-12T07:04:35.000Z</published>
+    <updated>2017-08-16T09:37:13.869Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>用来干什么就不用说了，反正不是什么好事情 =v=</p>
+<pre><code>
+typedef struct _DESKTOP_ICON_INFO {
+	LVITEMW item;
+	WCHAR item_text[MAX_PATH];
+	RECT rc;
+} DESKTOP_ICON_INFO, *PDESKTOP_ICON_INFO;
+
+BOOL GetDesktopIconInfo(LPCWSTR pattern, RECT &amp;rc, HWND &amp;desktop)
+{
+	HWND progman = FindWindow(TEXT(&quot;Progman&quot;), TEXT(&quot;Program Manager&quot;));
+	if (progman == NULL) {
+		return FALSE;
+	}
+	
+
+	HWND def_view = FindWindowEx(progman, NULL, TEXT(&quot;SHELLDLL_DefView&quot;), NULL);
+	if (def_view == NULL) {
+		return FALSE;
+	}
+
+	HWND list_view = FindWindowEx(def_view, NULL, TEXT(&quot;SysListView32&quot;), TEXT(&quot;FolderView&quot;));
+	if (list_view == NULL) {
+		return FALSE;
+	}
+	desktop = list_view;
+
+	ULONG process_id = 0;
+	GetWindowThreadProcessId(progman, &amp;process_id);
+	if (process_id == 0) {
+		return FALSE;
+	}
+
+	int count = (int)::SendMessage(list_view, LVM_GETITEMCOUNT, 0, 0);
+
+	HANDLE process_handle = OpenProcess(
+		PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_QUERY_INFORMATION, FALSE, process_id);
+	if (process_handle == NULL) {
+		return FALSE;
+	}
+
+	PUCHAR remote_addr = (PUCHAR)VirtualAllocEx(process_handle, NULL, 
+		sizeof(DESKTOP_ICON_INFO), MEM_COMMIT, PAGE_READWRITE);
+
+	DESKTOP_ICON_INFO icon_info;
+	icon_info.item.iItem = 0;
+	icon_info.item.iSubItem = 0;
+	icon_info.item.mask = LVIF_TEXT;
+	icon_info.item.pszText = (WCHAR *)(remote_addr + offsetof(DESKTOP_ICON_INFO, item_text));
+	icon_info.item.cchTextMax = MAX_PATH;
+
+	for (int i = 0; i &lt; count; i++) {
+		icon_info.rc.left = LVIR_BOUNDS;
+		ZeroMemory(icon_info.item_text, sizeof(icon_info.item_text));
+		if (WriteProcessMemory(process_handle, remote_addr, &amp;icon_info, sizeof(icon_info), NULL)) {
+			 ::SendMessage(list_view, LVM_GETITEMTEXT, (WPARAM)i, (LPARAM)(remote_addr + offsetof(DESKTOP_ICON_INFO, item)));
+			 ::SendMessage(list_view, LVM_GETITEMRECT, (WPARAM)i, (LPARAM)(remote_addr + offsetof(DESKTOP_ICON_INFO, rc)));
+			 ReadProcessMemory(process_handle, remote_addr, &amp;icon_info, sizeof(icon_info), NULL);
+
+			 if (_wcsicmp(icon_info.item_text, pattern) == 0) {
+				 rc = icon_info.rc;
+				 break;
+			 }
+		}
+	}
+
+	VirtualFreeEx(process_handle, remote_addr, 0, MEM_RELEASE);
+	CloseHandle(process_handle);
+	return TRUE;
+}
+
+ </code></pre>]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;用来干什么就不用说了，反正不是什么好事情 =v=&lt;/p&gt;
+&lt;pre&gt;&lt;cod
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>查看消息窗口工具</title>
+    <link href="http://0cch.com/2016/03/17/msg-wnd-view/"/>
+    <id>http://0cch.com/2016/03/17/msg-wnd-view/</id>
+    <published>2016-03-17T04:00:45.000Z</published>
+    <updated>2016-03-17T05:00:26.827Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>我们都知道用Spy++去查看窗口句柄的相关信息，但是这款工具无法找到消息窗口(Message-Only Windows)。所以写了个查看消息窗口的工具，帮我排查一些这方面的问题。</p>
+<p><a href="/uploads/2016/03/20160317120246.png"><img src="/uploads/2016/03/20160317120246.png" alt="20160317120246"></a></p>
+<p>下载：<a href="/uploads/2016/03/MsgOnlyWnd.zip">MsgOnlyWnd</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;我们都知道用Spy++去查看窗口句柄的相关信息，但是这款工具无法找到消息窗口
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>c06d007f异常的解决方法</title>
+    <link href="http://0cch.com/2016/02/23/delay-load-error/"/>
+    <id>http://0cch.com/2016/02/23/delay-load-error/</id>
+    <published>2016-02-22T16:55:58.000Z</published>
+    <updated>2017-08-16T09:35:44.101Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>c06d007f这个异常通常是在PE的延迟加载dll的时候发生的，加载器找不到对应的dll就会抛出这个异常。如果我们对这个异常不熟悉，按照常规方式去找上下文，那么结果肯定会让你失望。例如3.2526.1373.0版本的libcef在XP上运行的情况。</p>
+<pre><code>
+0:000&gt; kb
+ # ChildEBP RetAddr  Args to Child              
+00 0012f218 7c92d9ac 7c86449d d0000144 00000004 ntdll!KiFastSystemCallRet
+01 0012f21c 7c86449d d0000144 00000004 00000000 ntdll!ZwRaiseHardError+0xc
+02 0012f4a0 7c843892 0012f4c8 7c839b21 0012f4d0 kernel32!UnhandledExceptionFilter+0x628
+03 0012f4a8 7c839b21 0012f4d0 00000000 0012f4d0 kernel32!BaseProcessStart+0x39
+04 0012f4d0 7c9232a8 0012f5bc 0012ffe0 0012f5d4 kernel32!_except_handler3+0x61
+05 0012f4f4 7c92327a 0012f5bc 0012ffe0 0012f5d4 ntdll!ExecuteHandler2+0x26
+06 0012f5a4 7c92e46a 00000000 0012f5d4 0012f5bc ntdll!ExecuteHandler+0x24
+07 0012f5a4 00000000 00000000 0012f5d4 0012f5bc ntdll!KiUserExceptionDispatcher+0xe
+WARNING: Frame IP not in any known module. Following frames may be wrong.
+08 0012fff4 004a991e 00000000 78746341 00000020 0x0
+09 0012fff8 00000000 78746341 00000020 00000001 cefclient!pre_c_init+0xb9 [f:\dd\vctools\crt_bld\self_x86\crt\src\crtexe.c @ 261]
+
+0:000&gt; .cxr 0012f5d4;k
+eax=0012f8a4 ebx=1314a58c ecx=00000000 edx=00000001 esi=0012f954 edi=68d60000
+eip=00000000 esp=0012fff8 ebp=00000000 iopl=0         nv up ei pl nz na po nc
+cs=001b  ss=0023  ds=0023  es=0023  fs=003b  gs=0000             efl=00000202
+00000000 ??              ???
+  *** Stack trace for last set context - .thread&#x2F;.cxr resets it
+ # ChildEBP RetAddr  
+WARNING: Frame IP not in any known module. Following frames may be wrong.
+00 0012fff4 004a991e 0x0
+01 0012fff8 00000000 cefclient!pre_c_init+0xb9 [f:\dd\vctools\crt_bld\self_x86\crt\src\crtexe.c @ 261]
+</code></pre>
+<p>直接看栈回溯或者通过设置cxr看栈回溯，并没有帮助我们找到什么有用的信息。</p>
+<p>这里要使用的方法是，利用异常的参数来找到具体延迟加载谁的时候发生了异常。</p>
+<pre><code>
+0:000&gt; .exr 0012f5bc 
+ExceptionAddress: 7c812aeb (kernel32!RaiseException+0x00000053)
+   ExceptionCode: c06d007f
+  ExceptionFlags: 00000000
+NumberParameters: 1
+   Parameter[0]: 0012f918
+   </code></pre>
+<p>这里的参数0，就是我们要找的目标，记录了出错时候ebp-0x30的数据，也就是含有关键信息的地方。让我们仔细看看：</p>
+<pre><code>
+0:000&gt; dds 0012f918
+0012f918  00000024
+0012f91c  1314a58c libcef!_DELAY_IMPORT_DESCRIPTOR_dbghelp_dll
+0012f920  13181dbc libcef!_imp__SymGetSearchPathW
+0012f924  12ebdd20 libcef!_sz_dbghelp_dll
+0012f928  00000001
+0012f92c  1314ac8e libcef!dxva2_NULL_THUNK_DATA_DLN+0x7e
+0012f930  68d60000 dbghelp!_imp__CryptAcquireContextA &lt;PERF&gt; (dbghelp+0x0)
+0012f934  00000000
+0012f938  0000007f
+0012f93c  1314c138 libcef!dxva2_NULL_THUNK_DATA_DLN+0x1528
+0012f940  00000003
+0012f944  00000000
+0012f948  0012f9f8
+0012f94c  11d17587 libcef!_tailMerge_dbghelp_dll+0xd
+0012f950  0012f918
+0012f954  13181dbc libcef!_imp__SymGetSearchPathW
+0012f958  00000008
+0012f95c  7c9301bb ntdll!RtlAllocateHeap+0xeac
+0012f960  1019014e libcef!base::debug::`anonymous namespace&#39;::InitializeSymbols+0x9e [f:\stnts\browser\cef\ws\src\chromium\src\base\debug\stack_trace_win.cc @ 79]
+0012f964  ffffffff
+0012f968  00170880
+</code></pre>
+<p>我们可以清楚的看到加载器延迟加载SymGetSearchPathW的时候发生了问题。让我们进一步用depends工具验证一下</p>
+<p><a href="/uploads/2016/02/20160223003624.png"><img src="/uploads/2016/02/20160223003624.png" alt="20160223003624"></a></p>
+<p>如上图所示，XP自带的dbghelp里没有SymGetSearchPathW这个导出函数。要解决这个异常，实际上就需要在运行目录里添加一个稍微新一点的dbghelp文件，我这里替换的是6.2.9200.16384的dbghelp，替换过后问题已经不再出现了。</p>
+<p><a href="/uploads/2016/02/20160223003711.png"><img src="/uploads/2016/02/20160223003711.png" alt="20160223003711"></a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;c06d007f这个异常通常是在PE的延迟加载dll的时候发生的，加载器找不
+    
+    </summary>
+    
+      <category term="debugging" scheme="http://0cch.com/categories/debugging/"/>
+    
+    
+  </entry>
+  
+</feed>
