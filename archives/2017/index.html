@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
 <head>
-  <meta charset="utf-8">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -12,10 +12,10 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
   <!--在这里倒入jquery 方便处理部分页面的jquery-->
-  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script>
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 <body class="home">
-	<header class="site-header navfixed-false">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="site-header navfixed-false">
   <div class="container">
       <h1><a href="/" title="0CCh Blog"><span class="octicon octicon-mark-github"></span> 0CCh Blog</a></h1>
       <nav class="site-header-nav" role="navigation">
@@ -74,6 +74,50 @@
     <div class="columns">
         <div class="column two-thirds">
             
+                  <article id="post-test-math-plugin" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2017/08/17/test-math-plugin/">测试math-plugin</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="Inline"><a href="#Inline" class="headerlink" title="Inline"></a>Inline</h2><p>Simple inline \(a = b + c\).</p>
+<p>This equation \(\cos 2\theta = \cos^2 \theta - \sin^2 \theta =  2 \cos^2 \theta - 1 \) is inline.</p>
+<h2 id="Block"><a href="#Block" class="headerlink" title="Block"></a>Block</h2><p>$$\frac{\partial u}{\partial t}<br>= h^2 \left( \frac{\partial^2 u}{\partial x^2} +<br>\frac{\partial^2 u}{\partial y^2} +<br>\frac{\partial^2 u}{\partial z^2}\right)$$</p>
+<span>$$\begin{aligned}
+\dot{x} &amp; = \sigma(y-x) \\
+\dot{y} &amp; = \rho x - y - xz \\
+\dot{z} &amp; = -\beta z + xy
+\end{aligned}$$</span><!-- Has MathJax -->
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2017-08-17T02:28:17.000Z" itemprop="datePublished">2017-08-17</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+            <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Test/">Test</a></li></ul>
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
                   <article id="post-tip-about-com" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
@@ -85,7 +129,7 @@
       </h3>
       <div class="repo-list-description">
         
-          <p>最近遇到朋友的一个程序崩溃，原因是接口没有释放的时候调用了CoUninitialize，接着才释放接口。这个应该是个很明显的问题，但是朋友告诉我以前代码就是这个样子的，没有崩溃过，最近修改了部分代码但并不是这一块的。为了看看究竟什么回事，我把没有崩溃的程序抓了dump，看了COM的初始化引用计数：</p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近遇到朋友的一个程序崩溃，原因是接口没有释放的时候调用了CoUninitialize，接着才释放接口。这个应该是个很明显的问题，但是朋友告诉我以前代码就是这个样子的，没有崩溃过，最近修改了部分代码但并不是这一块的。为了看看究竟什么回事，我把没有崩溃的程序抓了dump，看了COM的初始化引用计数：</p>
 <pre><code>0:000&gt; dt _teb @$teb ReservedForOle
 ntdll!_TEB
    +0x1758 ReservedForOle : 0x00000000`00271b00 Void
@@ -133,7 +177,7 @@ ole32!CComApartment
       </h3>
       <div class="repo-list-description">
         
-          <p>在15年的一篇blog中，我介绍了gotcha sdk。<a href="https://0cch.com/ntinternals/2015/11/25/gotcha-sdk.html">https://0cch.com/ntinternals/2015/11/25/gotcha-sdk.html</a></p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在15年的一篇blog中，我介绍了gotcha sdk。<a href="https://0cch.com/ntinternals/2015/11/25/gotcha-sdk.html">https://0cch.com/ntinternals/2015/11/25/gotcha-sdk.html</a></p>
 <p>当时gotcha sdk没有提供文件监控功能，也就是说当搜索文件发生变化的时候，这个变化不会体现到搜索结果列表中。其实这个功能一直在todo list中，只不过忙的时候没时间写这部分代码，闲的时候又忘了。前几天终于有时间把这部分代码补上，升级了sdk。</p>
 <p>gotcha sdk 代码SVN:<br><a href="http://code.taobao.org/svn/gotcha_sdk/" target="_blank" rel="external">http://code.taobao.org/svn/gotcha_sdk/</a></p>
 
@@ -171,7 +215,7 @@ ole32!CComApartment
       </h3>
       <div class="repo-list-description">
         
-          <p>这是一个小技巧，可以帮助我们从session 1切换到session 0，并且获得system权限。有了system权限，可以做一些admin做不了的事情，具体哪些事情大伙可以自己挖掘。</p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这是一个小技巧，可以帮助我们从session 1切换到session 0，并且获得system权限。有了system权限，可以做一些admin做不了的事情，具体哪些事情大伙可以自己挖掘。</p>
 <pre><code>切换到session 0：    rundll32 winsta.dll WinStationSwitchToServicesSession
 切换会原session：    rundll32 winsta.dll WinStationRevertFromServicesSession
 </code></pre><p>但是如果直接切换到session 0，会发现一个问题，我们没有桌面程序，所以什么事情也做不了。解决方法也很简单，创建一个explorer就可以了。但是普通方法创建explorer，怎么会不能创建到session 0，于是这里可想而知，我们需要一个服务来创建explorer。专门写一个服务程序未免太麻烦，这里可以使用cmd来快速创建explorer。</p>
@@ -213,7 +257,7 @@ net start desktop0
       </h3>
       <div class="repo-list-description">
         
-          <p>最近给<a href="https://github.com/0cch/0cchext/releases/tag/1.0.16.3.55" target="_blank" rel="external">0cchext</a>添加了一个实用的逆向命令，dttoc，这个命令可以把dt命令输出的结构体转化为C的结构，方便我们做逆向还原工作。</p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近给<a href="https://github.com/0cch/0cchext/releases/tag/1.0.16.3.55" target="_blank" rel="external">0cchext</a>添加了一个实用的逆向命令，dttoc，这个命令可以把dt命令输出的结构体转化为C的结构，方便我们做逆向还原工作。</p>
 <pre><code>0:000&gt; !0cchext.dttoc nt!_peb
 struct _PEB {
     BYTE InheritedAddressSpace;
@@ -364,7 +408,7 @@ struct _PEB {
       </h3>
       <div class="repo-list-description">
         
-          <p>0EEDFADE是Delphi内部异常代码，该异常通常有7个参数，我们用的上的是第二个参数，这个参数指向的是Exception的对象，通过这个对象，我们就可以查出异常的一些信息。</p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>0EEDFADE是Delphi内部异常代码，该异常通常有7个参数，我们用的上的是第二个参数，这个参数指向的是Exception的对象，通过这个对象，我们就可以查出异常的一些信息。</p>
 <p>以Delphi XE2为例,Class name的偏移为（不同的版本偏移有所不同）：  </p>
 <pre><code>x86_vmtClassName = -56(0x38);
 x64_vmtClassName = -112(0x70);
@@ -413,7 +457,7 @@ x64: sxe -c &quot;da poi(poi(poi(@rbp+48))-70)+1;du /c 100 poi(poi(@rbp+48)+8)&q
       </h3>
       <div class="repo-list-description">
         
-          <p>现在的显示器分辨率越来越高2K，4K甚至5K，而很多程序并不支持这一的高分辨率，所以这些程序在桌面上会显示的很小，好在Windows 8以后的系统中，我们可以设置DPI来放大程序的窗口，如下图所示：  </p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>现在的显示器分辨率越来越高2K，4K甚至5K，而很多程序并不支持这一的高分辨率，所以这些程序在桌面上会显示的很小，好在Windows 8以后的系统中，我们可以设置DPI来放大程序的窗口，如下图所示：  </p>
 <p><a href="/uploads/2017/03/20170309145111.png"><img src="/uploads/2017/03/20170309145111.png" alt="20170309145111"></a></p>
 <p>但是，微软并没有把设置DPI的接口文档化。所以我把这个功能逆了一下，还原的代码如下：</p>
 <pre><code>
@@ -518,7 +562,7 @@ BOOL ApplyDpiSetting(ULONG val)
       </h3>
       <div class="repo-list-description">
         
-          <p>在开发一些公共库函数的时候，我们常常会对函数进行改写，这个时候我们会希望使用者用新的函数。为了提醒使用者，我们可以通过将函数声明为deprecated，这样编译器在编译的时候会抛出一个C4995或者C4996的警告。这个警告我们应该也经常看到过，比如使用strcpy，编译器会提示我们使用strcpy_s。  </p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在开发一些公共库函数的时候，我们常常会对函数进行改写，这个时候我们会希望使用者用新的函数。为了提醒使用者，我们可以通过将函数声明为deprecated，这样编译器在编译的时候会抛出一个C4995或者C4996的警告。这个警告我们应该也经常看到过，比如使用strcpy，编译器会提示我们使用strcpy_s。  </p>
 <p>使用这个编译器特性有两种方法：  </p>
 <ol>
 <li>__declspec(deprecated)</li>
@@ -568,7 +612,7 @@ BOOL ApplyDpiSetting(ULONG val)
       </h3>
       <div class="repo-list-description">
         
-          <p>前段时间微软的符号服务器特别不稳定，Windbg下载符号文件老是失败，所以就专门写了个pdb的下载工具(<a href="https://github.com/0cch/pdbdownloader" target="_blank" rel="external">pdbdownloader</a>)放到Github上。  </p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>前段时间微软的符号服务器特别不稳定，Windbg下载符号文件老是失败，所以就专门写了个pdb的下载工具(<a href="https://github.com/0cch/pdbdownloader" target="_blank" rel="external">pdbdownloader</a>)放到Github上。  </p>
 <p>P.S. 用WPF写界面确实是很有趣  </p>
 <p><a href="/uploads/2017/01/20170103120319.png"><img src="/uploads/2017/01/20170103120319.png" alt="20170103120319"></a></p>
 
@@ -666,7 +710,7 @@ BOOL ApplyDpiSetting(ULONG val)
             var handleGithub = function(){
                 var popularContainer = $(".popular-container");
 
-                var repos = "0cchext".split(",");
+                var repos = "0cchext,luadbg".split(",");
                 for(var i in repos){
                     var name = repos[i];
                     $.get("https://api.github.com/repos/0cch/"+name,handle);
@@ -752,7 +796,24 @@ BOOL ApplyDpiSetting(ULONG val)
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
 
 	</body>
 </html>

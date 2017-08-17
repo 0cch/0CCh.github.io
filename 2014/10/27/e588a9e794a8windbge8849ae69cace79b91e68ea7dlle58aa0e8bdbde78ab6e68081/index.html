@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
 <head>
-  <meta charset="utf-8">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -12,11 +12,11 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
   <!--在这里倒入jquery 方便处理部分页面的jquery-->
-  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script>
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
 <body>
-	<header class="site-header navfixed-false">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="site-header navfixed-false">
   <div class="container">
       <h1><a href="/" title="0CCh Blog"><span class="octicon octicon-mark-github"></span> 0CCh Blog</a></h1>
       <nav class="site-header-nav" role="navigation">
@@ -62,7 +62,7 @@
     <div class="columns">
         <div class="column  three-fourths " >
             <article class="article-content markdown-body">
-                <p>开发过大型程序的人都遇到过这样的问题，一个版本Release后，发现有的功能怎么也不对。但是每个模块在开发人员单独的环境下又是正常运行。那么遇到这样的问题，其中一个能想到的就是DLL模块没有加载正确。一般情况下，这种时候我们可以使用depends这样的工具查看模块的依赖情况，以判断出哪个模块是出问题的那个。但是如果如果真的遇上大型的程序，DLL模块很多，而且动态静态加载不一，这样光靠depends这样的工具是不能满足需求的。所以我这里写了个Windbg脚本来监控DLL加载状态，因为是动态调试，所以很轻松的就能找到加载问题，无论DLL是静态加载还是动态加载。</p>
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>开发过大型程序的人都遇到过这样的问题，一个版本Release后，发现有的功能怎么也不对。但是每个模块在开发人员单独的环境下又是正常运行。那么遇到这样的问题，其中一个能想到的就是DLL模块没有加载正确。一般情况下，这种时候我们可以使用depends这样的工具查看模块的依赖情况，以判断出哪个模块是出问题的那个。但是如果如果真的遇上大型的程序，DLL模块很多，而且动态静态加载不一，这样光靠depends这样的工具是不能满足需求的。所以我这里写了个Windbg脚本来监控DLL加载状态，因为是动态调试，所以很轻松的就能找到加载问题，无论DLL是静态加载还是动态加载。</p>
 <p>以下脚本是Windows 7 32Bit，对于64bit，稍微修改下就行。不过如果是Windows 8，DLL的加载细节已经发生变化，所以这个脚本就不适用了。希望能抛砖引玉一下，期待更多系统的脚本分享出来。</p>
 <pre><code>bp ntdll!LdrpFindOrMapDll &quot;
 .push &#x2F;r &#x2F;q
@@ -98,23 +98,31 @@ g
             
                 
 <div class="comments">
-    <div id="container"></div>
-        <script src="/js/gitment.browser.js"></script>
-         <script>
-            var gitment = new Gitment({
-                id: '/2014/10/27/e588a9e794a8windbge8849ae69cace79b91e68ea7dlle58aa0e8bdbde78ab6e68081/',
-                owner: '0cch',
-                repo: '0CCh.github.io',
-                oauth: {
-                    client_id: "671c226461f366904767",
-                    client_secret: "bc9407ce0e7a28726ea7b01c1e64a40e99857329",
-                }
-            })
-        gitment.render('container')
-        </script>
-</div>
+    <div id="disqus_thread"></div>
+    <script>
 
-            
+        var host = window.location.host;
+        var disqus_shortname = host.includes('127.0.0.1') || host.includes('0.0.0.0') || host.includes('localhost') ? '0cchDev' : '0cch'
+
+        var disqus_title = '利用Windbg脚本监控DLL加载状态';
+        var disqus_config = function () {
+            this.page.url = 'http://0cch.com/2014/10/27/e588a9e794a8windbge8849ae69cace79b91e68ea7dlle58aa0e8bdbde78ab6e68081/';
+        };
+        
+        (function() {
+            var d = document, s = d.createElement('script');
+
+            s.src = '//0cch.disqus.com/embed.js';
+
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>
+        请启用JavaScript来查看 <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+    </noscript>
+</div>
+             
 
         </div>
         <div class="column one-fourth">
@@ -127,7 +135,7 @@ g
 
 <div id="post-directory-module">
 	<section class="post-directory">
-		<p><strong class="toc-title">文章目录</strong></p>
+		<p><strong class="toc-title">Article directory</strong></p>
 		
 	</section>
 </div>
@@ -190,7 +198,24 @@ g
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
 
 	</body>
 </html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
 <head>
-  <meta charset="utf-8">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -12,11 +12,11 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
   <!--在这里倒入jquery 方便处理部分页面的jquery-->
-  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script>
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
 <body>
-	<header class="site-header navfixed-false">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="site-header navfixed-false">
   <div class="container">
       <h1><a href="/" title="0CCh Blog"><span class="octicon octicon-mark-github"></span> 0CCh Blog</a></h1>
       <nav class="site-header-nav" role="navigation">
@@ -62,7 +62,7 @@
     <div class="columns">
         <div class="column  three-fourths " >
             <article class="article-content markdown-body">
-                <p>网络上有这样一种小工具，号称可以提高计算机响应速度。简单看了下其中的一款工具，实现原理很简单，就是监控前台窗口的变化，设置进程线程的优先级。设置进程线程的优先级无非就是SetPriorityClass和SetThreadPriority这两个函数，主要问题就是要获得前台窗口的情况。<br>Windows提供了一种叫做Windows Event Hook的机制，来让我们获得多种不同的事件，其中一种就是前台窗口变化事件。所以要完成这个功能很简单，只需要注册一个针对EVENT_SYSTEM_FOREGROUND的HOOK就行了。注册和反注册Hook的函数分别是SetWinEventHook和UnhookWinEvent。<br>比如注册EVENT_SYSTEM_FOREGROUND事件的Hook，我们只需要这样：</p>
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>网络上有这样一种小工具，号称可以提高计算机响应速度。简单看了下其中的一款工具，实现原理很简单，就是监控前台窗口的变化，设置进程线程的优先级。设置进程线程的优先级无非就是SetPriorityClass和SetThreadPriority这两个函数，主要问题就是要获得前台窗口的情况。<br>Windows提供了一种叫做Windows Event Hook的机制，来让我们获得多种不同的事件，其中一种就是前台窗口变化事件。所以要完成这个功能很简单，只需要注册一个针对EVENT_SYSTEM_FOREGROUND的HOOK就行了。注册和反注册Hook的函数分别是SetWinEventHook和UnhookWinEvent。<br>比如注册EVENT_SYSTEM_FOREGROUND事件的Hook，我们只需要这样：</p>
 <pre><code>HWINEVENTHOOK hWinEventHook = SetWinEventHook(
 		EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND,
 		NULL, WinEventProc, 0, 0,
@@ -107,23 +107,31 @@
             
                 
 <div class="comments">
-    <div id="container"></div>
-        <script src="/js/gitment.browser.js"></script>
-         <script>
-            var gitment = new Gitment({
-                id: '/2014/10/19/e794a8windows-evente79b91e68ea7e5898de58fb0e7aa97e58fa3e58f98e58c96/',
-                owner: '0cch',
-                repo: '0CCh.github.io',
-                oauth: {
-                    client_id: "671c226461f366904767",
-                    client_secret: "bc9407ce0e7a28726ea7b01c1e64a40e99857329",
-                }
-            })
-        gitment.render('container')
-        </script>
-</div>
+    <div id="disqus_thread"></div>
+    <script>
 
-            
+        var host = window.location.host;
+        var disqus_shortname = host.includes('127.0.0.1') || host.includes('0.0.0.0') || host.includes('localhost') ? '0cchDev' : '0cch'
+
+        var disqus_title = '用Windows Event监控前台窗口变化';
+        var disqus_config = function () {
+            this.page.url = 'http://0cch.com/2014/10/19/e794a8windows-evente79b91e68ea7e5898de58fb0e7aa97e58fa3e58f98e58c96/';
+        };
+        
+        (function() {
+            var d = document, s = d.createElement('script');
+
+            s.src = '//0cch.disqus.com/embed.js';
+
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>
+        请启用JavaScript来查看 <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+    </noscript>
+</div>
+             
 
         </div>
         <div class="column one-fourth">
@@ -136,7 +144,7 @@
 
 <div id="post-directory-module">
 	<section class="post-directory">
-		<p><strong class="toc-title">文章目录</strong></p>
+		<p><strong class="toc-title">Article directory</strong></p>
 		
 	</section>
 </div>
@@ -199,7 +207,7 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
 
 	</body>
 </html>

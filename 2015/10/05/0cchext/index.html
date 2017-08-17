@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
 <head>
-  <meta charset="utf-8">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -12,11 +12,11 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
   <!--在这里倒入jquery 方便处理部分页面的jquery-->
-  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script>
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
 <body>
-	<header class="site-header navfixed-false">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="site-header navfixed-false">
   <div class="container">
       <h1><a href="/" title="0CCh Blog"><span class="octicon octicon-mark-github"></span> 0CCh Blog</a></h1>
       <nav class="site-header-nav" role="navigation">
@@ -62,7 +62,7 @@
     <div class="columns">
         <div class="column  three-fourths " >
             <article class="article-content markdown-body">
-                <p><a href="https://github.com/0cch/0cchext" target="_blank" rel="external">0cchext.dll</a>是我一直在开发和维护的一个Windbg扩展程序。扩展程序中包含了一些或者有趣，或者实用，或者纯个人偏好的功能。这篇文章就来介绍一些主要的功能：</p>
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p><a href="https://github.com/0cch/0cchext" target="_blank" rel="external">0cchext.dll</a>是我一直在开发和维护的一个Windbg扩展程序。扩展程序中包含了一些或者有趣，或者实用，或者纯个人偏好的功能。这篇文章就来介绍一些主要的功能：</p>
 <hr>
 <h4 id="a"><a href="#a" class="headerlink" title="!a"></a>!a</h4><blockquote>
 <p> !a               - Assembles instruction mnemonics and puts the resulting<br>                     instruction codes into memory.</p>
@@ -224,23 +224,31 @@ r @eip=@$t0
             
                 
 <div class="comments">
-    <div id="container"></div>
-        <script src="/js/gitment.browser.js"></script>
-         <script>
-            var gitment = new Gitment({
-                id: '/2015/10/05/0cchext/',
-                owner: '0cch',
-                repo: '0CCh.github.io',
-                oauth: {
-                    client_id: "671c226461f366904767",
-                    client_secret: "bc9407ce0e7a28726ea7b01c1e64a40e99857329",
-                }
-            })
-        gitment.render('container')
-        </script>
-</div>
+    <div id="disqus_thread"></div>
+    <script>
 
-            
+        var host = window.location.host;
+        var disqus_shortname = host.includes('127.0.0.1') || host.includes('0.0.0.0') || host.includes('localhost') ? '0cchDev' : '0cch'
+
+        var disqus_title = 'Windbg插件0cchext';
+        var disqus_config = function () {
+            this.page.url = 'http://0cch.com/2015/10/05/0cchext/';
+        };
+        
+        (function() {
+            var d = document, s = d.createElement('script');
+
+            s.src = '//0cch.disqus.com/embed.js';
+
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>
+        请启用JavaScript来查看 <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+    </noscript>
+</div>
+             
 
         </div>
         <div class="column one-fourth">
@@ -253,7 +261,7 @@ r @eip=@$t0
 
 <div id="post-directory-module">
 	<section class="post-directory">
-		<p><strong class="toc-title">文章目录</strong></p>
+		<p><strong class="toc-title">Article directory</strong></p>
 		<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#a"><span class="toc-text">!a</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#autocmd"><span class="toc-text">!autocmd</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#bing-amp-google"><span class="toc-text">!bing & !google</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#favcmd"><span class="toc-text">!favcmd</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#hwnd"><span class="toc-text">!hwnd</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#url"><span class="toc-text">!url</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#init-script-env"><span class="toc-text">!init_script_env</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#import-vs-bps"><span class="toc-text">!import_vs_bps</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#setvprot"><span class="toc-text">!setvprot</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#pe-export-amp-pe-import"><span class="toc-text">!pe_export & !pe_import</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#wql"><span class="toc-text">!wql</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#logcmd"><span class="toc-text">!logcmd</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#dpx"><span class="toc-text">!dpx</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#dtx"><span class="toc-text">!dtx</span></a></li></ol>
 	</section>
 </div>
@@ -316,7 +324,24 @@ r @eip=@$t0
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
 
 	</body>
 </html>

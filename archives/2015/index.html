@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
 <head>
-  <meta charset="utf-8">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -12,10 +12,10 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
   <!--在这里倒入jquery 方便处理部分页面的jquery-->
-  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script>
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 <body class="home">
-	<header class="site-header navfixed-false">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="site-header navfixed-false">
   <div class="container">
       <h1><a href="/" title="0CCh Blog"><span class="octicon octicon-mark-github"></span> 0CCh Blog</a></h1>
       <nav class="site-header-nav" role="navigation">
@@ -85,7 +85,7 @@
       </h3>
       <div class="repo-list-description">
         
-          <p>Visual C++ 的编译器用0xE06D7363表示C++异常。 0xE06D7363表示的意思就是.msc。  </p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Visual C++ 的编译器用0xE06D7363表示C++异常。 0xE06D7363表示的意思就是.msc。  </p>
 <pre><code>
 0:025&gt; .formats 0xE06D7363
 Evaluate expression:
@@ -170,7 +170,7 @@ NumberParameters: 3
       </h3>
       <div class="repo-list-description">
         
-          <p>想必大家都知道著名的全盘搜索工具everything，它极速的搜索速度让人眼前一亮。虽然everything提供了SDK，但是SDK是通过IPC的方式，获得everything程序里的数据。也就是说想在自己的程序中使用搜索功能那么必须带everything的主程序，这就是我开发gotcha sdk的主要原因，他能集成到程序当中，不需要依赖其他主程序，只需要你的程序是管理员权限运行，因为这样才能直接访问磁盘数据。另外网上也有一些关于everything原理和实现的代码，但是大部分都有问题，比如崩溃，死锁，内存占用过高等，并不适合直接用到产品当中。而gotcha sdk在自己开发了everything_study，并且使用了相当长的时间，解决性能，内存占用，死锁等问题的基础上提炼出来的开发库，我对其稳定性还是比较有信心的。</p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>想必大家都知道著名的全盘搜索工具everything，它极速的搜索速度让人眼前一亮。虽然everything提供了SDK，但是SDK是通过IPC的方式，获得everything程序里的数据。也就是说想在自己的程序中使用搜索功能那么必须带everything的主程序，这就是我开发gotcha sdk的主要原因，他能集成到程序当中，不需要依赖其他主程序，只需要你的程序是管理员权限运行，因为这样才能直接访问磁盘数据。另外网上也有一些关于everything原理和实现的代码，但是大部分都有问题，比如崩溃，死锁，内存占用过高等，并不适合直接用到产品当中。而gotcha sdk在自己开发了everything_study，并且使用了相当长的时间，解决性能，内存占用，死锁等问题的基础上提炼出来的开发库，我对其稳定性还是比较有信心的。</p>
 <p>利用gotcha sdk，既可以开发出everything_study这样用C++写的程序，也能够开发出如gotcha sdk的sample里的gotcha，一个C#编写的全盘搜索程序，该程序也展示了gotcha sdk的用法。</p>
 <p>gotcha sdk的用法非常简单，详细情况可以参考sample里的simple例子，该例子展示了sdk最简单的使用方式，我下一篇blog会介绍这套sdk的用法。</p>
 <p><a href="/uploads/2015/11/20151124233627.png"><img src="/uploads/2015/11/20151124233627.png" alt="20151124233627"></a></p>
@@ -210,7 +210,7 @@ NumberParameters: 3
       </h3>
       <div class="repo-list-description">
         
-          <p>拿到程序初始化失败的DUMP，一般情况下我们看到的栈是这个样子的：</p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>拿到程序初始化失败的DUMP，一般情况下我们看到的栈是这个样子的：</p>
 <pre><code>
 0:000&gt; kb
 ChildEBP RetAddr  Args to Child              
@@ -444,7 +444,7 @@ OPTIONAL HEADER VALUES
       </h3>
       <div class="repo-list-description">
         
-          <p><a href="https://github.com/0cch/0cchext" target="_blank" rel="external">0cchext.dll</a>是我一直在开发和维护的一个Windbg扩展程序。扩展程序中包含了一些或者有趣，或者实用，或者纯个人偏好的功能。这篇文章就来介绍一些主要的功能：</p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p><a href="https://github.com/0cch/0cchext" target="_blank" rel="external">0cchext.dll</a>是我一直在开发和维护的一个Windbg扩展程序。扩展程序中包含了一些或者有趣，或者实用，或者纯个人偏好的功能。这篇文章就来介绍一些主要的功能：</p>
 <hr>
 <h4 id="a"><a href="#a" class="headerlink" title="!a"></a>!a</h4><blockquote>
 <p> !a               - Assembles instruction mnemonics and puts the resulting<br>                     instruction codes into memory.</p>
@@ -625,7 +625,7 @@ r @eip=@$t0
       </h3>
       <div class="repo-list-description">
         
-          <p>Foxmail是一款不错的邮件客户端软件，小巧实用，我在公司就是用的它。早上一如既往的先打开Foxmail，然后去倒杯水，回来发现Foxmail还在收取邮件的状态，“这也太慢了”，我心想。用鼠标点了点，出现了程序挂起的特征，标题栏上显示无法响应，程序界面变白。经验告诉我挂起的问题70%都还是比较容易调的，好吧，就让我看看这是怎么回事。</p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Foxmail是一款不错的邮件客户端软件，小巧实用，我在公司就是用的它。早上一如既往的先打开Foxmail，然后去倒杯水，回来发现Foxmail还在收取邮件的状态，“这也太慢了”，我心想。用鼠标点了点，出现了程序挂起的特征，标题栏上显示无法响应，程序界面变白。经验告诉我挂起的问题70%都还是比较容易调的，好吧，就让我看看这是怎么回事。</p>
 <p>打开Windbg，Attach到Foxmail上，习惯做的第一件事情就是保存Full dump</p>
 <pre><code>.dump &#x2F;ma &#x2F;u e:\foxmail.dmp</code></pre>
 <p>由于程序的主界面出现了挂起的现象，而一般情况下主线程就是程序的界面线程，所以此时根本没必要去查看所有线程的情况，直接看看主线程的栈信息吧。</p>
@@ -856,7 +856,7 @@ WARNING: Stack unwind information not available. Following frames may be wrong.
       </h3>
       <div class="repo-list-description">
         
-          <p>####PickIconDlg</p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>####PickIconDlg</p>
 <p>相信给快捷方式指定过图标的朋友肯定看过一个这样的对话框吧，如果你看到过，你肯定已经知道了这个API是怎么一回事。这个API会弹出一个选择图标的窗口给你选择，确定后返回图标在资源中的索引值。这样你可以通过这个索引值和ExtractIcon函数获得这个图标的句柄。</p>
 <p><a href="/uploads/2015/08/20150827113011.png"><img src="/uploads/2015/08/20150827113011.png" alt="20150827113011"></a></p>
 <p>示例代码如下：</p>
@@ -933,7 +933,7 @@ SHOpenWithDialog(NULL, &amp;Info);</code></pre>
       </h3>
       <div class="repo-list-description">
         
-          <p>OleFileView是一个查看结构化存储文件的工具，我们熟悉的Ole存储的文件就是这种格式，虽然很老了，但是依旧被广泛使用，例如老版本Office的文件doc，xls等，包括msi，jumplist等，都是采用的这种格式。<br>所以我也就抽了点时间研究了一下这个数据结构，可以说这就是个小型的文件系统，虽然比不上NTFS，但是对于一般的存储可以说是小菜一碟。</p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>OleFileView是一个查看结构化存储文件的工具，我们熟悉的Ole存储的文件就是这种格式，虽然很老了，但是依旧被广泛使用，例如老版本Office的文件doc，xls等，包括msi，jumplist等，都是采用的这种格式。<br>所以我也就抽了点时间研究了一下这个数据结构，可以说这就是个小型的文件系统，虽然比不上NTFS，但是对于一般的存储可以说是小菜一碟。</p>
 <p><a href="/uploads/2015/08/20150803003316.png"><img src="/uploads/2015/08/20150803003316.png" alt="20150803003316"></a></p>
 <p>下载：<a href="/uploads/2015/08/OleFileView.zip">OleFileView.zip</a></p>
 
@@ -971,7 +971,7 @@ SHOpenWithDialog(NULL, &amp;Info);</code></pre>
       </h3>
       <div class="repo-list-description">
         
-          <p>Windows Management Instrumentation (WMI) 是微软实现的一套可以通过网页管理计算机的系统，我们可以通过WMI查询计算机的方方面面。从Vista开始，这个机制增加了Instance Event的提醒机制，这个机制可以帮助我们监控各种Instance的创建、删除和修改。所以，我们可以想到的是进程也是在WMI里的Win32_Process有Instance的记录，这样我们就可以跟踪到进程的创建和结束了。当然，我们还可能监控到文件等等WMI里的各种Instance。下面是一个监控进程的例子：</p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Windows Management Instrumentation (WMI) 是微软实现的一套可以通过网页管理计算机的系统，我们可以通过WMI查询计算机的方方面面。从Vista开始，这个机制增加了Instance Event的提醒机制，这个机制可以帮助我们监控各种Instance的创建、删除和修改。所以，我们可以想到的是进程也是在WMI里的Win32_Process有Instance的记录，这样我们就可以跟踪到进程的创建和结束了。当然，我们还可能监控到文件等等WMI里的各种Instance。下面是一个监控进程的例子：</p>
 <p><a href="/uploads/2015/05/20150712232158.png"><img src="/uploads/2015/07/20150712232158.png" alt="20150712232158"></a></p>
 <p>下载：<a href="/uploads/2015/07/MonitorProcessWithWMI.zip">MonitorProcessWithWMI.zip</a></p>
 
@@ -1009,7 +1009,7 @@ SHOpenWithDialog(NULL, &amp;Info);</code></pre>
       </h3>
       <div class="repo-list-description">
         
-          <p>最近看到有些恶意程序，从网络上下载PE文件后，直接放在内存里重定位和初始化，为了能将其dump出来，所以写了这个Windbg脚本。</p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近看到有些恶意程序，从网络上下载PE文件后，直接放在内存里重定位和初始化，为了能将其dump出来，所以写了这个Windbg脚本。</p>
 <pre><code>.foreach( place  { !address &#x2F;f:VAR,MEM_PRIVATE,MEM_COMMIT &#x2F;c:&quot;s -[1]a %1 %2 \&quot;MZ\&quot;&quot; } ) 
 {
 	ad *
@@ -1072,7 +1072,7 @@ SHOpenWithDialog(NULL, &amp;Info);</code></pre>
       </h3>
       <div class="repo-list-description">
         
-          <p>上周终于下定决心把blog从<a href="http://0cch.net" target="_blank" rel="external">wordpress</a>转到<a href="http://0cch.com">jekyll</a>，不是因为wordpress臃肿，也不是因为jekyll的更加Geek，纯粹是因为穷。我一直都觉得wordpress是一个非常伟大的blog程序，虽然臃肿了点，但确实功能强大操作简单，对于我这种懒人和对前端代码完全不熟的程序员来说，wordpress确实是一个非常好的选择。但是问题就出在了webhost上，我使用的webhost刚刚买的时候是50多刀一年，之后每年涨价，今年续费看了下需要100刀左右，这个确实让我心中无数的羊驼奔腾了起来。于是就决定把blog搬离这个地方。</p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>上周终于下定决心把blog从<a href="http://0cch.net" target="_blank" rel="external">wordpress</a>转到<a href="http://0cch.com">jekyll</a>，不是因为wordpress臃肿，也不是因为jekyll的更加Geek，纯粹是因为穷。我一直都觉得wordpress是一个非常伟大的blog程序，虽然臃肿了点，但确实功能强大操作简单，对于我这种懒人和对前端代码完全不熟的程序员来说，wordpress确实是一个非常好的选择。但是问题就出在了webhost上，我使用的webhost刚刚买的时候是50多刀一年，之后每年涨价，今年续费看了下需要100刀左右，这个确实让我心中无数的羊驼奔腾了起来。于是就决定把blog搬离这个地方。</p>
 <p>刚开始我只是想找便宜的地方转移wordpress的blog。网上也有很多这类的webhost，第一年进去都很便宜，甚至有1刀一个月的。但是一朝被蛇咬啊，为了防止以后又被迫搬家，于是打消了这个念头。想要便宜和稳定的blog空间，看来是只有伟大的Github。而Github只支持静态程序，那么我也只能放弃wordpress的方便，自己折腾点静态博客程序了。摆在眼前的选择其实很多最基础jekyll，加强版的octopress以及hexo。第一个程序的优点就是简单基础，缺点就是太基础了，而octopress在jekyll的基础之上加上了一些插件，让blog默认的功能变得丰富起来。之后hexo，也是一个自带很多基础功能的程序而且还带了很多非常漂亮的主题，主题控的bloger不妨选择这个，我就特别喜欢他其中的一个默认主题，但是折腾样式的时候jekyll的基本结构都搭建好了，所以就没有更换hexo程序，于是极度痛苦的折腾了一周的css和ruby插件才把现在的blog折腾的和之前的差不多。</p>
 <p>简单说下用jekyll在Github上搭建blog的步骤，其实网上很多很多教程，这里记录下就是防止自己忘了把。  </p>
 <ol>
@@ -1184,7 +1184,7 @@ SHOpenWithDialog(NULL, &amp;Info);</code></pre>
             var handleGithub = function(){
                 var popularContainer = $(".popular-container");
 
-                var repos = "0cchext".split(",");
+                var repos = "0cchext,luadbg".split(",");
                 for(var i in repos){
                     var name = repos[i];
                     $.get("https://api.github.com/repos/0cch/"+name,handle);
@@ -1276,7 +1276,24 @@ SHOpenWithDialog(NULL, &amp;Info);</code></pre>
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
 
 	</body>
 </html>
