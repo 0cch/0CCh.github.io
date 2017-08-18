@@ -86,41 +86,7 @@
       <div class="repo-list-description">
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Python干啥都挺方便的，出了调用win32的api。当然了，可以用pywin32这种库。但我不喜欢为了一两个api又给简单的东西加一堆依赖。比如获取文件版本，本来想在网上找个函数复制过去用得了，却发现还真没啥好用的。无奈自己就写了一个。</p>
-<pre><code>
-class VS_FIXEDFILEINFO(Structure):
-	_fields_ = [
-		(&quot;dwSignature&quot;, c_int), 
-		(&quot;dwStrucVersion&quot;, c_int),
-		(&quot;dwFileVersionMS&quot;, c_int),
-		(&quot;dwFileVersionLS&quot;, c_int),
-		(&quot;dwProductVersionMS&quot;, c_int),
-		(&quot;dwProductVersionLS&quot;, c_int),
-		(&quot;dwFileFlagsMask&quot;, c_int),
-		(&quot;dwFileFlags&quot;, c_int),
-		(&quot;dwFileOS&quot;, c_int),
-		(&quot;dwFileType&quot;, c_int),
-		(&quot;dwFileSubtype&quot;, c_int),
-		(&quot;dwFileDateMS&quot;, c_int),
-		(&quot;dwFileDateLS&quot;, c_int)
-	]
-def LOWORD(dword): return dword &amp; 0x0000ffff
-def HIWORD(dword): return dword &gt;&gt; 16
-def GetFileVersion(filename):
-	size = windll.version.GetFileVersionInfoSizeW(filename, None)
-	if not size:
-		return &#39;&#39;
-	res = create_string_buffer(size)
-	windll.version.GetFileVersionInfoW(filename, None, size, res)
-	r = VS_FIXEDFILEINFO()
-	l = c_uint()
-	p = c_void_p()
-	windll.version.VerQueryValueW(res, &#39;\\&#39;, byref(p), byref(l));
-	memmove(byref(r), p, sizeof(VS_FIXEDFILEINFO))
-	if not l.value:
-		return &#39;&#39;
-	
-	return (&#39;%d.%d.%d.%d&#39; % (HIWORD(r.dwFileVersionMS), LOWORD(r.dwFileVersionMS), 
-		HIWORD(r.dwProductVersionLS), LOWORD(r.dwProductVersionLS)));</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">VS_FIXEDFILEINFO</span><span class="params">(Structure)</span>:</span></div><div class="line">	_fields_ = [</div><div class="line">		(<span class="string">"dwSignature"</span>, c_int), </div><div class="line">		(<span class="string">"dwStrucVersion"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileVersionMS"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileVersionLS"</span>, c_int),</div><div class="line">		(<span class="string">"dwProductVersionMS"</span>, c_int),</div><div class="line">		(<span class="string">"dwProductVersionLS"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileFlagsMask"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileFlags"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileOS"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileType"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileSubtype"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileDateMS"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileDateLS"</span>, c_int)</div><div class="line">	]</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">LOWORD</span><span class="params">(dword)</span>:</span> <span class="keyword">return</span> dword &amp; <span class="number">0x0000ffff</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">HIWORD</span><span class="params">(dword)</span>:</span> <span class="keyword">return</span> dword &gt;&gt; <span class="number">16</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetFileVersion</span><span class="params">(filename)</span>:</span></div><div class="line">	size = windll.version.GetFileVersionInfoSizeW(filename, <span class="keyword">None</span>)</div><div class="line">	<span class="keyword">if</span> <span class="keyword">not</span> size:</div><div class="line">		<span class="keyword">return</span> <span class="string">''</span></div><div class="line">	res = create_string_buffer(size)</div><div class="line">	windll.version.GetFileVersionInfoW(filename, <span class="keyword">None</span>, size, res)</div><div class="line">	r = VS_FIXEDFILEINFO()</div><div class="line">	l = c_uint()</div><div class="line">	p = c_void_p()</div><div class="line">	windll.version.VerQueryValueW(res, <span class="string">'\\'</span>, byref(p), byref(l));</div><div class="line">	memmove(byref(r), p, sizeof(VS_FIXEDFILEINFO))</div><div class="line">	<span class="keyword">if</span> <span class="keyword">not</span> l.value:</div><div class="line">		<span class="keyword">return</span> <span class="string">''</span></div><div class="line">	</div><div class="line">	<span class="keyword">return</span> (<span class="string">'%d.%d.%d.%d'</span> % (HIWORD(r.dwFileVersionMS), LOWORD(r.dwFileVersionMS), </div><div class="line">		HIWORD(r.dwProductVersionLS), LOWORD(r.dwProductVersionLS)));</div></pre></td></tr></table></figure>
 
         
       </div>
@@ -371,9 +337,7 @@ def GetFileVersion(filename):
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 
 		<script src="/js/index.js"></script>

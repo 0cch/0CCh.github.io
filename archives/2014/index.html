@@ -86,41 +86,7 @@
       <div class="repo-list-description">
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Python干啥都挺方便的，出了调用win32的api。当然了，可以用pywin32这种库。但我不喜欢为了一两个api又给简单的东西加一堆依赖。比如获取文件版本，本来想在网上找个函数复制过去用得了，却发现还真没啥好用的。无奈自己就写了一个。</p>
-<pre><code>
-class VS_FIXEDFILEINFO(Structure):
-	_fields_ = [
-		(&quot;dwSignature&quot;, c_int), 
-		(&quot;dwStrucVersion&quot;, c_int),
-		(&quot;dwFileVersionMS&quot;, c_int),
-		(&quot;dwFileVersionLS&quot;, c_int),
-		(&quot;dwProductVersionMS&quot;, c_int),
-		(&quot;dwProductVersionLS&quot;, c_int),
-		(&quot;dwFileFlagsMask&quot;, c_int),
-		(&quot;dwFileFlags&quot;, c_int),
-		(&quot;dwFileOS&quot;, c_int),
-		(&quot;dwFileType&quot;, c_int),
-		(&quot;dwFileSubtype&quot;, c_int),
-		(&quot;dwFileDateMS&quot;, c_int),
-		(&quot;dwFileDateLS&quot;, c_int)
-	]
-def LOWORD(dword): return dword &amp; 0x0000ffff
-def HIWORD(dword): return dword &gt;&gt; 16
-def GetFileVersion(filename):
-	size = windll.version.GetFileVersionInfoSizeW(filename, None)
-	if not size:
-		return &#39;&#39;
-	res = create_string_buffer(size)
-	windll.version.GetFileVersionInfoW(filename, None, size, res)
-	r = VS_FIXEDFILEINFO()
-	l = c_uint()
-	p = c_void_p()
-	windll.version.VerQueryValueW(res, &#39;\\&#39;, byref(p), byref(l));
-	memmove(byref(r), p, sizeof(VS_FIXEDFILEINFO))
-	if not l.value:
-		return &#39;&#39;
-	
-	return (&#39;%d.%d.%d.%d&#39; % (HIWORD(r.dwFileVersionMS), LOWORD(r.dwFileVersionMS), 
-		HIWORD(r.dwProductVersionLS), LOWORD(r.dwProductVersionLS)));</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">VS_FIXEDFILEINFO</span><span class="params">(Structure)</span>:</span></div><div class="line">	_fields_ = [</div><div class="line">		(<span class="string">"dwSignature"</span>, c_int), </div><div class="line">		(<span class="string">"dwStrucVersion"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileVersionMS"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileVersionLS"</span>, c_int),</div><div class="line">		(<span class="string">"dwProductVersionMS"</span>, c_int),</div><div class="line">		(<span class="string">"dwProductVersionLS"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileFlagsMask"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileFlags"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileOS"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileType"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileSubtype"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileDateMS"</span>, c_int),</div><div class="line">		(<span class="string">"dwFileDateLS"</span>, c_int)</div><div class="line">	]</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">LOWORD</span><span class="params">(dword)</span>:</span> <span class="keyword">return</span> dword &amp; <span class="number">0x0000ffff</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">HIWORD</span><span class="params">(dword)</span>:</span> <span class="keyword">return</span> dword &gt;&gt; <span class="number">16</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetFileVersion</span><span class="params">(filename)</span>:</span></div><div class="line">	size = windll.version.GetFileVersionInfoSizeW(filename, <span class="keyword">None</span>)</div><div class="line">	<span class="keyword">if</span> <span class="keyword">not</span> size:</div><div class="line">		<span class="keyword">return</span> <span class="string">''</span></div><div class="line">	res = create_string_buffer(size)</div><div class="line">	windll.version.GetFileVersionInfoW(filename, <span class="keyword">None</span>, size, res)</div><div class="line">	r = VS_FIXEDFILEINFO()</div><div class="line">	l = c_uint()</div><div class="line">	p = c_void_p()</div><div class="line">	windll.version.VerQueryValueW(res, <span class="string">'\\'</span>, byref(p), byref(l));</div><div class="line">	memmove(byref(r), p, sizeof(VS_FIXEDFILEINFO))</div><div class="line">	<span class="keyword">if</span> <span class="keyword">not</span> l.value:</div><div class="line">		<span class="keyword">return</span> <span class="string">''</span></div><div class="line">	</div><div class="line">	<span class="keyword">return</span> (<span class="string">'%d.%d.%d.%d'</span> % (HIWORD(r.dwFileVersionMS), LOWORD(r.dwFileVersionMS), </div><div class="line">		HIWORD(r.dwProductVersionLS), LOWORD(r.dwProductVersionLS)));</div></pre></td></tr></table></figure>
 
         
       </div>
@@ -236,108 +202,7 @@ def GetFileVersion(filename):
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>今天无意中看到了HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU这个键值的用途，虽然感觉没啥实际用途，但是也挺有趣的，于是写了个小程序读取它。这个键值的意义非常明确，就是记录打开保存对话框的最近操作的文件的PIDL。所以我们可以通过PIDL来获得文件路径，就这么简单，确实没啥特别的实际用途吧，就当娱乐了。枚举的效果如下：</p>
 <p><a href="/uploads/2014/11/20141117231005.png"><img src="/uploads/2014/11/20141117231005.png" alt="20141117231005"></a></p>
 <p>代码也很简单：</p>
-<pre><code>
-#include &quot;stdafx.h&quot;
-#include &lt;atlbase.h&gt;
-#include &lt;atlstr.h&gt;
-#include &lt;Shlobj.h&gt;
-#include &lt;locale.h&gt;
-#include &lt;vector&gt;
-
-#pragma comment(lib, &quot;shell32.lib&quot;)
-
-const TCHAR mru_path[] = TEXT(&quot;Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32\\OpenSavePidlMRU&quot;);
-
-void EnumMRUValue(HKEY subkey, std::vector &amp;mru;_files)
-{
-	ULONG i = 0, j = 0;
-	TCHAR value_name[MAX_PATH];
-	ULONG value_name_length = MAX_PATH;
-	UCHAR data_buffer[1024];
-	ULONG data_length = sizeof(data_buffer);
-	while (RegEnumValue(subkey, i++, value_name, &amp;value;_name_length, 0, NULL, data_buffer, &amp;data;_length) == ERROR_SUCCESS)
-	{
-		if (_tcscmp(value_name, TEXT(&quot;MRUListEx&quot;)) != 0) {
-			CComPtr malloc_ptr;
-			HRESULT hr = SHGetMalloc(&amp;malloc;_ptr);
-			LPITEMIDLIST file_pidl = (LPITEMIDLIST)malloc_ptr-&gt;Alloc(sizeof(UCHAR) + data_length);
-
-			if (file_pidl) {
-				memcpy(file_pidl, data_buffer, data_length);
-				WCHAR file_path[MAX_PATH] = { 0 };
-				if (SHGetPathFromIDList(file_pidl, file_path)) {
-					mru_files.push_back(file_path);
-					
-				}
-				malloc_ptr-&gt;Free(file_pidl);
-			}
-		}
-
-		value_name_length = MAX_PATH;
-		data_length = sizeof(data_buffer);
-	}
-}
-
-BOOL PrintMRUFiles()
-{
-	HKEY subkey;
-	LSTATUS l = RegOpenKeyEx(HKEY_CURRENT_USER, mru_path, 0, KEY_READ, &amp;subkey;);
-	if (l != ERROR_SUCCESS) {
-		return FALSE;
-	}
-	ULONG i = 0;
-	TCHAR key_name[MAX_PATH];
-	ULONG key_name_length = MAX_PATH;
-	while (RegEnumKeyEx(subkey, i++, key_name, &amp;key;_name_length, 0, NULL, NULL, NULL) == ERROR_SUCCESS)
-	{
-		HKEY ext_key;
-		LSTATUS l = RegOpenKeyEx(subkey, key_name, 0, KEY_READ, &amp;ext;_key);
-		if (l == ERROR_SUCCESS) {
-			
-			std::vector mru_files;
-			EnumMRUValue(ext_key, mru_files);
-			if (mru_files.size() &gt; 0) {
-				_tprintf(TEXT(&quot;Extension Name : %s\n&quot;), key_name);
-				ULONG j = 0;
-				for (std::vector::iterator it = mru_files.begin(); it != mru_files.end(); ++it) {
-
-					WIN32_FILE_ATTRIBUTE_DATA attribute_data = { 0 };
-					
-					if (GetFileAttributesEx(it-&gt;GetString(), GetFileExInfoStandard, &amp;attribute;_data)) {
-						ULONGLONG file_size = ((ULONGLONG)attribute_data.nFileSizeHigh) &lt;&lt; 32 | attribute_data.nFileSizeLow;
-						_tprintf(TEXT(&quot;\t %u %s  % 11I64u KB] %s\n&quot;), j++,
-							(attribute_data.dwFileAttributes &amp; FILE_ATTRIBUTE_DIRECTORY) == 0 ? TEXT(&quot;[FILE&quot;) : TEXT(&quot;[DIR &quot;),
-							(file_size + 1023) &#x2F; 1024,
-							it-&gt;GetString());
-					}
-					else {
-						_tprintf(TEXT(&quot;\t %u [ERROR_FILE_NOT_FOUND] %s\n&quot;), j++,
-							it-&gt;GetString());
-					}
-					
-				}
-			}
-			
-			RegCloseKey(ext_key);
-		}
-
-		key_name_length = MAX_PATH;
-	}
-	
-	RegCloseKey(subkey);
-	return TRUE;
-}
-
-
-int _tmain(int argc, _TCHAR* argv[])
-{
-	setlocale(LC_ALL, &quot;chs&quot;);
-	PrintMRUFiles();
-	return 0;
-}
-
-
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdafx.h"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atlbase.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atlstr.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;Shlobj.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;locale.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">pragma</span> comment(lib, <span class="meta-string">"shell32.lib"</span>)</span></div><div class="line"></div><div class="line"><span class="keyword">const</span> TCHAR mru_path[] = TEXT(<span class="string">"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32\\OpenSavePidlMRU"</span>);</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">EnumMRUValue</span><span class="params">(HKEY subkey, <span class="built_in">std</span>::<span class="built_in">vector</span> &amp;mru;_files)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">	ULONG i = <span class="number">0</span>, j = <span class="number">0</span>;</div><div class="line">	TCHAR value_name[MAX_PATH];</div><div class="line">	ULONG value_name_length = MAX_PATH;</div><div class="line">	UCHAR data_buffer[<span class="number">1024</span>];</div><div class="line">	ULONG data_length = <span class="keyword">sizeof</span>(data_buffer);</div><div class="line">	<span class="keyword">while</span> (RegEnumValue(subkey, i++, value_name, &amp;value;_name_length, <span class="number">0</span>, <span class="literal">NULL</span>, data_buffer, &amp;data;_length) == ERROR_SUCCESS)</div><div class="line">	&#123;</div><div class="line">		<span class="keyword">if</span> (_tcscmp(value_name, TEXT(<span class="string">"MRUListEx"</span>)) != <span class="number">0</span>) &#123;</div><div class="line">			CComPtr malloc_ptr;</div><div class="line">			HRESULT hr = SHGetMalloc(&amp;<span class="built_in">malloc</span>;_ptr);</div><div class="line">			LPITEMIDLIST file_pidl = (LPITEMIDLIST)malloc_ptr-&gt;Alloc(<span class="keyword">sizeof</span>(UCHAR) + data_length);</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (file_pidl) &#123;</div><div class="line">				<span class="built_in">memcpy</span>(file_pidl, data_buffer, data_length);</div><div class="line">				WCHAR file_path[MAX_PATH] = &#123; <span class="number">0</span> &#125;;</div><div class="line">				<span class="keyword">if</span> (SHGetPathFromIDList(file_pidl, file_path)) &#123;</div><div class="line">					mru_files.push_back(file_path);</div><div class="line">					</div><div class="line">				&#125;</div><div class="line">				malloc_ptr-&gt;Free(file_pidl);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		value_name_length = MAX_PATH;</div><div class="line">		data_length = <span class="keyword">sizeof</span>(data_buffer);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function">BOOL <span class="title">PrintMRUFiles</span><span class="params">()</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">	HKEY subkey;</div><div class="line">	LSTATUS l = RegOpenKeyEx(HKEY_CURRENT_USER, mru_path, <span class="number">0</span>, KEY_READ, &amp;subkey;);</div><div class="line">	<span class="keyword">if</span> (l != ERROR_SUCCESS) &#123;</div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line">	ULONG i = <span class="number">0</span>;</div><div class="line">	TCHAR key_name[MAX_PATH];</div><div class="line">	ULONG key_name_length = MAX_PATH;</div><div class="line">	<span class="keyword">while</span> (RegEnumKeyEx(subkey, i++, key_name, &amp;key;_name_length, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>) == ERROR_SUCCESS)</div><div class="line">	&#123;</div><div class="line">		HKEY ext_key;</div><div class="line">		LSTATUS l = RegOpenKeyEx(subkey, key_name, <span class="number">0</span>, KEY_READ, &amp;ext;_key);</div><div class="line">		<span class="keyword">if</span> (l == ERROR_SUCCESS) &#123;</div><div class="line">			</div><div class="line">			<span class="built_in">std</span>::<span class="built_in">vector</span> mru_files;</div><div class="line">			EnumMRUValue(ext_key, mru_files);</div><div class="line">			<span class="keyword">if</span> (mru_files.size() &gt; <span class="number">0</span>) &#123;</div><div class="line">				_tprintf(TEXT(<span class="string">"Extension Name : %s\n"</span>), key_name);</div><div class="line">				ULONG j = <span class="number">0</span>;</div><div class="line">				<span class="keyword">for</span> (<span class="built_in">std</span>::<span class="built_in">vector</span>::iterator it = mru_files.begin(); it != mru_files.end(); ++it) &#123;</div><div class="line"></div><div class="line">					WIN32_FILE_ATTRIBUTE_DATA attribute_data = &#123; <span class="number">0</span> &#125;;</div><div class="line">					</div><div class="line">					<span class="keyword">if</span> (GetFileAttributesEx(it-&gt;GetString(), GetFileExInfoStandard, &amp;attribute;_data)) &#123;</div><div class="line">						ULONGLONG file_size = ((ULONGLONG)attribute_data.nFileSizeHigh) &lt;&lt; <span class="number">32</span> | attribute_data.nFileSizeLow;</div><div class="line">						_tprintf(TEXT(<span class="string">"\t %u %s  % 11I64u KB] %s\n"</span>), j++,</div><div class="line">							(attribute_data.dwFileAttributes &amp; FILE_ATTRIBUTE_DIRECTORY) == <span class="number">0</span> ? TEXT(<span class="string">"[FILE"</span>) : TEXT(<span class="string">"[DIR "</span>),</div><div class="line">							(file_size + <span class="number">1023</span>) / <span class="number">1024</span>,</div><div class="line">							it-&gt;GetString());</div><div class="line">					&#125;</div><div class="line">					<span class="keyword">else</span> &#123;</div><div class="line">						_tprintf(TEXT(<span class="string">"\t %u [ERROR_FILE_NOT_FOUND] %s\n"</span>), j++,</div><div class="line">							it-&gt;GetString());</div><div class="line">					&#125;</div><div class="line">					</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">			</div><div class="line">			RegCloseKey(ext_key);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		key_name_length = MAX_PATH;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	RegCloseKey(subkey);</div><div class="line">	<span class="keyword">return</span> TRUE;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">	setlocale(LC_ALL, <span class="string">"chs"</span>);</div><div class="line">	PrintMRUFiles();</div><div class="line">	<span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
 
         
       </div>
@@ -452,23 +317,7 @@ int _tmain(int argc, _TCHAR* argv[])
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>开发过大型程序的人都遇到过这样的问题，一个版本Release后，发现有的功能怎么也不对。但是每个模块在开发人员单独的环境下又是正常运行。那么遇到这样的问题，其中一个能想到的就是DLL模块没有加载正确。一般情况下，这种时候我们可以使用depends这样的工具查看模块的依赖情况，以判断出哪个模块是出问题的那个。但是如果如果真的遇上大型的程序，DLL模块很多，而且动态静态加载不一，这样光靠depends这样的工具是不能满足需求的。所以我这里写了个Windbg脚本来监控DLL加载状态，因为是动态调试，所以很轻松的就能找到加载问题，无论DLL是静态加载还是动态加载。</p>
 <p>以下脚本是Windows 7 32Bit，对于64bit，稍微修改下就行。不过如果是Windows 8，DLL的加载细节已经发生变化，所以这个脚本就不适用了。希望能抛砖引玉一下，期待更多系统的脚本分享出来。</p>
-<pre><code>bp ntdll!LdrpFindOrMapDll &quot;
-.push &#x2F;r &#x2F;q
-r @$t0 = poi(@esp+4)
-r @$t1 = poi(@esp+8)
-
-g @$ra
-
-.printf \&quot;name         = %msu\\n\&quot;, @$t0
-.printf \&quot;path         = %msu\\n\&quot;, @$t1
-.printf \&quot;Load status  = %08X\&quot;, @eax
-
-.if((@eax&amp;0xffffffff) != 0) {.printf &#x2F;D \&quot; WARNNING\\n\&quot;} .else {.printf \&quot;\\n\&quot;}
-
-.pop &#x2F;r &#x2F;q
-g
-&quot;
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">bp ntdll!LdrpFindOrMapDll <span class="string">"</span></div><div class="line"><span class="string">.push /r /q</span></div><div class="line"><span class="string">r @$t0 = poi(@esp+4)</span></div><div class="line"><span class="string">r @$t1 = poi(@esp+8)</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">g @$ra</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">.printf \"name         = %msu\\n\", @$t0</span></div><div class="line"><span class="string">.printf \"path         = %msu\\n\", @$t1</span></div><div class="line"><span class="string">.printf \"Load status  = %08X\", @eax</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">.if((@eax&amp;0xffffffff) != 0) &#123;.printf /D \" WARNNING\\n\"&#125; .else &#123;.printf \"\\n\"&#125;</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">.pop /r /q</span></div><div class="line"><span class="string">g</span></div><div class="line"><span class="string">"</span></div><div class="line"> </div></pre></td></tr></table></figure>
 <p>最后看看脚本的效果吧，如果加载失败了，那么返回的状态值就不是0。<br><a href="/uploads/2014/10/20141027164220.png"><img src="/uploads/2014/10/20141027164220.png" alt="20141027164220"></a><br><a href="/uploads/2014/10/20141027164424.png"><img src="/uploads/2014/10/20141027164424.png" alt="20141027164424"></a></p>
 
         
@@ -506,33 +355,11 @@ g
       <div class="repo-list-description">
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>网络上有这样一种小工具，号称可以提高计算机响应速度。简单看了下其中的一款工具，实现原理很简单，就是监控前台窗口的变化，设置进程线程的优先级。设置进程线程的优先级无非就是SetPriorityClass和SetThreadPriority这两个函数，主要问题就是要获得前台窗口的情况。<br>Windows提供了一种叫做Windows Event Hook的机制，来让我们获得多种不同的事件，其中一种就是前台窗口变化事件。所以要完成这个功能很简单，只需要注册一个针对EVENT_SYSTEM_FOREGROUND的HOOK就行了。注册和反注册Hook的函数分别是SetWinEventHook和UnhookWinEvent。<br>比如注册EVENT_SYSTEM_FOREGROUND事件的Hook，我们只需要这样：</p>
-<pre><code>HWINEVENTHOOK hWinEventHook = SetWinEventHook(
-		EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND,
-		NULL, WinEventProc, 0, 0,
-		WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS);
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">HWINEVENTHOOK hWinEventHook = SetWinEventHook(</div><div class="line">		EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND,</div><div class="line">		<span class="literal">NULL</span>, WinEventProc, <span class="number">0</span>, <span class="number">0</span>,</div><div class="line">		WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS);</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>前两个参数设置我们感兴趣的事件范围，由于我们最后一个参数设置的WINEVENT_OUTOFCONTEXT，表示Hook函数并不在产生Event的进程内部，所以hmodWinEventProc设置为NULL。WinEventProc则是我们的Hook函数idProcess和idThread为0，表示我们关心所有桌面上的进程线程，最后的flags还有一个WINEVENT_SKIPOWNPROCESS表示我们对自己的进程不感兴趣。<br>要反注册Hook只需要</p>
-<pre><code>UnhookWinEvent(hWinEventHook);
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">UnhookWinEvent(hWinEventHook);</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>WinEventProc的很简单</p>
-<pre><code>void CALLBACK WinEventProc(
-	HWINEVENTHOOK hWinEventHook,
-	DWORD event,
-	HWND hwnd,
-	LONG idObject,
-	LONG idChild,
-	DWORD dwEventThread,
-	DWORD dwmsEventTime
-	)
-{
-	if (hwnd &amp;&amp;
-		idObject == OBJID_WINDOW &amp;&amp;
-		idChild == CHILDID_SELF &amp;&amp;
-		event == EVENT_SYSTEM_FOREGROUND) {
-			...
-	}
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> CALLBACK <span class="title">WinEventProc</span><span class="params">(</span></span></div><div class="line"><span class="function"><span class="params">	HWINEVENTHOOK hWinEventHook,</span></span></div><div class="line"><span class="function"><span class="params">	DWORD event,</span></span></div><div class="line"><span class="function"><span class="params">	HWND hwnd,</span></span></div><div class="line"><span class="function"><span class="params">	LONG idObject,</span></span></div><div class="line"><span class="function"><span class="params">	LONG idChild,</span></span></div><div class="line"><span class="function"><span class="params">	DWORD dwEventThread,</span></span></div><div class="line"><span class="function"><span class="params">	DWORD dwmsEventTime</span></span></div><div class="line"><span class="function"><span class="params">	)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">	<span class="keyword">if</span> (hwnd &amp;&amp;</div><div class="line">		idObject == OBJID_WINDOW &amp;&amp;</div><div class="line">		idChild == CHILDID_SELF &amp;&amp;</div><div class="line">		event == EVENT_SYSTEM_FOREGROUND) &#123;</div><div class="line">			...</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>其中只需要知道hwnd就是当前的前台窗口就行了。然后通过hwnd和函数GetWindowThreadProcessId，获得进程线程id，自然就能获得其句柄，最后调用调整进程线程优先级的函数即可。</p>
 
         
@@ -611,144 +438,11 @@ g
       <div class="repo-list-description">
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>用Windbg查看stl的容器实在是已经让人悲伤的事情，为了方便，所以写了这么3个脚本<br>vector:</p>
-<pre><code>r? $t0 = ${$arg1}
-
-.if (${&#x2F;d:$VectorType}) {
-	r? $t0 = @@C++(*((${$VectorType} *)@$t0))
-}
-
-.if (${&#x2F;d:$arg2}) { 
-    .if ($sicmp(&quot;${$arg2}&quot;, &quot;-c&quot;) == 0) { 
-        r $t2 = 0 
-        aS ${&#x2F;v:command} &quot;${$arg3}&quot; 
-    } 
-}
-.else { 
-    r $t2 = 1 
-    aS ${&#x2F;v:command} &quot; &quot; 
-}
-
-
-r? $t1 = @@C++(@$t0._Mylast)
-r? $t0 = @@C++(@$t0._Myfirst)
-
-.printf &quot;size = %d\n&quot;, @@C++((@$t1 - @$t0))  
-
-.while (@$t0 != @$t1) {
-	.if ($t2 == 1) {
-		?? @@c++(@$t0-&gt;_Bx)
-	}
-	.else {
-		r? $t9 = @$t0-&gt;_Bx
-		command
-	}
-
-	r? $t0=@$t0+1
-}
-
-ad command 
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">r? $t0 = $&#123;$arg1&#125;</div><div class="line"></div><div class="line">.<span class="keyword">if</span> ($&#123;/d:$VectorType&#125;) &#123;</div><div class="line">	r? $t0 = @@C++(*(($&#123;$VectorType&#125; *)@$t0))</div><div class="line">&#125;</div><div class="line"></div><div class="line">.<span class="keyword">if</span> ($&#123;/d:$arg2&#125;) &#123; </div><div class="line">    .<span class="keyword">if</span> ($sicmp(<span class="string">"$&#123;$arg2&#125;"</span>, <span class="string">"-c"</span>) == <span class="number">0</span>) &#123; </div><div class="line">        r $t2 = <span class="number">0</span> </div><div class="line">        aS $&#123;/v:command&#125; <span class="string">"$&#123;$arg3&#125;"</span> </div><div class="line">    &#125; </div><div class="line">&#125;</div><div class="line">.<span class="keyword">else</span> &#123; </div><div class="line">    r $t2 = <span class="number">1</span> </div><div class="line">    aS $&#123;/v:command&#125; <span class="string">" "</span> </div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">r? $t1 = @@C++(@$t0._Mylast)</div><div class="line">r? $t0 = @@C++(@$t0._Myfirst)</div><div class="line"></div><div class="line">.<span class="built_in">printf</span> <span class="string">"size = %d\n"</span>, @@C++((@$t1 - @$t0))  </div><div class="line"></div><div class="line">.<span class="keyword">while</span> (@$t0 != @$t1) &#123;</div><div class="line">	.<span class="keyword">if</span> ($t2 == <span class="number">1</span>) &#123;</div><div class="line">		?? @@c++(@$t0-&gt;_Bx)</div><div class="line">	&#125;</div><div class="line">	.<span class="keyword">else</span> &#123;</div><div class="line">		r? $t9 = @$t0-&gt;_Bx</div><div class="line">		command</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	r? $t0=@$t0+<span class="number">1</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">ad command </div><div class="line"> </div></pre></td></tr></table></figure>
 <p>list:</p>
-<pre><code>r? $t0 = ${$arg1}
-
-.if (${&#x2F;d:$ListType}) {
-	r? $t0 = @@C++(*((${$ListType} *)@$t0))
-}
-
-.if (${&#x2F;d:$arg2}) { 
-    .if ($sicmp(&quot;${$arg2}&quot;, &quot;-c&quot;) == 0) { 
-        r $t2 = 0 
-        aS ${&#x2F;v:command} &quot;${$arg3}&quot; 
-    } 
-}
-.else { 
-    r $t2 = 1 
-    aS ${&#x2F;v:command} &quot; &quot; 
-}
-
-.printf &quot;size = %d\n&quot;, @@C++(@$t0._Mysize)
-
-r? $t1 = @@C++(@$t0._Myhead)
-r? $t0 = @@C++(@$t0._Myhead)
-r? $t0 = @@C++(@$t0-&gt;_Next)
-
-.while (@$t0 != @$t1) {
-	.if ($t2 == 1) {
-		?? @@c++(@$t0-&gt;_Myval._Bx)
-	}
-	.else {
-		r? $t9 = @$t0-&gt;_Myval._Bx
-		command
-	}
-
-	r? $t0 = @@C++(@$t0-&gt;_Next)
-}
-
-ad command 
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">r? $t0 = $&#123;$arg1&#125;</div><div class="line"></div><div class="line">.<span class="keyword">if</span> ($&#123;/d:$ListType&#125;) &#123;</div><div class="line">	r? $t0 = @@C++(*(($&#123;$ListType&#125; *)@$t0))</div><div class="line">&#125;</div><div class="line"></div><div class="line">.<span class="keyword">if</span> ($&#123;/d:$arg2&#125;) &#123; </div><div class="line">    .<span class="keyword">if</span> ($sicmp(<span class="string">"$&#123;$arg2&#125;"</span>, <span class="string">"-c"</span>) == <span class="number">0</span>) &#123; </div><div class="line">        r $t2 = <span class="number">0</span> </div><div class="line">        aS $&#123;/v:command&#125; <span class="string">"$&#123;$arg3&#125;"</span> </div><div class="line">    &#125; </div><div class="line">&#125;</div><div class="line">.<span class="keyword">else</span> &#123; </div><div class="line">    r $t2 = <span class="number">1</span> </div><div class="line">    aS $&#123;/v:command&#125; <span class="string">" "</span> </div><div class="line">&#125;</div><div class="line"></div><div class="line">.<span class="built_in">printf</span> <span class="string">"size = %d\n"</span>, @@C++(@$t0._Mysize)</div><div class="line"></div><div class="line">r? $t1 = @@C++(@$t0._Myhead)</div><div class="line">r? $t0 = @@C++(@$t0._Myhead)</div><div class="line">r? $t0 = @@C++(@$t0-&gt;_Next)</div><div class="line"></div><div class="line">.<span class="keyword">while</span> (@$t0 != @$t1) &#123;</div><div class="line">	.<span class="keyword">if</span> ($t2 == <span class="number">1</span>) &#123;</div><div class="line">		?? @@c++(@$t0-&gt;_Myval._Bx)</div><div class="line">	&#125;</div><div class="line">	.<span class="keyword">else</span> &#123;</div><div class="line">		r? $t9 = @$t0-&gt;_Myval._Bx</div><div class="line">		command</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	r? $t0 = @@C++(@$t0-&gt;_Next)</div><div class="line">&#125;</div><div class="line"></div><div class="line">ad command </div><div class="line"> </div></pre></td></tr></table></figure>
 <p>map:</p>
-<pre><code>.if ($sicmp(&quot;${$arg1}&quot;, &quot;-n&quot;) == 0) { 
-
-    .if (@@C++(@$t0-&gt;_Left) != @@C++(@$t1)) { 
-        .push &#x2F;r &#x2F;q 
-        r? $t0 = @$t0-&gt;_Left 
-        $$&gt;a&lt; ${$arg0} -n 
-        .pop &#x2F;r &#x2F;q 
-    } 
-	
-	.if (@@C++(@$t0-&gt;_Isnil) == 0) { 
-        .if (@$t2 == 1) { 
-            .printf &#x2F;D &quot;%p\n&quot;, @$t0, @$t0 
-            .printf &quot;key = &quot; 
-            ?? @$t0-&gt;_Myval.first 
-            .printf &quot;value = &quot; 
-            ?? @$t0-&gt;_Myval.second 
-        }
-		.else { 
-            r? $t9 = @$t0-&gt;_Myval 
-            command 
-        } 
-    }
-	
-    .if (@@C++(@$t0-&gt;_Right) != @@C++(@$t1)) { 
-        .push &#x2F;r &#x2F;q 
-        r? $t0 = @$t0-&gt;_Right 
-        $$&gt;a&lt; ${$arg0} -n 
-        .pop &#x2F;r &#x2F;q 
-    }
-	
-}
-.else { 
-
-	r? $t0 = ${$arg1}
-
-	.if (${&#x2F;d:$MapType}) {
-		r? $t0 = @@C++(*((${$MapType} *)@$t0))
-	}
-
-    .if (${&#x2F;d:$arg2}) { 
-        .if ($sicmp(&quot;${$arg2}&quot;, &quot;-c&quot;) == 0) { 
-            r $t2 = 0 
-            aS ${&#x2F;v:command} &quot;${$arg3}&quot; 
-        } 
-    }
-	.else { 
-        r $t2 = 1 
-        aS ${&#x2F;v:command} &quot; &quot; 
-    }
-	
-	
-
-	.printf &quot;size = %d\n&quot;, @@C++(@$t0._Mysize)  
-     
-	r? $t0 = @$t0._Myhead-&gt;_Parent 
-	r? $t1 = @$t0-&gt;_Parent
-	
-    $$&gt;a&lt; ${$arg0} -n
-
-    ad command 
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div></pre></td><td class="code"><pre><div class="line">.<span class="keyword">if</span> ($sicmp(<span class="string">"$&#123;$arg1&#125;"</span>, <span class="string">"-n"</span>) == <span class="number">0</span>) &#123; </div><div class="line"></div><div class="line">    .<span class="keyword">if</span> (@@C++(@$t0-&gt;_Left) != @@C++(@$t1)) &#123; </div><div class="line">        .push /r /q </div><div class="line">        r? $t0 = @$t0-&gt;_Left </div><div class="line">        $$&gt;a&lt; $&#123;$arg0&#125; -n </div><div class="line">        .pop /r /q </div><div class="line">    &#125; </div><div class="line">	</div><div class="line">	.<span class="keyword">if</span> (@@C++(@$t0-&gt;_Isnil) == <span class="number">0</span>) &#123; </div><div class="line">        .<span class="keyword">if</span> (@$t2 == <span class="number">1</span>) &#123; </div><div class="line">            .<span class="built_in">printf</span> /D <span class="string">"%p\n"</span>, @$t0, @$t0 </div><div class="line">            .<span class="built_in">printf</span> <span class="string">"key = "</span> </div><div class="line">            ?? @$t0-&gt;_Myval.first </div><div class="line">            .<span class="built_in">printf</span> <span class="string">"value = "</span> </div><div class="line">            ?? @$t0-&gt;_Myval.second </div><div class="line">        &#125;</div><div class="line">		.<span class="keyword">else</span> &#123; </div><div class="line">            r? $t9 = @$t0-&gt;_Myval </div><div class="line">            command </div><div class="line">        &#125; </div><div class="line">    &#125;</div><div class="line">	</div><div class="line">    .<span class="keyword">if</span> (@@C++(@$t0-&gt;_Right) != @@C++(@$t1)) &#123; </div><div class="line">        .push /r /q </div><div class="line">        r? $t0 = @$t0-&gt;_Right </div><div class="line">        $$&gt;a&lt; $&#123;$arg0&#125; -n </div><div class="line">        .pop /r /q </div><div class="line">    &#125;</div><div class="line">	</div><div class="line">&#125;</div><div class="line">.<span class="keyword">else</span> &#123; </div><div class="line"></div><div class="line">	r? $t0 = $&#123;$arg1&#125;</div><div class="line"></div><div class="line">	.<span class="keyword">if</span> ($&#123;/d:$MapType&#125;) &#123;</div><div class="line">		r? $t0 = @@C++(*(($&#123;$MapType&#125; *)@$t0))</div><div class="line">	&#125;</div><div class="line"></div><div class="line">    .<span class="keyword">if</span> ($&#123;/d:$arg2&#125;) &#123; </div><div class="line">        .<span class="keyword">if</span> ($sicmp(<span class="string">"$&#123;$arg2&#125;"</span>, <span class="string">"-c"</span>) == <span class="number">0</span>) &#123; </div><div class="line">            r $t2 = <span class="number">0</span> </div><div class="line">            aS $&#123;/v:command&#125; <span class="string">"$&#123;$arg3&#125;"</span> </div><div class="line">        &#125; </div><div class="line">    &#125;</div><div class="line">	.<span class="keyword">else</span> &#123; </div><div class="line">        r $t2 = <span class="number">1</span> </div><div class="line">        aS $&#123;/v:command&#125; <span class="string">" "</span> </div><div class="line">    &#125;</div><div class="line">	</div><div class="line">	</div><div class="line"></div><div class="line">	.<span class="built_in">printf</span> <span class="string">"size = %d\n"</span>, @@C++(@$t0._Mysize)  </div><div class="line">     </div><div class="line">	r? $t0 = @$t0._Myhead-&gt;_Parent </div><div class="line">	r? $t1 = @$t0-&gt;_Parent</div><div class="line">	</div><div class="line">    $$&gt;a&lt; $&#123;$arg0&#125; -n</div><div class="line"></div><div class="line">    ad command </div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 
         
       </div>
@@ -928,9 +622,7 @@ ad command
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 
 		<script src="/js/index.js"></script>

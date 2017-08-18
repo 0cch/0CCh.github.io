@@ -86,43 +86,8 @@
       <div class="repo-list-description">
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近和朋友讨论版本号常用的几种规范，前三位&lt;主版本&gt;.&lt;子版本&gt;.&lt;修正版本&gt;基本上一致，不需要详说。主要区别产生在最后一位，有的是build number，有的是时间日期，还有的是git或者svn的revision。我习惯用build number，每次编译都会增加版本号最后一位的数字。但是手动去修改明显不科学也不可靠，所以给和我有一样习惯的朋友分享一个我早年写的python脚本，无论是自己的工具还是公司的产品我一直都在用这个。</p>
-<pre><code>用法就是在VS的工程属性Build Event -&gt; Pre Build Event里设置x:\incbuildnum.py $(ProjectDir)$(ProjectName).rc。
-</code></pre><pre><code>
-import re
-import os
-import sys
-import shutil
-
-if os.path.isfile(sys.argv[1] + &quot;.bak&quot;):
-	os.remove(sys.argv[1] + &quot;.bak&quot;)
-shutil.copy(sys.argv[1], sys.argv[1] + &quot;.bak&quot;)
-
-with open(sys.argv[1], &#39;r+&#39;) as content_file:
-    content = content_file.read()
-    
-    
-    m = re.search(&quot;VALUE \&quot;FileVersion\&quot;, \&quot;(([\\d]+).[ ]*)*([\\d]+)\&quot;&quot;, content)
-    new_ver = str(int(m.group(3)) + 1)
-    content = re.sub(&quot;(VALUE \&quot;FileVersion\&quot;, \&quot;([\\d]+.[ ]*)*)[\\d]+\&quot;&quot;, &quot;\\g&lt;1&gt;&quot; + new_ver + &quot;\&quot;&quot;, content)
-
-    m = re.search(&quot;FILEVERSION (([\\d]+).[ ]*)*([\\d]+)&quot;, content)
-    new_ver = str(int(m.group(3)) + 1)
-    content = re.sub(&quot;(FILEVERSION ([\\d]+.[ ]*)*)([\\d]+)&quot;, &quot;\\g&lt;1&gt;&quot; + new_ver, content)
-
-    m = re.search(&quot;VALUE \&quot;ProductVersion\&quot;, \&quot;(([\\d]+).[ ]*)*([\\d]+)\&quot;&quot;, content)
-    new_ver = str(int(m.group(3)) + 1)
-    content = re.sub(&quot;(VALUE \&quot;ProductVersion\&quot;, \&quot;([\\d]+.[ ]*)*)[\\d]+\&quot;&quot;, &quot;\\g&lt;1&gt;&quot; + new_ver + &quot;\&quot;&quot;, content)
-
-    m = re.search(&quot;PRODUCTVERSION (([\\d]+).[ ]*)*([\\d]+)&quot;, content)
-    new_ver = str(int(m.group(3)) + 1)
-    content = re.sub(&quot;(PRODUCTVERSION ([\\d]+.[ ]*)*)([\\d]+)&quot;, &quot;\\g&lt;1&gt;&quot; + new_ver, content)
-    
-    content_file.seek(0)
-    content_file.write(content)
-    content_file.truncate()
-    content_file.close()
-    
-</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">用法就是在VS的工程属性Build Event -&gt; Pre Build Event里设置x:\incbuildnum.py $(ProjectDir)$(ProjectName).rc。</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">import</span> re</div><div class="line"><span class="keyword">import</span> os</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">import</span> shutil</div><div class="line"></div><div class="line"><span class="keyword">if</span> os.path.isfile(sys.argv[<span class="number">1</span>] + <span class="string">".bak"</span>):</div><div class="line">	os.remove(sys.argv[<span class="number">1</span>] + <span class="string">".bak"</span>)</div><div class="line">shutil.copy(sys.argv[<span class="number">1</span>], sys.argv[<span class="number">1</span>] + <span class="string">".bak"</span>)</div><div class="line"></div><div class="line"><span class="keyword">with</span> open(sys.argv[<span class="number">1</span>], <span class="string">'r+'</span>) <span class="keyword">as</span> content_file:</div><div class="line">    content = content_file.read()</div><div class="line">    </div><div class="line">    </div><div class="line">    m = re.search(<span class="string">"VALUE \"FileVersion\", \"(([\\d]+).[ ]*)*([\\d]+)\""</span>, content)</div><div class="line">    new_ver = str(int(m.group(<span class="number">3</span>)) + <span class="number">1</span>)</div><div class="line">    content = re.sub(<span class="string">"(VALUE \"FileVersion\", \"([\\d]+.[ ]*)*)[\\d]+\""</span>, <span class="string">"\\g&lt;1&gt;"</span> + new_ver + <span class="string">"\""</span>, content)</div><div class="line"></div><div class="line">    m = re.search(<span class="string">"FILEVERSION (([\\d]+).[ ]*)*([\\d]+)"</span>, content)</div><div class="line">    new_ver = str(int(m.group(<span class="number">3</span>)) + <span class="number">1</span>)</div><div class="line">    content = re.sub(<span class="string">"(FILEVERSION ([\\d]+.[ ]*)*)([\\d]+)"</span>, <span class="string">"\\g&lt;1&gt;"</span> + new_ver, content)</div><div class="line"></div><div class="line">    m = re.search(<span class="string">"VALUE \"ProductVersion\", \"(([\\d]+).[ ]*)*([\\d]+)\""</span>, content)</div><div class="line">    new_ver = str(int(m.group(<span class="number">3</span>)) + <span class="number">1</span>)</div><div class="line">    content = re.sub(<span class="string">"(VALUE \"ProductVersion\", \"([\\d]+.[ ]*)*)[\\d]+\""</span>, <span class="string">"\\g&lt;1&gt;"</span> + new_ver + <span class="string">"\""</span>, content)</div><div class="line"></div><div class="line">    m = re.search(<span class="string">"PRODUCTVERSION (([\\d]+).[ ]*)*([\\d]+)"</span>, content)</div><div class="line">    new_ver = str(int(m.group(<span class="number">3</span>)) + <span class="number">1</span>)</div><div class="line">    content = re.sub(<span class="string">"(PRODUCTVERSION ([\\d]+.[ ]*)*)([\\d]+)"</span>, <span class="string">"\\g&lt;1&gt;"</span> + new_ver, content)</div><div class="line">    </div><div class="line">    content_file.seek(<span class="number">0</span>)</div><div class="line">    content_file.write(content)</div><div class="line">    content_file.truncate()</div><div class="line">    content_file.close()</div><div class="line">    </div><div class="line"></div></pre></td></tr></table></figure>
         
       </div>
       <p class="repo-list-meta">
@@ -295,9 +260,7 @@ with open(sys.argv[1], &#39;r+&#39;) as content_file:
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 
 		<script src="/js/index.js"></script>

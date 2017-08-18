@@ -88,108 +88,7 @@
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>今天无意中看到了HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU这个键值的用途，虽然感觉没啥实际用途，但是也挺有趣的，于是写了个小程序读取它。这个键值的意义非常明确，就是记录打开保存对话框的最近操作的文件的PIDL。所以我们可以通过PIDL来获得文件路径，就这么简单，确实没啥特别的实际用途吧，就当娱乐了。枚举的效果如下：</p>
 <p><a href="/uploads/2014/11/20141117231005.png"><img src="/uploads/2014/11/20141117231005.png" alt="20141117231005"></a></p>
 <p>代码也很简单：</p>
-<pre><code>
-#include &quot;stdafx.h&quot;
-#include &lt;atlbase.h&gt;
-#include &lt;atlstr.h&gt;
-#include &lt;Shlobj.h&gt;
-#include &lt;locale.h&gt;
-#include &lt;vector&gt;
-
-#pragma comment(lib, &quot;shell32.lib&quot;)
-
-const TCHAR mru_path[] = TEXT(&quot;Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32\\OpenSavePidlMRU&quot;);
-
-void EnumMRUValue(HKEY subkey, std::vector &amp;mru;_files)
-{
-	ULONG i = 0, j = 0;
-	TCHAR value_name[MAX_PATH];
-	ULONG value_name_length = MAX_PATH;
-	UCHAR data_buffer[1024];
-	ULONG data_length = sizeof(data_buffer);
-	while (RegEnumValue(subkey, i++, value_name, &amp;value;_name_length, 0, NULL, data_buffer, &amp;data;_length) == ERROR_SUCCESS)
-	{
-		if (_tcscmp(value_name, TEXT(&quot;MRUListEx&quot;)) != 0) {
-			CComPtr malloc_ptr;
-			HRESULT hr = SHGetMalloc(&amp;malloc;_ptr);
-			LPITEMIDLIST file_pidl = (LPITEMIDLIST)malloc_ptr-&gt;Alloc(sizeof(UCHAR) + data_length);
-
-			if (file_pidl) {
-				memcpy(file_pidl, data_buffer, data_length);
-				WCHAR file_path[MAX_PATH] = { 0 };
-				if (SHGetPathFromIDList(file_pidl, file_path)) {
-					mru_files.push_back(file_path);
-					
-				}
-				malloc_ptr-&gt;Free(file_pidl);
-			}
-		}
-
-		value_name_length = MAX_PATH;
-		data_length = sizeof(data_buffer);
-	}
-}
-
-BOOL PrintMRUFiles()
-{
-	HKEY subkey;
-	LSTATUS l = RegOpenKeyEx(HKEY_CURRENT_USER, mru_path, 0, KEY_READ, &amp;subkey;);
-	if (l != ERROR_SUCCESS) {
-		return FALSE;
-	}
-	ULONG i = 0;
-	TCHAR key_name[MAX_PATH];
-	ULONG key_name_length = MAX_PATH;
-	while (RegEnumKeyEx(subkey, i++, key_name, &amp;key;_name_length, 0, NULL, NULL, NULL) == ERROR_SUCCESS)
-	{
-		HKEY ext_key;
-		LSTATUS l = RegOpenKeyEx(subkey, key_name, 0, KEY_READ, &amp;ext;_key);
-		if (l == ERROR_SUCCESS) {
-			
-			std::vector mru_files;
-			EnumMRUValue(ext_key, mru_files);
-			if (mru_files.size() &gt; 0) {
-				_tprintf(TEXT(&quot;Extension Name : %s\n&quot;), key_name);
-				ULONG j = 0;
-				for (std::vector::iterator it = mru_files.begin(); it != mru_files.end(); ++it) {
-
-					WIN32_FILE_ATTRIBUTE_DATA attribute_data = { 0 };
-					
-					if (GetFileAttributesEx(it-&gt;GetString(), GetFileExInfoStandard, &amp;attribute;_data)) {
-						ULONGLONG file_size = ((ULONGLONG)attribute_data.nFileSizeHigh) &lt;&lt; 32 | attribute_data.nFileSizeLow;
-						_tprintf(TEXT(&quot;\t %u %s  % 11I64u KB] %s\n&quot;), j++,
-							(attribute_data.dwFileAttributes &amp; FILE_ATTRIBUTE_DIRECTORY) == 0 ? TEXT(&quot;[FILE&quot;) : TEXT(&quot;[DIR &quot;),
-							(file_size + 1023) &#x2F; 1024,
-							it-&gt;GetString());
-					}
-					else {
-						_tprintf(TEXT(&quot;\t %u [ERROR_FILE_NOT_FOUND] %s\n&quot;), j++,
-							it-&gt;GetString());
-					}
-					
-				}
-			}
-			
-			RegCloseKey(ext_key);
-		}
-
-		key_name_length = MAX_PATH;
-	}
-	
-	RegCloseKey(subkey);
-	return TRUE;
-}
-
-
-int _tmain(int argc, _TCHAR* argv[])
-{
-	setlocale(LC_ALL, &quot;chs&quot;);
-	PrintMRUFiles();
-	return 0;
-}
-
-
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdafx.h"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atlbase.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atlstr.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;Shlobj.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;locale.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">pragma</span> comment(lib, <span class="meta-string">"shell32.lib"</span>)</span></div><div class="line"></div><div class="line"><span class="keyword">const</span> TCHAR mru_path[] = TEXT(<span class="string">"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32\\OpenSavePidlMRU"</span>);</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">EnumMRUValue</span><span class="params">(HKEY subkey, <span class="built_in">std</span>::<span class="built_in">vector</span> &amp;mru;_files)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">	ULONG i = <span class="number">0</span>, j = <span class="number">0</span>;</div><div class="line">	TCHAR value_name[MAX_PATH];</div><div class="line">	ULONG value_name_length = MAX_PATH;</div><div class="line">	UCHAR data_buffer[<span class="number">1024</span>];</div><div class="line">	ULONG data_length = <span class="keyword">sizeof</span>(data_buffer);</div><div class="line">	<span class="keyword">while</span> (RegEnumValue(subkey, i++, value_name, &amp;value;_name_length, <span class="number">0</span>, <span class="literal">NULL</span>, data_buffer, &amp;data;_length) == ERROR_SUCCESS)</div><div class="line">	&#123;</div><div class="line">		<span class="keyword">if</span> (_tcscmp(value_name, TEXT(<span class="string">"MRUListEx"</span>)) != <span class="number">0</span>) &#123;</div><div class="line">			CComPtr malloc_ptr;</div><div class="line">			HRESULT hr = SHGetMalloc(&amp;<span class="built_in">malloc</span>;_ptr);</div><div class="line">			LPITEMIDLIST file_pidl = (LPITEMIDLIST)malloc_ptr-&gt;Alloc(<span class="keyword">sizeof</span>(UCHAR) + data_length);</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (file_pidl) &#123;</div><div class="line">				<span class="built_in">memcpy</span>(file_pidl, data_buffer, data_length);</div><div class="line">				WCHAR file_path[MAX_PATH] = &#123; <span class="number">0</span> &#125;;</div><div class="line">				<span class="keyword">if</span> (SHGetPathFromIDList(file_pidl, file_path)) &#123;</div><div class="line">					mru_files.push_back(file_path);</div><div class="line">					</div><div class="line">				&#125;</div><div class="line">				malloc_ptr-&gt;Free(file_pidl);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		value_name_length = MAX_PATH;</div><div class="line">		data_length = <span class="keyword">sizeof</span>(data_buffer);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function">BOOL <span class="title">PrintMRUFiles</span><span class="params">()</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">	HKEY subkey;</div><div class="line">	LSTATUS l = RegOpenKeyEx(HKEY_CURRENT_USER, mru_path, <span class="number">0</span>, KEY_READ, &amp;subkey;);</div><div class="line">	<span class="keyword">if</span> (l != ERROR_SUCCESS) &#123;</div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line">	ULONG i = <span class="number">0</span>;</div><div class="line">	TCHAR key_name[MAX_PATH];</div><div class="line">	ULONG key_name_length = MAX_PATH;</div><div class="line">	<span class="keyword">while</span> (RegEnumKeyEx(subkey, i++, key_name, &amp;key;_name_length, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>) == ERROR_SUCCESS)</div><div class="line">	&#123;</div><div class="line">		HKEY ext_key;</div><div class="line">		LSTATUS l = RegOpenKeyEx(subkey, key_name, <span class="number">0</span>, KEY_READ, &amp;ext;_key);</div><div class="line">		<span class="keyword">if</span> (l == ERROR_SUCCESS) &#123;</div><div class="line">			</div><div class="line">			<span class="built_in">std</span>::<span class="built_in">vector</span> mru_files;</div><div class="line">			EnumMRUValue(ext_key, mru_files);</div><div class="line">			<span class="keyword">if</span> (mru_files.size() &gt; <span class="number">0</span>) &#123;</div><div class="line">				_tprintf(TEXT(<span class="string">"Extension Name : %s\n"</span>), key_name);</div><div class="line">				ULONG j = <span class="number">0</span>;</div><div class="line">				<span class="keyword">for</span> (<span class="built_in">std</span>::<span class="built_in">vector</span>::iterator it = mru_files.begin(); it != mru_files.end(); ++it) &#123;</div><div class="line"></div><div class="line">					WIN32_FILE_ATTRIBUTE_DATA attribute_data = &#123; <span class="number">0</span> &#125;;</div><div class="line">					</div><div class="line">					<span class="keyword">if</span> (GetFileAttributesEx(it-&gt;GetString(), GetFileExInfoStandard, &amp;attribute;_data)) &#123;</div><div class="line">						ULONGLONG file_size = ((ULONGLONG)attribute_data.nFileSizeHigh) &lt;&lt; <span class="number">32</span> | attribute_data.nFileSizeLow;</div><div class="line">						_tprintf(TEXT(<span class="string">"\t %u %s  % 11I64u KB] %s\n"</span>), j++,</div><div class="line">							(attribute_data.dwFileAttributes &amp; FILE_ATTRIBUTE_DIRECTORY) == <span class="number">0</span> ? TEXT(<span class="string">"[FILE"</span>) : TEXT(<span class="string">"[DIR "</span>),</div><div class="line">							(file_size + <span class="number">1023</span>) / <span class="number">1024</span>,</div><div class="line">							it-&gt;GetString());</div><div class="line">					&#125;</div><div class="line">					<span class="keyword">else</span> &#123;</div><div class="line">						_tprintf(TEXT(<span class="string">"\t %u [ERROR_FILE_NOT_FOUND] %s\n"</span>), j++,</div><div class="line">							it-&gt;GetString());</div><div class="line">					&#125;</div><div class="line">					</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">			</div><div class="line">			RegCloseKey(ext_key);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		key_name_length = MAX_PATH;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	RegCloseKey(subkey);</div><div class="line">	<span class="keyword">return</span> TRUE;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">	setlocale(LC_ALL, <span class="string">"chs"</span>);</div><div class="line">	PrintMRUFiles();</div><div class="line">	<span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
 
         
       </div>
@@ -440,9 +339,7 @@ int _tmain(int argc, _TCHAR* argv[])
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 
 		<script src="/js/index.js"></script>

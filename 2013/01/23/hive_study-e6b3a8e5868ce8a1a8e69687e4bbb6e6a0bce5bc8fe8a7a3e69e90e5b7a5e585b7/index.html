@@ -64,15 +64,7 @@
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这几天又写了个小工具，刚下班就在这发了算了。</p>
 <p>hive_study 是一个注册表文件格式解析工具。功能也比较的简单，主要是dump出注册表里面的数据信息。例如显示子项，子键，显示键值以及他们的安全描述符。当然了，还是那样，注册表的hive文件实际上是不可读的，因为内核独占他了。想要获得可以读的hive文件，可以用ntfsstudy把hive文件dump出来，然后去读这个新的hive文件。以下是他的Usage。</p>
-<pre><code>Usage : hive_study.exe -f hive_path [-options]
-
-Options:
-[-k key_path] Specifies key path (e.g.: -k &quot;ControlSet001\Control\Session Manager&quot;)
-[-v value_name] Specifies value name (e.g.: -v BootExecute)
-[-l] List subkeys information
-[-e] List values information
-[-s] Show key security description information
-[-w output_file] Dump attribute to a file</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Usage : hive_study.exe -f hive_path [-options]</div><div class="line"></div><div class="line">Options:</div><div class="line">[-k key_path] Specifies key path (e.g.: -k &quot;ControlSet001\Control\Session Manager&quot;)</div><div class="line">[-v value_name] Specifies value name (e.g.: -v BootExecute)</div><div class="line">[-l] List subkeys information</div><div class="line">[-e] List values information</div><div class="line">[-s] Show key security description information</div><div class="line">[-w output_file] Dump attribute to a file</div></pre></td></tr></table></figure>
 <p><a href="/uploads/2013/01/20130123181723.png"><img src="/uploads/2013/01/20130123181723.png" alt="20130123181723"></a></p>
 <p>下载<a href="/uploads/2013/01/hive_study.zip">hive_study</a></p>
 
@@ -173,9 +165,7 @@ Options:
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 			<script src="/js/toc.js"></script>
 		

@@ -91,61 +91,7 @@
 <p>勾选send bug report并且点击ok，窗口里的完整log和dump文件会打包为zip文件储存，储存的地方可以由程序指定，也可以写注册表键值，reporter会去都键值然后存储到相应的位置。具体什么键值，看源代码吧。不完整和遗憾的地方也有，就是还没有http上传到提交dump收集服务器的代码。因为确实不会写php啥的。另外这个工程也用了不少开源代码，这里也感谢一下，其中包括反汇编引擎和ZIP代码。</p>
 <p>下载源代码：<a href="/uploads/2013/01/BugReporter.zip">BugReporter</a></p>
 <p>以下是完整的dump log：</p>
-<pre><code>SYSTEM INFORMATIONS
----------------
-ProcessorArchitecture : x86
-Number Of Processors : 16
-OS Version : 6.1
-BuildNumber : 7600
-CSDVersion :
-Platform : Windows Server 2003, Windows XP, or Windows 2000
-
-EXCEPTION INFORMATIONS
----------------
-Thread id : 5744
-ExceptionCode : c00000fd
-ExceptionFlags : 00000000
-ExceptionRecord : 0000000000000000
-ExceptionAddress : 0000000000dea637
-ExceptionInformation0 = 0000000000000000
-ExceptionInformation1 = 0000000000102000
-Thread Context :
-EAX = 00102000 ECX = 00102050 EDX = 5eea2408 EBX = 7efde000
-ESP = 00103120 EBP = 00103128 ESI = 001ff9c8 EDI = 00104210
-EFLAGS = 00010206
-
-MODULE INFORMATIONS
----------------
-Base Size Name FileVersion ProductVersion
-0000000000de0000 0001a000 D:\crashme\Debug\crashme.exe 0 0
-00000000772b0000 00180000 C:\Windows\SysWOW64\ntdll.dll 600011db040af 600011db040af
-0000000075ef0000 00100000 C:\Windows\SysWOW64\kernel32.dll 600011db04001 600011db04001
-00000000750f0000 00046000 C:\Windows\SysWOW64\KERNELBASE.dll 600011db04001 600011db04001
-000000005ed90000 00124000 C:\Windows\winsxs\x86_microsoft.vc90.debugcrt_1fc8b3b9a1e18e3b_9.0.30729.4148_none_2a4cbfc25558bcd3\msvcr90d.dll 9000078091034 9000078091034
-0000000074330000 000eb000 C:\Windows\System32\dbghelp.dll 600011db04001 600011db04001
-0000000076e00000 000ac000 C:\Windows\SysWOW64\msvcrt.dll 700001db04001 6000121be4001
-0000000076d10000 000f0000 C:\Windows\SysWOW64\rpcrt4.dll 600011db04001 600011db04001
-0000000074e20000 00060000 C:\Windows\SysWOW64\sspicli.dll 600011db04064 600011db04064
-0000000074e10000 0000c000 C:\Windows\SysWOW64\CRYPTBASE.dll 600011db04001 600011db04001
-00000000761e0000 00019000 C:\Windows\SysWOW64\sechost.dll 600011db04001 600011db04001
-00000000763e0000 000a0000 C:\Windows\SysWOW64\advapi32.dll 600011db04001 600011db04001
-000000006e810000 00025000 C:\Windows\System32\powrprof.dll 600011db04001 600011db04001
-00000000768e0000 0019d000 C:\Windows\SysWOW64\setupapi.dll 600011db04001 600011db04001
-0000000074f70000 00027000 C:\Windows\SysWOW64\cfgmgr32.dll 600011db04001 600011db04001
-0000000076c80000 00090000 C:\Windows\SysWOW64\gdi32.dll 600011db04001 600011db04001
-0000000076a80000 00100000 C:\Windows\SysWOW64\user32.dll 600011db04001 600011db04001
-0000000077280000 0000a000 C:\Windows\SysWOW64\lpk.dll 600011db04001 600011db04001
-0000000075140000 0009d000 C:\Windows\SysWOW64\usp10.dll 102721db04001 102721db04001
-0000000076150000 0008f000 C:\Windows\SysWOW64\oleaut32.dll 600011db04001 600011db04001
-0000000075ff0000 0015c000 C:\Windows\SysWOW64\ole32.dll 600011db04001 600011db04001
-0000000074fa0000 00012000 C:\Windows\SysWOW64\devobj.dll 600011db04001 600011db04001
-0000000074f10000 00060000 C:\Windows\System32\imm32.dll 600011db04001 600011db04001
-0000000075020000 000cc000 C:\Windows\SysWOW64\msctf.dll 600011db04001 600011db04001
-000000006fa00000 0003e000 C:\Program Files (x86)\Sophos\Sophos Anti-Virus\sophos_detoured.dll 900000000235f 9000000000000
-00000000763d0000 00005000 C:\Windows\SysWOW64\psapi.dll 600011db04001 600011db04001
-
-Crash IP Disasm :
-test dword ptr [eax], eax</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line">SYSTEM INFORMATIONS</div><div class="line">---------------</div><div class="line">ProcessorArchitecture : x86</div><div class="line">Number Of Processors : 16</div><div class="line">OS Version : 6.1</div><div class="line">BuildNumber : 7600</div><div class="line">CSDVersion :</div><div class="line">Platform : Windows Server 2003, Windows XP, or Windows 2000</div><div class="line"></div><div class="line">EXCEPTION INFORMATIONS</div><div class="line">---------------</div><div class="line">Thread id : 5744</div><div class="line">ExceptionCode : c00000fd</div><div class="line">ExceptionFlags : 00000000</div><div class="line">ExceptionRecord : 0000000000000000</div><div class="line">ExceptionAddress : 0000000000dea637</div><div class="line">ExceptionInformation0 = 0000000000000000</div><div class="line">ExceptionInformation1 = 0000000000102000</div><div class="line">Thread Context :</div><div class="line">EAX = 00102000 ECX = 00102050 EDX = 5eea2408 EBX = 7efde000</div><div class="line">ESP = 00103120 EBP = 00103128 ESI = 001ff9c8 EDI = 00104210</div><div class="line">EFLAGS = 00010206</div><div class="line"></div><div class="line">MODULE INFORMATIONS</div><div class="line">---------------</div><div class="line">Base Size Name FileVersion ProductVersion</div><div class="line">0000000000de0000 0001a000 D:\crashme\Debug\crashme.exe 0 0</div><div class="line">00000000772b0000 00180000 C:\Windows\SysWOW64\ntdll.dll 600011db040af 600011db040af</div><div class="line">0000000075ef0000 00100000 C:\Windows\SysWOW64\kernel32.dll 600011db04001 600011db04001</div><div class="line">00000000750f0000 00046000 C:\Windows\SysWOW64\KERNELBASE.dll 600011db04001 600011db04001</div><div class="line">000000005ed90000 00124000 C:\Windows\winsxs\x86_microsoft.vc90.debugcrt_1fc8b3b9a1e18e3b_9.0.30729.4148_none_2a4cbfc25558bcd3\msvcr90d.dll 9000078091034 9000078091034</div><div class="line">0000000074330000 000eb000 C:\Windows\System32\dbghelp.dll 600011db04001 600011db04001</div><div class="line">0000000076e00000 000ac000 C:\Windows\SysWOW64\msvcrt.dll 700001db04001 6000121be4001</div><div class="line">0000000076d10000 000f0000 C:\Windows\SysWOW64\rpcrt4.dll 600011db04001 600011db04001</div><div class="line">0000000074e20000 00060000 C:\Windows\SysWOW64\sspicli.dll 600011db04064 600011db04064</div><div class="line">0000000074e10000 0000c000 C:\Windows\SysWOW64\CRYPTBASE.dll 600011db04001 600011db04001</div><div class="line">00000000761e0000 00019000 C:\Windows\SysWOW64\sechost.dll 600011db04001 600011db04001</div><div class="line">00000000763e0000 000a0000 C:\Windows\SysWOW64\advapi32.dll 600011db04001 600011db04001</div><div class="line">000000006e810000 00025000 C:\Windows\System32\powrprof.dll 600011db04001 600011db04001</div><div class="line">00000000768e0000 0019d000 C:\Windows\SysWOW64\setupapi.dll 600011db04001 600011db04001</div><div class="line">0000000074f70000 00027000 C:\Windows\SysWOW64\cfgmgr32.dll 600011db04001 600011db04001</div><div class="line">0000000076c80000 00090000 C:\Windows\SysWOW64\gdi32.dll 600011db04001 600011db04001</div><div class="line">0000000076a80000 00100000 C:\Windows\SysWOW64\user32.dll 600011db04001 600011db04001</div><div class="line">0000000077280000 0000a000 C:\Windows\SysWOW64\lpk.dll 600011db04001 600011db04001</div><div class="line">0000000075140000 0009d000 C:\Windows\SysWOW64\usp10.dll 102721db04001 102721db04001</div><div class="line">0000000076150000 0008f000 C:\Windows\SysWOW64\oleaut32.dll 600011db04001 600011db04001</div><div class="line">0000000075ff0000 0015c000 C:\Windows\SysWOW64\ole32.dll 600011db04001 600011db04001</div><div class="line">0000000074fa0000 00012000 C:\Windows\SysWOW64\devobj.dll 600011db04001 600011db04001</div><div class="line">0000000074f10000 00060000 C:\Windows\System32\imm32.dll 600011db04001 600011db04001</div><div class="line">0000000075020000 000cc000 C:\Windows\SysWOW64\msctf.dll 600011db04001 600011db04001</div><div class="line">000000006fa00000 0003e000 C:\Program Files (x86)\Sophos\Sophos Anti-Virus\sophos_detoured.dll 900000000235f 9000000000000</div><div class="line">00000000763d0000 00005000 C:\Windows\SysWOW64\psapi.dll 600011db04001 600011db04001</div><div class="line"></div><div class="line">Crash IP Disasm :</div><div class="line">test dword ptr [eax], eax</div></pre></td></tr></table></figure>
         
       </div>
       <p class="repo-list-meta">
@@ -229,52 +175,7 @@ test dword ptr [eax], eax</code></pre>
 <p><a href="/uploads/2013/01/ntfs_hive.png"><img src="/uploads/2013/01/ntfs_hive.png" alt="ntfs_hive"></a></p>
 <p>更多的详细用法和例子等我有空会在blog里面写一些。</p>
 <p>下面就是他的Usage，也是目前该工具具有的功能。</p>
-<pre><code>NtfsStudy v1.0 - Ntfs format study tool.
-Copyright (C) 2012-2013 nightxie
-0CCh - www.0cch.net
-
-Usage : NtfsStudy.exe [options] -f file_path_name
--f file_path_name Specifies the target file path to parse.
-
-options:
-
-
-[-r file_reference]   Specifies the target file reference.
-NtfsStudy will parse the REFERENCE rather than the path which
-Specifies by -f. NtfsStudy will just use the path root.
-[-a] Show the file record information of the target file.
-[-l]   List the files in the directory.
-[-w attribute_id output_file_path] Write target attribute to a file.
-(The attribute size must less than 128mb)
-[-v attribute_type] Show detail attribute information specified by attribute_type.
-[-d attribute_type [start_offset range]] Show binary information specified by attribute_type.
-[-s secure_id] Show the security descriptor specified by secure_id.
-[-c] Show the attributes definition columns.
-
-
-About attribute type:
-
-
-$STANDARD_INFORMATION         = 1
-$ATTRIBUTE_LIST               = 2
-$FILE_NAME                    = 3
-$OBJECT_ID                    = 4
-$SECURITY_DESCRIPTOR          = 5
-$VOLUME_NAME                  = 6
-$VOLUME_INFORMATION           = 7
-$DATA                         = 8
-$INDEX_ROOT                   = 9
-$INDEX_ALLOCATION             = 10
-$BITMAP                       = 11
-$REPARSE_POINT                = 12
-$EA_INFORMATION               = 13
-$EA                           = 14
-$LOGGED_UTILITY_STREAM        = 16
-
-About secure id:
-
-To get the secure id of target file.
-Use &#39;-v 1&#39; command, secure id will displayed in STANDARD_INFORMATION.</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">NtfsStudy v1.0 - Ntfs format study tool.</div><div class="line">Copyright (C) 2012-2013 nightxie</div><div class="line">0CCh - www.0cch.net</div><div class="line"></div><div class="line">Usage : NtfsStudy.exe [options] -f file_path_name</div><div class="line">-f file_path_name Specifies the target file path to parse.</div><div class="line"></div><div class="line">options:</div><div class="line"></div><div class="line"></div><div class="line">[-r file_reference]   Specifies the target file reference.</div><div class="line">NtfsStudy will parse the REFERENCE rather than the path which</div><div class="line">Specifies by -f. NtfsStudy will just use the path root.</div><div class="line">[-a] Show the file record information of the target file.</div><div class="line">[-l]   List the files in the directory.</div><div class="line">[-w attribute_id output_file_path] Write target attribute to a file.</div><div class="line">(The attribute size must less than 128mb)</div><div class="line">[-v attribute_type] Show detail attribute information specified by attribute_type.</div><div class="line">[-d attribute_type [start_offset range]] Show binary information specified by attribute_type.</div><div class="line">[-s secure_id] Show the security descriptor specified by secure_id.</div><div class="line">[-c] Show the attributes definition columns.</div><div class="line"></div><div class="line"></div><div class="line">About attribute type:</div><div class="line"></div><div class="line"></div><div class="line">$STANDARD_INFORMATION         = 1</div><div class="line">$ATTRIBUTE_LIST               = 2</div><div class="line">$FILE_NAME                    = 3</div><div class="line">$OBJECT_ID                    = 4</div><div class="line">$SECURITY_DESCRIPTOR          = 5</div><div class="line">$VOLUME_NAME                  = 6</div><div class="line">$VOLUME_INFORMATION           = 7</div><div class="line">$DATA                         = 8</div><div class="line">$INDEX_ROOT                   = 9</div><div class="line">$INDEX_ALLOCATION             = 10</div><div class="line">$BITMAP                       = 11</div><div class="line">$REPARSE_POINT                = 12</div><div class="line">$EA_INFORMATION               = 13</div><div class="line">$EA                           = 14</div><div class="line">$LOGGED_UTILITY_STREAM        = 16</div><div class="line"></div><div class="line">About secure id:</div><div class="line"></div><div class="line">To get the secure id of target file.</div><div class="line">Use &apos;-v 1&apos; command, secure id will displayed in STANDARD_INFORMATION.</div></pre></td></tr></table></figure>
 <p>另外我还会继续完善这个工具。如果发现bug请与我联系。</p>
 <p>下载<a href="/uploads/2013/01/NtfsStudy.zip">NtfsStudy</a></p>
 
@@ -314,37 +215,7 @@ Use &#39;-v 1&#39; command, secure id will displayed in STANDARD_INFORMATION.</c
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>给线程命名的作用主要还是为了调试方便。其他的好处也没有了，至少我没想出来。这里说一下MS_VC_EXCEPTION这个异常，调试器（vs，windbg）默认情况下应该会在收到这个异常的时候，他会自动处理这个异常，具体操作应该是记录下线程对应的名称，然后将异常设置为Handle状态。什么意思呢？就是说，即使下面这段代码中的RaiseException不在try-except中，在调试器attach的情况下也能顺畅执行，调试器不会因为异常把执行中断下了，而是默默设置了线程名之后继续后面的代码。而下面的代码之所以要放在try-except中，是因为希望没有调试器的情况下，也能顺利执行不被中断。另外一点，windbg可以设置让这个异常中断下来（命令 sxe vcpp），而vs貌似没有这样的方法，可能是我vs调试器用的比较少，没找到吧。对于托管代码，设置这个就更简单了，详见 <a href="http://msdn.microsoft.com/en-us/library/581hfskb(v=vs.100" target="_blank" rel="external">http://msdn.microsoft.com/en-us/library/581hfskb(v=vs.100).aspx</a>.aspx)</p>
 <p><a href="/uploads/2013/01/QQ截图20130112151544.png"><img src="/uploads/2013/01/QQ截图20130112151544.png" alt=""></a></p>
-<pre><code>
-#include 
-const DWORD MS_VC_EXCEPTION=0x406D1388;
-
-#pragma pack(push,8)
-typedef struct tagTHREADNAME_INFO
-{
-    DWORD dwType; &#x2F;&#x2F; Must be 0x1000.
-    LPCSTR szName; &#x2F;&#x2F; Pointer to name (in user addr space).
-    DWORD dwThreadID; &#x2F;&#x2F; Thread ID (-1=caller thread).
-    DWORD dwFlags; &#x2F;&#x2F; Reserved for future use, must be zero.
-} THREADNAME_INFO;
-#pragma pack(pop)
-
-void SetThreadName( DWORD dwThreadID, char* threadName)
-{
-    THREADNAME_INFO info;
-    info.dwType = 0x1000;
-    info.szName = threadName;
-    info.dwThreadID = dwThreadID;
-    info.dwFlags = 0;
-
-    __try
-    {
-        RaiseException( MS_VC_EXCEPTION, 0, sizeof(info)&#x2F;sizeof(ULONG_PTR), (ULONG_PTR*)&amp;info; );
-    }
-    __except(EXCEPTION_EXECUTE_HANDLER)
-    {
-    }
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> </span></div><div class="line"><span class="keyword">const</span> DWORD MS_VC_EXCEPTION=<span class="number">0x406D1388</span>;</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">pragma</span> pack(push,8)</span></div><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">tagTHREADNAME_INFO</span></span></div><div class="line"><span class="class">&#123;</span></div><div class="line">    DWORD dwType; <span class="comment">// Must be 0x1000.</span></div><div class="line">    LPCSTR szName; <span class="comment">// Pointer to name (in user addr space).</span></div><div class="line">    DWORD dwThreadID; <span class="comment">// Thread ID (-1=caller thread).</span></div><div class="line">    DWORD dwFlags; <span class="comment">// Reserved for future use, must be zero.</span></div><div class="line">&#125; THREADNAME_INFO;</div><div class="line"><span class="meta">#<span class="meta-keyword">pragma</span> pack(pop)</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">SetThreadName</span><span class="params">( DWORD dwThreadID, <span class="keyword">char</span>* threadName)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    THREADNAME_INFO info;</div><div class="line">    info.dwType = <span class="number">0x1000</span>;</div><div class="line">    info.szName = threadName;</div><div class="line">    info.dwThreadID = dwThreadID;</div><div class="line">    info.dwFlags = <span class="number">0</span>;</div><div class="line"></div><div class="line">    __try</div><div class="line">    &#123;</div><div class="line">        RaiseException( MS_VC_EXCEPTION, <span class="number">0</span>, <span class="keyword">sizeof</span>(info)/<span class="keyword">sizeof</span>(ULONG_PTR), (ULONG_PTR*)&amp;info; );</div><div class="line">    &#125;</div><div class="line">    __except(EXCEPTION_EXECUTE_HANDLER)</div><div class="line">    &#123;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 
         
       </div>
@@ -384,17 +255,7 @@ void SetThreadName( DWORD dwThreadID, char* threadName)
 <p>其他比较好的解决方案也有。比较好的一个就是用远程调试的方式，这种方式可以在hook存在的情况下调试程序，甚至调试hook的函数。另一个办法就是attach之前，卸载低级钩子。对于调试和钩子无关地方的时候，第二个选择也还是不错的。所以，Xuetr的卸载消息钩子的功能派上了用场。每次调试此程序之前，都先卸载钩子。但是还是有问题，我们都有这样的经验，在进行调试的时候经常需要restart程序，并且重新开始调试。这样可就恶心了，每次都要卸载一次钩子。于是，我就写了一个程序，循环查询低级鼠标键盘钩子，发现后立刻卸载，这样调试这个程序就会比较轻松了。</p>
 <p>虽然说用驱动写这个功能看起来比较轻松，实际上R3实现也很简单。这里用到的关键之时是Desktop Heap会在GUI进程中映射到用户态内存上，这也就给了我们可乘之机。简单介绍一些Desktop Heap是什么。我们都知道一个桌面都有个Desktop Object的对象，而实际上美国Desktop Object都会有一个对应他的Desktop Heap。Desktop Heap主要存储用户交互对象（user interface objects），这其中就包括Window，Menu，Hook等等。既然Hook存储在Desktop heap，而且Desktop heap又刚好映射到R3内存，那么我们就可以顺利的读取他了。这里，可能会有一个疑问，怎么知道Hook存储在Desktop Heap，而不是Share Heap或者其他。实际上Windows的Win32k中有一个Handle Information Table，指明了每种Object的存储类型。</p>
 <p>现在是已经知道了可以去读Hook对象，但是上哪去读就是要解决的问题了。这里就要提到老生常谈的Sharedinfo了。用户态的Sharedinfo获取方法很多，顺手就行。与上面问题相关的就是Sharedinfo里面会有一个Handle Entry Table，里面存储的就是包括Hook在内的User Object。Entry的结构如下（来自reactos）：</p>
-<pre><code>
-typedef struct _HANDLEENTRY
-{
-PHEAD pHead;
-PVOID pOwner;
-BYTE bType;
-BYTE bFlags;
-WORD wUniq;
-} HANDLEENTRY, *PHE, *PHANDLEENTRY;
-
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">HANDLEENTRY</span></span></div><div class="line"><span class="class">&#123;</span></div><div class="line">PHEAD pHead;</div><div class="line">PVOID pOwner;</div><div class="line">BYTE bType;</div><div class="line">BYTE bFlags;</div><div class="line">WORD wUniq;</div><div class="line">&#125; HANDLEENTRY, *PHE, *PHANDLEENTRY;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
 <p>其中pHead指向Object，bType表示object类型。HOOK的bType是5。所以这里我们只需要在bType为5的时候继续下面的操作。</p>
 <p>pHead肯定是指向的内核内存，所以我们无法直接访问HOOK的内部情况。我们需要找到这个Object映射到R3的内存地址才行。幸运的是这种关系也比较简单明了。在Teb-&gt;Win32ClientInfo.ulClientDelta就存放了对应的关系Delta值。计算方法如下</p>
 <p>ObjectInR3 = HANDLEENTRY.pHead - Teb-&gt;Win32ClientInfo.ulClientDelta。</p>
@@ -437,22 +298,10 @@ WORD wUniq;
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近写的程序中遇到了整型数符号位扩展的小问题。稍稍看了下，写在这里备忘。</p>
 <p>这里举个例子：</p>
-<pre><code>&#x2F;&#x2F; case 1
-long i = -1;
-long long q = i;
- </code></pre>
-<pre><code>&#x2F;&#x2F; case 2
-long i = -1;
-unsigned long long q = i;
- </code></pre>
-<pre><code>&#x2F;&#x2F; case 3
-unsigned long i = 0xffffffff;
-long long q = i;
- </code></pre>
-<pre><code>&#x2F;&#x2F; case 4
-unsigned long i = 0xffffffff;
-unsigned long long q = i;
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// case 1</span></div><div class="line"><span class="keyword">long</span> i = <span class="number">-1</span>;</div><div class="line"><span class="keyword">long</span> <span class="keyword">long</span> q = i;</div><div class="line"> </div></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// case 2</span></div><div class="line"><span class="keyword">long</span> i = <span class="number">-1</span>;</div><div class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> q = i;</div><div class="line"> </div></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// case 3</span></div><div class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> i = <span class="number">0xffffffff</span>;</div><div class="line"><span class="keyword">long</span> <span class="keyword">long</span> q = i;</div><div class="line"> </div></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// case 4</span></div><div class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> i = <span class="number">0xffffffff</span>;</div><div class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> q = i;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>那么这4肿情况中q都是多少呢？<br>实验结果是case 1 和 2，他们的q的值（这里都表示为无符号）0xffffffff<code>ffffffff，而case 3 和 4 中q的值为0x00000000</code>ffffffff。<br>看到这里，大概就能推测c++的转换策略。即以源操作数的类型为依据，对其进行扩展，然后赋值到目标操作数，他并不在乎目标的类型有无符号。</p>
 <p>看了相关编译完成后的汇编代码可以确认这一点，case 1和2的汇编代码完全相同，而3和4也是一样。更具体一点来说。有符号的情况下调用了cdq对符号位进行扩展，然后将edx赋值到q的高位，而无符号的情况下，简单xor了寄存器，然后赋值到q的高位。</p>
 
@@ -493,25 +342,7 @@ unsigned long long q = i;
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>关于dbgLua：<br>这是一个让windbg支持lua脚步的扩展程序。写这个程序的主要目的是希望能简单的取代windbg本身的脚本。因为我确实不喜欢windbg那种形式的脚本。</p>
 <p>使用方法：将dbgLua.dll拷贝到windbg的winext下，编写lua脚本。调试的时候，在输入框中输入“!dbgLua.run d:\sample.lua”其中“d:\sample.lua”是你的脚步路径。</p>
 <p>以下是1.0.0.1版本所支持的lua函数（后续可能会慢慢添加更多，看需求了）</p>
-<pre><code>dbgLua 1.0.1.1 API
-
-dprint 输出信息到windbg command窗口，例如dprint(&quot;hello&quot;)
-exec 执行一条windbg命令，例如exec(&quot;bp kernel32!CreateFileW&quot;)
-getreg 获得当前被调试对象的寄存器数据，例如eax_val = getreg(&quot;eax&quot;)
-setreg 设置当前被调试对象的寄存器数据，例如setreg(&quot;eax&quot;, 123456)
-readbyte 读取当前被调试对象的内存器数据，大小1字节
-readword 同上，大小为2字节
-readdword 同上，大小为4字节，例如mem_val = readxxxx(0x410000)
-writebyte 写入当前被调试对象的内存器数据，大小1自己
-writeword 同上，大小为2字节
-writedword 同上，大小为4字节，例如writexxxx(0x410000, 654321)
-readunicode 读取一个unicode字符串，例如str = readunicode(0x410000)
-readascii 读取一个ascii字符串，例如str = readascii(0x410000)
-wait 等待事件，例如exec(&quot;bp kernel32!CreateFileW;g&quot;);wait();
-evalmasm masm表达式求值，例如val = evalmasm(&quot;11+2*3&quot;)
-evalcpp cpp表达式求值，例如val = evalcpp(&quot;sizeof(char)&quot;)
-getmoduleinfo 通过模块名获得模块基址和大学，例如base,size = getmoduleinfo(&quot;kernel32&quot;)
-search 二进制查找，例如found = search(base, size, &quot;cc 89 75 fc eb &quot;)&lt;&#x2F;blockquote&gt;</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">dbgLua 1.0.1.1 API</div><div class="line"></div><div class="line">dprint 输出信息到windbg command窗口，例如dprint(&quot;hello&quot;)</div><div class="line">exec 执行一条windbg命令，例如exec(&quot;bp kernel32!CreateFileW&quot;)</div><div class="line">getreg 获得当前被调试对象的寄存器数据，例如eax_val = getreg(&quot;eax&quot;)</div><div class="line">setreg 设置当前被调试对象的寄存器数据，例如setreg(&quot;eax&quot;, 123456)</div><div class="line">readbyte 读取当前被调试对象的内存器数据，大小1字节</div><div class="line">readword 同上，大小为2字节</div><div class="line">readdword 同上，大小为4字节，例如mem_val = readxxxx(0x410000)</div><div class="line">writebyte 写入当前被调试对象的内存器数据，大小1自己</div><div class="line">writeword 同上，大小为2字节</div><div class="line">writedword 同上，大小为4字节，例如writexxxx(0x410000, 654321)</div><div class="line">readunicode 读取一个unicode字符串，例如str = readunicode(0x410000)</div><div class="line">readascii 读取一个ascii字符串，例如str = readascii(0x410000)</div><div class="line">wait 等待事件，例如exec(&quot;bp kernel32!CreateFileW;g&quot;);wait();</div><div class="line">evalmasm masm表达式求值，例如val = evalmasm(&quot;11+2*3&quot;)</div><div class="line">evalcpp cpp表达式求值，例如val = evalcpp(&quot;sizeof(char)&quot;)</div><div class="line">getmoduleinfo 通过模块名获得模块基址和大学，例如base,size = getmoduleinfo(&quot;kernel32&quot;)</div><div class="line">search 二进制查找，例如found = search(base, size, &quot;cc 89 75 fc eb &quot;)&lt;/blockquote&gt;</div></pre></td></tr></table></figure>
 <p>具体的结合这些函数进行调试的例子还没有准备好，等有机会了，我会准备好调试案例放到这里来。</p>
 <p>另外这是一个初始版本，不保证没有bug，如果你在使用中发现了bug，或者有好的想法，例如添加什么函数功能，不妨联系我。</p>
 <p>下载：</p>
@@ -554,11 +385,7 @@ search 二进制查找，例如found = search(base, size, &quot;cc 89 75 fc eb &
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>判断文件存在方法有很多，例如CreateFile，FindFirstFile，GetFileAttributes，PathFileExists等等。但是哪一种更加高效呢？其实作为常识，可能都能判断出GetFileAttributes和PathFileExists会比较快（而实际上PathFileExists就是调用的GetFileAttributes）。</p>
 <p>下面是google一份开源代码中提到的统计结果</p>
-<pre><code>&#x2F;&#x2F; NOTE: This is the fastest implementation I found. The results were:
-&#x2F;&#x2F; CreateFile 1783739 avg ticks&#x2F;call
-&#x2F;&#x2F; FindFirstFile 634148 avg ticks&#x2F;call
-&#x2F;&#x2F; GetFileAttributes 428714 avg ticks&#x2F;call
-&#x2F;&#x2F; GetFileAttributesEx 396324 avg ticks&#x2F;call&lt;&#x2F;blockquote&gt;</code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// <span class="doctag">NOTE:</span> This is the fastest implementation I found. The results were:</span></div><div class="line"><span class="comment">// CreateFile 1783739 avg ticks/call</span></div><div class="line"><span class="comment">// FindFirstFile 634148 avg ticks/call</span></div><div class="line"><span class="comment">// GetFileAttributes 428714 avg ticks/call</span></div><div class="line"><span class="comment">// GetFileAttributesEx 396324 avg ticks/call&lt;/blockquote&gt;</span></div></pre></td></tr></table></figure>
 <p>为什么会这样呢？大概了看了下，原因应该是这样的。</p>
 <p>1.CreateFile会创建句柄，需要一个完整IO流程，所以需要的时间比如非常长。<br>2.FindFirstFile回去查询文件夹的文件，虽然不会真正的打开文件句柄，并且在文件已经被缓存的情况下，走的是fastio流程，所以查询时间大幅下降，但是操作略微繁琐，导致他不是最好的选择。  </p>
 <ol>
@@ -566,21 +393,7 @@ search 二进制查找，例如found = search(base, size, &quot;cc 89 75 fc eb &
 </ol>
 <p>那么为什么GetFileAttributesEx 会快那么一点点呢？因为这个函数少了一个获取BasicInformation，也就是少了一个fastio流程。所以速度更快。这样看来，自己实现一个PathFileExistsEx效率可以高过PathFileExists了。（其实没多大实际意义）</p>
 <p>google就是这样做的：</p>
-<pre><code>
-bool File::Exists(const TCHAR* file_name) {
-ASSERT1(file_name &amp;&amp; *file_name);
-ASSERT1(lstrlen(file_name) &gt; 0);
-
-&#x2F;&#x2F; NOTE: This is the fastest implementation I found. The results were:
-&#x2F;&#x2F; CreateFile 1783739 avg ticks&#x2F;call
-&#x2F;&#x2F; FindFirstFile 634148 avg ticks&#x2F;call
-&#x2F;&#x2F; GetFileAttributes 428714 avg ticks&#x2F;call
-&#x2F;&#x2F; GetFileAttributesEx 396324 avg ticks&#x2F;call
-WIN32_FILE_ATTRIBUTE_DATA attrs = {0};
-return 0 != ::GetFileAttributesEx(file_name, ::GetFileExInfoStandard, &amp;attrs);
-}
-
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">bool</span> File::Exists(<span class="keyword">const</span> TCHAR* file_name) &#123;</div><div class="line">ASSERT1(file_name &amp;&amp; *file_name);</div><div class="line">ASSERT1(lstrlen(file_name) &gt; <span class="number">0</span>);</div><div class="line"></div><div class="line"><span class="comment">// <span class="doctag">NOTE:</span> This is the fastest implementation I found. The results were:</span></div><div class="line"><span class="comment">// CreateFile 1783739 avg ticks/call</span></div><div class="line"><span class="comment">// FindFirstFile 634148 avg ticks/call</span></div><div class="line"><span class="comment">// GetFileAttributes 428714 avg ticks/call</span></div><div class="line"><span class="comment">// GetFileAttributesEx 396324 avg ticks/call</span></div><div class="line">WIN32_FILE_ATTRIBUTE_DATA attrs = &#123;<span class="number">0</span>&#125;;</div><div class="line"><span class="keyword">return</span> <span class="number">0</span> != ::GetFileAttributesEx(file_name, ::GetFileExInfoStandard, &amp;attrs);</div><div class="line">&#125;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
 
         
       </div>
@@ -846,9 +659,7 @@ return 0 != ::GetFileAttributesEx(file_name, ::GetFileExInfoStandard, &amp;attrs
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 
 		<script src="/js/index.js"></script>

@@ -88,25 +88,7 @@
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>关于dbgLua：<br>这是一个让windbg支持lua脚步的扩展程序。写这个程序的主要目的是希望能简单的取代windbg本身的脚本。因为我确实不喜欢windbg那种形式的脚本。</p>
 <p>使用方法：将dbgLua.dll拷贝到windbg的winext下，编写lua脚本。调试的时候，在输入框中输入“!dbgLua.run d:\sample.lua”其中“d:\sample.lua”是你的脚步路径。</p>
 <p>以下是1.0.0.1版本所支持的lua函数（后续可能会慢慢添加更多，看需求了）</p>
-<pre><code>dbgLua 1.0.1.1 API
-
-dprint 输出信息到windbg command窗口，例如dprint(&quot;hello&quot;)
-exec 执行一条windbg命令，例如exec(&quot;bp kernel32!CreateFileW&quot;)
-getreg 获得当前被调试对象的寄存器数据，例如eax_val = getreg(&quot;eax&quot;)
-setreg 设置当前被调试对象的寄存器数据，例如setreg(&quot;eax&quot;, 123456)
-readbyte 读取当前被调试对象的内存器数据，大小1字节
-readword 同上，大小为2字节
-readdword 同上，大小为4字节，例如mem_val = readxxxx(0x410000)
-writebyte 写入当前被调试对象的内存器数据，大小1自己
-writeword 同上，大小为2字节
-writedword 同上，大小为4字节，例如writexxxx(0x410000, 654321)
-readunicode 读取一个unicode字符串，例如str = readunicode(0x410000)
-readascii 读取一个ascii字符串，例如str = readascii(0x410000)
-wait 等待事件，例如exec(&quot;bp kernel32!CreateFileW;g&quot;);wait();
-evalmasm masm表达式求值，例如val = evalmasm(&quot;11+2*3&quot;)
-evalcpp cpp表达式求值，例如val = evalcpp(&quot;sizeof(char)&quot;)
-getmoduleinfo 通过模块名获得模块基址和大学，例如base,size = getmoduleinfo(&quot;kernel32&quot;)
-search 二进制查找，例如found = search(base, size, &quot;cc 89 75 fc eb &quot;)&lt;&#x2F;blockquote&gt;</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">dbgLua 1.0.1.1 API</div><div class="line"></div><div class="line">dprint 输出信息到windbg command窗口，例如dprint(&quot;hello&quot;)</div><div class="line">exec 执行一条windbg命令，例如exec(&quot;bp kernel32!CreateFileW&quot;)</div><div class="line">getreg 获得当前被调试对象的寄存器数据，例如eax_val = getreg(&quot;eax&quot;)</div><div class="line">setreg 设置当前被调试对象的寄存器数据，例如setreg(&quot;eax&quot;, 123456)</div><div class="line">readbyte 读取当前被调试对象的内存器数据，大小1字节</div><div class="line">readword 同上，大小为2字节</div><div class="line">readdword 同上，大小为4字节，例如mem_val = readxxxx(0x410000)</div><div class="line">writebyte 写入当前被调试对象的内存器数据，大小1自己</div><div class="line">writeword 同上，大小为2字节</div><div class="line">writedword 同上，大小为4字节，例如writexxxx(0x410000, 654321)</div><div class="line">readunicode 读取一个unicode字符串，例如str = readunicode(0x410000)</div><div class="line">readascii 读取一个ascii字符串，例如str = readascii(0x410000)</div><div class="line">wait 等待事件，例如exec(&quot;bp kernel32!CreateFileW;g&quot;);wait();</div><div class="line">evalmasm masm表达式求值，例如val = evalmasm(&quot;11+2*3&quot;)</div><div class="line">evalcpp cpp表达式求值，例如val = evalcpp(&quot;sizeof(char)&quot;)</div><div class="line">getmoduleinfo 通过模块名获得模块基址和大学，例如base,size = getmoduleinfo(&quot;kernel32&quot;)</div><div class="line">search 二进制查找，例如found = search(base, size, &quot;cc 89 75 fc eb &quot;)&lt;/blockquote&gt;</div></pre></td></tr></table></figure>
 <p>具体的结合这些函数进行调试的例子还没有准备好，等有机会了，我会准备好调试案例放到这里来。</p>
 <p>另外这是一个初始版本，不保证没有bug，如果你在使用中发现了bug，或者有好的想法，例如添加什么函数功能，不妨联系我。</p>
 <p>下载：</p>
@@ -149,11 +131,7 @@ search 二进制查找，例如found = search(base, size, &quot;cc 89 75 fc eb &
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>判断文件存在方法有很多，例如CreateFile，FindFirstFile，GetFileAttributes，PathFileExists等等。但是哪一种更加高效呢？其实作为常识，可能都能判断出GetFileAttributes和PathFileExists会比较快（而实际上PathFileExists就是调用的GetFileAttributes）。</p>
 <p>下面是google一份开源代码中提到的统计结果</p>
-<pre><code>&#x2F;&#x2F; NOTE: This is the fastest implementation I found. The results were:
-&#x2F;&#x2F; CreateFile 1783739 avg ticks&#x2F;call
-&#x2F;&#x2F; FindFirstFile 634148 avg ticks&#x2F;call
-&#x2F;&#x2F; GetFileAttributes 428714 avg ticks&#x2F;call
-&#x2F;&#x2F; GetFileAttributesEx 396324 avg ticks&#x2F;call&lt;&#x2F;blockquote&gt;</code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// <span class="doctag">NOTE:</span> This is the fastest implementation I found. The results were:</span></div><div class="line"><span class="comment">// CreateFile 1783739 avg ticks/call</span></div><div class="line"><span class="comment">// FindFirstFile 634148 avg ticks/call</span></div><div class="line"><span class="comment">// GetFileAttributes 428714 avg ticks/call</span></div><div class="line"><span class="comment">// GetFileAttributesEx 396324 avg ticks/call&lt;/blockquote&gt;</span></div></pre></td></tr></table></figure>
 <p>为什么会这样呢？大概了看了下，原因应该是这样的。</p>
 <p>1.CreateFile会创建句柄，需要一个完整IO流程，所以需要的时间比如非常长。<br>2.FindFirstFile回去查询文件夹的文件，虽然不会真正的打开文件句柄，并且在文件已经被缓存的情况下，走的是fastio流程，所以查询时间大幅下降，但是操作略微繁琐，导致他不是最好的选择。  </p>
 <ol>
@@ -161,21 +139,7 @@ search 二进制查找，例如found = search(base, size, &quot;cc 89 75 fc eb &
 </ol>
 <p>那么为什么GetFileAttributesEx 会快那么一点点呢？因为这个函数少了一个获取BasicInformation，也就是少了一个fastio流程。所以速度更快。这样看来，自己实现一个PathFileExistsEx效率可以高过PathFileExists了。（其实没多大实际意义）</p>
 <p>google就是这样做的：</p>
-<pre><code>
-bool File::Exists(const TCHAR* file_name) {
-ASSERT1(file_name &amp;&amp; *file_name);
-ASSERT1(lstrlen(file_name) &gt; 0);
-
-&#x2F;&#x2F; NOTE: This is the fastest implementation I found. The results were:
-&#x2F;&#x2F; CreateFile 1783739 avg ticks&#x2F;call
-&#x2F;&#x2F; FindFirstFile 634148 avg ticks&#x2F;call
-&#x2F;&#x2F; GetFileAttributes 428714 avg ticks&#x2F;call
-&#x2F;&#x2F; GetFileAttributesEx 396324 avg ticks&#x2F;call
-WIN32_FILE_ATTRIBUTE_DATA attrs = {0};
-return 0 != ::GetFileAttributesEx(file_name, ::GetFileExInfoStandard, &amp;attrs);
-}
-
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">bool</span> File::Exists(<span class="keyword">const</span> TCHAR* file_name) &#123;</div><div class="line">ASSERT1(file_name &amp;&amp; *file_name);</div><div class="line">ASSERT1(lstrlen(file_name) &gt; <span class="number">0</span>);</div><div class="line"></div><div class="line"><span class="comment">// <span class="doctag">NOTE:</span> This is the fastest implementation I found. The results were:</span></div><div class="line"><span class="comment">// CreateFile 1783739 avg ticks/call</span></div><div class="line"><span class="comment">// FindFirstFile 634148 avg ticks/call</span></div><div class="line"><span class="comment">// GetFileAttributes 428714 avg ticks/call</span></div><div class="line"><span class="comment">// GetFileAttributesEx 396324 avg ticks/call</span></div><div class="line">WIN32_FILE_ATTRIBUTE_DATA attrs = &#123;<span class="number">0</span>&#125;;</div><div class="line"><span class="keyword">return</span> <span class="number">0</span> != ::GetFileAttributesEx(file_name, ::GetFileExInfoStandard, &amp;attrs);</div><div class="line">&#125;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
 
         
       </div>
@@ -349,9 +313,7 @@ return 0 != ::GetFileAttributesEx(file_name, ::GetFileExInfoStandard, &amp;attrs
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 
 		<script src="/js/index.js"></script>

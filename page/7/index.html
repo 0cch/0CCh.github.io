@@ -131,28 +131,13 @@
 <p>编写格式化磁盘的程序的时候，我们需要用到SHFormatDrive这个API，同样的，他也会弹出一个对话框。出现对话框当然是为了安全考虑，防止磁盘被用户不知情的情况下格式化，导致数据丢失。但是，某些情况下，确实希望静默的去格式化，而不去打扰用户，例如格式化Ramdisk。那么就需要找点一个办法要求不弹出对话框的格式化磁盘。既然Windows并没有提供这样的API，那我们只能深入分析下调用过程，找出可以使用的API。</p>
 <p>怎么找的就不想说了，无非用ProcMon看一下堆栈就清楚明白了。在fmifs.dll中有一些导出的API可以帮助完成这一的任务，比如FormatEx，FormatEx2。</p>
 <p>这里简单的描述下FormatEx的用法：<br>函数原型是</p>
-<pre><code>VOID WINAPI FormatEx(
-	LPCWSTR DriveRoot,
-	MEDIA_TYPE MediaType,
-	LPCWSTR FileSystemTypeName,
-	LPCWSTR Label,
-	BOOL QuickFormat,
-	ULONG ClusterSize,
-	FILE_SYSTEM_CALLBACK Callback
-);
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function">VOID WINAPI <span class="title">FormatEx</span><span class="params">(</span></span></div><div class="line"><span class="function"><span class="params">	LPCWSTR DriveRoot,</span></span></div><div class="line"><span class="function"><span class="params">	MEDIA_TYPE MediaType,</span></span></div><div class="line"><span class="function"><span class="params">	LPCWSTR FileSystemTypeName,</span></span></div><div class="line"><span class="function"><span class="params">	LPCWSTR Label,</span></span></div><div class="line"><span class="function"><span class="params">	BOOL QuickFormat,</span></span></div><div class="line"><span class="function"><span class="params">	ULONG ClusterSize,</span></span></div><div class="line"><span class="function"><span class="params">	FILE_SYSTEM_CALLBACK Callback</span></span></div><div class="line"><span class="function"><span class="params">)</span></span>;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>参数<br>DriveRoot —— 盘符，如”K:\”<br>MediaType —— 磁盘类型，如FixedMedia<br>FileSystemTypeName —— 要格式化的文件系统，如”NTFS”<br>Label —— 标签，随便写吧<br>QuickFormat —— 快速格式化<br>ClusterSize —— 簇大小<br>Callback —— 状态回调函数  </p>
 <p>回调函数原型</p>
-<pre><code>typedef BOOLEAN (__stdcall *FILE_SYSTEM_CALLBACK)(
-	ULONG                        Command,
-	ULONG                        Action,
-	PVOID                        pData
-);
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">BOOLEAN</span> <span class="params">(__stdcall *FILE_SYSTEM_CALLBACK)</span><span class="params">(</span></span></div><div class="line"><span class="function"><span class="params">	ULONG                        Command,</span></span></div><div class="line"><span class="function"><span class="params">	ULONG                        Action,</span></span></div><div class="line"><span class="function"><span class="params">	PVOID                        pData</span></span></div><div class="line"><span class="function"><span class="params">)</span></span>;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>Command 表示Action和pData的意义，比如Command = 0表示pData是进度，Command = 11表示完成。还有其他的状态，例如错误等等，这些google一下就知道了。这个函数返回TRUE表示函数继续运行，FALSE表示停止格式化。</p>
 <p>比如，下面是格式化K盘：</p>
-<pre><code>FormatEx(L&quot;K:\&quot;, FixedMedia, L&quot;NTFS&quot;, L&quot;0CCh&quot;, TRUE, 4096, FormatExCallback);
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">FormatEx(<span class="string">L"K:\", FixedMedia, L"</span>NTFS<span class="string">", L"</span><span class="number">0</span>CCh<span class="string">", TRUE, 4096, FormatExCallback);</span></div><div class="line"><span class="string"> </span></div></pre></td></tr></table></figure>
 
         
       </div>
@@ -190,23 +175,17 @@
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>C4930是微软的C++编译器提示的一个警告，在维基百科中，把造成这种警告的语句描述成最让人为难的解析的语句。那么这里我们看看到底是有多么为难，这个可以帮助我们进一步了解C++和编译器。</p>
 <p>那么首先，我最开始发现这个问题是在类似这样的代码中碰到的。</p>
-<pre><code>std::ifstream s(&quot;d:\\xxx.txt&quot;);
-std::string str(std::istream_iterator&lt;char&gt;(s), std::istream_iterator&lt;char&gt;());
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">std</span>::<span class="function">ifstream <span class="title">s</span><span class="params">(<span class="string">"d:\\xxx.txt"</span>)</span></span>;</div><div class="line">std::string str(std::istream_iterator&lt;char&gt;(s), std::istream_iterator&lt;char&gt;());</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>如果编译这个，编译器会毫不留情地扔给你一个C4930警告，提示编译器不知道怎么做，所以跳过编译。如果你没看懂这警告，后果就是这句话根本不会编译进去，即使编译通过了，运行也会和设想的不同。</p>
 <p>先说个简单的C4930的例子吧。</p>
-<pre><code>MyClass sample();
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function">MyClass <span class="title">sample</span><span class="params">()</span></span>;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>这句代码非常简单，也很容易明白。如果这么写，那么编译器就混乱，因为这句话可以是描述：<br>1.一个变量的定义，调用默认构造。<br>2.一个函数的声明。<br>所以编译器就傻了，他把这个认为是函数声明，所以不会做任何事情。<br>同样的事情发生在  </p>
-<pre><code>std::string str(std::istream_iterator&lt;char&gt;(s), std::istream_iterator&lt;char&gt;());
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">std::string str(std::istream_iterator&lt;char&gt;(s), std::istream_iterator&lt;char&gt;());</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>这里，我们实际上就是给string的构造函数传入iterator来构造这个string。但是编译器可不是这么觉得，他认为这句话应该这样解析：一个返回string的函数，函数名为str，函数参数有两个并且类型相同，都是istream_iterator<char>，不同的是一个有参数名s，一个省略了参数名！</char></p>
 <p>编译器这么解析，也真没错，我们就只能通过修改代码来明确目的了。通常的做法是给第一个iterator外加上括<br>号：</p>
-<pre><code>std::string str((std::istream_iterator&lt;char&gt;(s)), std::istream_iterator&lt;char&gt;());
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">std::string str((std::istream_iterator&lt;char&gt;(s)), std::istream_iterator&lt;char&gt;());</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>不过，我写这两行代码也就是为了偷懒读取一个文件的字符串，所以我可以干脆改成一行：</p>
-<pre><code>std::string str(std::istream_iterator&lt;char&gt;(std::ifstream(&quot;d:\\xxx.txt&quot;)), std::istream_iterator&lt;char&gt;());
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">std::string str(std::istream_iterator&lt;char&gt;(std::ifstream("d:\\xxx.txt")), std::istream_iterator&lt;char&gt;());</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>这样就能顺利编译运行了。</p>
 <p>最近在看新版的《The C++ Standard Library A Tutorial and Reference》里面也看到了这个东西，很有意思所<br>以拿出来说下。而且新版的书中，已经包含了C++11的解释，很有意思。</p>
 
@@ -519,21 +498,7 @@ std::string str(std::istream_iterator&lt;char&gt;(s), std::istream_iterator&lt;c
 <p>首先我们需要用SDK中的工具ECMangen，生成一个manifest文件，这个文件用来描述记录的事件，如图。<br><a href="/uploads/2013/11/20131117114336.png"><img src="/uploads/2013/11/20131117114336.png" alt="20131117114336"></a><br>这里，我们首先创建一个Provider，接下来创建一个Event，参数可以随便填下，就像上图所示。作为演示，这里一个Event就够了（FirstEvent）。<br>然后保存为0CChProvider.man。</p>
 <p>接下来我们MC来生成一个头文件，一个资源文件和两个二进制文件。命令行如：<br>mc -um C:\etw\0CChProvider.man<br><a href="/uploads/2013/11/20131117114801.png"><img src="/uploads/2013/11/20131117114801.png" alt="20131117114801"></a></p>
 <p>然后我们可以创建一个工程，加入这个头文件和资源文件。并且在代码中插入写事件的代码，例如：</p>
-<pre><code>#include &quot;stdafx.h&quot;
-#include 
-#include &quot;..&#x2F;..&#x2F;0CChProvider.h&quot;
-
-
-int _tmain(int argc, _TCHAR* argv[])
-{
-    EventRegisterMy0CChProvider();
-    EventWriteFirstEvent(L&quot;Hello ETW World!&quot;);
-    Sleep(1000);
-    EventWriteFirstEvent(L&quot;Bye ETW World!&quot;);
-    EventUnregisterMy0CChProvider();
-    return 0;
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdafx.h"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> </span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"../../0CChProvider.h"</span></span></div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    EventRegisterMy0CChProvider();</div><div class="line">    EventWriteFirstEvent(<span class="string">L"Hello ETW World!"</span>);</div><div class="line">    Sleep(<span class="number">1000</span>);</div><div class="line">    EventWriteFirstEvent(<span class="string">L"Bye ETW World!"</span>);</div><div class="line">    EventUnregisterMy0CChProvider();</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>在这里，我们利用EventRegisterMy0CChProvider先注册自己的Provider，接下写事件才会发挥作用。记录事件后，我们需要反注册Provider。<br>好了，演示代码就这么一点，然后编译即可。</p>
 <p>接下来我们需要注册这个Provider给系统，需要使用到系统自带的工具WEVTUtil.exe。<br>wevtutil im C:\etw\0CChProvider.man</p>
 <p>注册成功后就可以利用XPerf开启ETW，然后运行程序，查看记录的事件了。</p>
@@ -726,9 +691,7 @@ int _tmain(int argc, _TCHAR* argv[])
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 
 		<script src="/js/index.js"></script>

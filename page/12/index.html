@@ -135,129 +135,22 @@
 <p>首先是new 一个char数组，分别用delete和delete[]释放。结果表明，没有任何问题，而且不会产生内存泄露。坑爹么？NO，还没完，其实咱们最怀疑的一直都是数组对象，因为他们都有构造和析构函数。而char这样的系统内建类型，想象得出不会出什么问题。new一个对象数组，分别用delete和delete[] 释放。果然问题暴露了，delete的时候出了问题。</p>
 <p>知其然，不足以满足好奇心。下面才是拿手的，精彩的要放在后面嘛。</p>
 <p>先看测试代码</p>
-<pre><code>#include
-
-using namespace std;
-
-class A {
-
-public:
-A() {cout &lt;&lt; &quot;start 1&quot; &lt;&lt; endl;}
-~A() {cout &lt;&lt; &quot;End 1&quot; &lt;&lt; endl;}
-};
-
-int main()
-{
-A *a = new A[10]();
-
-delete[] a;
-return 0;
-}
- </code></pre>
-<p>编译后看到代码如下<br><pre><code>0040103D push 0Eh
-0040103F call operator new[] (403ED0h)</code></pre><br>注意到这里传入的大小时0Eh，也就是说申请分配14个字节大小的内存。但是我们知道C++标准中空类的大小应该是1字节。那么多出的dword我们就很容易想到他的用处，应该是记录数组大小的。事实也确实如此。</p>
-<pre><code>mov dword ptr [eax],0Ah</code></pre>  
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span></span></div><div class="line"></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> &#123;</span></div><div class="line"></div><div class="line"><span class="keyword">public</span>:</div><div class="line">A() &#123;<span class="built_in">cout</span> &lt;&lt; <span class="string">"start 1"</span> &lt;&lt; <span class="built_in">endl</span>;&#125;</div><div class="line">~A() &#123;<span class="built_in">cout</span> &lt;&lt; <span class="string">"End 1"</span> &lt;&lt; <span class="built_in">endl</span>;&#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">A *a = <span class="keyword">new</span> A[<span class="number">10</span>]();</div><div class="line"></div><div class="line"><span class="keyword">delete</span>[] a;</div><div class="line"><span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
+<p>编译后看到代码如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">0040103D push 0Eh</div><div class="line">0040103F call operator new[] (403ED0h)</div></pre></td></tr></table></figure><br>注意到这里传入的大小时0Eh，也就是说申请分配14个字节大小的内存。但是我们知道C++标准中空类的大小应该是1字节。那么多出的dword我们就很容易想到他的用处，应该是记录数组大小的。事实也确实如此。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mov dword ptr [eax],0Ah</div></pre></td></tr></table></figure>  
 <p>这里明确交代，给分配内存的第一个dword传入10。</p>
-<pre><code>00401069 push offset A::~A (4011D0h)
-0040106E push offset A::A (401120h)
-00401073 push 0Ah
-00401075 push 1
-00401077 mov ecx,dword ptr [ebp-0F8h]
-0040107D add ecx,4
-00401080 push ecx
-00401081 call `eh vector constructor iterator&#39; (40A010h)</code></pre>  
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">00401069 push offset A::~A (4011D0h)</div><div class="line">0040106E push offset A::A (401120h)</div><div class="line">00401073 push 0Ah</div><div class="line">00401075 push 1</div><div class="line">00401077 mov ecx,dword ptr [ebp-0F8h]</div><div class="line">0040107D add ecx,4</div><div class="line">00401080 push ecx</div><div class="line">00401081 call `eh vector constructor iterator&apos; (40A010h)</div></pre></td></tr></table></figure>  
 <p>这里是调用构造函数，注意是vector版本的构造函数。参数分别是数组的this指针，sizeof(A)，数组数量，构造和析构函数。这样，在这个函数内部循环10次调用构造函数，构造完毕。</p>
-<pre><code>004010BD mov eax,dword ptr [ebp-14h]
-004010C0 mov dword ptr [ebp-0E0h],eax
-004010C6 mov ecx,dword ptr [ebp-0E0h]
-004010CC mov dword ptr [ebp-0ECh],ecx
-004010D2 cmp dword ptr [ebp-0ECh],0
-004010D9 je main+0F0h (4010F0h)
-004010DB push 3
-004010DD mov ecx,dword ptr [ebp-0ECh]
-004010E3 call A::`vector deleting destructor&#39; (401230h)</code></pre>  
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">004010BD mov eax,dword ptr [ebp-14h]</div><div class="line">004010C0 mov dword ptr [ebp-0E0h],eax</div><div class="line">004010C6 mov ecx,dword ptr [ebp-0E0h]</div><div class="line">004010CC mov dword ptr [ebp-0ECh],ecx</div><div class="line">004010D2 cmp dword ptr [ebp-0ECh],0</div><div class="line">004010D9 je main+0F0h (4010F0h)</div><div class="line">004010DB push 3</div><div class="line">004010DD mov ecx,dword ptr [ebp-0ECh]</div><div class="line">004010E3 call A::`vector deleting destructor&apos; (401230h)</div></pre></td></tr></table></figure>  
 <p>这里是析构部分传入数组的this指针，传入flag(3)，调用析构函数。</p>
-<p>继续看call之后的代码<br><pre><code>00401253 mov eax,dword ptr [ebp+8]
-00401256 and eax,2
-00401259 je A::`vector deleting destructor&#39;+61h (401291h)
-0040125B push offset A::~A (4011D0h)
-00401260 mov eax,dword ptr [this]
-00401263 mov ecx,dword ptr [eax-4]
-00401266 push ecx
-00401267 push 1
-00401269 mov edx,dword ptr [this]
-0040126C push edx
-0040126D call `eh vector destructor iterator&#39; (40A920h)
-00401272 mov eax,dword ptr [ebp+8]</code></pre><br>如果flag中位1是set，那么调用eh_vector_destructor_iterator调用每个析构函数。参数分别是this，sizeof(A)，数组个数（这里很明显是从eax-4中拿出来的）以及析构函数地址。</p>
-<p>OK，明白了delete[]的做法，我们看看delete为什么失败。<br><pre><code>004010BD mov eax,dword ptr [ebp-14h]
-004010C0 mov dword ptr [ebp-0E0h],eax
-004010C6 mov ecx,dword ptr [ebp-0E0h]
-004010CC mov dword ptr [ebp-0ECh],ecx
-004010D2 cmp dword ptr [ebp-0ECh],0
-004010D9 je main+0F0h (4010F0h)
-004010DB push 1
-004010DD mov ecx,dword ptr [ebp-0ECh]
-004010E3 call A::`scalar deleting destructor&#39; (4012D0h)</code></pre><br>这里调用的析构函数都不一样是一个scalar版本的函数。</p>
-<p>继续看这个函数的关键部分<br><pre><code>004012F3 mov ecx,dword ptr [this]
-004012F6 call A::~A (4011D0h)
-004012FB mov eax,dword ptr [ebp+8]
-004012FE and eax,1
-00401301 je A::`scalar deleting destructor&#39;+3Fh (40130Fh)
-00401303 mov eax,dword ptr [this]
-00401306 push eax
-00401307 call operator delete (40A890h)</code></pre><br>这里很清楚的看到，只进行一次析构，然后就释放内存。所以我们看到的现象是只调用一次析构函数。那么为什么会崩溃呢？因为delete错了地址。看上面的对比的值，eax-4才是new返回的地址，所以delete的不应该是eax，而是eax-4。</p>
+<p>继续看call之后的代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">00401253 mov eax,dword ptr [ebp+8]</div><div class="line">00401256 and eax,2</div><div class="line">00401259 je A::`vector deleting destructor&apos;+61h (401291h)</div><div class="line">0040125B push offset A::~A (4011D0h)</div><div class="line">00401260 mov eax,dword ptr [this]</div><div class="line">00401263 mov ecx,dword ptr [eax-4]</div><div class="line">00401266 push ecx</div><div class="line">00401267 push 1</div><div class="line">00401269 mov edx,dword ptr [this]</div><div class="line">0040126C push edx</div><div class="line">0040126D call `eh vector destructor iterator&apos; (40A920h)</div><div class="line">00401272 mov eax,dword ptr [ebp+8]</div></pre></td></tr></table></figure><br>如果flag中位1是set，那么调用eh_vector_destructor_iterator调用每个析构函数。参数分别是this，sizeof(A)，数组个数（这里很明显是从eax-4中拿出来的）以及析构函数地址。</p>
+<p>OK，明白了delete[]的做法，我们看看delete为什么失败。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">004010BD mov eax,dword ptr [ebp-14h]</div><div class="line">004010C0 mov dword ptr [ebp-0E0h],eax</div><div class="line">004010C6 mov ecx,dword ptr [ebp-0E0h]</div><div class="line">004010CC mov dword ptr [ebp-0ECh],ecx</div><div class="line">004010D2 cmp dword ptr [ebp-0ECh],0</div><div class="line">004010D9 je main+0F0h (4010F0h)</div><div class="line">004010DB push 1</div><div class="line">004010DD mov ecx,dword ptr [ebp-0ECh]</div><div class="line">004010E3 call A::`scalar deleting destructor&apos; (4012D0h)</div></pre></td></tr></table></figure><br>这里调用的析构函数都不一样是一个scalar版本的函数。</p>
+<p>继续看这个函数的关键部分<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">004012F3 mov ecx,dword ptr [this]</div><div class="line">004012F6 call A::~A (4011D0h)</div><div class="line">004012FB mov eax,dword ptr [ebp+8]</div><div class="line">004012FE and eax,1</div><div class="line">00401301 je A::`scalar deleting destructor&apos;+3Fh (40130Fh)</div><div class="line">00401303 mov eax,dword ptr [this]</div><div class="line">00401306 push eax</div><div class="line">00401307 call operator delete (40A890h)</div></pre></td></tr></table></figure><br>这里很清楚的看到，只进行一次析构，然后就释放内存。所以我们看到的现象是只调用一次析构函数。那么为什么会崩溃呢？因为delete错了地址。看上面的对比的值，eax-4才是new返回的地址，所以delete的不应该是eax，而是eax-4。</p>
 <p>真相大白？NO，还有一个问题，delete[] 和delete 内建类型真的成功了么？<br>看看我贴出的代码吧，这里不解释了。</p>
-<pre><code>;delete[] version
-0040101E push 0Ah
-00401020 call operator new[] (4014C0h)
-00401025 add esp,4
-00401028 mov dword ptr [ebp-0E0h],eax
-0040102E mov eax,dword ptr [ebp-0E0h]
-00401034 mov dword ptr [a],eax
-00401037 mov eax,dword ptr [a]
-0040103A mov dword ptr [ebp-0D4h],eax
-00401040 mov ecx,dword ptr [ebp-0D4h]
-00401046 push ecx
-00401047 call operator delete[] (401600h) `
-
-;delete version
-0040101E push 0Ah
-00401020 call operator new[] (4014C0h)
-00401025 add esp,4
-00401028 mov dword ptr [ebp-0E0h],eax
-0040102E mov eax,dword ptr [ebp-0E0h]
-00401034 mov dword ptr [a],eax
-00401037 mov eax,dword ptr [a]
-0040103A mov dword ptr [ebp-0D4h],eax
-00401040 mov ecx,dword ptr [ebp-0D4h]
-00401046 push ecx
-00401047 call operator delete (401600h)</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">;delete[] version</div><div class="line">0040101E push 0Ah</div><div class="line">00401020 call operator new[] (4014C0h)</div><div class="line">00401025 add esp,4</div><div class="line">00401028 mov dword ptr [ebp-0E0h],eax</div><div class="line">0040102E mov eax,dword ptr [ebp-0E0h]</div><div class="line">00401034 mov dword ptr [a],eax</div><div class="line">00401037 mov eax,dword ptr [a]</div><div class="line">0040103A mov dword ptr [ebp-0D4h],eax</div><div class="line">00401040 mov ecx,dword ptr [ebp-0D4h]</div><div class="line">00401046 push ecx</div><div class="line">00401047 call operator delete[] (401600h) `</div><div class="line"></div><div class="line">;delete version</div><div class="line">0040101E push 0Ah</div><div class="line">00401020 call operator new[] (4014C0h)</div><div class="line">00401025 add esp,4</div><div class="line">00401028 mov dword ptr [ebp-0E0h],eax</div><div class="line">0040102E mov eax,dword ptr [ebp-0E0h]</div><div class="line">00401034 mov dword ptr [a],eax</div><div class="line">00401037 mov eax,dword ptr [a]</div><div class="line">0040103A mov dword ptr [ebp-0D4h],eax</div><div class="line">00401040 mov ecx,dword ptr [ebp-0D4h]</div><div class="line">00401046 push ecx</div><div class="line">00401047 call operator delete (401600h)</div></pre></td></tr></table></figure>
 <p>就像我刚刚所说的delete[]会调用delete。所以不会出任何问题。</p>
 <p>如果汇编看的头疼的话，这里我写了两个函数的逆向代码（说了精彩的应该放在后面的）：</p>
-<pre><code>void A::&#39;scalar deleting destructor&#39;(unsigned int flags)
-{
-	this-&gt;~A();
-	if (flags &amp; 1) {
-	A::operator delete(this);
-}
-
-void A::&#39;vector deleting destructor&#39;(unsigned int flags)
-{
-	if (flags &amp; 2) {
-		count = *(int *)((int)this - 4);
-		&#39;eh vector destructor iterator&#39;(this, sizeof(A), count, A::~A);
-		if (flags&amp;1) {
-			A::operator delete((void *)((int)this - 4));
-		}
-	}
-	else {
-		this-&gt;~A();
-		if (flags &amp; 1) {
-			A::operator delete(this);
-		}
-	}
-};
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">void A::'scalar deleting destructor'(unsigned int flags)</div><div class="line">&#123;</div><div class="line">	<span class="keyword">this</span>-&gt;~A();</div><div class="line">	<span class="keyword">if</span> (flags &amp; <span class="number">1</span>) &#123;</div><div class="line">	A::<span class="function"><span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="keyword">this</span>)</span></span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line">void A::'vector deleting destructor'(unsigned int flags)</div><div class="line">&#123;</div><div class="line">	<span class="keyword">if</span> (flags &amp; <span class="number">2</span>) &#123;</div><div class="line">		count = *(<span class="keyword">int</span> *)((<span class="keyword">int</span>)<span class="keyword">this</span> - <span class="number">4</span>);</div><div class="line">		'eh vector destructor iterator'(this, sizeof(A), count, A::~A);</div><div class="line">		<span class="keyword">if</span> (flags&amp;<span class="number">1</span>) &#123;</div><div class="line">			A::operator delete((void *)((int)this - 4));</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">else</span> &#123;</div><div class="line">		<span class="keyword">this</span>-&gt;~A();</div><div class="line">		<span class="keyword">if</span> (flags &amp; <span class="number">1</span>) &#123;</div><div class="line">			A::<span class="function"><span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="keyword">this</span>)</span></span>;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>分析到这，终于明白。数组一定要用delete[]释放才安全。所以千万不要用auto_ptr作为数组的智能指针，不然会死的很惨。这里还要提一点，auto_ptr也不要用到容器里面去了，也是不允许的。非要这么做就用shared_ptr吧， C++0x已经在stl中加入的这部分。从vs2008 sp1开始支持。低版本的vs的话就去boost里面找吧。</p>
 
         
@@ -701,396 +594,45 @@ void A::&#39;vector deleting destructor&#39;(unsigned int flags)
       <div class="repo-list-description">
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Freeldr提供了对fat12、fat32、fatx、ntfs等文件系统的只读功能。这部分代码主要集中在boot\freeldr\freeldr\fs\fs.c文件中。<br>首先计算机加电后会把mbr读取到物理内存的0x7c00位置，mbr搜索活动分区并加载活动分区根目录下的Freeldr.sys文件。加载后跳入Freeldr入口start。Freeldr进行32为初始化后跳入主初始化函数BootMain(boot\freeldr\freeldr\Freeldr.c)中。</p>
-<pre><code>VOID BootMain(LPSTR CmdLine)
-{
-......
-MachInit(CmdLine);
-FsInit();
-......
-RunLoader();
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function">VOID <span class="title">BootMain</span><span class="params">(LPSTR CmdLine)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">......</div><div class="line">MachInit(CmdLine);</div><div class="line">FsInit();</div><div class="line">......</div><div class="line">RunLoader();</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>BootMain会对硬件(MachInit)和文件系统(FsInit)进行检测和初始化。所有准备工作进行完毕后就会调用RunLoader进行系统的加载工作。<br>Fs初始化和DEVICE、FILEDATA结构<br>下面看一下文件系统的初始化 FsInit(boot\freeldr\freeldr\fs\fs.c)</p>
-<pre><code>VOID FsInit(VOID)
-{
-ULONG i;
-RtlZeroMemory(FileData, sizeof(FileData));
-for (i = 0; i &lt; MAX_FDS; i++)
-FileData[i].DeviceId = (ULONG)-1;
-InitializeListHead(&amp;DeviceListHead);
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function">VOID <span class="title">FsInit</span><span class="params">(VOID)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">ULONG i;</div><div class="line">RtlZeroMemory(FileData, <span class="keyword">sizeof</span>(FileData));</div><div class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; MAX_FDS; i++)</div><div class="line">FileData[i].DeviceId = (ULONG)<span class="number">-1</span>;</div><div class="line">InitializeListHead(&amp;DeviceListHead);</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>FsInit初始化FileData数组。和一个和磁盘分区相关的链表DeviceListHead。<br>首先fs.c维护了一个MAX_FDS(60)大小的数组 static FILEDATA FileData[MAX_FDS];  </p>
-<pre><code>typedef struct tagDEVVTBL
-{
-ARC_CLOSE Close;
-ARC_GET_FILE_INFORMATION GetFileInformation;
-ARC_OPEN Open;
-ARC_READ Read;
-ARC_SEEK Seek;
-LPCWSTR ServiceName;
-} DEVVTBL;
-typedef struct tagFILEDATA
-{
-ULONG DeviceId;            &#x2F;&#x2F; 文件所在磁盘的磁盘文件句柄, 同样也是FileData的索引
-ULONG ReferenceCount;       &#x2F;&#x2F; 引用计数
-const DEVVTBL* FuncTable;    &#x2F;&#x2F; 对文件进行读写的指针
-const DEVVTBL* FileFuncTable; &#x2F;&#x2F; 对文件进行读写的函数数组
-VOID* Specific;             &#x2F;&#x2F; 文件系统自定义指针
-} FILEDATA;
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">tagDEVVTBL</span></span></div><div class="line"><span class="class">&#123;</span></div><div class="line">ARC_CLOSE Close;</div><div class="line">ARC_GET_FILE_INFORMATION GetFileInformation;</div><div class="line">ARC_OPEN Open;</div><div class="line">ARC_READ Read;</div><div class="line">ARC_SEEK Seek;</div><div class="line">LPCWSTR ServiceName;</div><div class="line">&#125; DEVVTBL;</div><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">tagFILEDATA</span></span></div><div class="line"><span class="class">&#123;</span></div><div class="line">ULONG DeviceId;            <span class="comment">// 文件所在磁盘的磁盘文件句柄, 同样也是FileData的索引</span></div><div class="line">ULONG ReferenceCount;       <span class="comment">// 引用计数</span></div><div class="line"><span class="keyword">const</span> DEVVTBL* FuncTable;    <span class="comment">// 对文件进行读写的指针</span></div><div class="line"><span class="keyword">const</span> DEVVTBL* FileFuncTable; <span class="comment">// 对文件进行读写的函数数组</span></div><div class="line">VOID* Specific;             <span class="comment">// 文件系统自定义指针</span></div><div class="line">&#125; FILEDATA;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>每一个成功打开的文件会返回一个文件句柄，这个句柄实际上就是FileData数组的索引。所以每个打开的文件都有一个对应的FileData。这个结构就类似windows中的FILE_OBJECT<br>FileData中DeviceId是文件所在磁盘的句柄。这个句柄同样也是FileData数组的索引，通过这个句柄可以找到”磁盘文件”，对”磁盘文件”的读写就是直接对相应的磁盘或磁盘分区的读写。类似Windows中直接对磁盘分区进行CreateFile返回的句柄。”磁盘文件”的DeviceId没有意义。<br>ReferenceCount是该文件的引用计数。<br>FuncTable这是一个函数数组指针，里面存放了对文件进行读写、SEEK等操作的函数指针。<br>FileFuncTable只对”磁盘文件”有意义。当Freeldr确定了磁盘文件对应的分区的分区格式后，会把与分区格式相关的函数指针数组放到这个字段里面。如Fat12分区”磁盘文件”的FileFuncTable字段存放的就是FatFuncTable指针。<br>Specific存放于文件有关的结构。磁盘文件就是DISKCONTEXT指针，fat12下的文件就是FAT_FILE_INFO指针 等等。<br>之后是DeviceListHead，这是DEVICE结构的链表头  </p>
-<pre><code>typedef struct tagDEVICE
-{
-LIST_ENTRY ListEntry;        &#x2F;&#x2F; 链表节点
-const DEVVTBL* FuncTable;    &#x2F;&#x2F; 操作该分区的函数表
-CHAR* Prefix;              &#x2F;&#x2F; 分区对应的ArcName
-ULONG DeviceId;            &#x2F;&#x2F; FILEDATA中该分区对应的句柄
-ULONG ReferenceCount;      &#x2F;&#x2F; 引用计数
-} DEVICE;
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">tagDEVICE</span></span></div><div class="line"><span class="class">&#123;</span></div><div class="line">LIST_ENTRY ListEntry;        <span class="comment">// 链表节点</span></div><div class="line"><span class="keyword">const</span> DEVVTBL* FuncTable;    <span class="comment">// 操作该分区的函数表</span></div><div class="line">CHAR* Prefix;              <span class="comment">// 分区对应的ArcName</span></div><div class="line">ULONG DeviceId;            <span class="comment">// FILEDATA中该分区对应的句柄</span></div><div class="line">ULONG ReferenceCount;      <span class="comment">// 引用计数</span></div><div class="line">&#125; DEVICE;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>用户电脑中的每一个硬盘和硬盘中的每一分区都对应了一个DEVICE结构。<br>FuncTable里面存放了对该分区进行读写等操作的指针，对于硬盘而言这个数组就是DiskVtbl。<br>Prefix是该分区或硬盘的ArcName。(如multi(0)disk(0)rdisk(0)partition(0))。Freeldr中的文件路径都是Arc形式的路径。而且0号分区代表整个硬盘，真正的分区从1号开始。如multi(0)disk(0)rdisk(0)partition(0)便代表第0块硬盘本身。multi(0)disk(0)rdisk(0)partition(1)代表第0块硬盘的第0个分区。<br>通过DeviceId字段可以找到该DEVICE的文件句柄。这个字段和FILEDATA相互配合，使系统可以遍历DEVICE结构快速找到某个分区的文件句柄。<br>DEVICE(磁盘及分区)的检测<br>上面说到Freeldr操作的路径都是存储在DEVICE结构中的ArcPath。那么这些DEVICE是怎么来的呢？<br>首先我们看一下DEVICE的注册函数，FsRegisterDevice(boot\freeldr\freeldr\fs\fs.c)  </p>
-<pre><code>VOID FsRegisterDevice(CHAR* Prefix, const DEVVTBL* FuncTable)
-{
-DEVICE* pNewEntry;
-ULONG dwLength;
-dwLength = strlen(Prefix) + 1;
-pNewEntry = MmHeapAlloc(sizeof(DEVICE) + dwLength);
-if (!pNewEntry)
-return;
-pNewEntry-&gt;FuncTable = FuncTable;
-pNewEntry-&gt;ReferenceCount = 0;
-pNewEntry-&gt;Prefix = (CHAR*)(pNewEntry + 1);
-memcpy(pNewEntry-&gt;Prefix, Prefix, dwLength);
-InsertHeadList(&amp;DeviceListHead, &amp;pNewEntry-&gt;ListEntry);
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function">VOID <span class="title">FsRegisterDevice</span><span class="params">(CHAR* Prefix, <span class="keyword">const</span> DEVVTBL* FuncTable)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">DEVICE* pNewEntry;</div><div class="line">ULONG dwLength;</div><div class="line">dwLength = <span class="built_in">strlen</span>(Prefix) + <span class="number">1</span>;</div><div class="line">pNewEntry = MmHeapAlloc(<span class="keyword">sizeof</span>(DEVICE) + dwLength);</div><div class="line"><span class="keyword">if</span> (!pNewEntry)</div><div class="line"><span class="keyword">return</span>;</div><div class="line">pNewEntry-&gt;FuncTable = FuncTable;</div><div class="line">pNewEntry-&gt;ReferenceCount = <span class="number">0</span>;</div><div class="line">pNewEntry-&gt;Prefix = (CHAR*)(pNewEntry + <span class="number">1</span>);</div><div class="line"><span class="built_in">memcpy</span>(pNewEntry-&gt;Prefix, Prefix, dwLength);</div><div class="line">InsertHeadList(&amp;DeviceListHead, &amp;pNewEntry-&gt;ListEntry);</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>这么函数非常简单。Prefix就是Arc路径，FuncTable是操作这个分区（磁盘）对应的函数数组。FsRegisterDevice生成了一个DEVICE结构，把ArcName和FuncTable复制进去。之后连入了DeviceListHead链表。<br>那么又是谁调用的FsRegisterDevice呢？是DetectBiosDisks(boot\freeldr\freeldr\arch\i386\hardware.c)函数。虽然这一部分已经不属于FS的范畴，还是在这里简单讲一下便于理解。这里我略去了不必要的代码。<br>DetectBiosDisks的调用顺序是 RunLoader -&gt; MachHwDetect (PcHwDetect)-&gt; DetectISABios -&gt; DetectBiosDisks</p>
-<pre><code>static VOID
-DetectBiosDisks(PCONFIGURATION_COMPONENT_DATA BusKey)
-{
-BOOLEAN BootDriveReported = FALSE;
-ULONG i;
-ULONG DiskCount = GetDiskCount(BusKey);
-CHAR BootPath[512];
-......
-for (i = 0; i &lt; DiskCount; i++)
-{
-ULONG Size;
-CHAR Identifier[20];
-......
-if (BootDrive == 0x80 + i)
-BootDriveReported = TRUE;
-&#x2F;* Get disk values *&#x2F;
-GetHarddiskIdentifier(Identifier, 0x80 + i);
-}
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> VOID</div><div class="line">DetectBiosDisks(PCONFIGURATION_COMPONENT_DATA BusKey)</div><div class="line">&#123;</div><div class="line">BOOLEAN BootDriveReported = FALSE;</div><div class="line">ULONG i;</div><div class="line">ULONG DiskCount = GetDiskCount(BusKey);</div><div class="line">CHAR BootPath[<span class="number">512</span>];</div><div class="line">......</div><div class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; DiskCount; i++)</div><div class="line">&#123;</div><div class="line">ULONG Size;</div><div class="line">CHAR Identifier[<span class="number">20</span>];</div><div class="line">......</div><div class="line"><span class="keyword">if</span> (BootDrive == <span class="number">0x80</span> + i)</div><div class="line">BootDriveReported = TRUE;</div><div class="line"><span class="comment">/* Get disk values */</span></div><div class="line">GetHarddiskIdentifier(Identifier, <span class="number">0x80</span> + i);</div><div class="line">&#125;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>首先使用GetDiskCount从Freeldr注册表的System键中读取硬盘总数。System键的初始化在DetectSystem(freeldr\freeldr\arch\i386\hardware.c)中，一会儿再看。<br>于是进入一个for循环，为每个硬盘调用GetHarddiskIdentifier函数。在BIOS中硬盘号是从0x80开始的，所以GetHarddiskIdentifier的硬盘号加了0x80。<br>GetHarddiskIdentifier的作用是为制定硬盘生成一个唯一的ID，并通过Identifier参数返回。但这个函数名起得并不好，因为生成ID其实只是这个函数的功能之一。另外的一大功能是检测硬盘，并且为硬盘本身和硬盘分区调用FsRegisterDevice函数进行注册。通过这个注册后硬盘才能真正被文件系统识别。<br>freeldr\freeldr\arch\i386\hardware.c中</p>
-<pre><code>static VOID
-GetHarddiskIdentifier(PCHAR Identifier,
-ULONG DriveNumber)
-{
-PMASTER_BOOT_RECORD Mbr;
-ULONG *Buffer;
-ULONG i;
-ULONG Checksum;
-ULONG Signature;
-CHAR ArcName[256];
-PARTITION_TABLE_ENTRY PartitionTableEntry;
-&#x2F;* Read the MBR *&#x2F;
-if (!MachDiskReadLogicalSectors(DriveNumber, 0ULL, 1, (PVOID)DISKREADBUFFER))
-{
-DPRINTM(DPRINT_HWDETECT, &quot;Reading MBR failed\n&quot;);
-return;
-}
-Buffer = (ULONG*)DISKREADBUFFER;
-Mbr = (PMASTER_BOOT_RECORD)DISKREADBUFFER;
-Signature = Mbr-&gt;Signature;
-DPRINTM(DPRINT_HWDETECT, &quot;Signature: %x\n&quot;, Signature);
-&#x2F;* Calculate the MBR checksum *&#x2F;
-Checksum = 0;
-for (i = 0; i &lt; 128; i++)
-{
-Checksum += Buffer[i];
-}
-Checksum = ~Checksum + 1;
-DPRINTM(DPRINT_HWDETECT, &quot;Checksum: %x\n&quot;, Checksum);
-&#x2F;* Fill out the ARC disk block *&#x2F;
-reactos_arc_disk_info[reactos_disk_count].Signature = Signature;
-reactos_arc_disk_info[reactos_disk_count].CheckSum = Checksum;
-sprintf(ArcName, &quot;multi(0)disk(0)rdisk(%lu)&quot;, reactos_disk_count);
-strcpy(reactos_arc_strings[reactos_disk_count], ArcName);
-reactos_arc_disk_info[reactos_disk_count].ArcName =
-reactos_arc_strings[reactos_disk_count];
-reactos_disk_count++;
-sprintf(ArcName, &quot;multi(0)disk(0)rdisk(%lu)partition(0)&quot;, DriveNumber - 0x80);
-FsRegisterDevice(ArcName, &amp;DiskVtbl);
-&#x2F;* Add partitions *&#x2F;
-i = 1;
-DiskReportError(FALSE);
-while (DiskGetPartitionEntry(DriveNumber, i, &amp;PartitionTableEntry))
-{
-if (PartitionTableEntry.SystemIndicator != PARTITION_ENTRY_UNUSED)
-{
-sprintf(ArcName, &quot;multi(0)disk(0)rdisk(%lu)partition(%lu)&quot;, DriveNumber - 0x80, i);
-FsRegisterDevice(ArcName, &amp;DiskVtbl);
-}
-i++;
-}
-DiskReportError(TRUE);
-&#x2F;* Convert checksum and signature to identifier string *&#x2F;
-Identifier[0] = Hex[(Checksum &gt;&gt; 28) &amp; 0x0F];
-Identifier[1] = Hex[(Checksum &gt;&gt; 24) &amp; 0x0F];
-Identifier[2] = Hex[(Checksum &gt;&gt; 20) &amp; 0x0F];
-Identifier[3] = Hex[(Checksum &gt;&gt; 16) &amp; 0x0F];
-Identifier[4] = Hex[(Checksum &gt;&gt; 12) &amp; 0x0F];
-Identifier[5] = Hex[(Checksum &gt;&gt; 8 ) &amp; 0x0F];
-Identifier[6] = Hex[(Checksum &gt;&gt; 4) &amp; 0x0F];
-Identifier[7] = Hex[Checksum &amp; 0x0F];
-Identifier[8] = &#39;-&#39;;
-Identifier[9] = Hex[(Signature &gt;&gt; 28) &amp; 0x0F];
-Identifier[10] = Hex[(Signature &gt;&gt; 24) &amp; 0x0F];
-Identifier[11] = Hex[(Signature &gt;&gt; 20) &amp; 0x0F];
-Identifier[12] = Hex[(Signature &gt;&gt; 16) &amp; 0x0F];
-Identifier[13] = Hex[(Signature &gt;&gt; 12) &amp; 0x0F];
-Identifier[14] = Hex[(Signature &gt;&gt; 8 ) &amp; 0x0F];
-Identifier[15] = Hex[(Signature &gt;&gt; 4) &amp; 0x0F];
-Identifier[16] = Hex[Signature &amp; 0x0F];
-Identifier[17] = &#39;-&#39;;
-Identifier[18] = &#39;A&#39;;
-Identifier[19] = 0;
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> VOID</div><div class="line">GetHarddiskIdentifier(PCHAR Identifier,</div><div class="line">ULONG DriveNumber)</div><div class="line">&#123;</div><div class="line">PMASTER_BOOT_RECORD Mbr;</div><div class="line">ULONG *Buffer;</div><div class="line">ULONG i;</div><div class="line">ULONG Checksum;</div><div class="line">ULONG Signature;</div><div class="line">CHAR ArcName[<span class="number">256</span>];</div><div class="line">PARTITION_TABLE_ENTRY PartitionTableEntry;</div><div class="line"><span class="comment">/* Read the MBR */</span></div><div class="line"><span class="keyword">if</span> (!MachDiskReadLogicalSectors(DriveNumber, <span class="number">0U</span>LL, <span class="number">1</span>, (PVOID)DISKREADBUFFER))</div><div class="line">&#123;</div><div class="line">DPRINTM(DPRINT_HWDETECT, <span class="string">"Reading MBR failed\n"</span>);</div><div class="line"><span class="keyword">return</span>;</div><div class="line">&#125;</div><div class="line">Buffer = (ULONG*)DISKREADBUFFER;</div><div class="line">Mbr = (PMASTER_BOOT_RECORD)DISKREADBUFFER;</div><div class="line">Signature = Mbr-&gt;Signature;</div><div class="line">DPRINTM(DPRINT_HWDETECT, <span class="string">"Signature: %x\n"</span>, Signature);</div><div class="line"><span class="comment">/* Calculate the MBR checksum */</span></div><div class="line">Checksum = <span class="number">0</span>;</div><div class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">128</span>; i++)</div><div class="line">&#123;</div><div class="line">Checksum += Buffer[i];</div><div class="line">&#125;</div><div class="line">Checksum = ~Checksum + <span class="number">1</span>;</div><div class="line">DPRINTM(DPRINT_HWDETECT, <span class="string">"Checksum: %x\n"</span>, Checksum);</div><div class="line"><span class="comment">/* Fill out the ARC disk block */</span></div><div class="line">reactos_arc_disk_info[reactos_disk_count].Signature = Signature;</div><div class="line">reactos_arc_disk_info[reactos_disk_count].CheckSum = Checksum;</div><div class="line"><span class="built_in">sprintf</span>(ArcName, <span class="string">"multi(0)disk(0)rdisk(%lu)"</span>, reactos_disk_count);</div><div class="line"><span class="built_in">strcpy</span>(reactos_arc_strings[reactos_disk_count], ArcName);</div><div class="line">reactos_arc_disk_info[reactos_disk_count].ArcName =</div><div class="line">reactos_arc_strings[reactos_disk_count];</div><div class="line">reactos_disk_count++;</div><div class="line"><span class="built_in">sprintf</span>(ArcName, <span class="string">"multi(0)disk(0)rdisk(%lu)partition(0)"</span>, DriveNumber - <span class="number">0x80</span>);</div><div class="line">FsRegisterDevice(ArcName, &amp;DiskVtbl);</div><div class="line"><span class="comment">/* Add partitions */</span></div><div class="line">i = <span class="number">1</span>;</div><div class="line">DiskReportError(FALSE);</div><div class="line"><span class="keyword">while</span> (DiskGetPartitionEntry(DriveNumber, i, &amp;PartitionTableEntry))</div><div class="line">&#123;</div><div class="line"><span class="keyword">if</span> (PartitionTableEntry.SystemIndicator != PARTITION_ENTRY_UNUSED)</div><div class="line">&#123;</div><div class="line"><span class="built_in">sprintf</span>(ArcName, <span class="string">"multi(0)disk(0)rdisk(%lu)partition(%lu)"</span>, DriveNumber - <span class="number">0x80</span>, i);</div><div class="line">FsRegisterDevice(ArcName, &amp;DiskVtbl);</div><div class="line">&#125;</div><div class="line">i++;</div><div class="line">&#125;</div><div class="line">DiskReportError(TRUE);</div><div class="line"><span class="comment">/* Convert checksum and signature to identifier string */</span></div><div class="line">Identifier[<span class="number">0</span>] = Hex[(Checksum &gt;&gt; <span class="number">28</span>) &amp; <span class="number">0x0F</span>];</div><div class="line">Identifier[<span class="number">1</span>] = Hex[(Checksum &gt;&gt; <span class="number">24</span>) &amp; <span class="number">0x0F</span>];</div><div class="line">Identifier[<span class="number">2</span>] = Hex[(Checksum &gt;&gt; <span class="number">20</span>) &amp; <span class="number">0x0F</span>];</div><div class="line">Identifier[<span class="number">3</span>] = Hex[(Checksum &gt;&gt; <span class="number">16</span>) &amp; <span class="number">0x0F</span>];</div><div class="line">Identifier[<span class="number">4</span>] = Hex[(Checksum &gt;&gt; <span class="number">12</span>) &amp; <span class="number">0x0F</span>];</div><div class="line">Identifier[<span class="number">5</span>] = Hex[(Checksum &gt;&gt; <span class="number">8</span> ) &amp; <span class="number">0x0F</span>];</div><div class="line">Identifier[<span class="number">6</span>] = Hex[(Checksum &gt;&gt; <span class="number">4</span>) &amp; <span class="number">0x0F</span>];</div><div class="line">Identifier[<span class="number">7</span>] = Hex[Checksum &amp; <span class="number">0x0F</span>];</div><div class="line">Identifier[<span class="number">8</span>] = <span class="string">'-'</span>;</div><div class="line">Identifier[<span class="number">9</span>] = Hex[(Signature &gt;&gt; <span class="number">28</span>) &amp; <span class="number">0x0F</span>];</div><div class="line">Identifier[<span class="number">10</span>] = Hex[(Signature &gt;&gt; <span class="number">24</span>) &amp; <span class="number">0x0F</span>];</div><div class="line">Identifier[<span class="number">11</span>] = Hex[(Signature &gt;&gt; <span class="number">20</span>) &amp; <span class="number">0x0F</span>];</div><div class="line">Identifier[<span class="number">12</span>] = Hex[(Signature &gt;&gt; <span class="number">16</span>) &amp; <span class="number">0x0F</span>];</div><div class="line">Identifier[<span class="number">13</span>] = Hex[(Signature &gt;&gt; <span class="number">12</span>) &amp; <span class="number">0x0F</span>];</div><div class="line">Identifier[<span class="number">14</span>] = Hex[(Signature &gt;&gt; <span class="number">8</span> ) &amp; <span class="number">0x0F</span>];</div><div class="line">Identifier[<span class="number">15</span>] = Hex[(Signature &gt;&gt; <span class="number">4</span>) &amp; <span class="number">0x0F</span>];</div><div class="line">Identifier[<span class="number">16</span>] = Hex[Signature &amp; <span class="number">0x0F</span>];</div><div class="line">Identifier[<span class="number">17</span>] = <span class="string">'-'</span>;</div><div class="line">Identifier[<span class="number">18</span>] = <span class="string">'A'</span>;</div><div class="line">Identifier[<span class="number">19</span>] = <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>函数首先使用MachDiskReadLogicalSectors读取指定硬盘的MBR。对于PC机而言MachDiskReadLogicalSectors使用int 13h中断实现对硬盘的读操作。里面包括了16、32位代码的互转，和本节内容无关，以后再做说明。<br>MBR结构为。详细信息可以参考(<a href="http://en.wikipedia.org/wiki/Master_boot_record" target="_blank" rel="external">http://en.wikipedia.org/wiki/Master_boot_record</a>)</p>
-<pre><code>typedef struct _MASTER_BOOT_RECORD
-{
-UCHAR        MasterBootRecordCodeAndData[0x1b8];   &#x2F;* 0x000 *&#x2F;
-ULONG        Signature;          &#x2F;* 0x1B8 *&#x2F;
-USHORT        Reserved;          &#x2F;* 0x1BC *&#x2F;
-PARTITION_TABLE_ENTRY   PartitionTable[4];        &#x2F;* 0x1BE *&#x2F;
-USHORT        MasterBootRecordMagic;        &#x2F;* 0x1FE *&#x2F;
-} MASTER_BOOT_RECORD, *PMASTER_BOOT_RECORD;
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">MASTER_BOOT_RECORD</span></span></div><div class="line"><span class="class">&#123;</span></div><div class="line">UCHAR        MasterBootRecordCodeAndData[<span class="number">0x1b8</span>];   <span class="comment">/* 0x000 */</span></div><div class="line">ULONG        Signature;          <span class="comment">/* 0x1B8 */</span></div><div class="line">USHORT        Reserved;          <span class="comment">/* 0x1BC */</span></div><div class="line">PARTITION_TABLE_ENTRY   PartitionTable[<span class="number">4</span>];        <span class="comment">/* 0x1BE */</span></div><div class="line">USHORT        MasterBootRecordMagic;        <span class="comment">/* 0x1FE */</span></div><div class="line">&#125; MASTER_BOOT_RECORD, *PMASTER_BOOT_RECORD;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>GetHarddiskIdentifier在获取了Signature、计算了Checksum后 。<br>sprintf(ArcName, “multi(0)disk(0)rdisk(%lu)partition(0)”, DriveNumber - 0x80);<br>FsRegisterDevice(ArcName, &amp;DiskVtbl);<br>生成对应硬盘的ArcName，使用FsRegisterDevice注册这块硬盘，这个函数我们已经看过。注意这里Partition为0，所以0号分区实际表示硬盘本身。<br>之后</p>
-<pre><code>i = 1;
-while (DiskGetPartitionEntry(DriveNumber, i, &amp;PartitionTableEntry))
-{
-if (PartitionTableEntry.SystemIndicator != PARTITION_ENTRY_UNUSED)
-{
-sprintf(ArcName, &quot;multi(0)disk(0)rdisk(%lu)partition(%lu)&quot;, DriveNumber - 0x80, i);
-FsRegisterDevice(ArcName, &amp;DiskVtbl);
-}
-i++;
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">i = <span class="number">1</span>;</div><div class="line"><span class="keyword">while</span> (DiskGetPartitionEntry(DriveNumber, i, &amp;PartitionTableEntry))</div><div class="line">&#123;</div><div class="line"><span class="keyword">if</span> (PartitionTableEntry.SystemIndicator != PARTITION_ENTRY_UNUSED)</div><div class="line">&#123;</div><div class="line"><span class="built_in">sprintf</span>(ArcName, <span class="string">"multi(0)disk(0)rdisk(%lu)partition(%lu)"</span>, DriveNumber - <span class="number">0x80</span>, i);</div><div class="line">FsRegisterDevice(ArcName, &amp;DiskVtbl);</div><div class="line">&#125;</div><div class="line">i++;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>DiskGetParititionEntry将会解析DriveNumber对应磁盘的分区表，填充第i个分区的信息到PartitionTableEntry结构。如果分区存在则使用FsRegisterDevice注册分区。<br>使用刚才计算的CheckSum和Signature组合一个ID返回给调用者。其实这个ID没有被使用过。。。<br>最后看一下调用FsRegisterDevice时的第二个参数DiskVtbl  </p>
-<pre><code>static const DEVVTBL DiskVtbl = {
-DiskClose,
-DiskGetFileInformation,
-DiskOpen,
-DiskRead,
-DiskSeek,
-};
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> <span class="keyword">const</span> DEVVTBL DiskVtbl = &#123;</div><div class="line">DiskClose,</div><div class="line">DiskGetFileInformation,</div><div class="line">DiskOpen,</div><div class="line">DiskRead,</div><div class="line">DiskSeek,</div><div class="line">&#125;;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>这里面包含了对磁盘扇区读写的全部函数。我们之后再介绍。<br>至此硬盘的及硬盘分区的注册完成。<br>执行完DetectBiosDisks后，DeviceListHead里面就存放了当前计算机所有的磁盘和分区对应的DEVICE结构。<br>文件系统的识别和文件的打开<br>这时Fs模块已经知道的硬盘数量，分区信息。下面来看看一个文件的打开流程。<br>首先，Freeldr使用的是Arc路径，IDE硬盘以multi(0)disk(0)rdisk(n)开头，文件也是以Arc路径表示的。打开文件的函数在Freeldr\Freeldr\fs\fs.c中。这函数比较长，我们分段阅读。<br>Freeldr\Freeldr\fs\fs.c</p>
-<pre><code>LONG ArcOpen(CHAR* Path, OPENMODE OpenMode, ULONG* FileId)
-{
-......
-*FileId = MAX_FDS;
-&#x2F;* Search last &#39;)&#39;, which delimits device and path *&#x2F;
-FileName = strrchr(Path, &#39;)&#39;);
-if (!FileName)
-return EINVAL;
-FileName++;
-&#x2F;* Count number of &quot;()&quot;, which needs to be replaced by &quot;(0)&quot; *&#x2F;
-dwCount = 0;
-for (p = Path; p != FileName; p++)
-if (*p == &#39;(&#39; &amp;&amp; *(p + 1) == &#39;)&#39;)
-dwCount++;
-&#x2F;* Duplicate device name, and replace &quot;()&quot; by &quot;(0)&quot; (if required) *&#x2F;
-dwLength = FileName - Path + dwCount;
-if (dwCount != 0)
-{
-DeviceName = MmHeapAlloc(FileName - Path + dwCount);
-if (!DeviceName)
-return ENOMEM;
-for (p = Path, q = DeviceName; p != FileName; p++)
-{
-*q++ = *p;
-if (*p == &#39;(&#39; &amp;&amp; *(p + 1) == &#39;)&#39;)
-*q++ = &#39;0&#39;;
-}
-}
-else
-DeviceName = Path;
-......
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="function">LONG <span class="title">ArcOpen</span><span class="params">(CHAR* Path, OPENMODE OpenMode, ULONG* FileId)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">......</div><div class="line">*FileId = MAX_FDS;</div><div class="line"><span class="comment">/* Search last ')', which delimits device and path */</span></div><div class="line">FileName = <span class="built_in">strrchr</span>(Path, <span class="string">')'</span>);</div><div class="line"><span class="keyword">if</span> (!FileName)</div><div class="line"><span class="keyword">return</span> EINVAL;</div><div class="line">FileName++;</div><div class="line"><span class="comment">/* Count number of "()", which needs to be replaced by "(0)" */</span></div><div class="line">dwCount = <span class="number">0</span>;</div><div class="line"><span class="keyword">for</span> (p = Path; p != FileName; p++)</div><div class="line"><span class="keyword">if</span> (*p == <span class="string">'('</span> &amp;&amp; *(p + <span class="number">1</span>) == <span class="string">')'</span>)</div><div class="line">dwCount++;</div><div class="line"><span class="comment">/* Duplicate device name, and replace "()" by "(0)" (if required) */</span></div><div class="line">dwLength = FileName - Path + dwCount;</div><div class="line"><span class="keyword">if</span> (dwCount != <span class="number">0</span>)</div><div class="line">&#123;</div><div class="line">DeviceName = MmHeapAlloc(FileName - Path + dwCount);</div><div class="line"><span class="keyword">if</span> (!DeviceName)</div><div class="line"><span class="keyword">return</span> ENOMEM;</div><div class="line"><span class="keyword">for</span> (p = Path, q = DeviceName; p != FileName; p++)</div><div class="line">&#123;</div><div class="line">*q++ = *p;</div><div class="line"><span class="keyword">if</span> (*p == <span class="string">'('</span> &amp;&amp; *(p + <span class="number">1</span>) == <span class="string">')'</span>)</div><div class="line">*q++ = <span class="string">'0'</span>;</div><div class="line">&#125;</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span></div><div class="line">DeviceName = Path;</div><div class="line">......</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>这个函数有三个参数Path是文件名的Arc路径，如multi(0)disk(0)rdisk(0)partition(1)Freeldr.sys就表示C盘中的Freeldr.sys文件。<br>OpenMode是打开模式(OpenReadOnly、OpenReadWrite等)。<br>如果打开成功，文件句柄将通过FileId参数返回。<br>首先这一部分代码分理出Arc磁盘路径中的”()”替换成”(0)”并存入DeviceName中，如multi()disk()rdisk()partition(1)Freeldr.sys处理后，DeviceName将指向multi(0)disk(0)rdisk(0)partition(1)。注意这个DeviceName是不以NULL结尾的。。。这是个很蛋疼的设计。<br>FileName会指向Arc路径中的文件名部分，上面的例子将是Freeldr.sys。<br>文件打开分为两步，第一步是开个文件所在的设备、创建设备的句柄。第二部才是打开文件本身。<br>这里是第一步打开设备的代码。  </p>
-<pre><code>......
-pEntry = DeviceListHead.Flink;
-while (pEntry != &amp;DeviceListHead)
-{
-pDevice = CONTAINING_RECORD(pEntry, DEVICE, ListEntry);
-if (strncmp(pDevice-&gt;Prefix, DeviceName, dwLength) == 0)
-{
-&#x2F;* OK, device found. It is already opened? *&#x2F;
-if (pDevice-&gt;ReferenceCount == 0)
-{
-&#x2F;* Search some room for the device *&#x2F;
-for (DeviceId = 0; DeviceId &lt; MAX_FDS; DeviceId++)
-if (!FileData[DeviceId].FuncTable)
-break;
-if (DeviceId == MAX_FDS)
-return EMFILE;
-&#x2F;* Try to open the device *&#x2F;
-FileData[DeviceId].FuncTable = pDevice-&gt;FuncTable;
-ret = pDevice-&gt;FuncTable-&gt;Open(pDevice-&gt;Prefix, DeviceOpenMode, &amp;DeviceId);
-if (ret != ESUCCESS)
-{
-FileData[DeviceId].FuncTable = NULL;
-return ret;
-}
-else if (!*FileName)
-{
-&#x2F;* Done, caller wanted to open the raw device *&#x2F;
-*FileId = DeviceId;
-pDevice-&gt;ReferenceCount++;
-return ESUCCESS;
-}
-&#x2F;* Try to detect the file system *&#x2F;
-FileData[DeviceId].FileFuncTable = FatMount(DeviceId);
-if (!FileData[DeviceId].FileFuncTable)
-FileData[DeviceId].FileFuncTable = NtfsMount(DeviceId);
-if (!FileData[DeviceId].FileFuncTable)
-FileData[DeviceId].FileFuncTable = Ext2Mount(DeviceId);
-if (!FileData[DeviceId].FileFuncTable)
-{
-&#x2F;* Error, unable to detect file system *&#x2F;
-pDevice-&gt;FuncTable-&gt;Close(DeviceId);
-FileData[DeviceId].FuncTable = NULL;
-return ENODEV;
-}
-pDevice-&gt;DeviceId = DeviceId;
-}
-else
-{
-DeviceId = pDevice-&gt;DeviceId;
-}
-pDevice-&gt;ReferenceCount++;
-break;
-}
-pEntry = pEntry-&gt;Flink;
-}
-if (pEntry == &amp;DeviceListHead)
-return ENODEV;
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line">......</div><div class="line">pEntry = DeviceListHead.Flink;</div><div class="line"><span class="keyword">while</span> (pEntry != &amp;DeviceListHead)</div><div class="line">&#123;</div><div class="line">pDevice = CONTAINING_RECORD(pEntry, DEVICE, ListEntry);</div><div class="line"><span class="keyword">if</span> (<span class="built_in">strncmp</span>(pDevice-&gt;Prefix, DeviceName, dwLength) == <span class="number">0</span>)</div><div class="line">&#123;</div><div class="line"><span class="comment">/* OK, device found. It is already opened? */</span></div><div class="line"><span class="keyword">if</span> (pDevice-&gt;ReferenceCount == <span class="number">0</span>)</div><div class="line">&#123;</div><div class="line"><span class="comment">/* Search some room for the device */</span></div><div class="line"><span class="keyword">for</span> (DeviceId = <span class="number">0</span>; DeviceId &lt; MAX_FDS; DeviceId++)</div><div class="line"><span class="keyword">if</span> (!FileData[DeviceId].FuncTable)</div><div class="line"><span class="keyword">break</span>;</div><div class="line"><span class="keyword">if</span> (DeviceId == MAX_FDS)</div><div class="line"><span class="keyword">return</span> EMFILE;</div><div class="line"><span class="comment">/* Try to open the device */</span></div><div class="line">FileData[DeviceId].FuncTable = pDevice-&gt;FuncTable;</div><div class="line">ret = pDevice-&gt;FuncTable-&gt;Open(pDevice-&gt;Prefix, DeviceOpenMode, &amp;DeviceId);</div><div class="line"><span class="keyword">if</span> (ret != ESUCCESS)</div><div class="line">&#123;</div><div class="line">FileData[DeviceId].FuncTable = <span class="literal">NULL</span>;</div><div class="line"><span class="keyword">return</span> ret;</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> <span class="keyword">if</span> (!*FileName)</div><div class="line">&#123;</div><div class="line"><span class="comment">/* Done, caller wanted to open the raw device */</span></div><div class="line">*FileId = DeviceId;</div><div class="line">pDevice-&gt;ReferenceCount++;</div><div class="line"><span class="keyword">return</span> ESUCCESS;</div><div class="line">&#125;</div><div class="line"><span class="comment">/* Try to detect the file system */</span></div><div class="line">FileData[DeviceId].FileFuncTable = FatMount(DeviceId);</div><div class="line"><span class="keyword">if</span> (!FileData[DeviceId].FileFuncTable)</div><div class="line">FileData[DeviceId].FileFuncTable = NtfsMount(DeviceId);</div><div class="line"><span class="keyword">if</span> (!FileData[DeviceId].FileFuncTable)</div><div class="line">FileData[DeviceId].FileFuncTable = Ext2Mount(DeviceId);</div><div class="line"><span class="keyword">if</span> (!FileData[DeviceId].FileFuncTable)</div><div class="line">&#123;</div><div class="line"><span class="comment">/* Error, unable to detect file system */</span></div><div class="line">pDevice-&gt;FuncTable-&gt;Close(DeviceId);</div><div class="line">FileData[DeviceId].FuncTable = <span class="literal">NULL</span>;</div><div class="line"><span class="keyword">return</span> ENODEV;</div><div class="line">&#125;</div><div class="line">pDevice-&gt;DeviceId = DeviceId;</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span></div><div class="line">&#123;</div><div class="line">DeviceId = pDevice-&gt;DeviceId;</div><div class="line">&#125;</div><div class="line">pDevice-&gt;ReferenceCount++;</div><div class="line"><span class="keyword">break</span>;</div><div class="line">&#125;</div><div class="line">pEntry = pEntry-&gt;Flink;</div><div class="line">&#125;</div><div class="line"><span class="keyword">if</span> (pEntry == &amp;DeviceListHead)</div><div class="line"><span class="keyword">return</span> ENODEV;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>一个循环，遍历DEVICE链表，找到DEVICE-&gt;Prefix (磁盘、分区的Arc路径，上一节说过)和刚刚分解出来的DeviceName相等的节点。如果没有则函数直接失败。<br>找到DEVICE节点后判断DEVICE-&gt;ReferenceCount是否为0。这个代表该DEVICE被打开的次数，如果ReferenceCount不为0，说明DEVICE已经被打开。那个直接从Device-&gt;DeviceId中获得设备的文件句柄。可以看出无论打开一个设备多少次，只会有ReferenceCount的变化，而句柄都是相同的。所以如果设备打开两次，SEEK时会相互影响。读写之前最好重新调用SEEK函数。<br>当DEVICE-&gt;ReferenceCount为0时是Freeldr需要调用进行打开和文件系统的识别。我们仔细读读。  </p>
-<pre><code>&#x2F;* Search some room for the device *&#x2F;
-for (DeviceId = 0; DeviceId &lt; MAX_FDS; DeviceId++)
-if (!FileData[DeviceId].FuncTable)
-break;
-if (DeviceId == MAX_FDS)
-return EMFILE;
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Search some room for the device */</span></div><div class="line"><span class="keyword">for</span> (DeviceId = <span class="number">0</span>; DeviceId &lt; MAX_FDS; DeviceId++)</div><div class="line"><span class="keyword">if</span> (!FileData[DeviceId].FuncTable)</div><div class="line"><span class="keyword">break</span>;</div><div class="line"><span class="keyword">if</span> (DeviceId == MAX_FDS)</div><div class="line"><span class="keyword">return</span> EMFILE;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>首先在FileData数组中找到空闲项，数组的索引即将成为设备句柄。  </p>
-<pre><code>&#x2F;* Try to open the device *&#x2F;
-FileData[DeviceId].FuncTable = pDevice-&gt;FuncTable;
-ret = pDevice-&gt;FuncTable-&gt;Open(pDevice-&gt;Prefix, DeviceOpenMode, &amp;DeviceId);
-if (ret != ESUCCESS)
-{
-FileData[DeviceId].FuncTable = NULL;
-return ret;
-}
-else if (!*FileName)
-{
-&#x2F;* Done, caller wanted to open the raw device *&#x2F;
-*FileId = DeviceId;
-pDevice-&gt;ReferenceCount++;
-return ESUCCESS;
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Try to open the device */</span></div><div class="line">FileData[DeviceId].FuncTable = pDevice-&gt;FuncTable;</div><div class="line">ret = pDevice-&gt;FuncTable-&gt;Open(pDevice-&gt;Prefix, DeviceOpenMode, &amp;DeviceId);</div><div class="line"><span class="keyword">if</span> (ret != ESUCCESS)</div><div class="line">&#123;</div><div class="line">FileData[DeviceId].FuncTable = <span class="literal">NULL</span>;</div><div class="line"><span class="keyword">return</span> ret;</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> <span class="keyword">if</span> (!*FileName)</div><div class="line">&#123;</div><div class="line"><span class="comment">/* Done, caller wanted to open the raw device */</span></div><div class="line">*FileId = DeviceId;</div><div class="line">pDevice-&gt;ReferenceCount++;</div><div class="line"><span class="keyword">return</span> ESUCCESS;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>之后把DEVICE中存储的设别操作函数数组FuncTable赋值给对应FileData中的FuncTable。之后对该句柄的读写操作将直接传递给FileData.FuncTable中的函数。<br>调用FuncTable-&gt;Open打开设备。上面我们看过这个函数实际是freeldr\freeldr\arch\i386\hardware.c中的DiskOpen。<br>打开成功后，如果FileName（需要打开的文件名）为空，说明这次请求只打开设备，于是直接返回设备的句柄。<br>如果不为空，则下面开始识别分区格式，打开文件的操作。<br>在继续读ArcOpen函数前我们先看看DiskOpen在打开设备时都做了什么。  </p>
-<pre><code>ArcOpen -&gt; DiskOpen (freeldr\freeldr\arch\i386\hardware.c)
-static LONG DiskOpen(CHAR* Path, OPENMODE OpenMode, ULONG* FileId)
-{
-......
-if (!DissectArcPath(Path, FileName, &amp;DriveNumber, &amp;DrivePartition))
-return EINVAL;
-if (DrivePartition == 0xff)
-{
-&#x2F;* This is a CD-ROM device *&#x2F;
-SectorSize = 2048;
-}
-else
-{
-SectorSize = 512;
-}
-if (DrivePartition != 0xff &amp;&amp; DrivePartition != 0)
-{
-if (!DiskGetPartitionEntry(DriveNumber, DrivePartition, &amp;PartitionTableEntry))
-return EINVAL;
-SectorOffset = PartitionTableEntry.SectorCountBeforePartition;
-SectorCount = PartitionTableEntry.PartitionSectorCount;
-}
-Context = MmHeapAlloc(sizeof(DISKCONTEXT));
-if (!Context)
-return ENOMEM;
-Context-&gt;DriveNumber = DriveNumber;
-Context-&gt;SectorSize = SectorSize;
-Context-&gt;SectorOffset = SectorOffset;
-Context-&gt;SectorCount = SectorCount;
-Context-&gt;SectorNumber = 0;
-FsSetDeviceSpecific(*FileId, Context);
-return ESUCCESS;
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">ArcOpen -&gt; DiskOpen (freeldr\freeldr\arch\i386\hardware.c)</div><div class="line"><span class="function"><span class="keyword">static</span> LONG <span class="title">DiskOpen</span><span class="params">(CHAR* Path, OPENMODE OpenMode, ULONG* FileId)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">......</div><div class="line"><span class="keyword">if</span> (!DissectArcPath(Path, FileName, &amp;DriveNumber, &amp;DrivePartition))</div><div class="line"><span class="keyword">return</span> EINVAL;</div><div class="line"><span class="keyword">if</span> (DrivePartition == <span class="number">0xff</span>)</div><div class="line">&#123;</div><div class="line"><span class="comment">/* This is a CD-ROM device */</span></div><div class="line">SectorSize = <span class="number">2048</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span></div><div class="line">&#123;</div><div class="line">SectorSize = <span class="number">512</span>;</div><div class="line">&#125;</div><div class="line"><span class="keyword">if</span> (DrivePartition != <span class="number">0xff</span> &amp;&amp; DrivePartition != <span class="number">0</span>)</div><div class="line">&#123;</div><div class="line"><span class="keyword">if</span> (!DiskGetPartitionEntry(DriveNumber, DrivePartition, &amp;PartitionTableEntry))</div><div class="line"><span class="keyword">return</span> EINVAL;</div><div class="line">SectorOffset = PartitionTableEntry.SectorCountBeforePartition;</div><div class="line">SectorCount = PartitionTableEntry.PartitionSectorCount;</div><div class="line">&#125;</div><div class="line">Context = MmHeapAlloc(<span class="keyword">sizeof</span>(DISKCONTEXT));</div><div class="line"><span class="keyword">if</span> (!Context)</div><div class="line"><span class="keyword">return</span> ENOMEM;</div><div class="line">Context-&gt;DriveNumber = DriveNumber;</div><div class="line">Context-&gt;SectorSize = SectorSize;</div><div class="line">Context-&gt;SectorOffset = SectorOffset;</div><div class="line">Context-&gt;SectorCount = SectorCount;</div><div class="line">Context-&gt;SectorNumber = <span class="number">0</span>;</div><div class="line">FsSetDeviceSpecific(*FileId, Context);</div><div class="line"><span class="keyword">return</span> ESUCCESS;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>这个函数非常简单，使用DissectArcPath根据设备的Arc路径分解出文件名FileName、BIOS驱动器号DriveNumber、和分区号DrivePartition（第0个分区的编号是1，0代表整个硬盘）<br>之后确定扇区大小，分区开始的扇区号、分区扇区数等信息，存入DISKCONTEXT结构。使用FsSetDeviceSpecific和FildId相关联。<br>还记得FILEDATA的结构么？FsSetDeviceSpecific就是填充里面的Specific指针 ：）  </p>
-<pre><code>VOID FsSetDeviceSpecific(ULONG FileId, VOID* Specific)
-{
-if (FileId &gt;= MAX_FDS || !FileData[FileId].FuncTable)
-return;
-FileData[FileId].Specific = Specific;
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function">VOID <span class="title">FsSetDeviceSpecific</span><span class="params">(ULONG FileId, VOID* Specific)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line"><span class="keyword">if</span> (FileId &gt;= MAX_FDS || !FileData[FileId].FuncTable)</div><div class="line"><span class="keyword">return</span>;</div><div class="line">FileData[FileId].Specific = Specific;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>实际上DiskOpen的作用就是获得该设备（分区）的基本信息——BIOS驱动器号、扇区大小、开始扇区号、扇区数量和当前读写指针（SectorNumber）。生成DISKCONTENT结构使用FsSetDeviceSpecific和FileID绑定。<br>现在我们回到ArcOpen函数，希望你还记得 ：）  </p>
-<pre><code>&#x2F;* Try to detect the file system *&#x2F;
-FileData[DeviceId].FileFuncTable = FatMount(DeviceId);
-if (!FileData[DeviceId].FileFuncTable)
-FileData[DeviceId].FileFuncTable = NtfsMount(DeviceId);
-if (!FileData[DeviceId].FileFuncTable)
-FileData[DeviceId].FileFuncTable = Ext2Mount(DeviceId);
-if (!FileData[DeviceId].FileFuncTable)
-{
-&#x2F;* Error, unable to detect file system *&#x2F;
-pDevice-&gt;FuncTable-&gt;Close(DeviceId);
-FileData[DeviceId].FuncTable = NULL;
-return ENODEV;
-}
-pDevice-&gt;DeviceId = DeviceId;
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Try to detect the file system */</span></div><div class="line">FileData[DeviceId].FileFuncTable = FatMount(DeviceId);</div><div class="line"><span class="keyword">if</span> (!FileData[DeviceId].FileFuncTable)</div><div class="line">FileData[DeviceId].FileFuncTable = NtfsMount(DeviceId);</div><div class="line"><span class="keyword">if</span> (!FileData[DeviceId].FileFuncTable)</div><div class="line">FileData[DeviceId].FileFuncTable = Ext2Mount(DeviceId);</div><div class="line"><span class="keyword">if</span> (!FileData[DeviceId].FileFuncTable)</div><div class="line">&#123;</div><div class="line"><span class="comment">/* Error, unable to detect file system */</span></div><div class="line">pDevice-&gt;FuncTable-&gt;Close(DeviceId);</div><div class="line">FileData[DeviceId].FuncTable = <span class="literal">NULL</span>;</div><div class="line"><span class="keyword">return</span> ENODEV;</div><div class="line">&#125;</div><div class="line">pDevice-&gt;DeviceId = DeviceId;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>现在FileData[DeviceId]已经代表刚刚打开的设备了，开始挂载分区。啥叫挂载分区，就是让文件系统提供个接口，能让我们操作分区里面的文件。而这个接口就是个DEVVTBL指针，和直接操作硬盘的接口一样，只不过这次这个可以操作文件了。如果分区识别成功，XxxMount函数将会返回另外一个DEVVTBL指针数组，这个指针赋值给设备对象的FileFuncTable成员。使用这个指针数组就可以在文件级别操作了。比如打开freeldr.sys文件就可以调用FileData[DeviceId].FileFuncTable-&gt;open函数。FileFuncTable和FuncTable是不同的哦！ ：）<br>注意FileFuncTable其实是不直接使用的，这个指针的作用是为之后打开的文件对应的FileData.FileTable赋值。于是操作文件和操作磁盘都是用对应的FileData.FileTable，实现形式上的统一。而且这种架构还可以轻易的实现将一个文件虚拟成为一个分区，只要为文件对象调用XxxMount并且给FileFuncTable域赋值就可以了，非常易于扩展。Freeldr并没有实现这种功能，文件的FileData.FileFuncTable没有使用～<br>下面我们就来看看第二步，打开文件<br>首先为文件找一个空闲的FileData  </p>
-<pre><code>for (i = 0; i &lt; MAX_FDS; i++)
-if (!FileData[i].FuncTable)
-break;
-if (i == MAX_FDS)
-return EMFILE;
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; MAX_FDS; i++)</div><div class="line"><span class="keyword">if</span> (!FileData[i].FuncTable)</div><div class="line"><span class="keyword">break</span>;</div><div class="line"><span class="keyword">if</span> (i == MAX_FDS)</div><div class="line"><span class="keyword">return</span> EMFILE;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>跳过文件名开始的 “\” 字符  </p>
-<pre><code>if (*FileName == &#39;\\&#39;)
-FileName++;
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (*FileName == <span class="string">'\\'</span>)</div><div class="line">FileName++;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>我们前面说的，为FileData.FuncTable赋值。FileData.DeviceId是文件所在分区的句柄。FuncTable内部函数将通过这个句柄调用读写分区内容，为用户提供文件的读写接口。</p>
-<pre><code>FileData[i].FuncTable = FileData[DeviceId].FileFuncTable;
-FileData[i].DeviceId = DeviceId;
-*FileId = i;
-ret = FileData[i].FuncTable-&gt;Open(FileName, OpenMode, FileId);
-if (ret != ESUCCESS)
-{
-FileData[i].FuncTable = NULL;
-*FileId = MAX_FDS;
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">FileData[i].FuncTable = FileData[DeviceId].FileFuncTable;</div><div class="line">FileData[i].DeviceId = DeviceId;</div><div class="line">*FileId = i;</div><div class="line">ret = FileData[i].FuncTable-&gt;Open(FileName, OpenMode, FileId);</div><div class="line"><span class="keyword">if</span> (ret != ESUCCESS)</div><div class="line">&#123;</div><div class="line">FileData[i].FuncTable = <span class="literal">NULL</span>;</div><div class="line">*FileId = MAX_FDS;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>至此打开文件的操作结束。这里略去了XxxMount和文件的Open函数。以后再说。 ：）  </p>
 
         
@@ -1129,26 +671,8 @@ FileData[i].FuncTable = NULL;
 <p>（图1）</p>
 <p>在我们平时打开文件中（CreateFile）总是需要我们传入一个dwShareMode的参数。它有三个值分别是FILE_SHARE_DELETE，FILE_SHARE_READ，FILE_SHARE_WRITE。如果一个打开一个文件的时候，没有传入了FILE_SHARE_READ，那么如果有另一段代码对文件用FILE_READ_DATA权限打开的时候一定返回的是一个失败。其他两个SHARE也是一样。那么是不是设置了FILE_SHARE_READ，其他代码用FILE_READ_DATA权限打开该文件都会成功呢？答案是不一定，主要要看在这段代码CreateFile的dwShareMode。如果也设置的FILE_SHARE_READ，那么打开文件就会成功，否则返回一个SHARE错误。</p>
 <p>（吐槽：上面说了一堆，还是没进入正题，貌似有点太详细了。接下来才是重头戏。）</p>
-<p>来看看NTFS文件系统是怎么来Check权限的。<br>每个文件打开的时候系统会为文件分配一个FILE_OBJECT（文件对象）。在这里我们主要关注的是以下几个域。<br><pre><code>nt!_FILE_OBJECT
-...
-+0x00c FsContext        : Ptr32 Void
-...
-+0x026 ReadAccess       : UChar
-+0x027 WriteAccess      : UChar
-+0x028 DeleteAccess     : UChar
-+0x029 SharedRead       : UChar
-+0x02a SharedWrite      : UChar
-+0x02b SharedDelete     : UChar
-...</code></pre><br>熟悉NTFS文件系统的同学都知道FsContext实际上是对应着一个SCB。SCB的数据结构是未公开的，所以只有逆向或者通过其他途径获得。而这篇文章只需要关注的是SCB的SHARE_ACCESS。SHARE_ACCESS在SCB的0x60的偏移处，这个和NT的SCB有些不同。SHARE_ACCESS的数据结构是这样</p>
-<pre><code>typedef struct _SHARE_ACCESS {
-ULONG OpenCount;
-ULONG Readers;
-ULONG Writers;
-ULONG Deleters;
-ULONG SharedRead;
-ULONG SharedWrite;
-ULONG SharedDelete;
-} SHARE_ACCESS, *PSHARE_ACCESS;</code></pre>
+<p>来看看NTFS文件系统是怎么来Check权限的。<br>每个文件打开的时候系统会为文件分配一个FILE_OBJECT（文件对象）。在这里我们主要关注的是以下几个域。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">nt!_FILE_OBJECT</div><div class="line">...</div><div class="line">+0x00c FsContext        : Ptr32 Void</div><div class="line">...</div><div class="line">+0x026 ReadAccess       : UChar</div><div class="line">+0x027 WriteAccess      : UChar</div><div class="line">+0x028 DeleteAccess     : UChar</div><div class="line">+0x029 SharedRead       : UChar</div><div class="line">+0x02a SharedWrite      : UChar</div><div class="line">+0x02b SharedDelete     : UChar</div><div class="line">...</div></pre></td></tr></table></figure><br>熟悉NTFS文件系统的同学都知道FsContext实际上是对应着一个SCB。SCB的数据结构是未公开的，所以只有逆向或者通过其他途径获得。而这篇文章只需要关注的是SCB的SHARE_ACCESS。SHARE_ACCESS在SCB的0x60的偏移处，这个和NT的SCB有些不同。SHARE_ACCESS的数据结构是这样</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">SHARE_ACCESS</span> &#123;</span></div><div class="line">ULONG OpenCount;</div><div class="line">ULONG Readers;</div><div class="line">ULONG Writers;</div><div class="line">ULONG Deleters;</div><div class="line">ULONG SharedRead;</div><div class="line">ULONG SharedWrite;</div><div class="line">ULONG SharedDelete;</div><div class="line">&#125; SHARE_ACCESS, *PSHARE_ACCESS;</div></pre></td></tr></table></figure>
 <p>这个就是这篇文章的关键。</p>
 <p>当一个文件被打开的时候，系统会初始化这个数据结构。根据CreateFile的权限设置来填充这个结构。<br>比如DesiredAccess中设置了FILE_READ_DATA，那么Readers，OpenCount就会增加1，如果在此同时设置了ShareMode为FILE_SHARE_READ，那么SharedRead也会加1。同时FILE_OBJECT的ReadAccess和SharedRead会被设置为TRUE。那么在文件被关闭的时候，如果FILE_OBJECT的ReadAccess和SharedRead为TRUE，那么SHARE_ACCESS的Readers，OpenCount，SharedRead就会减1。</p>
 <p>在进程准备去打开一个已经打开的文件时，文件系统会做一系列的检查，包括文件权限（比如如果是只读文件，你却想要写权限，这样就会失败），安全描述符，以及共享权限（ShareAccess）。假设前面两个都符合要求，那么就到了共享权限的检查了。</p>
@@ -1156,13 +680,7 @@ ULONG SharedDelete;
 <p>当有另外一段代码去试图用FILE_READ_DATA权限打开这个文件的时候，那么文件系统就会去检查第一个打开这个文件的操作共享权限。这时的OpenCount是1，SharedRead是0，他会发现SharedRead小于OpenCount，那么他认为这个文件并没有SHARE_READ，所以参数检查返回失败，你会得到一个共享错误。这就是为什么我们复制粘贴SYSTEM文件的时候会失败。</p>
 <p>原因分析到这里就结束了。但是我就这样满足了么？显然我没那么容易满足滴~</p>
 <p>我想做的就是复制出这个SYSTEM文件，实际上网上已经有很多做法，什么底层磁盘解析读取数据，句柄复制大法。而我这次是修改底层SCB的ShareAccess来达到复制的目的。如果读懂了上面的原理，看下面这段代码就很轻松了。</p>
-<pre><code>kfile File;
-ns = File.Create(FILENAME, FILE_OPEN, FILE_READ_ATTRIBUTES, 0);
-FileObj = File.GetObject();
-ShareAccess = (SHARE_ACCESS *)((ULONG)FileObj-&gt;FsContext + Offset);
-ShareAccess-&gt;SharedRead = ShareAccess-&gt;Readers;
-File.Release();
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">kfile File;</div><div class="line">ns = File.Create(FILENAME, FILE_OPEN, FILE_READ_ATTRIBUTES, <span class="number">0</span>);</div><div class="line">FileObj = File.GetObject();</div><div class="line">ShareAccess = (SHARE_ACCESS *)((ULONG)FileObj-&gt;FsContext + Offset);</div><div class="line">ShareAccess-&gt;SharedRead = ShareAccess-&gt;Readers;</div><div class="line">File.Release();</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>OK，编写好测试代码，生成一个驱动。运行即可。接下来就是见证奇迹的时刻了。还是用同样的方法复制看看，完全没有问题了。（图2）</p>
 <p><a href="/uploads/2011/05/Windows-XP-Professional-2011-05-23-01-53-40.png"><img src="/uploads/2011/05/Windows-XP-Professional-2011-05-23-01-53-40-300x225.png" alt=""></a></p>
 <p>（图2）</p>
@@ -1206,38 +724,9 @@ File.Release();
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>有的时候出于一些目的，我们会希望程序等待调试器Attach上去以后才开始继续往前跑。例如，我们写了一堆console程序，同时又有个shell去调用这些console，而这个时候我们却想去调试shell运行起来的这个console。当然Windbg本身就有调试debugee子进程的功能，但是身为懒人，这种方式太麻烦。我还是更愿意加入几行代码解决这个问题。</p>
 <p>要解决这个问题，原理上很简单。无非是程序运行初期不断的去检测本进程是否被调试，如果是就把自己断下来，如果不是继续等待。</p>
-<pre><code>void WaitDebuggerAttach(DWORD Second)
-{
-	DWORD CurSec = 0;
-	while((!IsDebuggerPresent()) &amp;&amp; (CurSec &lt; Second)) {
-		
-		CurSec++;
-		Sleep(1000);
-	}
-
-	if (IsDebuggerPresent()) {
-
-		__asm int 3
-	}
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">WaitDebuggerAttach</span><span class="params">(DWORD Second)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">	DWORD CurSec = <span class="number">0</span>;</div><div class="line">	<span class="keyword">while</span>((!IsDebuggerPresent()) &amp;&amp; (CurSec &lt; Second)) &#123;</div><div class="line">		</div><div class="line">		CurSec++;</div><div class="line">		Sleep(<span class="number">1000</span>);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">if</span> (IsDebuggerPresent()) &#123;</div><div class="line"></div><div class="line">		__asm <span class="keyword">int</span> <span class="number">3</span></div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>这个函数可以指定等待时间，如果Debugger Attach上去了，那么就断下来方便调试，否则会超时，正常执行。<br>这里我是用的IsDebuggerPresent这个API来获得进程的调试状态。实际上检测自己调试状态的方法很多，只不过这个用起来最方便而已。比如可以用测试断点异常的方法来检测自己的调试状态。  </p>
-<pre><code>BOOL CheckForDebugger()
-{
-    __try 
-    {
-        DebugBreak();
-    }
-    __except(GetExceptionCode() == EXCEPTION_BREAKPOINT ? 
-             EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH) 
-    {
-        &#x2F;&#x2F; No debugger is attached, so return FALSE 
-        &#x2F;&#x2F; and continue.
-        return FALSE;
-    }
-    return TRUE;
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function">BOOL <span class="title">CheckForDebugger</span><span class="params">()</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    __try </div><div class="line">    &#123;</div><div class="line">        DebugBreak();</div><div class="line">    &#125;</div><div class="line">    __except(GetExceptionCode() == EXCEPTION_BREAKPOINT ? </div><div class="line">             EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH) </div><div class="line">    &#123;</div><div class="line">        <span class="comment">// No debugger is attached, so return FALSE </span></div><div class="line">        <span class="comment">// and continue.</span></div><div class="line">        <span class="keyword">return</span> FALSE;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> TRUE;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>本Blog的第一篇文章总算是出炉了~~~我太懒了哇~</p>
 
         
@@ -1274,7 +763,7 @@ File.Release();
       </h3>
       <div class="repo-list-description">
         
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><pre><code>printf(&quot;hello world!&quot;); </code></pre>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">printf</span>(<span class="string">"hello world!"</span>); </div></pre></td></tr></table></figure>
 
         
       </div>
@@ -1449,9 +938,7 @@ File.Release();
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 
 		<script src="/js/index.js"></script>

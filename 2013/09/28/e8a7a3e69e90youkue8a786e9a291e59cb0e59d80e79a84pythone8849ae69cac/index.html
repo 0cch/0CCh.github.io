@@ -64,85 +64,7 @@
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>几个月前写的东西，偶然翻出来发现还能用，就贴出来吧。非专业python程序员，代码比较乱 :-(</p>
 <p><a href="/uploads/2013/09/20130928134507.png"><img src="/uploads/2013/09/20130928134507.png" alt="20130928134507"></a></p>
-<pre><code>&#39;&#39;&#39;
-Created on 2013-3-6
-
-@author: nightxie
-&#39;&#39;&#39;
-
-import sys
-import urllib.request
-import urllib.parse
-import json
-
-def GetKeyString(seed):
-    base_string = &#39;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&#x2F;\\:._-1234567890&#39;;
-    target_string = &#39;&#39;;
-    while len(base_string) != 0 :
-        seed = (seed * 211 + 30031) % 65536;
-        index = (seed &#x2F; 65536 * len(base_string));
-        target_string += base_string[int(index)];
-        base_string = base_string[:int(index)] + base_string[int(index)+1:];
-    return target_string;
-
-def GetFildId(daye_str, seed):
-
-    new_list = daye_str.split(&#39;*&#39;);
-    target_string = &#39;&#39;;
-    base_string = GetKeyString(seed);
-    length = len(new_list);
-    i = 0;
-    while i &lt; length - 1:
-        index = int(new_list[i]);
-        target_string += base_string[index];
-        i += 1;
-    return target_string;
-
-def GetFlvPath(videoids, flv_type):
-    url = &#39;http:&#x2F;&#x2F;v.youku.com&#x2F;player&#x2F;getPlayList&#x2F;VideoIDS&#x2F;&#39; + videoids + &#39;&#x2F;timezone&#x2F;+08&#x2F;version&#x2F;5&#x2F;source&#x2F;video&#39;
-    req = urllib.request.Request(url);
-    req.add_header(&#39;Referer&#39;, &#39;http:&#x2F;&#x2F;static.youku.com&#x2F;v1.0.0307&#x2F;v&#x2F;swf&#x2F;player_yk.swf&#39;);
-    req.add_header(&#39;User-Agent&#39;, &#39;Mozilla&#x2F;5.0 (Windows NT 6.1) AppleWebKit&#x2F;537.17 (KHTML, like Gecko) Chrome&#x2F;24.0.1312.56 Safari&#x2F;537.17&#39;);
-    play_list = urllib.request.urlopen(req).read().decode(&quot;utf8&quot;);
-   
-    play_list_data = json.loads(play_list)[&#39;data&#39;][0];
-    seed = play_list_data[&#39;seed&#39;];
-    streamfileids = play_list_data[&#39;streamfileids&#39;];
-    regs = play_list_data[&#39;segs&#39;];
-    
-    type_fileid = streamfileids[flv_type];
-    type_list = regs[flv_type];
-    url_type = flv_type;
-    if url_type == &#39;hd2&#39;:
-        url_type = &#39;flv&#39;
-    
-    type_list_count = len(type_list);
-    i = 0;
-    while i &lt; type_list_count :
-        fileid = GetFildId(type_fileid, seed);
-        fileid = fileid[:8] + (&quot;%0.2X&quot; % i) + fileid[10:];
-        fileid += &#39;?k=&#39;;
-        fileid += type_list[i][&#39;k&#39;];
-        flv_path = &#39;http:&#x2F;&#x2F;f.youku.com&#x2F;player&#x2F;getFlvPath&#x2F;sid&#x2F;00_00&#x2F;st&#x2F;&#39;+url_type+&#39;&#x2F;fileid&#x2F;&#39; + fileid;
-        print(flv_path);
-        i += 1;
-        
-def GetVideoIdsFromUrl(url):
-    url_object = urllib.parse.urlparse(url);
-    url_path = url_object.path;
-    return url_path[11:-5]
-
-def GetFlvPathFromUrl(url, video_type):
-    video_ids = GetVideoIdsFromUrl(url);
-    GetFlvPath(video_ids, video_type);
-
-if __name__ == &#39;__main__&#39;:
-    if len(sys.argv) == 3:
-        GetFlvPathFromUrl(sys.argv[1], sys.argv[2]);
-    else:
-        print(&quot;youku.py  &quot;);
-   
-</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div></pre></td><td class="code"><pre><div class="line"><span class="string">'''</span></div><div class="line"><span class="string">Created on 2013-3-6</span></div><div class="line"><span class="string"></span></div><div class="line"><span class="string">@author: nightxie</span></div><div class="line"><span class="string">'''</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">import</span> urllib.request</div><div class="line"><span class="keyword">import</span> urllib.parse</div><div class="line"><span class="keyword">import</span> json</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetKeyString</span><span class="params">(seed)</span>:</span></div><div class="line">    base_string = <span class="string">'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/\\:._-1234567890'</span>;</div><div class="line">    target_string = <span class="string">''</span>;</div><div class="line">    <span class="keyword">while</span> len(base_string) != <span class="number">0</span> :</div><div class="line">        seed = (seed * <span class="number">211</span> + <span class="number">30031</span>) % <span class="number">65536</span>;</div><div class="line">        index = (seed / <span class="number">65536</span> * len(base_string));</div><div class="line">        target_string += base_string[int(index)];</div><div class="line">        base_string = base_string[:int(index)] + base_string[int(index)+<span class="number">1</span>:];</div><div class="line">    <span class="keyword">return</span> target_string;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetFildId</span><span class="params">(daye_str, seed)</span>:</span></div><div class="line"></div><div class="line">    new_list = daye_str.split(<span class="string">'*'</span>);</div><div class="line">    target_string = <span class="string">''</span>;</div><div class="line">    base_string = GetKeyString(seed);</div><div class="line">    length = len(new_list);</div><div class="line">    i = <span class="number">0</span>;</div><div class="line">    <span class="keyword">while</span> i &lt; length - <span class="number">1</span>:</div><div class="line">        index = int(new_list[i]);</div><div class="line">        target_string += base_string[index];</div><div class="line">        i += <span class="number">1</span>;</div><div class="line">    <span class="keyword">return</span> target_string;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetFlvPath</span><span class="params">(videoids, flv_type)</span>:</span></div><div class="line">    url = <span class="string">'http://v.youku.com/player/getPlayList/VideoIDS/'</span> + videoids + <span class="string">'/timezone/+08/version/5/source/video'</span></div><div class="line">    req = urllib.request.Request(url);</div><div class="line">    req.add_header(<span class="string">'Referer'</span>, <span class="string">'http://static.youku.com/v1.0.0307/v/swf/player_yk.swf'</span>);</div><div class="line">    req.add_header(<span class="string">'User-Agent'</span>, <span class="string">'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.56 Safari/537.17'</span>);</div><div class="line">    play_list = urllib.request.urlopen(req).read().decode(<span class="string">"utf8"</span>);</div><div class="line">   </div><div class="line">    play_list_data = json.loads(play_list)[<span class="string">'data'</span>][<span class="number">0</span>];</div><div class="line">    seed = play_list_data[<span class="string">'seed'</span>];</div><div class="line">    streamfileids = play_list_data[<span class="string">'streamfileids'</span>];</div><div class="line">    regs = play_list_data[<span class="string">'segs'</span>];</div><div class="line">    </div><div class="line">    type_fileid = streamfileids[flv_type];</div><div class="line">    type_list = regs[flv_type];</div><div class="line">    url_type = flv_type;</div><div class="line">    <span class="keyword">if</span> url_type == <span class="string">'hd2'</span>:</div><div class="line">        url_type = <span class="string">'flv'</span></div><div class="line">    </div><div class="line">    type_list_count = len(type_list);</div><div class="line">    i = <span class="number">0</span>;</div><div class="line">    <span class="keyword">while</span> i &lt; type_list_count :</div><div class="line">        fileid = GetFildId(type_fileid, seed);</div><div class="line">        fileid = fileid[:<span class="number">8</span>] + (<span class="string">"%0.2X"</span> % i) + fileid[<span class="number">10</span>:];</div><div class="line">        fileid += <span class="string">'?k='</span>;</div><div class="line">        fileid += type_list[i][<span class="string">'k'</span>];</div><div class="line">        flv_path = <span class="string">'http://f.youku.com/player/getFlvPath/sid/00_00/st/'</span>+url_type+<span class="string">'/fileid/'</span> + fileid;</div><div class="line">        print(flv_path);</div><div class="line">        i += <span class="number">1</span>;</div><div class="line">        </div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetVideoIdsFromUrl</span><span class="params">(url)</span>:</span></div><div class="line">    url_object = urllib.parse.urlparse(url);</div><div class="line">    url_path = url_object.path;</div><div class="line">    <span class="keyword">return</span> url_path[<span class="number">11</span>:<span class="number">-5</span>]</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetFlvPathFromUrl</span><span class="params">(url, video_type)</span>:</span></div><div class="line">    video_ids = GetVideoIdsFromUrl(url);</div><div class="line">    GetFlvPath(video_ids, video_type);</div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    <span class="keyword">if</span> len(sys.argv) == <span class="number">3</span>:</div><div class="line">        GetFlvPathFromUrl(sys.argv[<span class="number">1</span>], sys.argv[<span class="number">2</span>]);</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        print(<span class="string">"youku.py  "</span>);</div><div class="line">   </div><div class="line"></div></pre></td></tr></table></figure>
 
             </article>
             
@@ -241,9 +163,7 @@ if __name__ == &#39;__main__&#39;:
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 			<script src="/js/toc.js"></script>
 		

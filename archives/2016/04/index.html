@@ -86,77 +86,7 @@
       <div class="repo-list-description">
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>用来干什么就不用说了，反正不是什么好事情 =v=</p>
-<pre><code>
-typedef struct _DESKTOP_ICON_INFO {
-	LVITEMW item;
-	WCHAR item_text[MAX_PATH];
-	RECT rc;
-} DESKTOP_ICON_INFO, *PDESKTOP_ICON_INFO;
-
-BOOL GetDesktopIconInfo(LPCWSTR pattern, RECT &amp;rc, HWND &amp;desktop)
-{
-	HWND progman = FindWindow(TEXT(&quot;Progman&quot;), TEXT(&quot;Program Manager&quot;));
-	if (progman == NULL) {
-		return FALSE;
-	}
-	
-
-	HWND def_view = FindWindowEx(progman, NULL, TEXT(&quot;SHELLDLL_DefView&quot;), NULL);
-	if (def_view == NULL) {
-		return FALSE;
-	}
-
-	HWND list_view = FindWindowEx(def_view, NULL, TEXT(&quot;SysListView32&quot;), TEXT(&quot;FolderView&quot;));
-	if (list_view == NULL) {
-		return FALSE;
-	}
-	desktop = list_view;
-
-	ULONG process_id = 0;
-	GetWindowThreadProcessId(progman, &amp;process_id);
-	if (process_id == 0) {
-		return FALSE;
-	}
-
-	int count = (int)::SendMessage(list_view, LVM_GETITEMCOUNT, 0, 0);
-
-	HANDLE process_handle = OpenProcess(
-		PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_QUERY_INFORMATION, FALSE, process_id);
-	if (process_handle == NULL) {
-		return FALSE;
-	}
-
-	PUCHAR remote_addr = (PUCHAR)VirtualAllocEx(process_handle, NULL, 
-		sizeof(DESKTOP_ICON_INFO), MEM_COMMIT, PAGE_READWRITE);
-
-	DESKTOP_ICON_INFO icon_info;
-	icon_info.item.iItem = 0;
-	icon_info.item.iSubItem = 0;
-	icon_info.item.mask = LVIF_TEXT;
-	icon_info.item.pszText = (WCHAR *)(remote_addr + offsetof(DESKTOP_ICON_INFO, item_text));
-	icon_info.item.cchTextMax = MAX_PATH;
-
-	for (int i = 0; i &lt; count; i++) {
-		icon_info.rc.left = LVIR_BOUNDS;
-		ZeroMemory(icon_info.item_text, sizeof(icon_info.item_text));
-		if (WriteProcessMemory(process_handle, remote_addr, &amp;icon_info, sizeof(icon_info), NULL)) {
-			 ::SendMessage(list_view, LVM_GETITEMTEXT, (WPARAM)i, (LPARAM)(remote_addr + offsetof(DESKTOP_ICON_INFO, item)));
-			 ::SendMessage(list_view, LVM_GETITEMRECT, (WPARAM)i, (LPARAM)(remote_addr + offsetof(DESKTOP_ICON_INFO, rc)));
-			 ReadProcessMemory(process_handle, remote_addr, &amp;icon_info, sizeof(icon_info), NULL);
-
-			 if (_wcsicmp(icon_info.item_text, pattern) == 0) {
-				 rc = icon_info.rc;
-				 break;
-			 }
-		}
-	}
-
-	VirtualFreeEx(process_handle, remote_addr, 0, MEM_RELEASE);
-	CloseHandle(process_handle);
-	return TRUE;
-}
-
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">DESKTOP_ICON_INFO</span> &#123;</span></div><div class="line">	LVITEMW item;</div><div class="line">	WCHAR item_text[MAX_PATH];</div><div class="line">	RECT rc;</div><div class="line">&#125; DESKTOP_ICON_INFO, *PDESKTOP_ICON_INFO;</div><div class="line"></div><div class="line"><span class="function">BOOL <span class="title">GetDesktopIconInfo</span><span class="params">(LPCWSTR pattern, RECT &amp;rc, HWND &amp;desktop)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">	HWND progman = FindWindow(TEXT(<span class="string">"Progman"</span>), TEXT(<span class="string">"Program Manager"</span>));</div><div class="line">	<span class="keyword">if</span> (progman == <span class="literal">NULL</span>) &#123;</div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line"></div><div class="line">	HWND def_view = FindWindowEx(progman, <span class="literal">NULL</span>, TEXT(<span class="string">"SHELLDLL_DefView"</span>), <span class="literal">NULL</span>);</div><div class="line">	<span class="keyword">if</span> (def_view == <span class="literal">NULL</span>) &#123;</div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	HWND list_view = FindWindowEx(def_view, <span class="literal">NULL</span>, TEXT(<span class="string">"SysListView32"</span>), TEXT(<span class="string">"FolderView"</span>));</div><div class="line">	<span class="keyword">if</span> (list_view == <span class="literal">NULL</span>) &#123;</div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line">	desktop = list_view;</div><div class="line"></div><div class="line">	ULONG process_id = <span class="number">0</span>;</div><div class="line">	GetWindowThreadProcessId(progman, &amp;process_id);</div><div class="line">	<span class="keyword">if</span> (process_id == <span class="number">0</span>) &#123;</div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">int</span> count = (<span class="keyword">int</span>)::SendMessage(list_view, LVM_GETITEMCOUNT, <span class="number">0</span>, <span class="number">0</span>);</div><div class="line"></div><div class="line">	HANDLE process_handle = OpenProcess(</div><div class="line">		PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_QUERY_INFORMATION, FALSE, process_id);</div><div class="line">	<span class="keyword">if</span> (process_handle == <span class="literal">NULL</span>) &#123;</div><div class="line">		<span class="keyword">return</span> FALSE;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	PUCHAR remote_addr = (PUCHAR)VirtualAllocEx(process_handle, <span class="literal">NULL</span>, </div><div class="line">		<span class="keyword">sizeof</span>(DESKTOP_ICON_INFO), MEM_COMMIT, PAGE_READWRITE);</div><div class="line"></div><div class="line">	DESKTOP_ICON_INFO icon_info;</div><div class="line">	icon_info.item.iItem = <span class="number">0</span>;</div><div class="line">	icon_info.item.iSubItem = <span class="number">0</span>;</div><div class="line">	icon_info.item.mask = LVIF_TEXT;</div><div class="line">	icon_info.item.pszText = (WCHAR *)(remote_addr + offsetof(DESKTOP_ICON_INFO, item_text));</div><div class="line">	icon_info.item.cchTextMax = MAX_PATH;</div><div class="line"></div><div class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</div><div class="line">		icon_info.rc.left = LVIR_BOUNDS;</div><div class="line">		ZeroMemory(icon_info.item_text, <span class="keyword">sizeof</span>(icon_info.item_text));</div><div class="line">		<span class="keyword">if</span> (WriteProcessMemory(process_handle, remote_addr, &amp;icon_info, <span class="keyword">sizeof</span>(icon_info), <span class="literal">NULL</span>)) &#123;</div><div class="line">			 ::SendMessage(list_view, LVM_GETITEMTEXT, (WPARAM)i, (LPARAM)(remote_addr + offsetof(DESKTOP_ICON_INFO, item)));</div><div class="line">			 ::SendMessage(list_view, LVM_GETITEMRECT, (WPARAM)i, (LPARAM)(remote_addr + offsetof(DESKTOP_ICON_INFO, rc)));</div><div class="line">			 ReadProcessMemory(process_handle, remote_addr, &amp;icon_info, <span class="keyword">sizeof</span>(icon_info), <span class="literal">NULL</span>);</div><div class="line"></div><div class="line">			 <span class="keyword">if</span> (_wcsicmp(icon_info.item_text, pattern) == <span class="number">0</span>) &#123;</div><div class="line">				 rc = icon_info.rc;</div><div class="line">				 <span class="keyword">break</span>;</div><div class="line">			 &#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	VirtualFreeEx(process_handle, remote_addr, <span class="number">0</span>, MEM_RELEASE);</div><div class="line">	CloseHandle(process_handle);</div><div class="line">	<span class="keyword">return</span> TRUE;</div><div class="line">&#125;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
         
       </div>
       <p class="repo-list-meta">
@@ -329,9 +259,7 @@ BOOL GetDesktopIconInfo(LPCWSTR pattern, RECT &amp;rc, HWND &amp;desktop)
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 
 		<script src="/js/index.js"></script>

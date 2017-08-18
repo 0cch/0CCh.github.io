@@ -63,18 +63,8 @@
         <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近遇到朋友的一个程序崩溃，原因是接口没有释放的时候调用了CoUninitialize，接着才释放接口。这个应该是个很明显的问题，但是朋友告诉我以前代码就是这个样子的，没有崩溃过，最近修改了部分代码但并不是这一块的。为了看看究竟什么回事，我把没有崩溃的程序抓了dump，看了COM的初始化引用计数：</p>
-<pre><code>0:000&gt; dt _teb @$teb ReservedForOle
-ntdll!_TEB
-   +0x1758 ReservedForOle : 0x00000000`00271b00 Void
-
-0:000&gt; dt ole32!SOleTlsData 0x00000000`00271b00 cComInits pNativeApt
-   +0x028 cComInits  : 5
-   +0x080 pNativeApt : 0x00000000`00272680 CComApartment
-
-0:000&gt; dt 0x00000000`00272680 CComApartment _AptKind
-ole32!CComApartment
-   +0x010 _AptKind : 4 ( APTKIND_APARTMENTTHREADED )
-</code></pre><p>没有崩溃的时候，引用计数确实不为0，也能看出是个STA。后来朋友发现，之所以之前没有崩溃，是因为之前线程加载的某个dll中，有初始化COM的调用，所以引用计数不为0。后来移开了这个dll，问题就出现了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">0:000&gt; dt _teb @$teb ReservedForOle</div><div class="line">ntdll!_TEB</div><div class="line">   +0x1758 ReservedForOle : 0x00000000`00271b00 Void</div><div class="line"></div><div class="line">0:000&gt; dt ole32!SOleTlsData 0x00000000`00271b00 cComInits pNativeApt</div><div class="line">   +0x028 cComInits  : 5</div><div class="line">   +0x080 pNativeApt : 0x00000000`00272680 CComApartment</div><div class="line">   </div><div class="line">0:000&gt; dt 0x00000000`00272680 CComApartment _AptKind</div><div class="line">ole32!CComApartment</div><div class="line">   +0x010 _AptKind : 4 ( APTKIND_APARTMENTTHREADED )</div></pre></td></tr></table></figure>
+<p>没有崩溃的时候，引用计数确实不为0，也能看出是个STA。后来朋友发现，之所以之前没有崩溃，是因为之前线程加载的某个dll中，有初始化COM的调用，所以引用计数不为0。后来移开了这个dll，问题就出现了。</p>
 
             </article>
             
@@ -173,9 +163,7 @@ ole32!CComApartment
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 			<script src="/js/toc.js"></script>
 		

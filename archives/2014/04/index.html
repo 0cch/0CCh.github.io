@@ -87,25 +87,7 @@
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这是自己没事在家调试程序的一个小需求。</p>
 <p>有时候比如IE这样的程序，线程实在是非常的多，我想操作某个特殊线程就比较麻烦，需要先找到线程然后再实行命令，为了偷懒就写了这个脚本。</p>
-<pre><code>$$ If a frame of a thread has the target symbol, we execute the command.
-$$ Author: nighxie 
-$$ Blog: 0cch.net
-
-.if (${&#x2F;d:$arg1} &amp; ${&#x2F;d:$arg2} &amp; ${&#x2F;d:$arg3}) {
-	.for (r @$t0 = 0; @$t0 &lt; 0n${$arg1}; r @$t0 = @$t0 + 1) {
-		r @$t1 = 0;
-		~[@$t0]s;
-		!for_each_frame .if($spat(&quot;${@#SymbolName}&quot;, &quot;${$arg2}&quot;)) {r @$t1 = 1}
-		.if (@$t1 == 1) {
-			${$arg3};
-		}
-	}
-}
-.else {
-	.echo &quot;Usage $$&gt;a&lt;${$arg0} thread_count pattern cmd&quot;;
-	.echo &quot;e.g. $$&gt;a&lt;${$arg0} 5 ntdll* ~n&quot;;
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">$$ If a frame of a thread has the target symbol, we execute the command.</div><div class="line">$$ Author: nighxie </div><div class="line">$$ Blog: <span class="number">0</span>cch.net</div><div class="line"></div><div class="line">.<span class="keyword">if</span> ($&#123;/d:$arg1&#125; &amp; $&#123;/d:$arg2&#125; &amp; $&#123;/d:$arg3&#125;) &#123;</div><div class="line">	.<span class="keyword">for</span> (r @$t0 = <span class="number">0</span>; @$t0 &lt; <span class="number">0</span>n$&#123;$arg1&#125;; r @$t0 = @$t0 + <span class="number">1</span>) &#123;</div><div class="line">		r @$t1 = <span class="number">0</span>;</div><div class="line">		~[@$t0]s;</div><div class="line">		!for_each_frame .<span class="keyword">if</span>($spat(<span class="string">"$&#123;@#SymbolName&#125;"</span>, <span class="string">"$&#123;$arg2&#125;"</span>)) &#123;r @$t1 = <span class="number">1</span>&#125;</div><div class="line">		.<span class="keyword">if</span> (@$t1 == <span class="number">1</span>) &#123;</div><div class="line">			$&#123;$arg3&#125;;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line">.<span class="keyword">else</span> &#123;</div><div class="line">	.echo <span class="string">"Usage $$&gt;a&lt;$&#123;$arg0&#125; thread_count pattern cmd"</span>;</div><div class="line">	.echo <span class="string">"e.g. $$&gt;a&lt;$&#123;$arg0&#125; 5 ntdll* ~n"</span>;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>就如同上面的例子指定线程数量，要匹配的符号，最后就是要执行的命令。<br>$$&gt;a&lt;${$arg0} 5 ntdll* ~n就表示在前5个线程里寻找栈回溯有关ntdll的线程，然后执行~n命令挂起线程。</p>
 
         
@@ -149,55 +131,14 @@ $$ Blog: 0cch.net
 <p>好了，既然微软都这么说了，也没办法，还好微软也给我们提供了另一套函数，叫做<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/dn424972(v=vs.85" target="_blank" rel="external">Version Helper functions</a>.aspx) ，看起来是一套很不错的API，能帮助我们方便的判断系统版本。但是，仔细一看，这套函数需要头文件VersionHelpers.h，而这个文件是 Windows 8.1 software development kit 的一部分。对于使用低版本的VS还得装新版SDK，岂不麻烦。那么我们希望能找到一套更好的解决方法。</p>
 <p>我第一个能想到了，当然就是万能的WMI，使用Win32_OperatingSystem class中的Version可以获得一个形如6.3.9600的字符串，我们就能通过解析这个获得系统的版本了。但是说实话，不到万不得已我不太喜欢用WMI这套API，总感觉为了一个小功能，牵扯了一堆东西。</p>
 <p>那么第二套方案，是我觉得比较满意的，那就是调用<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms725493(v=vs.85" target="_blank" rel="external">VerSetConditionMask</a>.aspx)和<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms725492(v=vs.85" target="_blank" rel="external">VerifyVersionInfo</a>.aspx)来完成对系统版本的判断。具体做法如下：</p>
-<pre><code>BOOL IsWindows8Point1()
-{
-	OSVERSIONINFOEX version_info = {0};
-	version_info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	version_info.dwMajorVersion = 6;
-	version_info.dwMinorVersion = 3;
-	ULONGLONG mask = VerSetConditionMask(0, VER_MAJORVERSION, VER_EQUAL);
-	mask = VerSetConditionMask(mask, VER_MINORVERSION, VER_EQUAL);
-	return VerifyVersionInfo(&amp;version;_info, VER_MAJORVERSION | VER_MINORVERSION, mask);
-}
-
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function">BOOL <span class="title">IsWindows8Point1</span><span class="params">()</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">	OSVERSIONINFOEX version_info = &#123;<span class="number">0</span>&#125;;</div><div class="line">	version_info.dwOSVersionInfoSize = <span class="keyword">sizeof</span>(OSVERSIONINFOEX);</div><div class="line">	version_info.dwMajorVersion = <span class="number">6</span>;</div><div class="line">	version_info.dwMinorVersion = <span class="number">3</span>;</div><div class="line">	ULONGLONG mask = VerSetConditionMask(<span class="number">0</span>, VER_MAJORVERSION, VER_EQUAL);</div><div class="line">	mask = VerSetConditionMask(mask, VER_MINORVERSION, VER_EQUAL);</div><div class="line">	<span class="keyword">return</span> VerifyVersionInfo(&amp;version;_info, VER_MAJORVERSION | VER_MINORVERSION, mask);</div><div class="line">&#125;</div><div class="line"></div><div class="line"> </div></pre></td></tr></table></figure>
 <p>那么，我们就可以用这个函数来判断系统是否是Windows 8.1，如果不是，我们就可以用老办法，GetVersionEx来获得系统的版本号作判断了。当然了，大家看到这估计也能看出，我们自己也能用这两个函数实现一套所谓的Version Helper functions。举个例子：</p>
-<pre><code>BOOL WINAPI IsWindowsVersionOrGreater(
-	WORD wMajorVersion,
-	WORD wMinorVersion,
-	WORD wServicePackMajor
-	)
-{
-	OSVERSIONINFOEX version_info = { 0 };
-	version_info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	version_info.dwMajorVersion = wMajorVersion;
-	version_info.dwMinorVersion = wMinorVersion;
-	version_info.wServicePackMajor = wServicePackMajor;
-
-	ULONGLONG mask = VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL);
-	mask = VerSetConditionMask(mask, VER_MINORVERSION, VER_GREATER_EQUAL);
-	mask = VerSetConditionMask(mask, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
-
-	return VerifyVersionInfo(&amp;version;_info, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, mask);
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="function">BOOL WINAPI <span class="title">IsWindowsVersionOrGreater</span><span class="params">(</span></span></div><div class="line"><span class="function"><span class="params">	WORD wMajorVersion,</span></span></div><div class="line"><span class="function"><span class="params">	WORD wMinorVersion,</span></span></div><div class="line"><span class="function"><span class="params">	WORD wServicePackMajor</span></span></div><div class="line"><span class="function"><span class="params">	)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">	OSVERSIONINFOEX version_info = &#123; <span class="number">0</span> &#125;;</div><div class="line">	version_info.dwOSVersionInfoSize = <span class="keyword">sizeof</span>(OSVERSIONINFOEX);</div><div class="line">	version_info.dwMajorVersion = wMajorVersion;</div><div class="line">	version_info.dwMinorVersion = wMinorVersion;</div><div class="line">	version_info.wServicePackMajor = wServicePackMajor;</div><div class="line"></div><div class="line">	ULONGLONG mask = VerSetConditionMask(<span class="number">0</span>, VER_MAJORVERSION, VER_GREATER_EQUAL);</div><div class="line">	mask = VerSetConditionMask(mask, VER_MINORVERSION, VER_GREATER_EQUAL);</div><div class="line">	mask = VerSetConditionMask(mask, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);</div><div class="line"></div><div class="line">	<span class="keyword">return</span> VerifyVersionInfo(&amp;version;_info, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, mask);</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>怎么样，是不是达到了以假乱真的效果了。那么最后，咱再看看这么写出来的API的效果如何：</p>
 <p><a href="/uploads/2014/04/20140413233019.png"><img src="/uploads/2014/04/20140413233019.png" alt="20140413233019"></a></p>
 <p>===============想睡觉的分割线====================</p>
 <p>更新另外一个方法，在网上看到的，感觉也还行。只不过需要引入其他DLL，可以作为备选方案。</p>
-<pre><code>ULONG MyGetVersion()
-{	
-	LPBYTE raw_data;
-	ULONG retval = 0;
-	if (NetWkstaGetInfo(NULL, 100, &amp;raw;_data) == NERR_Success) {
-		WKSTA_INFO_100 * ws_info = reinterpret_cast(raw_data);
-		retval = (ws_info-&gt;wki100_ver_major &lt;&lt; 16) | ws_info-&gt;wki100_ver_minor;
-		NetApiBufferFree(raw_data);
-		return retval;
-	}
-	return retval;
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function">ULONG <span class="title">MyGetVersion</span><span class="params">()</span></span></div><div class="line"><span class="function"></span>&#123;	</div><div class="line">	LPBYTE raw_data;</div><div class="line">	ULONG retval = <span class="number">0</span>;</div><div class="line">	<span class="keyword">if</span> (NetWkstaGetInfo(<span class="literal">NULL</span>, <span class="number">100</span>, &amp;raw;_data) == NERR_Success) &#123;</div><div class="line">		WKSTA_INFO_100 * ws_info = <span class="keyword">reinterpret_cast</span>(raw_data);</div><div class="line">		retval = (ws_info-&gt;wki100_ver_major &lt;&lt; <span class="number">16</span>) | ws_info-&gt;wki100_ver_minor;</div><div class="line">		NetApiBufferFree(raw_data);</div><div class="line">		<span class="keyword">return</span> retval;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> retval;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 
         
       </div>
@@ -412,9 +353,7 @@ $$ Blog: 0cch.net
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 
 		<script src="/js/index.js"></script>

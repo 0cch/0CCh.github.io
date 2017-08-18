@@ -87,22 +87,10 @@
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近写的程序中遇到了整型数符号位扩展的小问题。稍稍看了下，写在这里备忘。</p>
 <p>这里举个例子：</p>
-<pre><code>&#x2F;&#x2F; case 1
-long i = -1;
-long long q = i;
- </code></pre>
-<pre><code>&#x2F;&#x2F; case 2
-long i = -1;
-unsigned long long q = i;
- </code></pre>
-<pre><code>&#x2F;&#x2F; case 3
-unsigned long i = 0xffffffff;
-long long q = i;
- </code></pre>
-<pre><code>&#x2F;&#x2F; case 4
-unsigned long i = 0xffffffff;
-unsigned long long q = i;
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// case 1</span></div><div class="line"><span class="keyword">long</span> i = <span class="number">-1</span>;</div><div class="line"><span class="keyword">long</span> <span class="keyword">long</span> q = i;</div><div class="line"> </div></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// case 2</span></div><div class="line"><span class="keyword">long</span> i = <span class="number">-1</span>;</div><div class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> q = i;</div><div class="line"> </div></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// case 3</span></div><div class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> i = <span class="number">0xffffffff</span>;</div><div class="line"><span class="keyword">long</span> <span class="keyword">long</span> q = i;</div><div class="line"> </div></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// case 4</span></div><div class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> i = <span class="number">0xffffffff</span>;</div><div class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> q = i;</div><div class="line"> </div></pre></td></tr></table></figure>
 <p>那么这4肿情况中q都是多少呢？<br>实验结果是case 1 和 2，他们的q的值（这里都表示为无符号）0xffffffff<code>ffffffff，而case 3 和 4 中q的值为0x00000000</code>ffffffff。<br>看到这里，大概就能推测c++的转换策略。即以源操作数的类型为依据，对其进行扩展，然后赋值到目标操作数，他并不在乎目标的类型有无符号。</p>
 <p>看了相关编译完成后的汇编代码可以确认这一点，case 1和2的汇编代码完全相同，而3和4也是一样。更具体一点来说。有符号的情况下调用了cdq对符号位进行扩展，然后将edx赋值到q的高位，而无符号的情况下，简单xor了寄存器，然后赋值到q的高位。</p>
 
@@ -278,9 +266,7 @@ unsigned long long q = i;
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 
 		<script src="/js/index.js"></script>

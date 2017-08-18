@@ -68,108 +68,7 @@
 <p>如果要输出到文件也只需要这样：<br>HANDLE log_file;<br>log_file = CreateFile(“c:\log.txt”, GENERIC_WRITE,<br>    FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,<br>    FILE_ATTRIBUTE_NORMAL, NULL);<br>_CrtSetReportFile(_CRT_WARN, log_file);<br>CloseHandle(log_file);<br>或者<br>freopen( “c:\log2.txt”, “w”, stdout);<br>_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);<br>_CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDOUT);  </p>
 <p>好了，这样就能解决输出设备的问题。既然已经说到这里，继续介绍下ATLTRACE很少人知道的其他优点吧。<br>1.可以通过ATL/MFT TRACE Tool 随时设定Log的输出Filter，并且可以保持配置（工具用法很简单，具体直接用用就知道了）。<br>2.通过AtlDebugAPI的接口，可以给自己的代码中添加读取配置文件的函数。这样每次修改配置文件就能改变ATLTRACE的行为。<br>3.通过AtlDebugAPI的接口，可以直接制定输出内容，不用配置文件也可以。<br>这三条涉及到的接口有：<br>AtlTraceOpenProcess<br>AtlTraceModifyProcess<br>AtlTraceCloseProcess<br>AtlTraceLoadSettings  </p>
 <p>为了更方便使用，我这写了几个宏代码如下：</p>
-<pre><code>#include &lt;atlbase.h&gt;
-#include &lt;atltrace.h&gt;
-#include &lt;atldebugapi.h&gt;
-#include &lt;atlpath.h&gt;
-
-#define TRACEHELPA(fmt, ...)	\
-do								\
-{								\
-	SYSTEMTIME tm;				\
-	GetLocalTime(&amp;tm;);			\
-	ATLTRACE(&quot;%s: [%02d-%02d-%02d %02d:%02d:%02d:%03d] &quot;fmt, __FUNCTION__,							\
-	tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond, tm.wMilliseconds, __VA_ARGS__);	\
-} while (0)
-
-#define TRACEHELPW(fmt, ...)	\
-do								\
-{								\
-	SYSTEMTIME tm;				\
-	GetLocalTime(&amp;tm;);			\
-	ATLTRACE(L&quot;%S: [%02d-%02d-%02d %02d:%02d:%02d:%03d] &quot;fmt, __FUNCTION__,							\
-	tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond, tm.wMilliseconds, __VA_ARGS__);	\
-} while (0)
-
-#define TRACEHELPEXA(category, level, fmt, ...)	\
-do								\
-{								\
-	SYSTEMTIME tm;				\
-	GetLocalTime(&amp;tm;);			\
-	ATLTRACE(category, level, &quot;%s: [%02d-%02d-%02d %02d:%02d:%02d:%03d] &quot;fmt, __FUNCTION__,			\
-	tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond, tm.wMilliseconds, __VA_ARGS__);	\
-} while (0)
-
-#define TRACEHELPEXW(category, level, fmt, ...)	\
-do								\
-{								\
-	SYSTEMTIME tm;				\
-	GetLocalTime(&amp;tm;);			\
-	ATLTRACE(category, level, L&quot;%S: [%02d-%02d-%02d %02d:%02d:%02d:%03d] &quot;fmt, __FUNCTION__,		\
-	tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond, tm.wMilliseconds, __VA_ARGS__);	\
-} while (0)
-
-#define SetAtlTraceOpt(level, enable, category, filename_lineno, report_type, report_file)	\
-do																							\
-{																							\
-	DWORD_PTR trace_process = AtlTraceOpenProcess(GetCurrentProcessId());					\
-	AtlTraceModifyProcess(trace_process, level, enable, category, filename_lineno);			\
-	AtlTraceCloseProcess(trace_process);													\
-	_CrtSetReportMode(level, report_type);													\
-	if (report_type == _CRTDBG_MODE_FILE) {													\
-		_CrtSetReportFile(level, report_file);												\
-	}																						\
-} while (0)
-
-#define LoadAtlDebugCfgExA(path)															\
-do																							\
-{																							\
-	DWORD_PTR trace_process = AtlTraceOpenProcess(GetCurrentProcessId());					\
-	AtlTraceLoadSettingsA(path, trace_process);												\
-	AtlTraceCloseProcess(trace_process);													\
-} while (0)
-
-#define LoadAtlDebugCfgExW(path)															\
-do																							\
-{																							\
-	DWORD_PTR trace_process = AtlTraceOpenProcess(GetCurrentProcessId());					\
-	AtlTraceLoadSettingsU(path, trace_process);												\
-	AtlTraceCloseProcess(trace_process);													\
-} while (0)
-
-#define LoadAtlDebugCfgA()																	\
-do																							\
-{																							\
-	CHAR debug_cfg_path[MAX_PATH] = {0};													\
-	GetModuleFileNameA(NULL, debug_cfg_path, MAX_PATH);										\
-	CPathA debug_cfg_path_obj(debug_cfg_path);												\
-	debug_cfg_path_obj.RemoveExtension();													\
-	debug_cfg_path_obj.AddExtension(&quot;.trc&quot;);												\
-	LoadAtlDebugCfgExA(debug_cfg_path_obj.m_strPath.GetString());							\
-} while (0)
-
-#define LoadAtlDebugCfgW()																	\
-do																							\
-{																							\
-	WCHAR debug_cfg_path[MAX_PATH] = {0};													\
-	GetModuleFileNameW(NULL, debug_cfg_path, MAX_PATH);										\
-	CPathW debug_cfg_path_obj(debug_cfg_path);												\
-	debug_cfg_path_obj.RemoveExtension();													\
-	debug_cfg_path_obj.AddExtension(L&quot;.trc&quot;);												\
-	LoadAtlDebugCfgExW(debug_cfg_path_obj.m_strPath.GetString());							\
-} while (0)
-
-int _tmain(int argc, _TCHAR* argv[])
-{
-
-	SetAtlTraceOpt(_CRT_WARN, true, true, true, _CRTDBG_MODE_FILE, _CRTDBG_FILE_STDOUT);
-	LoadAtlDebugCfgW();
-	CTraceCategory MY_CATEGORY(_T(&quot;MyCategoryName&quot;));
-	TRACEHELPEXA(MY_CATEGORY, 0, &quot;test test test\n&quot;);
-	TRACEHELPEXW(MY_CATEGORY, 0, L&quot;test test test\n&quot;);
-	return 0;
-}
- </code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atlbase.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atltrace.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atldebugapi.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atlpath.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> TRACEHELPA(fmt, ...)	\</span></div><div class="line"><span class="keyword">do</span>								\</div><div class="line">&#123;								\</div><div class="line">	SYSTEMTIME tm;				\</div><div class="line">	GetLocalTime(&amp;tm;);			\</div><div class="line">	ATLTRACE(<span class="string">"%s: [%02d-%02d-%02d %02d:%02d:%02d:%03d] "</span>fmt, __FUNCTION__,							\</div><div class="line">	tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond, tm.wMilliseconds, __VA_ARGS__);	\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> TRACEHELPW(fmt, ...)	\</span></div><div class="line"><span class="keyword">do</span>								\</div><div class="line">&#123;								\</div><div class="line">	SYSTEMTIME tm;				\</div><div class="line">	GetLocalTime(&amp;tm;);			\</div><div class="line">	ATLTRACE(<span class="string">L"%S: [%02d-%02d-%02d %02d:%02d:%02d:%03d] "</span>fmt, __FUNCTION__,							\</div><div class="line">	tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond, tm.wMilliseconds, __VA_ARGS__);	\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> TRACEHELPEXA(category, level, fmt, ...)	\</span></div><div class="line"><span class="keyword">do</span>								\</div><div class="line">&#123;								\</div><div class="line">	SYSTEMTIME tm;				\</div><div class="line">	GetLocalTime(&amp;tm;);			\</div><div class="line">	ATLTRACE(category, level, <span class="string">"%s: [%02d-%02d-%02d %02d:%02d:%02d:%03d] "</span>fmt, __FUNCTION__,			\</div><div class="line">	tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond, tm.wMilliseconds, __VA_ARGS__);	\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> TRACEHELPEXW(category, level, fmt, ...)	\</span></div><div class="line"><span class="keyword">do</span>								\</div><div class="line">&#123;								\</div><div class="line">	SYSTEMTIME tm;				\</div><div class="line">	GetLocalTime(&amp;tm;);			\</div><div class="line">	ATLTRACE(category, level, <span class="string">L"%S: [%02d-%02d-%02d %02d:%02d:%02d:%03d] "</span>fmt, __FUNCTION__,		\</div><div class="line">	tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond, tm.wMilliseconds, __VA_ARGS__);	\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> SetAtlTraceOpt(level, enable, category, filename_lineno, report_type, report_file)	\</span></div><div class="line"><span class="keyword">do</span>																							\</div><div class="line">&#123;																							\</div><div class="line">	DWORD_PTR trace_process = AtlTraceOpenProcess(GetCurrentProcessId());					\</div><div class="line">	AtlTraceModifyProcess(trace_process, level, enable, category, filename_lineno);			\</div><div class="line">	AtlTraceCloseProcess(trace_process);													\</div><div class="line">	_CrtSetReportMode(level, report_type);													\</div><div class="line">	<span class="keyword">if</span> (report_type == _CRTDBG_MODE_FILE) &#123;													\</div><div class="line">		_CrtSetReportFile(level, report_file);												\</div><div class="line">	&#125;																						\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> LoadAtlDebugCfgExA(path)															\</span></div><div class="line"><span class="keyword">do</span>																							\</div><div class="line">&#123;																							\</div><div class="line">	DWORD_PTR trace_process = AtlTraceOpenProcess(GetCurrentProcessId());					\</div><div class="line">	AtlTraceLoadSettingsA(path, trace_process);												\</div><div class="line">	AtlTraceCloseProcess(trace_process);													\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> LoadAtlDebugCfgExW(path)															\</span></div><div class="line"><span class="keyword">do</span>																							\</div><div class="line">&#123;																							\</div><div class="line">	DWORD_PTR trace_process = AtlTraceOpenProcess(GetCurrentProcessId());					\</div><div class="line">	AtlTraceLoadSettingsU(path, trace_process);												\</div><div class="line">	AtlTraceCloseProcess(trace_process);													\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> LoadAtlDebugCfgA()																	\</span></div><div class="line"><span class="keyword">do</span>																							\</div><div class="line">&#123;																							\</div><div class="line">	CHAR debug_cfg_path[MAX_PATH] = &#123;<span class="number">0</span>&#125;;													\</div><div class="line">	GetModuleFileNameA(<span class="literal">NULL</span>, debug_cfg_path, MAX_PATH);										\</div><div class="line">	<span class="function">CPathA <span class="title">debug_cfg_path_obj</span><span class="params">(debug_cfg_path)</span></span>;												\</div><div class="line">	debug_cfg_path_obj.RemoveExtension();													\</div><div class="line">	debug_cfg_path_obj.AddExtension(<span class="string">".trc"</span>);												\</div><div class="line">	LoadAtlDebugCfgExA(debug_cfg_path_obj.m_strPath.GetString());							\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> LoadAtlDebugCfgW()																	\</span></div><div class="line"><span class="keyword">do</span>																							\</div><div class="line">&#123;																							\</div><div class="line">	WCHAR debug_cfg_path[MAX_PATH] = &#123;<span class="number">0</span>&#125;;													\</div><div class="line">	GetModuleFileNameW(<span class="literal">NULL</span>, debug_cfg_path, MAX_PATH);										\</div><div class="line">	<span class="function">CPathW <span class="title">debug_cfg_path_obj</span><span class="params">(debug_cfg_path)</span></span>;												\</div><div class="line">	debug_cfg_path_obj.RemoveExtension();													\</div><div class="line">	debug_cfg_path_obj.AddExtension(<span class="string">L".trc"</span>);												\</div><div class="line">	LoadAtlDebugCfgExW(debug_cfg_path_obj.m_strPath.GetString());							\</div><div class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</div><div class="line"></div><div class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line"></div><div class="line">	SetAtlTraceOpt(_CRT_WARN, <span class="literal">true</span>, <span class="literal">true</span>, <span class="literal">true</span>, _CRTDBG_MODE_FILE, _CRTDBG_FILE_STDOUT);</div><div class="line">	LoadAtlDebugCfgW();</div><div class="line">	CTraceCategory MY_CATEGORY(_T("MyCategoryName"));</div><div class="line">	TRACEHELPEXA(MY_CATEGORY, <span class="number">0</span>, <span class="string">"test test test\n"</span>);</div><div class="line">	TRACEHELPEXW(MY_CATEGORY, <span class="number">0</span>, <span class="string">L"test test test\n"</span>);</div><div class="line">	<span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line"> </div></pre></td></tr></table></figure>
 
             </article>
             
@@ -268,9 +167,7 @@ int _tmain(int argc, _TCHAR* argv[])
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 			<script src="/js/toc.js"></script>
 		

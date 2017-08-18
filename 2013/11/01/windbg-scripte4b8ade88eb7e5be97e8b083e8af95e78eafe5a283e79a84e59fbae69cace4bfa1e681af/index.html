@@ -63,49 +63,7 @@
         <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>今天继续来玩Windbg script。在写复杂的脚本的时候，可能需要根据调试的环境，指定不同的脚本代码来运行。而Windbg貌似没有提供很好的方式，让脚本得知调试环境。还好，我们可以用一些其他的方式获得这些信息，例如：写一个扩展程序来设置这些信息到Aliase上，<a href="https://github.com/0cch/0cchext" target="_blank" rel="external">0cchext</a>就实现了这个功能。另外一个方式就是使用脚本自身来获得一些简单的信息，算是个windbg script中的小把戏吧。脚本如下：</p>
-<pre><code>$$ Initialize script environment
-$$ Author: nighxie 
-$$ Blog: 0cch.net
-$$ @#NtMajorVersion @#NtMinorVersion - System version number.
-$$ @#DebugMode - 0:kd 1:lkd 2:user
-
-ad &#x2F;q ${&#x2F;v:$sharedata} 
-
-.catch {
-    .foreach &#x2F;pS 2 (${&#x2F;v:$addr} {!kuser}) {
-        aS ${&#x2F;v:$sharedata} ${$addr};
-        .leave;
-    }
-}
-
-.block {
-    r @$t0=${$sharedata};
-    aS &#x2F;x ${&#x2F;v:@#NtMajorVersion} @@C++(((nt!_KUSER_SHARED_DATA *)@$t0)-&gt;NtMajorVersion);
-    aS &#x2F;x ${&#x2F;v:@#NtMinorVersion} @@C++(((nt!_KUSER_SHARED_DATA *)@$t0)-&gt;NtMinorVersion);
-}
-
-ad &#x2F;q ${&#x2F;v:$sharedata} 
-
-.catch {
-    r @$t0 = 0;
-    .foreach (${&#x2F;v:$addr} {lm1m m nt}) {
-        r @$t0 = ${$addr};
-        .leave;
-    }
-}
-
-.if ($vvalid(@$t0, 1)) {
-    aS ${&#x2F;v:@#DebugMode} 0;
-     .foreach (${&#x2F;v:$val} {.catch{? @eax}}) {
-        .if ($scmp(&quot;${$val}&quot;, &quot;\&#39;@eax\&#39;&quot;)==0) {
-            aS ${&#x2F;v:@#DebugMode} 1;
-        }
-    }
-}
-.else {
-    aS ${&#x2F;v:@#DebugMode} 2;
-}
-</code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">$$ Initialize script environment</div><div class="line">$$ Author: nighxie </div><div class="line">$$ Blog: <span class="number">0</span>cch.net</div><div class="line">$$ @#NtMajorVersion @#NtMinorVersion - System version number.</div><div class="line">$$ @#DebugMode - <span class="number">0</span>:kd <span class="number">1</span>:lkd <span class="number">2</span>:user</div><div class="line"></div><div class="line">ad /q $&#123;/v:$sharedata&#125; </div><div class="line"></div><div class="line">.<span class="keyword">catch</span> &#123;</div><div class="line">    .foreach /pS <span class="number">2</span> ($&#123;/v:$addr&#125; &#123;!kuser&#125;) &#123;</div><div class="line">        aS $&#123;/v:$sharedata&#125; $&#123;$addr&#125;;</div><div class="line">        .leave;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">.block &#123;</div><div class="line">    r @$t0=$&#123;$sharedata&#125;;</div><div class="line">    aS /x $&#123;/v:@#NtMajorVersion&#125; @@C++(((nt!_KUSER_SHARED_DATA *)@$t0)-&gt;NtMajorVersion);</div><div class="line">    aS /x $&#123;/v:@#NtMinorVersion&#125; @@C++(((nt!_KUSER_SHARED_DATA *)@$t0)-&gt;NtMinorVersion);</div><div class="line">&#125;</div><div class="line"></div><div class="line">ad /q $&#123;/v:$sharedata&#125; </div><div class="line"></div><div class="line">.<span class="keyword">catch</span> &#123;</div><div class="line">    r @$t0 = <span class="number">0</span>;</div><div class="line">    .foreach ($&#123;/v:$addr&#125; &#123;lm1m m nt&#125;) &#123;</div><div class="line">        r @$t0 = $&#123;$addr&#125;;</div><div class="line">        .leave;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">.<span class="keyword">if</span> ($vvalid(@$t0, <span class="number">1</span>)) &#123;</div><div class="line">    aS $&#123;/v:@#DebugMode&#125; <span class="number">0</span>;</div><div class="line">     .foreach ($&#123;/v:$val&#125; &#123;.<span class="keyword">catch</span>&#123;? @eax&#125;&#125;) &#123;</div><div class="line">        .<span class="keyword">if</span> ($scmp(<span class="string">"$&#123;$val&#125;"</span>, <span class="string">"\'@eax\'"</span>)==<span class="number">0</span>) &#123;</div><div class="line">            aS $&#123;/v:@#DebugMode&#125; <span class="number">1</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">.<span class="keyword">else</span> &#123;</div><div class="line">    aS $&#123;/v:@#DebugMode&#125; <span class="number">2</span>;</div><div class="line">&#125;</div><div class="line"></div></pre></td></tr></table></figure>
 
             </article>
             
@@ -204,9 +162,7 @@ ad &#x2F;q ${&#x2F;v:$sharedata}
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 			<script src="/js/toc.js"></script>
 		

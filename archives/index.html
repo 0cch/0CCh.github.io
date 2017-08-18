@@ -130,18 +130,8 @@
       <div class="repo-list-description">
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近遇到朋友的一个程序崩溃，原因是接口没有释放的时候调用了CoUninitialize，接着才释放接口。这个应该是个很明显的问题，但是朋友告诉我以前代码就是这个样子的，没有崩溃过，最近修改了部分代码但并不是这一块的。为了看看究竟什么回事，我把没有崩溃的程序抓了dump，看了COM的初始化引用计数：</p>
-<pre><code>0:000&gt; dt _teb @$teb ReservedForOle
-ntdll!_TEB
-   +0x1758 ReservedForOle : 0x00000000`00271b00 Void
-
-0:000&gt; dt ole32!SOleTlsData 0x00000000`00271b00 cComInits pNativeApt
-   +0x028 cComInits  : 5
-   +0x080 pNativeApt : 0x00000000`00272680 CComApartment
-
-0:000&gt; dt 0x00000000`00272680 CComApartment _AptKind
-ole32!CComApartment
-   +0x010 _AptKind : 4 ( APTKIND_APARTMENTTHREADED )
-</code></pre><p>没有崩溃的时候，引用计数确实不为0，也能看出是个STA。后来朋友发现，之所以之前没有崩溃，是因为之前线程加载的某个dll中，有初始化COM的调用，所以引用计数不为0。后来移开了这个dll，问题就出现了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">0:000&gt; dt _teb @$teb ReservedForOle</div><div class="line">ntdll!_TEB</div><div class="line">   +0x1758 ReservedForOle : 0x00000000`00271b00 Void</div><div class="line"></div><div class="line">0:000&gt; dt ole32!SOleTlsData 0x00000000`00271b00 cComInits pNativeApt</div><div class="line">   +0x028 cComInits  : 5</div><div class="line">   +0x080 pNativeApt : 0x00000000`00272680 CComApartment</div><div class="line">   </div><div class="line">0:000&gt; dt 0x00000000`00272680 CComApartment _AptKind</div><div class="line">ole32!CComApartment</div><div class="line">   +0x010 _AptKind : 4 ( APTKIND_APARTMENTTHREADED )</div></pre></td></tr></table></figure>
+<p>没有崩溃的时候，引用计数确实不为0，也能看出是个STA。后来朋友发现，之所以之前没有崩溃，是因为之前线程加载的某个dll中，有初始化COM的调用，所以引用计数不为0。后来移开了这个dll，问题就出现了。</p>
 
         
       </div>
@@ -216,12 +206,10 @@ ole32!CComApartment
       <div class="repo-list-description">
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这是一个小技巧，可以帮助我们从session 1切换到session 0，并且获得system权限。有了system权限，可以做一些admin做不了的事情，具体哪些事情大伙可以自己挖掘。</p>
-<pre><code>切换到session 0：    rundll32 winsta.dll WinStationSwitchToServicesSession
-切换会原session：    rundll32 winsta.dll WinStationRevertFromServicesSession
-</code></pre><p>但是如果直接切换到session 0，会发现一个问题，我们没有桌面程序，所以什么事情也做不了。解决方法也很简单，创建一个explorer就可以了。但是普通方法创建explorer，怎么会不能创建到session 0，于是这里可想而知，我们需要一个服务来创建explorer。专门写一个服务程序未免太麻烦，这里可以使用cmd来快速创建explorer。</p>
-<pre><code>sc create desktop0 binpath= &quot;cmd /c start explorer.exe&quot; type= own type= interact
-net start desktop0
-</code></pre><p>虽然cmd不是服务，但是也会被运行起来，只不过不能与服务管理器交互，所以在超时的时候会被结束。不过那个时候已经没关系了，因为explorer已经创建起来了。接下来就可以切换了session 0，用system权限管理电脑了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">切换到session 0：    rundll32 winsta.dll WinStationSwitchToServicesSession</div><div class="line">切换会原session：    rundll32 winsta.dll WinStationRevertFromServicesSession</div></pre></td></tr></table></figure>
+<p>但是如果直接切换到session 0，会发现一个问题，我们没有桌面程序，所以什么事情也做不了。解决方法也很简单，创建一个explorer就可以了。但是普通方法创建explorer，怎么会不能创建到session 0，于是这里可想而知，我们需要一个服务来创建explorer。专门写一个服务程序未免太麻烦，这里可以使用cmd来快速创建explorer。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sc create desktop0 binpath= &quot;cmd /c start explorer.exe&quot; type= own type= interact</div><div class="line">net start desktop0</div></pre></td></tr></table></figure>
+<p>虽然cmd不是服务，但是也会被运行起来，只不过不能与服务管理器交互，所以在超时的时候会被结束。不过那个时候已经没关系了，因为explorer已经创建起来了。接下来就可以切换了session 0，用system权限管理电脑了。</p>
 
         
       </div>
@@ -258,122 +246,7 @@ net start desktop0
       <div class="repo-list-description">
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近给<a href="https://github.com/0cch/0cchext/releases/tag/1.0.16.3.55" target="_blank" rel="external">0cchext</a>添加了一个实用的逆向命令，dttoc，这个命令可以把dt命令输出的结构体转化为C的结构，方便我们做逆向还原工作。</p>
-<pre><code>0:000&gt; !0cchext.dttoc nt!_peb
-struct _PEB {
-    BYTE InheritedAddressSpace;
-    BYTE ReadImageFileExecOptions;
-    BYTE BeingDebugged;
-    union {
-        BYTE BitField;
-        struct {
-            BYTE ImageUsesLargePages:1;
-            BYTE IsProtectedProcess:1;
-            BYTE IsImageDynamicallyRelocated:1;
-            BYTE SkipPatchingUser32Forwarders:1;
-            BYTE IsPackagedProcess:1;
-            BYTE IsAppContainer:1;
-            BYTE IsProtectedProcessLight:1;
-            BYTE IsLongPathAwareProcess:1;
-        };
-    };
-    VOID* Mutant;
-    VOID* ImageBaseAddress;
-    _PEB_LDR_DATA* Ldr;
-    _RTL_USER_PROCESS_PARAMETERS* ProcessParameters;
-    VOID* SubSystemData;
-    VOID* ProcessHeap;
-    _RTL_CRITICAL_SECTION* FastPebLock;
-    _SLIST_HEADER* AtlThunkSListPtr;
-    VOID* IFEOKey;
-    union {
-        DWORD CrossProcessFlags;
-        struct {
-            DWORD ProcessInJob:1;
-            DWORD ProcessInitializing:1;
-            DWORD ProcessUsingVEH:1;
-            DWORD ProcessUsingVCH:1;
-            DWORD ProcessUsingFTH:1;
-            DWORD ReservedBits0:27;
-        };
-    };
-    union {
-        VOID* KernelCallbackTable;
-        VOID* UserSharedInfoPtr;
-    };
-    DWORD SystemReserved[1];
-    _SLIST_HEADER* AtlThunkSListPtr32;
-    VOID* ApiSetMap;
-    DWORD TlsExpansionCounter;
-    VOID* TlsBitmap;
-    DWORD TlsBitmapBits[2];
-    VOID* ReadOnlySharedMemoryBase;
-    VOID* SparePvoid0;
-    VOID** ReadOnlyStaticServerData;
-    VOID* AnsiCodePageData;
-    VOID* OemCodePageData;
-    VOID* UnicodeCaseTableData;
-    DWORD NumberOfProcessors;
-    DWORD NtGlobalFlag;
-    _LARGE_INTEGER CriticalSectionTimeout;
-    DWORD HeapSegmentReserve;
-    DWORD HeapSegmentCommit;
-    DWORD HeapDeCommitTotalFreeThreshold;
-    DWORD HeapDeCommitFreeBlockThreshold;
-    DWORD NumberOfHeaps;
-    DWORD MaximumNumberOfHeaps;
-    VOID** ProcessHeaps;
-    VOID* GdiSharedHandleTable;
-    VOID* ProcessStarterHelper;
-    DWORD GdiDCAttributeList;
-    _RTL_CRITICAL_SECTION* LoaderLock;
-    DWORD OSMajorVersion;
-    DWORD OSMinorVersion;
-    WORD OSBuildNumber;
-    WORD OSCSDVersion;
-    DWORD OSPlatformId;
-    DWORD ImageSubsystem;
-    DWORD ImageSubsystemMajorVersion;
-    DWORD ImageSubsystemMinorVersion;
-    DWORD ActiveProcessAffinityMask;
-    DWORD GdiHandleBuffer[34];
-    void* PostProcessInitRoutine;
-    VOID* TlsExpansionBitmap;
-    DWORD TlsExpansionBitmapBits[32];
-    DWORD SessionId;
-    _ULARGE_INTEGER AppCompatFlags;
-    _ULARGE_INTEGER AppCompatFlagsUser;
-    VOID* pShimData;
-    VOID* AppCompatInfo;
-    _UNICODE_STRING CSDVersion;
-    _ACTIVATION_CONTEXT_DATA* ActivationContextData;
-    _ASSEMBLY_STORAGE_MAP* ProcessAssemblyStorageMap;
-    _ACTIVATION_CONTEXT_DATA* SystemDefaultActivationContextData;
-    _ASSEMBLY_STORAGE_MAP* SystemAssemblyStorageMap;
-    DWORD MinimumStackCommit;
-    _FLS_CALLBACK_INFO* FlsCallback;
-    _LIST_ENTRY FlsListHead;
-    VOID* FlsBitmap;
-    DWORD FlsBitmapBits[4];
-    DWORD FlsHighIndex;
-    VOID* WerRegistrationData;
-    VOID* WerShipAssertPtr;
-    VOID* pUnused;
-    VOID* pImageHeaderHash;
-    union {
-        DWORD TracingFlags;
-        struct {
-            QWORD HeapTracingEnabled:1;
-            QWORD CritSecTracingEnabled:1;
-            QWORD LibLoaderTracingEnabled:1;
-            QWORD SpareTracingBits:29;
-        };
-    };
-    QWORD CsrServerReadOnlySharedMemoryBase;
-    DWORD TppWorkerpListLock;
-    _LIST_ENTRY TppWorkerpList;
-    VOID* WaitOnAddressHashTable[128];
-};
-</code></pre>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div></pre></td><td class="code"><pre><div class="line">0:000&gt; !0cchext.dttoc nt!_peb</div><div class="line">struct _PEB &#123;</div><div class="line">	BYTE InheritedAddressSpace;</div><div class="line">	BYTE ReadImageFileExecOptions;</div><div class="line">	BYTE BeingDebugged;</div><div class="line">	union &#123;</div><div class="line">		BYTE BitField;</div><div class="line">		struct &#123;</div><div class="line">			BYTE ImageUsesLargePages:1;</div><div class="line">			BYTE IsProtectedProcess:1;</div><div class="line">			BYTE IsImageDynamicallyRelocated:1;</div><div class="line">			BYTE SkipPatchingUser32Forwarders:1;</div><div class="line">			BYTE IsPackagedProcess:1;</div><div class="line">			BYTE IsAppContainer:1;</div><div class="line">			BYTE IsProtectedProcessLight:1;</div><div class="line">			BYTE IsLongPathAwareProcess:1;</div><div class="line">		&#125;;</div><div class="line">	&#125;;</div><div class="line">	VOID* Mutant;</div><div class="line">	VOID* ImageBaseAddress;</div><div class="line">	_PEB_LDR_DATA* Ldr;</div><div class="line">	_RTL_USER_PROCESS_PARAMETERS* ProcessParameters;</div><div class="line">	VOID* SubSystemData;</div><div class="line">	VOID* ProcessHeap;</div><div class="line">	_RTL_CRITICAL_SECTION* FastPebLock;</div><div class="line">	_SLIST_HEADER* AtlThunkSListPtr;</div><div class="line">	VOID* IFEOKey;</div><div class="line">	union &#123;</div><div class="line">		DWORD CrossProcessFlags;</div><div class="line">		struct &#123;</div><div class="line">			DWORD ProcessInJob:1;</div><div class="line">			DWORD ProcessInitializing:1;</div><div class="line">			DWORD ProcessUsingVEH:1;</div><div class="line">			DWORD ProcessUsingVCH:1;</div><div class="line">			DWORD ProcessUsingFTH:1;</div><div class="line">			DWORD ReservedBits0:27;</div><div class="line">		&#125;;</div><div class="line">	&#125;;</div><div class="line">	union &#123;</div><div class="line">		VOID* KernelCallbackTable;</div><div class="line">		VOID* UserSharedInfoPtr;</div><div class="line">	&#125;;</div><div class="line">	DWORD SystemReserved[1];</div><div class="line">	_SLIST_HEADER* AtlThunkSListPtr32;</div><div class="line">	VOID* ApiSetMap;</div><div class="line">	DWORD TlsExpansionCounter;</div><div class="line">	VOID* TlsBitmap;</div><div class="line">	DWORD TlsBitmapBits[2];</div><div class="line">	VOID* ReadOnlySharedMemoryBase;</div><div class="line">	VOID* SparePvoid0;</div><div class="line">	VOID** ReadOnlyStaticServerData;</div><div class="line">	VOID* AnsiCodePageData;</div><div class="line">	VOID* OemCodePageData;</div><div class="line">	VOID* UnicodeCaseTableData;</div><div class="line">	DWORD NumberOfProcessors;</div><div class="line">	DWORD NtGlobalFlag;</div><div class="line">	_LARGE_INTEGER CriticalSectionTimeout;</div><div class="line">	DWORD HeapSegmentReserve;</div><div class="line">	DWORD HeapSegmentCommit;</div><div class="line">	DWORD HeapDeCommitTotalFreeThreshold;</div><div class="line">	DWORD HeapDeCommitFreeBlockThreshold;</div><div class="line">	DWORD NumberOfHeaps;</div><div class="line">	DWORD MaximumNumberOfHeaps;</div><div class="line">	VOID** ProcessHeaps;</div><div class="line">	VOID* GdiSharedHandleTable;</div><div class="line">	VOID* ProcessStarterHelper;</div><div class="line">	DWORD GdiDCAttributeList;</div><div class="line">	_RTL_CRITICAL_SECTION* LoaderLock;</div><div class="line">	DWORD OSMajorVersion;</div><div class="line">	DWORD OSMinorVersion;</div><div class="line">	WORD OSBuildNumber;</div><div class="line">	WORD OSCSDVersion;</div><div class="line">	DWORD OSPlatformId;</div><div class="line">	DWORD ImageSubsystem;</div><div class="line">	DWORD ImageSubsystemMajorVersion;</div><div class="line">	DWORD ImageSubsystemMinorVersion;</div><div class="line">	DWORD ActiveProcessAffinityMask;</div><div class="line">	DWORD GdiHandleBuffer[34];</div><div class="line">	void* PostProcessInitRoutine;</div><div class="line">	VOID* TlsExpansionBitmap;</div><div class="line">	DWORD TlsExpansionBitmapBits[32];</div><div class="line">	DWORD SessionId;</div><div class="line">	_ULARGE_INTEGER AppCompatFlags;</div><div class="line">	_ULARGE_INTEGER AppCompatFlagsUser;</div><div class="line">	VOID* pShimData;</div><div class="line">	VOID* AppCompatInfo;</div><div class="line">	_UNICODE_STRING CSDVersion;</div><div class="line">	_ACTIVATION_CONTEXT_DATA* ActivationContextData;</div><div class="line">	_ASSEMBLY_STORAGE_MAP* ProcessAssemblyStorageMap;</div><div class="line">	_ACTIVATION_CONTEXT_DATA* SystemDefaultActivationContextData;</div><div class="line">	_ASSEMBLY_STORAGE_MAP* SystemAssemblyStorageMap;</div><div class="line">	DWORD MinimumStackCommit;</div><div class="line">	_FLS_CALLBACK_INFO* FlsCallback;</div><div class="line">	_LIST_ENTRY FlsListHead;</div><div class="line">	VOID* FlsBitmap;</div><div class="line">	DWORD FlsBitmapBits[4];</div><div class="line">	DWORD FlsHighIndex;</div><div class="line">	VOID* WerRegistrationData;</div><div class="line">	VOID* WerShipAssertPtr;</div><div class="line">	VOID* pUnused;</div><div class="line">	VOID* pImageHeaderHash;</div><div class="line">	union &#123;</div><div class="line">		DWORD TracingFlags;</div><div class="line">		struct &#123;</div><div class="line">			QWORD HeapTracingEnabled:1;</div><div class="line">			QWORD CritSecTracingEnabled:1;</div><div class="line">			QWORD LibLoaderTracingEnabled:1;</div><div class="line">			QWORD SpareTracingBits:29;</div><div class="line">		&#125;;</div><div class="line">	&#125;;</div><div class="line">	QWORD CsrServerReadOnlySharedMemoryBase;</div><div class="line">	DWORD TppWorkerpListLock;</div><div class="line">	_LIST_ENTRY TppWorkerpList;</div><div class="line">	VOID* WaitOnAddressHashTable[128];</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
         
       </div>
       <p class="repo-list-meta">
@@ -409,20 +282,12 @@ struct _PEB {
       <div class="repo-list-description">
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>0EEDFADE是Delphi内部异常代码，该异常通常有7个参数，我们用的上的是第二个参数，这个参数指向的是Exception的对象，通过这个对象，我们就可以查出异常的一些信息。</p>
-<p>以Delphi XE2为例,Class name的偏移为（不同的版本偏移有所不同）：  </p>
-<pre><code>x86_vmtClassName = -56(0x38);
-x64_vmtClassName = -112(0x70);
-</code></pre><p>我们可以用如下命令获取相关信息：  </p>
-<pre><code>x86: da poi(poi(exception_object)-38)+1;du /c 100 poi(exception_object+4)  
-x64: da poi(poi(exception_object)-70)+1;du /c 100 poi(exception_object+8)
-</code></pre><p>以上命令就能获取异常的类名，而exception_object+sizeof(pointer)则是Exception Message的所在偏移，这是一个unicode string。实际效果如下：</p>
-<pre><code>0:002&gt; da poi(poi(003a2800)-38)+1;du /c 100 poi(003a2800 +4)
-00b9ec47  &quot;TTransportExceptionUnknown&quot;
-00375b8c  &quot;ServerTransport.Accept() may not return NULL&quot;
-</code></pre><p>当然，我们也可以设置event filter去截获异常：  </p>
-<pre><code>x86: sxe -c &quot;da poi(poi(poi(@ebp+1c))-38)+1;du /c 100 poi(poi(@ebp+1c)+4)&quot; 0EEDFADE
-x64: sxe -c &quot;da poi(poi(poi(@rbp+48))-70)+1;du /c 100 poi(poi(@rbp+48)+8)&quot; 0EEDFADE
-</code></pre>
+<p>以Delphi XE2为例,Class name的偏移为（不同的版本偏移有所不同）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x86_vmtClassName = -56(0x38);</div><div class="line">x64_vmtClassName = -112(0x70);</div></pre></td></tr></table></figure></p>
+<p>我们可以用如下命令获取相关信息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x86: da poi(poi(exception_object)-38)+1;du /c 100 poi(exception_object+4)  </div><div class="line">x64: da poi(poi(exception_object)-70)+1;du /c 100 poi(exception_object+8)</div></pre></td></tr></table></figure></p>
+<p>以上命令就能获取异常的类名，而exception_object+sizeof(pointer)则是Exception Message的所在偏移，这是一个unicode string。实际效果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">0:002&gt; da poi(poi(003a2800)-38)+1;du /c 100 poi(003a2800 +4)</div><div class="line">00b9ec47  &quot;TTransportExceptionUnknown&quot;</div><div class="line">00375b8c  &quot;ServerTransport.Accept() may not return NULL&quot;</div></pre></td></tr></table></figure>
+<p>当然，我们也可以设置event filter去截获异常：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">x86: sxe -c &quot;da poi(poi(poi(@ebp+1c))-38)+1;du /c 100 poi(poi(@ebp+1c)+4)&quot; 0EEDFADE</div><div class="line">x64: sxe -c &quot;da poi(poi(poi(@rbp+48))-70)+1;du /c 100 poi(poi(@rbp+48)+8)&quot; 0EEDFADE</div></pre></td></tr></table></figure></p>
+
         
       </div>
       <p class="repo-list-meta">
@@ -460,74 +325,7 @@ x64: sxe -c &quot;da poi(poi(poi(@rbp+48))-70)+1;du /c 100 poi(poi(@rbp+48)+8)&q
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>现在的显示器分辨率越来越高2K，4K甚至5K，而很多程序并不支持这一的高分辨率，所以这些程序在桌面上会显示的很小，好在Windows 8以后的系统中，我们可以设置DPI来放大程序的窗口，如下图所示：  </p>
 <p><a href="/uploads/2017/03/20170309145111.png"><img src="/uploads/2017/03/20170309145111.png" alt="20170309145111"></a></p>
 <p>但是，微软并没有把设置DPI的接口文档化。所以我把这个功能逆了一下，还原的代码如下：</p>
-<pre><code>
-&#x2F;*
-	BOOL ApplyDpiSetting(int val);
-	val 为DPI要设置的数字，例如0是100%，1是125%，以此类推，注意250%以后是300%。
-	另外上面的对应关系只是通常情况下的，还有可能有其他对应关系，例如0是300%，-1是250%等等。
-	具体怎么对应可以通过GetDpiForMonitor函数来获取
-*&#x2F;
-
-typedef struct _SET_DPI {
-	DISPLAYCONFIG_DEVICE_INFO_HEADER header;
-	ULONG val;
-} SET_DPI;
-
-BOOL ApplyDpiSetting(ULONG val)
-{
-	UINT32 num_of_paths = 0;
-	UINT32 num_of_modes = 0;
-	DISPLAYCONFIG_PATH_INFO* display_paths = NULL; 
-	DISPLAYCONFIG_MODE_INFO* display_modes = NULL;
-	BOOL retval = FALSE;
-
-	do 
-	{
-		if (GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, 
-			&amp;num_of_paths, 
-			&amp;num_of_modes) != ERROR_SUCCESS) {
-				break;
-		}
-
-
-		display_paths = (DISPLAYCONFIG_PATH_INFO*)calloc((int)num_of_paths, sizeof(DISPLAYCONFIG_PATH_INFO));
-		display_modes = (DISPLAYCONFIG_MODE_INFO*)calloc((int)num_of_modes, sizeof(DISPLAYCONFIG_MODE_INFO));
-		
-		if (QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, 
-			&amp;num_of_paths, 
-			display_paths, 
-			&amp;num_of_modes, 
-			display_modes, 
-			NULL) != ERROR_SUCCESS) {
-				break;
-		}
-
-		SET_DPI dpi;
-		dpi.header.type = (DISPLAYCONFIG_DEVICE_INFO_TYPE)0xFFFFFFFC;
-		dpi.header.size = sizeof(dpi);
-		dpi.header.adapterId = display_paths[0].sourceInfo.adapterId;
-		dpi.header.id = display_paths[0].sourceInfo.id;
-		dpi.val = val;
-
-		if (DisplayConfigSetDeviceInfo((DISPLAYCONFIG_DEVICE_INFO_HEADER*)&amp;dpi) == ERROR_SUCCESS) {
-			retval = TRUE;
-		}
-
-	} while (0);
-
-	if (display_paths) {
-		free(display_paths);
-	}
-	
-	if (display_modes) {
-		free(display_modes);
-	}
-
-	return retval;
-}
-
-
-</code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">/*</span></div><div class="line"><span class="comment">	BOOL ApplyDpiSetting(int val);</span></div><div class="line"><span class="comment">	val 为DPI要设置的数字，例如0是100%，1是125%，以此类推，注意250%以后是300%。</span></div><div class="line"><span class="comment">	另外上面的对应关系只是通常情况下的，还有可能有其他对应关系，例如0是300%，-1是250%等等。</span></div><div class="line"><span class="comment">	具体怎么对应可以通过GetDpiForMonitor函数来获取</span></div><div class="line"><span class="comment">*/</span></div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">SET_DPI</span> &#123;</span></div><div class="line">	DISPLAYCONFIG_DEVICE_INFO_HEADER header;</div><div class="line">	ULONG val;</div><div class="line">&#125; SET_DPI;</div><div class="line"></div><div class="line"><span class="function">BOOL <span class="title">ApplyDpiSetting</span><span class="params">(ULONG val)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">	UINT32 num_of_paths = <span class="number">0</span>;</div><div class="line">	UINT32 num_of_modes = <span class="number">0</span>;</div><div class="line">	DISPLAYCONFIG_PATH_INFO* display_paths = <span class="literal">NULL</span>; </div><div class="line">	DISPLAYCONFIG_MODE_INFO* display_modes = <span class="literal">NULL</span>;</div><div class="line">	BOOL retval = FALSE;</div><div class="line"></div><div class="line">	<span class="keyword">do</span> </div><div class="line">	&#123;</div><div class="line">		<span class="keyword">if</span> (GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, </div><div class="line">			&amp;num_of_paths, </div><div class="line">			&amp;num_of_modes) != ERROR_SUCCESS) &#123;</div><div class="line">				<span class="keyword">break</span>;</div><div class="line">		&#125;</div><div class="line"></div><div class="line"></div><div class="line">		display_paths = (DISPLAYCONFIG_PATH_INFO*)<span class="built_in">calloc</span>((<span class="keyword">int</span>)num_of_paths, <span class="keyword">sizeof</span>(DISPLAYCONFIG_PATH_INFO));</div><div class="line">		display_modes = (DISPLAYCONFIG_MODE_INFO*)<span class="built_in">calloc</span>((<span class="keyword">int</span>)num_of_modes, <span class="keyword">sizeof</span>(DISPLAYCONFIG_MODE_INFO));</div><div class="line">		</div><div class="line">		<span class="keyword">if</span> (QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, </div><div class="line">			&amp;num_of_paths, </div><div class="line">			display_paths, </div><div class="line">			&amp;num_of_modes, </div><div class="line">			display_modes, </div><div class="line">			<span class="literal">NULL</span>) != ERROR_SUCCESS) &#123;</div><div class="line">				<span class="keyword">break</span>;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		SET_DPI dpi;</div><div class="line">		dpi.header.type = (DISPLAYCONFIG_DEVICE_INFO_TYPE)<span class="number">0xFFFFFFFC</span>;</div><div class="line">		dpi.header.size = <span class="keyword">sizeof</span>(dpi);</div><div class="line">		dpi.header.adapterId = display_paths[<span class="number">0</span>].sourceInfo.adapterId;</div><div class="line">		dpi.header.id = display_paths[<span class="number">0</span>].sourceInfo.id;</div><div class="line">		dpi.val = val;</div><div class="line"></div><div class="line">		<span class="keyword">if</span> (DisplayConfigSetDeviceInfo((DISPLAYCONFIG_DEVICE_INFO_HEADER*)&amp;dpi) == ERROR_SUCCESS) &#123;</div><div class="line">			retval = TRUE;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">	&#125; <span class="keyword">while</span> (<span class="number">0</span>);</div><div class="line"></div><div class="line">	<span class="keyword">if</span> (display_paths) &#123;</div><div class="line">		<span class="built_in">free</span>(display_paths);</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="keyword">if</span> (display_modes) &#123;</div><div class="line">		<span class="built_in">free</span>(display_modes);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> retval;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"></div></pre></td></tr></table></figure>
         
       </div>
       <p class="repo-list-meta">
@@ -569,13 +367,13 @@ BOOL ApplyDpiSetting(ULONG val)
 <li>#pragma deprecated</li>
 </ol>
 <ul>
-<li>__declspec(deprecated)<br><a href="https://msdn.microsoft.com/en-us/library/044swk7y.aspx" target="_blank" rel="external">https://msdn.microsoft.com/en-us/library/044swk7y.aspx</a><br>这种方法直接声明在函数或者类之前，在使用函数的地方会抛出C4996的警告  <pre><code>__declspec(deprecated) void func1(int) {}
-</code></pre>当然我们还可以给警告自定义消息信息  <pre><code>__declspec(deprecated(&quot;** this is a deprecated function **&quot;)) void func2(int) {}
-</code></pre></li>
+<li>__declspec(deprecated)<br><a href="https://msdn.microsoft.com/en-us/library/044swk7y.aspx" target="_blank" rel="external">https://msdn.microsoft.com/en-us/library/044swk7y.aspx</a><br>这种方法直接声明在函数或者类之前，在使用函数的地方会抛出C4996的警告  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">__declspec(deprecated) void func1(int) &#123;&#125;</div></pre></td></tr></table></figure>
+</li>
 </ul>
+<p>当然我们还可以给警告自定义消息信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">__declspec(deprecated(&quot;** this is a deprecated function **&quot;)) void func2(int) &#123;&#125;</div></pre></td></tr></table></figure></p>
 <ul>
-<li>#pragma deprecated<br><a href="https://msdn.microsoft.com/en-us/library/c8xdzzhh.aspx" target="_blank" rel="external">https://msdn.microsoft.com/en-us/library/c8xdzzhh.aspx</a><br>这种方法可以一次性声明多个函数或者类，使用函数的地方会抛出C4995的警告  <pre><code>#pragma deprecated(func1, func2)
-</code></pre></li>
+<li>#pragma deprecated<br><a href="https://msdn.microsoft.com/en-us/library/c8xdzzhh.aspx" target="_blank" rel="external">https://msdn.microsoft.com/en-us/library/c8xdzzhh.aspx</a><br>这种方法可以一次性声明多个函数或者类，使用函数的地方会抛出C4995的警告  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#pragma deprecated(func1, func2)</div></pre></td></tr></table></figure>
+</li>
 </ul>
 
         
@@ -651,61 +449,7 @@ BOOL ApplyDpiSetting(ULONG val)
       <div class="repo-list-description">
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>从Windows8开始，Windows设计了一个新的中断，INT 29H，用来快速的抛出失败。在sdk中，他被声明为 __fastfail:</p>
-<pre><code>
-
-#define FAST_FAIL_LEGACY_GS_VIOLATION          0
-#define FAST_FAIL_VTGUARD_CHECK_FAILURE        1
-#define FAST_FAIL_STACK_COOKIE_CHECK_FAILURE   2
-#define FAST_FAIL_CORRUPT_LIST_ENTRY           3
-#define FAST_FAIL_INCORRECT_STACK              4
-#define FAST_FAIL_INVALID_ARG                  5
-#define FAST_FAIL_GS_COOKIE_INIT               6
-#define FAST_FAIL_FATAL_APP_EXIT               7
-#define FAST_FAIL_RANGE_CHECK_FAILURE          8
-#define FAST_FAIL_UNSAFE_REGISTRY_ACCESS       9
-#define FAST_FAIL_GUARD_ICALL_CHECK_FAILURE    10
-#define FAST_FAIL_GUARD_WRITE_CHECK_FAILURE    11
-#define FAST_FAIL_INVALID_FIBER_SWITCH         12
-#define FAST_FAIL_INVALID_SET_OF_CONTEXT       13
-#define FAST_FAIL_INVALID_REFERENCE_COUNT      14
-#define FAST_FAIL_INVALID_JUMP_BUFFER          18
-#define FAST_FAIL_MRDATA_MODIFIED              19
-#define FAST_FAIL_CERTIFICATION_FAILURE        20
-#define FAST_FAIL_INVALID_EXCEPTION_CHAIN      21
-#define FAST_FAIL_CRYPTO_LIBRARY               22
-#define FAST_FAIL_INVALID_CALL_IN_DLL_CALLOUT  23
-#define FAST_FAIL_INVALID_IMAGE_BASE           24
-#define FAST_FAIL_DLOAD_PROTECTION_FAILURE     25
-#define FAST_FAIL_UNSAFE_EXTENSION_CALL        26
-#define FAST_FAIL_DEPRECATED_SERVICE_INVOKED   27
-#define FAST_FAIL_INVALID_BUFFER_ACCESS        28
-#define FAST_FAIL_INVALID_BALANCED_TREE        29
-#define FAST_FAIL_INVALID_NEXT_THREAD          30
-#define FAST_FAIL_GUARD_ICALL_CHECK_SUPPRESSED 31         &#x2F;&#x2F; Telemetry, nonfatal
-#define FAST_FAIL_APCS_DISABLED                32
-#define FAST_FAIL_INVALID_IDLE_STATE           33
-#define FAST_FAIL_MRDATA_PROTECTION_FAILURE    34
-#define FAST_FAIL_UNEXPECTED_HEAP_EXCEPTION    35
-#define FAST_FAIL_INVALID_FAST_FAIL_CODE       0xFFFFFFFF
-
-#if _MSC_VER &gt;= 1610
-
-DECLSPEC_NORETURN
-VOID
-__fastfail(
-    _In_ unsigned int Code
-    );
-
-#pragma intrinsic(__fastfail)
-
-#endif
-
-&#x2F;*
-	&#x2F;&#x2F; 汇编代码为
-	mov ecx, code
-	int 29h
-*&#x2F;
-</code></pre>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_LEGACY_GS_VIOLATION          0</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_VTGUARD_CHECK_FAILURE        1</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_STACK_COOKIE_CHECK_FAILURE   2</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_CORRUPT_LIST_ENTRY           3</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INCORRECT_STACK              4</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_ARG                  5</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_GS_COOKIE_INIT               6</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_FATAL_APP_EXIT               7</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_RANGE_CHECK_FAILURE          8</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_UNSAFE_REGISTRY_ACCESS       9</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_GUARD_ICALL_CHECK_FAILURE    10</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_GUARD_WRITE_CHECK_FAILURE    11</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_FIBER_SWITCH         12</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_SET_OF_CONTEXT       13</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_REFERENCE_COUNT      14</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_JUMP_BUFFER          18</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_MRDATA_MODIFIED              19</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_CERTIFICATION_FAILURE        20</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_EXCEPTION_CHAIN      21</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_CRYPTO_LIBRARY               22</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_CALL_IN_DLL_CALLOUT  23</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_IMAGE_BASE           24</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_DLOAD_PROTECTION_FAILURE     25</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_UNSAFE_EXTENSION_CALL        26</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_DEPRECATED_SERVICE_INVOKED   27</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_BUFFER_ACCESS        28</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_BALANCED_TREE        29</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_NEXT_THREAD          30</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_GUARD_ICALL_CHECK_SUPPRESSED 31         <span class="comment">// Telemetry, nonfatal</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_APCS_DISABLED                32</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_IDLE_STATE           33</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_MRDATA_PROTECTION_FAILURE    34</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_UNEXPECTED_HEAP_EXCEPTION    35</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_FAST_FAIL_CODE       0xFFFFFFFF</span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">if</span> _MSC_VER &gt;= 1610</span></div><div class="line"></div><div class="line">DECLSPEC_NORETURN</div><div class="line">VOID</div><div class="line">__fastfail(</div><div class="line">    _In_ <span class="keyword">unsigned</span> <span class="keyword">int</span> Code</div><div class="line">    );</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">pragma</span> intrinsic(__fastfail)</span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line"></div><div class="line"><span class="comment">/*</span></div><div class="line"><span class="comment">	// 汇编代码为</span></div><div class="line"><span class="comment">	mov ecx, code</span></div><div class="line"><span class="comment">	int 29h</span></div><div class="line"><span class="comment">*/</span></div><div class="line"></div></pre></td></tr></table></figure>
 <p>在中断代码执行后，操作系统会根据执行代码的环境来做出不同的处理。<br>如果<strong>fastfail发生在Ring0中，操作系统会抛出一个KERNEL_SECURITY_CHECK_FAILURE (0x139)的蓝屏。如果</strong>fastfail发生在Ring3，系统会抛出一个第二次机会的不可继续执行的异常，异常代码为0xC0000409，然后走进我们熟悉的Windows Error Reporting(WER)流程。另外，无论__fastfail发生在R0或者R3，如果有调试器正在调试系统或进程，都将得到一次中断到调试器的机会，这让我们能够看清楚具体发生了什么事情。但是正如我上面所说，这个是一个不可继续执行的异常，所以我们不能在调试器里处理了异常后让程序继续向前跑，当然也不能用try和except去捕获异常。</p>
 <p>我觉得__fastfail是个非常不错的设计，它让程序可以快速的进入内核异常处理流程，不需要执行额外的用户层的代码，也不需要额外的内存空间，提高了不可恢复的异常处理的性能，更重要的是，简单快速不依赖内存的执行方式也保证了系统的安全。所以在系统的安全检查失败处理中，大量使用了这个方式，减少被攻击的可能性。</p>
 <p>最后，如果INT 29H发生在Windows8以下的系统上，内核里会抛出一个常规的UNEXPECTED_KERNEL_MODE_TRAP的蓝屏，而用户层程序会抛出一个ACCESS VIOLATION的异常。</p>
@@ -888,9 +632,7 @@ __fastfail(
 </footer>
 
 		<script src="/js/geopattern.js"></script>
-		<script src="/js/highlight.pack.js"></script>
 		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 		
 
 		<script src="/js/index.js"></script>
