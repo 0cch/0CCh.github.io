@@ -72,16 +72,16 @@
     <link href="http://0cch.com/2017/07/02/gotcha-sdk-monitor-update/"/>
     <id>http://0cch.com/2017/07/02/gotcha-sdk-monitor-update/</id>
     <published>2017-07-02T07:56:54.000Z</published>
-    <updated>2017-07-03T07:56:59.473Z</updated>
+    <updated>2017-08-18T06:19:15.541Z</updated>
     
-    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在15年的一篇blog中，我介绍了gotcha sdk。<a href="https://0cch.com/ntinternals/2015/11/25/gotcha-sdk.html">https://0cch.com/ntinternals/2015/11/25/gotcha-sdk.html</a></p>
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在15年的一篇blog中，我介绍了gotcha sdk。<a href="/2015/11/24/gotcha-sdk/" title="gotcha sdk 全盘文件名搜索开发库">gotcha sdk 全盘文件名搜索开发库</a></p>
 <p>当时gotcha sdk没有提供文件监控功能，也就是说当搜索文件发生变化的时候，这个变化不会体现到搜索结果列表中。其实这个功能一直在todo list中，只不过忙的时候没时间写这部分代码，闲的时候又忘了。前几天终于有时间把这部分代码补上，升级了sdk。</p>
 <p>gotcha sdk 代码SVN:<br><a href="http://code.taobao.org/svn/gotcha_sdk/" target="_blank" rel="external">http://code.taobao.org/svn/gotcha_sdk/</a></p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;在15年的一篇blog中，我介绍了gotcha sdk。&lt;a href=&quot;h
+      &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;在15年的一篇blog中，我介绍了gotcha sdk。&lt;a href=&quot;/
     
     </summary>
     
