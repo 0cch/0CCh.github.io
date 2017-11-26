@@ -62,7 +62,7 @@
     <div class="columns">
         <div class="column  three-fourths " >
             <article class="article-content markdown-body">
-                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在推出<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="external">ntfs_study的博文</a>中，我谈到过要用一些例子来简单介绍这个工具的用法，本文就算是这个工具的使用介绍以及hardlink在ntfs文件系统底层的简单探讨。</p>
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在推出<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="noopener">ntfs_study的博文</a>中，我谈到过要用一些例子来简单介绍这个工具的用法，本文就算是这个工具的使用介绍以及hardlink在ntfs文件系统底层的简单探讨。</p>
 <p>MSDN中写到，hardlink是在文件系统中，用多个在同一个卷的路径表示同一个文件的方法。那么在ntfs格式中这些被link的文件是怎么存在的呢？下面进行一些简单的探讨。</p>
 <p>首先，我们需要去创建hardlink的文件。<br><a href="/uploads/2013/03/20130312202150.png"><img src="/uploads/2013/03/20130312202150.png" alt="20130312202150"></a></p>
 <p>图中，第一个命令，在target_file.txt的同目录下，创建了hardlink文件link_file.txt。第二个命令，在不同目录（otherdir）下创建了第二个hardlink文件，link_file_in_otherdir.txt。第三个命令返回了错误，原因是我试图在不同卷里面来创建hardlink文件。失败的原因文章后面会介绍。</p>

@@ -74,6 +74,51 @@
     <div class="columns">
         <div class="column two-thirds">
             
+                  <article id="post-gdi_handle_study-e69fa5e79c8be8bf9be7a88bgdie8b584e6ba90e68385e586b5e79a84e5b7a5e585b7" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2013/05/04/gdi_handle_study-e69fa5e79c8be8bf9be7a88bgdie8b584e6ba90e68385e586b5e79a84e5b7a5e585b7/">gdi_handle_study —— 查看进程GDI资源情况的工具</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>gdi_handle_study 是一个用于查看进程中gdi句柄资源的工具。可以用于监控gdi资源是否泄露，已经对gdi资源的使用情况。使用方法非常简单：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;blockquote&gt;usage: gdi_handle_study.exe [-c] [-v [-f &lt;filter&gt;]] [processname|pid]</span><br><span class="line">processname    List GDI handles loaded by process (partial name accepted)</span><br><span class="line">pid                   List GDI handles associated with the specified process id</span><br><span class="line">-c                    Show GDI count information.</span><br><span class="line">-v                    Show GDI handle information.</span><br><span class="line">-f                    Filter the GDI handle type.&lt;/blockquote&gt;</span><br></pre></td></tr></table></figure>
+<p>在不用任何参数的情况下，工具会显示所有进程的gdi资源使用概况，如图所示：<br><a href="/uploads/2013/05/20130504154700.png"><img src="/uploads/2013/05/20130504154700.png" alt="20130504154700"></a></p>
+<p>值得注意的是，GDI Total和GDI All的区别在于，GDI Total统计出来的数量，是通过工具本身枚举可统计GDI资源后得出统计值，而GDI All是通过系统API直接获得的值，有些的情况下，GDI Total的值是小于GDI All的值的。这种情况可能因为某些GDI资源是系统保留的。另外一个要注意的是，如果要显示所有进程的gdi情况，需要有管理员权限运行该工具。</p>
+<p>processname和pid参数能让我们指定需要查看的进程名或者进程ID。参数-c能查看更为详细的gdi资源的统计情况。如下图所示：<br><a href="/uploads/2013/05/20130504155533.png"><img src="/uploads/2013/05/20130504155533.png" alt="20130504155533"></a></p>
+<p>从上图可以看出，qq这种DirectUI程序，用的Bitmap资源何其的多啊。。。</p>
+<p>-v参数是用来查看更为详细的GDI资源信息，其中就包括额资源的句柄，资源的种类以及资源的内核对象地址。如图所示：<br><a href="/uploads/2013/05/20130504160314.png"><img src="/uploads/2013/05/20130504160314.png" alt="20130504160314"></a></p>
+<p>最后工具还能利用-f filter，来查看想看到的资源情况，例如上图中，bitmap不是自己想看的资源，但是却占据了大量的视野。这个时候filter就能用上了。如图：<br><a href="/uploads/2013/05/20130504160837.png"><img src="/uploads/2013/05/20130504160837.png" alt="20130504160837"></a></p>
+<p>上图就是利用filter，显示的Brush资源的详细情况了。</p>
+<p>下载<a href="/uploads/2013/05/gdi_handle_study.zip">gdi_handle_study</a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2013-05-04T00:16:35.000Z" itemprop="datePublished">2013-05-04</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/NTInternals/' title=''>NTInternals</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
                   <article id="post-procmem-e8bf9be7a88be58685e5ad98e69fa5e79c8be5b7a5e585b7" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
@@ -91,7 +136,7 @@
 <p>工具上半部分就是显示的目标进程的内存分布情况，以及一些细节信息。这里必须要谈到一点，Windows的标准控件中没有TreeList，对我这个写100个程序99个没有界面的人来说，自绘这个东西差点没要了我的命。</p>
 <p>工具的下半部分用来显示TreeList选中项的内存情况，十六进制表示。值得注意的是，这里只会显示选中内存头个PAGE_SIZE大小的内存情况。如果想查看该项内存的全部情况，可以使用Dump功能，把内存Dump下来，然后用WinHex这样的工具查看，这个简单的内存显示区，只是为了提供一个预览功能而已。</p>
 <p>值得一提的是，菜单Find，不是用来查找下方十六进制内存显示的内容，而是用来查找TreeList中的项目。例如想找到有关ntdll的内存区域，可以在查找框中输入ntdll，这样就可以定位如图所示的项目了。</p>
-<p>这个工具是我花了大半周的业余时间弄的，时间比较仓促，不可避免的可能会有些bug。如果你刚好用上了这个工具，而且发现了bug，不妨通过邮件联系我（邮箱地址见<a href="http://0cch.net/wordpress/?page_id=2" target="_blank" rel="external">About Me</a>页面）。</p>
+<p>这个工具是我花了大半周的业余时间弄的，时间比较仓促，不可避免的可能会有些bug。如果你刚好用上了这个工具，而且发现了bug，不妨通过邮件联系我（邮箱地址见<a href="http://0cch.net/wordpress/?page_id=2" target="_blank" rel="noopener">About Me</a>页面）。</p>
 <p>下载<a href="/uploads/2013/04/ProcMem.zip">ProcMem</a>(包括32和64位版本)</p>
 
         
@@ -176,8 +221,8 @@
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>everythings是一个非常强大而且好用的文件搜索工具。他搜索文件的速度非常之快，基本上刚刚输入要查找的文件名，文件已经搜索了出来。这里就简单介绍一下他的工作原理。</p>
 <p>有一点已经非常明显，everythings在查找工作开始之前会建立全盘文件索引的数据库，那么这个数据库必然就是搜索文件快速的最重要的原因。而这个数据库的建立的用时似乎非常之短，是普通方法下遍历整个卷所不能及的。</p>
-<p>实际上，建立数据库的方法确实比较特殊。简单来说就是遍历目标卷NTFS文件系统的Master File Table（简称MFT）的记录，这也解释了为什么everythings只能工作在是NTFS的文件系统的卷上。MFT可以看成ntfs中文件的索引，MFT中的每条记录都是指向卷中的一个文件。遍历这个索引的速度可要比按照目录递归整个卷的速度要快得多了。不过可惜的是，Windows并没有提供能够直接访问MFT的API，除非你直接解析NTFS磁盘格式（参考<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="external">这篇文章</a>）。而且就算让你直接遍历的MFT，要监控文件的变化并且写入数据库也是一个不好办的工作。不过可喜的是，微软提供了一种间接遍历MFT记录的方式，并且通过这样的方式可以监控卷上文件的变化，他就是Change Journal（<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa363798(v=vs.85" target="_blank" rel="external">官方文档</a>.aspx)）。</p>
-<p>Change Journal实际上是Windows 2000的NTFS文件系统就提供了的功能。其目的就是如同名字一样，记录文件改变的日志，方便NTFS文件系统对文件的恢复，这确实是个不错的特性。如何使用这个功能去遍历和监控MFT的记录，我这里就不做详细介绍了。因为有一片更加好的文章已经写的非常的清楚，我的demo也参考了他的很多代码。这篇文章叫做《<a href="http://www.microsoft.com/msj/0999/journal/journal.aspx" target="_blank" rel="external">Keeping an Eye on Your NTFS Drives: the Windows 2000 Change Journal Explained</a>》是1999年9月份的msdn杂志发表的。</p>
+<p>实际上，建立数据库的方法确实比较特殊。简单来说就是遍历目标卷NTFS文件系统的Master File Table（简称MFT）的记录，这也解释了为什么everythings只能工作在是NTFS的文件系统的卷上。MFT可以看成ntfs中文件的索引，MFT中的每条记录都是指向卷中的一个文件。遍历这个索引的速度可要比按照目录递归整个卷的速度要快得多了。不过可惜的是，Windows并没有提供能够直接访问MFT的API，除非你直接解析NTFS磁盘格式（参考<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="noopener">这篇文章</a>）。而且就算让你直接遍历的MFT，要监控文件的变化并且写入数据库也是一个不好办的工作。不过可喜的是，微软提供了一种间接遍历MFT记录的方式，并且通过这样的方式可以监控卷上文件的变化，他就是Change Journal（<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa363798(v=vs.85" target="_blank" rel="noopener">官方文档</a>.aspx)）。</p>
+<p>Change Journal实际上是Windows 2000的NTFS文件系统就提供了的功能。其目的就是如同名字一样，记录文件改变的日志，方便NTFS文件系统对文件的恢复，这确实是个不错的特性。如何使用这个功能去遍历和监控MFT的记录，我这里就不做详细介绍了。因为有一片更加好的文章已经写的非常的清楚，我的demo也参考了他的很多代码。这篇文章叫做《<a href="http://www.microsoft.com/msj/0999/journal/journal.aspx" target="_blank" rel="noopener">Keeping an Eye on Your NTFS Drives: the Windows 2000 Change Journal Explained</a>》是1999年9月份的msdn杂志发表的。</p>
 <p>我这里假设你已经阅读了这篇文章。我们已经知道了遍历和监控MFT记录的方法，并且通过这个方法获得了每个文件的文件名，file reference和parent reference（可以理解为文件id和其父目录id）。那么这里就可以把这三个元素作为一条记录存储在我们制定的数据库中。</p>
 <p>下面简单说下如何利用这个数据库，当需要查找文件的时候：<br>1.获得用户输入的文件名。<br>2.通过文件名A可以从数据库中筛选出一些记录，而这些记录中就包括了文件的parent reference。<br>3.通过parent reference再次查找数据库的file reference字段，获得对应的文件名B，这个文件名B就是文件A的父目录了。重复这一步直到根目录为止。<br>这样就能找到文件的详细路径了。  </p>
 <p>我写demo的时候并没有考虑怎么构建这个数据库，直接用了sqlite。不过如果能自己设计一个专门为存储这些数据的小数据库，也应该有更高的效率吧。everythings的数据库就是经过bzip压缩的自定义的文件。</p>
@@ -185,7 +230,7 @@
 <p>DEMO——查找文件<br><a href="/uploads/2013/04/20130409003752.png"><img src="/uploads/2013/04/20130409003752.png" alt="20130409003752"></a></p>
 <p>P.S 如果采用sqlite作为文件数据库的话，建立索引的插入数据操作一定要利用sqlite的事务机制，否则会在插入数据上花费很多时间。</p>
 <p>P.S.2 everythings之所以需要管理员权限才能工作，是因为他需要打开本地卷的句柄，这个就需要管理员权限了。</p>
-<p>最后说一点这种方法的不足吧。那就是这种方法对于有多个hardlinks的文件，只能枚举出一个路径。关于hardlink的介绍可以参考<a href="http://0cch.net/wordpress/?p=179" target="_blank" rel="external">这篇文章</a>。由于这个不足，你在查找system32下的文件的时候，往往搜索不到，搜索到的又往往在其他目录，出现尤其多的应该是Winsxs目录了（而关于Winsxs可以看看<a href="http://sysdbg.com/index.php/2013/04/08/everything-you-never-wanted-to-know-about-winsxs/" target="_blank" rel="external">这篇翻译</a>，翻译质量很不错）。例如我们搜索C盘下的notepad.exe，everythings搜索的结果是这样的：<br><a href="/uploads/2013/04/20130409021029.png"><img src="/uploads/2013/04/20130409021029.png" alt="20130409021029"></a></p>
+<p>最后说一点这种方法的不足吧。那就是这种方法对于有多个hardlinks的文件，只能枚举出一个路径。关于hardlink的介绍可以参考<a href="http://0cch.net/wordpress/?p=179" target="_blank" rel="noopener">这篇文章</a>。由于这个不足，你在查找system32下的文件的时候，往往搜索不到，搜索到的又往往在其他目录，出现尤其多的应该是Winsxs目录了（而关于Winsxs可以看看<a href="http://sysdbg.com/index.php/2013/04/08/everything-you-never-wanted-to-know-about-winsxs/" target="_blank" rel="noopener">这篇翻译</a>，翻译质量很不错）。例如我们搜索C盘下的notepad.exe，everythings搜索的结果是这样的：<br><a href="/uploads/2013/04/20130409021029.png"><img src="/uploads/2013/04/20130409021029.png" alt="20130409021029"></a></p>
 <p>可以注意到并没有system32下notepad.exe的身影。我们的demo同样也会遇到这样的情况：<br><a href="/uploads/2013/04/20130409021252.png"><img src="/uploads/2013/04/20130409021252.png" alt="20130409021252"></a></p>
 <p>下图显示的是同一个notepad.exe的4个存储位置。<br><a href="/uploads/2013/04/20130409021829.png"><img src="/uploads/2013/04/20130409021829.png" alt="20130409021829"></a></p>
 <p>虽然everythings有这样的一个不足，但是瑕不掩瑜，他的的确确是一个非常非常优秀的工具！我这里探讨的也仅仅是他的大概原理。实际上这个工具如此优秀，必然是在很多细节上做的非常好才行的。强烈推荐大家使用！</p>
@@ -265,7 +310,7 @@
       </h3>
       <div class="repo-list-description">
         
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在上一篇讨论<a href="http://0cch.net/wordpress/?p=179" target="_blank" rel="external">hardlink</a>的文章中，我在最后提到要写一个查找hardlinks的工具。正如上一篇文章中介绍这种工具的工作原理一样，他的代码比较简单。所以前几天find_links_study就已经写完了，只是一直没空发出来。这个工具的使用和FindLinks一模一样，这里也不多做介绍了。下图是工具的工作效果：</p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在上一篇讨论<a href="http://0cch.net/wordpress/?p=179" target="_blank" rel="noopener">hardlink</a>的文章中，我在最后提到要写一个查找hardlinks的工具。正如上一篇文章中介绍这种工具的工作原理一样，他的代码比较简单。所以前几天find_links_study就已经写完了，只是一直没空发出来。这个工具的使用和FindLinks一模一样，这里也不多做介绍了。下图是工具的工作效果：</p>
 <p><a href="/uploads/2013/03/20130316214417.png"><img src="/uploads/2013/03/20130316214417.png" alt="20130316214417"></a></p>
 <p>从图中我们可以发现，原来我们在系统中看到的多个notepad文件实际上就是一个文件而已，只不过他利用了hardlink的技术，产生了多个路径罢了。我感觉hardlink还是一个非常实用的技术，具体用在哪大家可以发挥想象力。就我个人看来，在某些情况下，用hardlink来备份文件，倒是一种不错的选择。</p>
 <p>下载<a href="/uploads/2013/03/find_links_study.zip">find_links_study</a></p>
@@ -304,7 +349,7 @@
       </h3>
       <div class="repo-list-description">
         
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在推出<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="external">ntfs_study的博文</a>中，我谈到过要用一些例子来简单介绍这个工具的用法，本文就算是这个工具的使用介绍以及hardlink在ntfs文件系统底层的简单探讨。</p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在推出<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="noopener">ntfs_study的博文</a>中，我谈到过要用一些例子来简单介绍这个工具的用法，本文就算是这个工具的使用介绍以及hardlink在ntfs文件系统底层的简单探讨。</p>
 <p>MSDN中写到，hardlink是在文件系统中，用多个在同一个卷的路径表示同一个文件的方法。那么在ntfs格式中这些被link的文件是怎么存在的呢？下面进行一些简单的探讨。</p>
 <p>首先，我们需要去创建hardlink的文件。<br><a href="/uploads/2013/03/20130312202150.png"><img src="/uploads/2013/03/20130312202150.png" alt="20130312202150"></a></p>
 <p>图中，第一个命令，在target_file.txt的同目录下，创建了hardlink文件link_file.txt。第二个命令，在不同目录（otherdir）下创建了第二个hardlink文件，link_file_in_otherdir.txt。第三个命令返回了错误，原因是我试图在不同卷里面来创建hardlink文件。失败的原因文章后面会介绍。</p>
@@ -396,7 +441,7 @@
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>ntfs_info_study 这个工具可以显示ntfs卷的一些信息。主要也是学习NtfsInfo的功能，而仿造的一个小工具。ntfs_info_study能显示的信息包括卷大小，扇区数量，簇数量，扇区字节数，簇字节数，主文件表每条记录字节数以及主文件表的一些信息。当然它还可以显示部分NTFS系统文件的信息，例如：$Volume。</p>
 <p>实际上ntfs_info_study稍微修复了NtfsInfo的一个问题。原来的NtfsInfo已经无法显示NTFS系统文件的信息了。原因是这个工具调用FindFirstFile这样的函数来查找NTFS系统文件。我不知道什么版本的Windows可以这么做，至少现在Windows 7上，这个方法是行不通的。所以在我从写的工具里，是先打开系统文件，然后查询文件信息，但是普通的CreateFile是打不开这些文件的，这里我的方法是调用OpenFileById。不过实际上，我还没找到正规而且完美显示所有NTFS系统文件的方法，因为部分系统文件在打开的时候会提示访问拒绝。</p>
-<p>当然不正规的但是却比较完美的查看NTFS系统文件的方法也有，就是直接打开卷，解析NTFS文件系统数据结构。这个功能已经在<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="external">ntfs_study</a>中实现了，具体可以移步这个<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="external">链接</a>。</p>
+<p>当然不正规的但是却比较完美的查看NTFS系统文件的方法也有，就是直接打开卷，解析NTFS文件系统数据结构。这个功能已经在<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="noopener">ntfs_study</a>中实现了，具体可以移步这个<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="noopener">链接</a>。</p>
 <p><a href="/uploads/2013/02/20130227235402.png"><img src="/uploads/2013/02/20130227235402.png" alt="20130227235402"></a></p>
 <p>以上是一副对比图，其他功能是一样的，唯一的区别就是最后一项中，ntfs_info_study能够显示部分NTFS系统文件信息。</p>
 <blockquote>
@@ -440,7 +485,7 @@
       <div class="repo-list-description">
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>昨天在家看完笑傲江湖,没事可做，看了sysinternals的一个很简单的小工具PipeList，然后逆了下，山寨了一个，并且加按照管道名筛选的功能。工具很简单，一共也就200行代码。使用方法如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Usage: pipe_list_study.exe [search_pipe_name]</div><div class="line"></div><div class="line">search_pipe_name  ---  List the pipes that has search_pipe_name in the pipe name string.</div><div class="line">                       Without this argument pipe_list_study will list all pipes.</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Usage: pipe_list_study.exe [search_pipe_name]</span><br><span class="line"></span><br><span class="line">search_pipe_name  ---  List the pipes that has search_pipe_name in the pipe name string.</span><br><span class="line">                       Without this argument pipe_list_study will list all pipes.</span><br></pre></td></tr></table></figure>
 <p><a href="/uploads/2013/02/20130221114347.png"><img src="/uploads/2013/02/20130221114347.png" alt="20130221114347"></a></p>
 <p>下载<a href="/uploads/2013/02/pipe_list_study.zip">pipe_list_study</a></p>
 
@@ -457,45 +502,6 @@
             <span class="octicon octicon-file-directory"></span>
             <a href='/categories/NTInternals/' title=''>NTInternals</a>
           </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-e6b2a1e69c89e4b896e7958ce69cabe697a5efbc8ce7949fe6b4bbe8bf98e8a681e7bba7e7bbad" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2013/02/17/e6b2a1e69c89e4b896e7958ce69cabe697a5efbc8ce7949fe6b4bbe8bf98e8a681e7bba7e7bbad/">又是总结和展望：没有世界末日，生活还要继续</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>今天总算是有时间，有心情写一篇总结去年生活，展望今年的文章了。</p>
-<p>过去的2012年对我来说并不是末日，恰恰相反，他更像是一个新的开始。年初加入新公司，感觉选择还是比较正确的。在新的公司工作，工作不算忙，考勤也比较人性化，环境也还不错。主要是新同事们都还不错，别的不说，侃大山的能力还是很让人钦佩的。所以工作之余也非常娱乐。他们负责娱，我负责乐就行了，哈哈哈哈。刚刚说到工作不算忙，说起来本人也确实在这个环境中挺酱油的，不过俺也不是偷懒，主要是工作上合适我的活不算多。我去小组之后，发现本来打打杀杀的软件，现在要做良民了，不过其实这个做产品的思路是正确的，我也落得点清闲，实在不错。</p>
-<p>当然了，本人实际上不甘于清闲。没事的时候还是跟哥们研究了许多编译器和系统底层的机制。除此之外，今年最大的一个收获是把COM这套东西了解一下，这样不仅对今后的工作有所帮助，而且自己本身对代码应该如何写方面也有一些收获。了解了COM当然要了解ATL，因为ATL过于强大，大部分代码我也没有去读，现在而言主要停留在能合理的使用，对于这点我也比较满意，实际上没打算把ATL搞得太清楚。至于编译器，学的也不多，刚刚把语法分析那块弄得一知半解吧。系统底层倒是一直在研究，尤其是文件系统，注册表等。关于系统底层这些，可以看我去年发的几篇blog，都是一些研究后自己写的工具。包括ntfs文件系统学习工具，注册表格式学习工具，pdb的解析工具等等。</p>
-<p>回头再看看去年定的目标。。。我只能说“呵呵”。。。没有一个完成的啊有木有！！！果然奇迹没有发生啊有木有！！！那么，我又要给今年定目标了。。。</p>
-<p>1.写一个study系列的工具，可以从山寨sysinternals的工具开始做起。</p>
-<p>没了，对！就这一条！！！我就不信这一条我也搞不定！！！！！</p>
-<p>去年写了总结后，同学们说我生活上的写的太少了，好吧那我简单总结下生活上的开心事！最开心的是，哥开始健身了！！！每周固定和一哥们去三次健身房，每次25分钟跑4k多米，并且锻炼腹肌和肱二头肌。现在人感觉就像回到高中状态。更让人欣慰的事情是能看到一点点腹肌了！另外精神方面，更多的相信“念念不忘，必有回响”，也有称这个为宇宙神秘力量的，不是迷信，而是一种信念，是一种相信只要你不断努力，不断追求就一定能达到目标的执念。不过可惜，我一直念念不忘年会大奖，可惜大宇宙送了我两个字——“呵呵”。。。关于练字，总是断断续续，貌似没啥进步。关于英语，嗯，没了。关于更八卦的生活详情~呵呵~你们以为我会写么！</p>
-<p>那么今年生活上的目标呢？！还是健身，练字，英语和嘿嘿~~~</p>
-<p>最后还是送祝福时间：祝福我的家人，朋友和我自己，新春快乐，健康平安，家庭和睦温馨！！！</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2013-02-17T08:28:09.000Z" itemprop="datePublished">2013-02-17</time>
-        </span>
-
         
       
         <!--
@@ -608,7 +614,7 @@
 
     <h3>Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
     </div>
   </div>
 
