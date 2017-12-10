@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+  <link rel="icon" href="/favicon.ico">
+  
+  <title>0CCh Blog | 将图片转化成mnist格式</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
+  <!--在这里倒入jquery 方便处理部分页面的jquery-->
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="site-header navfixed-false">
+  <div class="container">
+      <h1><a href="/" title="0CCh Blog"><span class="octicon octicon-mark-github"></span> 0CCh Blog</a></h1>
+      <nav class="site-header-nav" role="navigation">
+        
+              
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+        
+              
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+        
+              
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+        
+      </nav>
+  </div>
+</header>
+
+	
+<section class="collection-head geopattern" data-pattern-id="将图片转化成mnist格式" >
+    <div class="container">
+        <div class="collection-title">
+            <h1 class="collection-header">
+                将图片转化成mnist格式
+            </h1>
+            
+                <div class="collection-info">
+                    <span class="meta-info">
+                        <span class="octicon octicon-calendar"></span>
+                        <time datetime="2017-12-09T12:51:42.000Z" itemprop="datePublished">2017-12-09</time>
+                    </span>
+                    
+                        <span class="meta-info">
+                            <span class="octicon octicon-file-directory"></span>
+                            <a href='/categories/DeepLearner/' title=''>DeepLearner</a>
+                        </span>
+                    
+                </div>
+            
+        </div>
+    </div>
+</section>
+	<section class="container">
+    <div class="columns">
+        <div class="column  three-fourths " >
+            <article class="article-content markdown-body">
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>利用mnist数据对数字符号进行识别基本上算是深度学习的Hello World了。在我学习这个“hello world”的过程中，多多少少有点不爽，原因是无论是训练数据还是测试数据，都是mnist准备好的，即使最后训练的数字识别率很高，我也没有什么参与感。其实，我特别想测试自己手写数字的识别率。<br>为了完成上述想法，我第一个想到的是将普通图片数据转换成mnist数据。mnist的数据格式非常简单，如下图所示：</p>
+<p><a href="/uploads/2017/12/2017-12-10-t10k-images.idx3-ubyte.png"><img src="/uploads/2017/12/2017-12-10-t10k-images.idx3-ubyte.png" alt="2017-12-10-t10k-images.idx3-ubyte"></a></p>
+<p><a href="/uploads/2017/12/2017-12-10-t10k-labels.idx1-ubyte.png"><img src="/uploads/2017/12/2017-12-10-t10k-labels.idx1-ubyte.png" alt="2017-12-10-t10k-labels.idx1-ubyte"></a></p>
+<p>两幅图分别表示了图形数据和标签数据。他们都有一个4字节长度的magic number，用来识别数据的具体格式。如果是标签数据，那么格式相对简单，后续是一个标签数量，接着的是标签数据（0-9的值）。如果是图像数据，那么magic number后，出了4个字节的数据数量以外，还有分别占4字节的行列数据，最后的就是图像数据。结构非常简单，但是值得注意的事情有两点：</p>
+<blockquote>
+<ol>
+<li>数据使用big endian组织的。</li>
+<li>图像数据中，255表示前景，也就是黑色，0表示背景，也就是白色，这和我们平时看到的RGB是不同的。</li>
+</ol>
+</blockquote>
+<p>知道了数据格式，接下来的事情就是用程序将图像转换到mnist了。说实在的，如果对于操作二进制的数据，C比python还是方便不少的。但是C读取图像更加麻烦。所以这里推荐还是使用python对数据做转化。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 首先导入图像处理库</span></span><br><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">from</span> array <span class="keyword">import</span> *</span><br><span class="line"><span class="comment"># 接下来打开图片，并且将像转化为8bit黑白像素</span></span><br><span class="line">im = Image.open(path_to_image)</span><br><span class="line">im = im.convert(<span class="string">'L'</span>)</span><br><span class="line"><span class="comment"># 转换图像到mnist的大小28*28</span></span><br><span class="line">im = im.resize((<span class="number">28</span>,<span class="number">28</span>))</span><br><span class="line"><span class="comment"># 获取图像长宽</span></span><br><span class="line">width, height = im.size()</span><br><span class="line"><span class="comment"># 将图像数据转化位mnist</span></span><br><span class="line"><span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">0</span>,width):</span><br><span class="line">    <span class="keyword">for</span> y <span class="keyword">in</span> range(<span class="number">0</span>,height):</span><br><span class="line">        data_image.append(<span class="number">255</span> - pixel[y,x])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将数据写到mnist文件中</span></span><br><span class="line">header = array(<span class="string">'B'</span>)</span><br><span class="line"><span class="comment"># 写入magic number</span></span><br><span class="line">header.extend([<span class="number">0</span>,<span class="number">0</span>,<span class="number">8</span>,<span class="number">3</span>])</span><br><span class="line"><span class="comment"># 写入数据数量，以一个图片为例</span></span><br><span class="line">header.extend([<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>])</span><br><span class="line"><span class="comment"># 写入行列像素数</span></span><br><span class="line">header.extend([<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">28</span>])</span><br><span class="line">header.extend([<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">28</span>])</span><br><span class="line"><span class="comment"># 写入数据</span></span><br><span class="line">header.extend(data_image)</span><br><span class="line"><span class="comment"># 最后写文件</span></span><br><span class="line">output_file = open(<span class="string">r'data.mnist'</span>, <span class="string">'wb'</span>)</span><br><span class="line">header.tofile(output_file)</span><br><span class="line">output_file.close()</span><br></pre></td></tr></table></figure>
+<p>以上是对图像数据的转换，标签数据的转换代码和以上代码基本一样，所以这里不再赘述。<br>有了这个方法，我们可以通过画图软件画上一堆自己手写的数字，通过python批量转化成mnist格式的数据，再让tensorflow进行测试，算出模型对我们自己手写数字的识别正确率。</p>
+<p>好了，以上就是我说的第一种让模型识别自己的手写数字的方法。不过，这个方法不能实时的识别我手写的数字，让人总觉得缺点什么。于是就有了第二种方法，这种方法将借助浏览器，js以及web server等工具将手写的数字实时的传给后台的模型进行识别，然后把结果回复给用户。不过这个方法就要等待下一篇文章来描述了。</p>
+
+            </article>
+            
+                <div class="share">
+                    <!--开启分享-->
+<div class="share-component" data-disabled="google,twitter,facebook" data-description=""></div>
+
+<script src="/js/share.min.js"></script>
+
+                </div>    
+            
+
+            
+            
+                
+<div class="comments">
+    <div id="disqus_thread"></div>
+    <script>
+
+        var host = window.location.host;
+        var disqus_shortname = host.includes('127.0.0.1') || host.includes('0.0.0.0') || host.includes('localhost') ? '0cchDev' : '0cch'
+
+        var disqus_title = '将图片转化成mnist格式';
+        var disqus_config = function () {
+            this.page.url = 'http://0cch.com/2017/12/09/image-to-mnist1/';
+        };
+        
+        (function() {
+            var d = document, s = d.createElement('script');
+
+            s.src = '//0cch.disqus.com/embed.js';
+
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>
+        请启用JavaScript来查看 <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+    </noscript>
+</div>
+             
+
+        </div>
+        <div class="column one-fourth">
+            
+                
+                
+
+
+<h3>Post Directory</h3>
+
+<div id="post-directory-module">
+	<section class="post-directory">
+		<p><strong class="toc-title">Article directory</strong></p>
+		
+	</section>
+</div>
+            
+        </div>
+    </div>
+</section>
+
+<footer class="container">
+    <div class="site-footer" role="contentinfo">
+        
+        <ul class="site-footer-links right mobile-hidden">
+            <li>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+            </li>
+        </ul>
+
+        <ul class="site-footer-links mobile-hidden">
+            
+                  
+                  <li>
+                    <a href="/"  title="Home">Home</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/categories/"  title="Category">Category</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
+                  </li>
+            
+            <li>
+                <a href="/atom.xml">
+                    <span class="octicon octicon-rss" style="color:orange;"></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</footer>
+
+		<script src="/js/geopattern.js"></script>
+		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+		
+			<script src="/js/toc.js"></script>
+		
+
+		<script src="/js/index.js"></script>
+
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
+
+	</body>
+</html>

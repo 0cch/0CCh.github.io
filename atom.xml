@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://0cch.com/"/>
-  <updated>2017-11-26T09:11:15.257Z</updated>
+  <updated>2017-12-10T12:56:13.842Z</updated>
   <id>http://0cch.com/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>将图片转化成mnist格式</title>
+    <link href="http://0cch.com/2017/12/09/image-to-mnist1/"/>
+    <id>http://0cch.com/2017/12/09/image-to-mnist1/</id>
+    <published>2017-12-09T12:51:42.000Z</published>
+    <updated>2017-12-10T12:56:13.842Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>利用mnist数据对数字符号进行识别基本上算是深度学习的Hello World了。在我学习这个“hello world”的过程中，多多少少有点不爽，原因是无论是训练数据还是测试数据，都是mnist准备好的，即使最后训练的数字识别率很高，我也没有什么参与感。其实，我特别想测试自己手写数字的识别率。<br>为了完成上述想法，我第一个想到的是将普通图片数据转换成mnist数据。mnist的数据格式非常简单，如下图所示：</p><p><a href="/uploads/2017/12/2017-12-10-t10k-images.idx3-ubyte.png"><img src="/uploads/2017/12/2017-12-10-t10k-images.idx3-ubyte.png" alt="2017-12-10-t10k-images.idx3-ubyte"></a></p><p><a href="/uploads/2017/12/2017-12-10-t10k-labels.idx1-ubyte.png"><img src="/uploads/2017/12/2017-12-10-t10k-labels.idx1-ubyte.png" alt="2017-12-10-t10k-labels.idx1-ubyte"></a></p><p>两幅图分别表示了图形数据和标签数据。他们都有一个4字节长度的magic number，用来识别数据的具体格式。如果是标签数据，那么格式相对简单，后续是一个标签数量，接着的是标签数据（0-9的值）。如果是图像数据，那么magic number后，出了4个字节的数据数量以外，还有分别占4字节的行列数据，最后的就是图像数据。结构非常简单，但是值得注意的事情有两点：</p><blockquote><ol><li>数据使用big endian组织的。</li><li>图像数据中，255表示前景，也就是黑色，0表示背景，也就是白色，这和我们平时看到的RGB是不同的。</li></ol></blockquote><p>知道了数据格式，接下来的事情就是用程序将图像转换到mnist了。说实在的，如果对于操作二进制的数据，C比python还是方便不少的。但是C读取图像更加麻烦。所以这里推荐还是使用python对数据做转化。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 首先导入图像处理库</span></span><br><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">from</span> array <span class="keyword">import</span> *</span><br><span class="line"><span class="comment"># 接下来打开图片，并且将像转化为8bit黑白像素</span></span><br><span class="line">im = Image.open(path_to_image)</span><br><span class="line">im = im.convert(<span class="string">'L'</span>)</span><br><span class="line"><span class="comment"># 转换图像到mnist的大小28*28</span></span><br><span class="line">im = im.resize((<span class="number">28</span>,<span class="number">28</span>))</span><br><span class="line"><span class="comment"># 获取图像长宽</span></span><br><span class="line">width, height = im.size()</span><br><span class="line"><span class="comment"># 将图像数据转化位mnist</span></span><br><span class="line"><span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">0</span>,width):</span><br><span class="line">    <span class="keyword">for</span> y <span class="keyword">in</span> range(<span class="number">0</span>,height):</span><br><span class="line">        data_image.append(<span class="number">255</span> - pixel[y,x])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将数据写到mnist文件中</span></span><br><span class="line">header = array(<span class="string">'B'</span>)</span><br><span class="line"><span class="comment"># 写入magic number</span></span><br><span class="line">header.extend([<span class="number">0</span>,<span class="number">0</span>,<span class="number">8</span>,<span class="number">3</span>])</span><br><span class="line"><span class="comment"># 写入数据数量，以一个图片为例</span></span><br><span class="line">header.extend([<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>])</span><br><span class="line"><span class="comment"># 写入行列像素数</span></span><br><span class="line">header.extend([<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">28</span>])</span><br><span class="line">header.extend([<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">28</span>])</span><br><span class="line"><span class="comment"># 写入数据</span></span><br><span class="line">header.extend(data_image)</span><br><span class="line"><span class="comment"># 最后写文件</span></span><br><span class="line">output_file = open(<span class="string">r'data.mnist'</span>, <span class="string">'wb'</span>)</span><br><span class="line">header.tofile(output_file)</span><br><span class="line">output_file.close()</span><br></pre></td></tr></table></figure><p>以上是对图像数据的转换，标签数据的转换代码和以上代码基本一样，所以这里不再赘述。<br>有了这个方法，我们可以通过画图软件画上一堆自己手写的数字，通过python批量转化成mnist格式的数据，再让tensorflow进行测试，算出模型对我们自己手写数字的识别正确率。</p><p>好了，以上就是我说的第一种让模型识别自己的手写数字的方法。不过，这个方法不能实时的识别我手写的数字，让人总觉得缺点什么。于是就有了第二种方法，这种方法将借助浏览器，js以及web server等工具将手写的数字实时的传给后台的模型进行识别，然后把结果回复给用户。不过这个方法就要等待下一篇文章来描述了。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;利用mnist数据对数字符号进行识别基本上算是深度学习的Hello Worl
+      
+    
+    </summary>
+    
+      <category term="DeepLearner" scheme="http://0cch.com/categories/DeepLearner/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>TensorFlow pip安装（非GPU版）</title>
@@ -446,29 +469,6 @@
       
       
         &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;从Win8开始，任务管理已经悄然发生变化了，这篇文章要说的就是结束任务这一个
-      
-    
-    </summary>
-    
-      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Windows 8 Shell API对于长路径文件名的支持</title>
-    <link href="http://0cch.com/2016/05/17/win8-shell-long-filename/"/>
-    <id>http://0cch.com/2016/05/17/win8-shell-long-filename/</id>
-    <published>2016-05-17T08:16:56.000Z</published>
-    <updated>2017-11-26T08:52:02.539Z</updated>
-    
-    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在Windows 8之前，Shell API对于长路径的文件名的支持并不理想。比如PathAppend这个函数，函数规定pszPath，也就是第一个参数，它的buffer大小必须要能够容纳MAX_PATH个字符。第二个参数pszMore也不能超过MAX_PATH的长度。这样的API不仅不能满足我们对长文件路径需求，同时也可能让我们的软件由于字符串检查不严格出现严重BUG和漏洞。</p><p>还好，这个问题在Windows 8以及以后的系统上得到了解决。还是以路径拼接为例。微软向我们介绍了PathCchAppend和PathCchAppendEx函数。其中PathCchAppend函数，增加了cchPath参数，用来指定输出buffer的大小。用这样的方式来加强参数的检查，增加了函数的安全性。而PathCchAppendEx这个函数在PathCchAppend基础上，又加入了dwFlags，现在这个标志只有PATHCCH_ALLOW_LONG_PATHS，意思就是让我们的路径名超过MAX_PATH。</p><p>不知道微软设计PathCchAppend和PathCchAppendEx这两个API的时候是怎么样的一个想法，我觉得完全没必要设计成两个函数，一个PathCchAppendEx就足够了。大家是不是也有这个疑问呢？</p><p>最后，由于Windows 7现在的使用量还是非常大的，我们也不能因为要使用这些新的API而放弃兼容老版本的Windows。比较合适的做法还是动态导入这些函数，如果成功了就可以使用新的函数，失败就用老的函数。另外值得注意的是，PathCchAppend这类新的函数并不是放在shlwapi.dll里面，而是在kernelbase.dll，动态获取函数的时候需要注意这一点。</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;在Windows 8之前，Shell API对于长路径的文件名的支持并不理想
       
     
     </summary>
