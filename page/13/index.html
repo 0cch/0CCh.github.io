@@ -74,6 +74,288 @@
     <div class="columns">
         <div class="column two-thirds">
             
+                  <article id="post-reactos-freeldre7a381e79b98e58f8ae69687e4bbb6e7aea1e790862" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2011/06/10/reactos-freeldre7a381e79b98e58f8ae69687e4bbb6e7aea1e790862/">ReactOS-Freeldr磁盘及文件管理2</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>ArcOpen的大体流程我们看过了。大致分为这几步</p>
+<ol>
+<li>函数会尝试找到文件所在分区的设备句柄，如果还没有对应的句柄。那么使用DEVICE.FuncTable中的Open函数打开设备，并为这个设备分配句柄。</li>
+</ol>
+<ol>
+<li>打开设备后条用XxxMount识别分区格式，识别成功返回另外的FuncTable，存储到设备的FileData.FileFuncTable域。</li>
+</ol>
+<ol>
+<li>为文件分配一个句柄，在对应的FileData.DeviceId为上面创建设备句柄，FileData.FuncTable为设备的FileData.FileFuncTable。</li>
+</ol>
+<ol>
+<li>最后调用文件的FileData.FuncTable.Open函数打开文件。</li>
+</ol>
+<p><strong>挂载分区时做了什么</strong></p>
+<p>之前我们忽略了XxxMount函数。现在来读读比较简单的FatMount (freeldr\freeldr\fs\fat.c)。</p>
+<ol>
+<li><p><em>const</em> DEVVTBL<strong>*</strong> FatMount<strong>(</strong>ULONG DeviceId<strong>)</strong></p>
+</li>
+<li><p><strong>{</strong></p>
+</li>
+<li><p><strong>.**</strong>.<strong><strong>.</strong></strong>.<strong><strong>.</strong></strong>.<strong><strong>.</strong></strong>.**</p>
+</li>
+<li><p>// 生成一个FAT_VOLUME_INFO结构</p>
+</li>
+<li><p>Volume <strong>=</strong> MmHeapAlloc<strong>(</strong><em>sizeof</em><strong>(</strong>FAT_VOLUME_INFO<strong>)**</strong>)<strong>**;</strong></p>
+</li>
+<li><p><em>if</em> <strong>(**</strong>!<strong>Volume</strong>)**</p>
+</li>
+<li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
+</li>
+<li><p><em>RtlZeroMemory</em><strong>(</strong>Volume, <em>sizeof</em><strong>(</strong>FAT_VOLUME_INFO<strong>)**</strong>)<strong>**;</strong></p>
+</li>
+<li><p>// 读第一个扇区</p>
+</li>
+<li><p>Position<strong>.</strong>HighPart <strong>=</strong> 0<strong>;</strong></p>
+</li>
+<li><p>Position<strong>.</strong>LowPart <strong>=</strong> 0<strong>;</strong></p>
+</li>
+<li><p>ret <strong>=</strong> ArcSeek<strong>(</strong>DeviceId, <strong>&amp;</strong>Position, SeekAbsolute<strong>)**</strong>;**</p>
+</li>
+<li><p><em>if</em> <strong>(</strong>ret <strong>!**</strong>=<strong> ESUCCESS</strong>)**</p>
+</li>
+<li><p><strong>{</strong></p>
+</li>
+<li><p>MmHeapFree<strong>(</strong>Volume<strong>)**</strong>;**</p>
+</li>
+<li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
+</li>
+<li><p><strong>}</strong></p>
+</li>
+<li><p>ret <strong>=</strong> ArcRead<strong>(</strong>DeviceId, Buffer, <em>sizeof</em><strong>(</strong>Buffer<strong>)</strong>, <strong>&amp;</strong>Count<strong>)**</strong>;**</p>
+</li>
+<li><p><em>if</em> <strong>(</strong>ret <strong>!**</strong>=<strong> ESUCCESS </strong>|<strong>**|</strong> Count <strong>!**</strong>=<strong> <em>sizeof</em></strong>(<strong>Buffer</strong>)<strong>**)</strong></p>
+</li>
+<li><p><strong>{</strong></p>
+</li>
+<li><p>MmHeapFree<strong>(</strong>Volume<strong>)**</strong>;**</p>
+</li>
+<li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
+</li>
+<li><p><strong>}</strong></p>
+</li>
+<li><p>// 判断是否有fat分区标志</p>
+</li>
+<li><p><em>if</em> <strong>(**</strong>!<strong>RtlEqualMemory</strong>(<strong>BootSector</strong>-<strong>**&gt;</strong>FileSystemType, “FAT12 “, 8<strong>)</strong> <strong>&amp;**</strong>&amp;**</p>
+</li>
+<li><p><strong>!</strong>RtlEqualMemory<strong>(</strong>BootSector<strong>-**</strong>&gt;<strong>FileSystemType, “FAT16 “, 8</strong>)<strong> </strong>&amp;<strong>**&amp;</strong></p>
+</li>
+<li><p><strong>!</strong>RtlEqualMemory<strong>(</strong>BootSector32<strong>-**</strong>&gt;<strong>FileSystemType, “FAT32 “, 8</strong>)<strong> </strong>&amp;<strong>**&amp;</strong></p>
+</li>
+<li><p><strong>!</strong>RtlEqualMemory<strong>(</strong>BootSectorX<strong>-**</strong>&gt;<strong>FileSystemType, “FATX”, 4</strong>)<strong>**)</strong></p>
+</li>
+<li><p><strong>{</strong></p>
+</li>
+<li><p>MmHeapFree<strong>(</strong>Volume<strong>)**</strong>;**</p>
+</li>
+<li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
+</li>
+<li><p><strong>}</strong></p>
+</li>
+<li><p>// 获得分区大小等信息</p>
+</li>
+<li><p>ret <strong>=</strong> ArcGetFileInformation<strong>(</strong>DeviceId, <strong>&amp;</strong>FileInformation<strong>)**</strong>;**</p>
+</li>
+<li><p><em>if</em> <strong>(</strong>ret <strong>!**</strong>=<strong> ESUCCESS</strong>)**</p>
+</li>
+<li><p><strong>{</strong></p>
+</li>
+<li><p>MmHeapFree<strong>(</strong>Volume<strong>)**</strong>;**</p>
+</li>
+<li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
+</li>
+<li><p><strong>}</strong></p>
+</li>
+<li><p>SectorCount<strong>.</strong>HighPart <strong>=</strong> FileInformation<strong>.</strong>EndingAddress<strong>.</strong>HighPart<strong>;</strong></p>
+</li>
+<li><p>SectorCount<strong>.</strong>LowPart <strong>=</strong> FileInformation<strong>.</strong>EndingAddress<strong>.</strong>LowPart<strong>;</strong></p>
+</li>
+<li><p>SectorCount<strong>.</strong>QuadPart <strong>/**</strong>=<strong> SECTOR_SIZE</strong>;**</p>
+</li>
+<li><p>Volume<strong>-**</strong>&gt;<strong>DeviceId </strong>=<strong> DeviceId</strong>;**</p>
+</li>
+<li><p>// 打开分区</p>
+</li>
+<li><p><em>if</em> <strong>(**</strong>!<strong>FatOpenVolume</strong>(<strong>Volume, BootSector, SectorCount</strong>.<strong>QuadPart</strong>)<strong>**)</strong></p>
+</li>
+<li><p><strong>{</strong></p>
+</li>
+<li><p>MmHeapFree<strong>(</strong>Volume<strong>)**</strong>;**</p>
+</li>
+<li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
+</li>
+<li><p><strong>}</strong></p>
+</li>
+<li><p>// 存储FAT_VOLUME_INFO结构</p>
+</li>
+<li><p>FatVolumes<strong>[</strong>DeviceId<strong>]</strong> <strong>=</strong> Volume<strong>;</strong></p>
+</li>
+<li><p>// 返回fat文件读写的FuncTable</p>
+</li>
+<li><p><em>return</em> <strong>&amp;</strong>FatFuncTable<strong>;</strong></p>
+</li>
+<li><p><strong>}</strong></p>
+</li>
+<li><p><strong>           
+</strong></p>
+</li>
+</ol>
+<p>函数中的DeviceId是设备的句柄。</p>
+<p>生成FAT_VOLUME_INFO结构。这个结构里面存储了FAT分区的基本信息。包括扇区大小，每个簇的扇区数等等。</p>
+<ol>
+<li><p><em>typedef</em> <em>struct</em> _FAT_VOLUME_INFO </p>
+</li>
+<li><p><strong>{</strong></p>
+</li>
+<li><p>ULONG BytesPerSector<strong>;</strong> /<em> Number of bytes per sector </em>/</p>
+</li>
+<li><p>ULONG SectorsPerCluster<strong>;</strong> /<em> Number of sectors per cluster </em>/</p>
+</li>
+<li><p>ULONG FatSectorStart<strong>;</strong> /<em> Starting sector of 1st FAT table </em>/</p>
+</li>
+<li><p>ULONG ActiveFatSectorStart<strong>;</strong> /<em> Starting sector of active FAT table </em>/</p>
+</li>
+<li><p>ULONG NumberOfFats<strong>;</strong> /<em> Number of FAT tables </em>/</p>
+</li>
+<li><p>ULONG SectorsPerFat<strong>;</strong> /<em> Sectors per FAT table </em>/</p>
+</li>
+<li><p>ULONG RootDirSectorStart<strong>;</strong> /<em> Starting sector of the root directory (non-fat32) </em>/</p>
+</li>
+<li><p>ULONG RootDirSectors<strong>;</strong> /<em> Number of sectors of the root directory (non-fat32) </em>/</p>
+</li>
+<li><p>ULONG RootDirStartCluster<strong>;</strong> /<em> Starting cluster number of the root directory (fat32 only) </em>/</p>
+</li>
+<li><p>ULONG DataSectorStart<strong>;</strong> /<em> Starting sector of the data area </em>/</p>
+</li>
+<li><p>ULONG FatType<strong>;</strong> /<em> FAT12, FAT16, FAT32, FATX16 or FATX32 </em>/</p>
+</li>
+<li><p>ULONG DeviceId<strong>;</strong></p>
+</li>
+<li><p><strong>}</strong> FAT_VOLUME_INFO<strong>;</strong></p>
+</li>
+<li><p><strong>             
+</strong></p>
+</li>
+</ol>
+<p>  读取第一个山区，判断是否有fat标志。如果没有直接返回，挂载失败。之后使用ArcGetFileInformation获得分区大小。ArcGetFileInformation里面调用了FileData.FuncTable.GetFileInformation。因为当前DeviceId是设备句柄，所以他实际调用的是DiskGetFileInformation(freeldr\freeldr\arch\i386\hardware.c)。这个函数很简单，通过FileInformation返回分区开始和结束的地址，这里就不列出了。     </p>
+<p>这里的代码用FileInformation<strong>.</strong>EndingAddress / SECTOR_SIZE计算出了该分区的扇区数SectorCount。这里应该BUG。因为EndingAddress是分区结束地址，真的扇区数应该是 (分区开始地址 - EndingAddress ) / SECTOR_SIZE。好在SectorCount只是判断fat分区的一个依据，而且一般C盘计算出的SectorCount误差不会很大，影响不大。</p>
+<p>最后执行FatOpenVolume真正执行分区的挂载、初始化。初始化结束后将生成的Volume放到fat.c维护的全局数组FatVolumes里，之后对fat分区进行操作（读写）时，通过设备的DeviceId就可以找到对应的FAT_VOLUME_INFO结构。</p>
+<p>最后函数返回FatFuncTable函数数组</p>
+<ol>
+<li><p><em>const</em> DEVVTBL FatFuncTable <strong>=</strong></p>
+</li>
+<li><p><strong>{</strong></p>
+</li>
+<li><p>FatClose, </p>
+</li>
+<li><p>FatGetFileInformation, </p>
+</li>
+<li><p>FatOpen, </p>
+</li>
+<li><p>FatRead, </p>
+</li>
+<li><p>FatSeek, </p>
+</li>
+<li><p>L”fastfat”, </p>
+</li>
+<li><p><strong>}**</strong>;**</p>
+</li>
+<li></li>
+</ol>
+<p>用户可以通过这些函数就读写改fat分区啦。</p>
+<p>那么FatOpenVolume都干了什么呢。</p>
+<p>这个函数简单来说就是根据分区内容填写了Volume结构，已经算是一个分区的具体实现细节了，和整体架构无关，不多说了。这个函数在freeldr\freeldr\fs\fat.c中。</p>
+<p><strong><strong>打开文件时做了什么</strong></strong></p>
+<p>上一篇文章中还有一个地方没说，就是打开设备并创建完文件的句柄后，ArcOpen调用了文件对应的FileData.FuncTable.Open。对于fat分区而言这个函数是FatOpen(freeldr\freeldr\fs\fat.c). 这个函数也是和分区结构有关的了，有一点比较重要就是函数最后调用了FsSetDeviceSpecific把一个和文件相关的内部结构与文件句柄相关联。以后使用FatRead对文件句柄进行读操作时直接就可以获得这个结构啦。</p>
+<ol>
+<li><p>LONG FatOpen<strong>(</strong>CHAR<strong>*</strong> Path, OPENMODE OpenMode, ULONG<strong>*</strong> FileId<strong>)</strong></p>
+</li>
+<li><p><strong>{</strong></p>
+</li>
+<li><p><strong>.**</strong>.<strong><strong>.</strong></strong>.<strong><strong>.</strong></strong>.**</p>
+</li>
+<li></li>
+<li><p>// 根据文件的FileId获得文件所在的设备句柄FileData.DeviceId, 从而获得FatMount时生成的Volume结构。</p>
+</li>
+<li><p>DeviceId <strong>=</strong> FsGetDeviceId<strong>(<strong>*</strong></strong>FileId<strong>)**</strong>;**</p>
+</li>
+<li><p>FatVolume <strong>=</strong> FatVolumes<strong>[</strong>DeviceId<strong>]**</strong>;**</p>
+</li>
+<li><p>// 从DeviceId设备中读取并查询fat表，判断path表示的文件是否存在</p>
+</li>
+<li><p><em>RtlZeroMemory</em><strong>(**</strong>&amp;<strong>TempFileInfo, <em>sizeof</em></strong>(<strong>TempFileInfo</strong>)<strong><strong>)</strong></strong>;**</p>
+</li>
+<li><p>ret <strong>=</strong> FatLookupFile<strong>(</strong>FatVolume, Path, DeviceId, <strong>&amp;</strong>TempFileInfo<strong>)**</strong>;**</p>
+</li>
+<li><p><em>if</em> <strong>(</strong>ret <strong>!**</strong>=<strong> ESUCCESS</strong>)**</p>
+</li>
+<li><p><em>return</em> ENOENT<strong>;</strong></p>
+</li>
+<li><p>// 判断是否是目录</p>
+</li>
+<li><p>IsDirectory <strong>=</strong> <strong>(</strong>TempFileInfo<strong>.</strong>Attributes <strong>&amp;</strong> ATTR_DIRECTORY<strong>)</strong> <strong>!**</strong>=<strong> 0</strong>;**</p>
+</li>
+<li><p><em>if</em> <strong>(</strong>IsDirectory <strong>&amp;**</strong>&amp;<strong> OpenMode </strong>!<strong>**=</strong> OpenDirectory<strong>)</strong></p>
+</li>
+<li><p><em>return</em> EISDIR<strong>;</strong></p>
+</li>
+<li><p><em>else</em> <em>if</em> <strong>(**</strong>!<strong>IsDirectory </strong>&amp;<strong>**&amp;</strong> OpenMode <strong>!**</strong>=<strong> OpenReadOnly</strong>)**</p>
+</li>
+<li><p><em>return</em> ENOTDIR<strong>;</strong></p>
+</li>
+<li><p>// 生成FAT_FILE_INFO结构，里面存放了文件的信息(开始的扇区等)</p>
+</li>
+<li><p>FileHandle <strong>=</strong> MmHeapAlloc<strong>(</strong><em>sizeof</em><strong>(</strong>FAT_FILE_INFO<strong>)**</strong>)<strong>**;</strong></p>
+</li>
+<li><p><em>if</em> <strong>(**</strong>!<strong>FileHandle</strong>)**</p>
+</li>
+<li><p><em>return</em> ENOMEM<strong>;</strong></p>
+</li>
+<li><p>RtlCopyMemory<strong>(</strong>FileHandle, <strong>&amp;</strong>TempFileInfo, <em>sizeof</em><strong>(</strong>FAT_FILE_INFO<strong>)**</strong>)<strong>**;</strong></p>
+</li>
+<li><p>FileHandle<strong>-**</strong>&gt;<strong>Volume </strong>=<strong> FatVolume</strong>;**</p>
+</li>
+<li><p>// 把这个结构和文件对应的FileData.Specific关联。之后进行FatRead等操作时可以直接获得这个结构了</p>
+</li>
+<li><p>FsSetDeviceSpecific<strong>(<strong>*</strong></strong>FileId, FileHandle<strong>)**</strong>;**</p>
+</li>
+<li><p><em>return</em> ESUCCESS<strong>;</strong></p>
+</li>
+<li><p><strong>}</strong></p>
+</li>
+</ol>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2011-06-09T18:17:00.000Z" itemprop="datePublished">2011-06-10</time>
+        </span>
+
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
                   <article id="post-reactos-freeldre7a381e79b98e58f8ae69687e4bbb6e7aea1e79086" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
@@ -377,7 +659,7 @@
 
     <h3>Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
     </div>
   </div>
 
