@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   <link rel="icon" href="/favicon.ico">
   
@@ -12,8 +12,8 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
   <!--在这里倒入jquery 方便处理部分页面的jquery-->
-  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</head>
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head></html>
 <body class="home">
 	<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="site-header navfixed-false">
   <div class="container">
@@ -21,13 +21,13 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
@@ -74,8 +74,98 @@
     <div class="columns">
         <div class="column two-thirds">
             
+                  <article id="post-How-does-the-debugger-match-the-symbol-file" class="repo-list">
+    <div class="repo-list-item">
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2017/09/18/How-does-the-debugger-match-the-symbol-file/">调试器是怎么匹配程序的符号文件的</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>微软的天才软件工程师们设计的PE（Portable Executable）文件数据结构有极强的扩展性和兼容性。我们关心的符号文件信息存储在PE结构中，一个叫做Debug Directory的节里。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">0:000&gt; !dh -f ntdll</span><br><span class="line"></span><br><span class="line">File Type: DLL</span><br><span class="line">FILE HEADER VALUES</span><br><span class="line">    8664 machine (X64)</span><br><span class="line">       7 number of sections</span><br><span class="line">590296CE time date stamp Thu Apr 27 18:11:42 2017</span><br><span class="line"></span><br><span class="line">       0 file pointer to symbol table</span><br><span class="line">       0 number of symbols</span><br><span class="line">      F0 size of optional header</span><br><span class="line">    2022 characteristics</span><br><span class="line">            Executable</span><br><span class="line">            App can handle &gt;2gb addresses</span><br><span class="line">            DLL</span><br><span class="line"></span><br><span class="line">OPTIONAL HEADER VALUES</span><br><span class="line">     20B magic #</span><br><span class="line">    9.00 linker version</span><br><span class="line">   FB800 size of code</span><br><span class="line">   A9600 size of initialized data</span><br><span class="line">       0 size of uninitialized data</span><br><span class="line">       0 address of entry point</span><br><span class="line">    1000 base of code</span><br><span class="line">         ----- new -----</span><br><span class="line">00000000774e0000 image base</span><br><span class="line">    1000 section alignment</span><br><span class="line">     200 file alignment</span><br><span class="line">       3 subsystem (Windows CUI)</span><br><span class="line">    6.01 operating system version</span><br><span class="line">    6.01 image version</span><br><span class="line">    6.01 subsystem version</span><br><span class="line">  1AA000 size of image</span><br><span class="line">     400 size of headers</span><br><span class="line">  1B5DB0 checksum</span><br><span class="line">0000000000040000 size of stack reserve</span><br><span class="line">0000000000001000 size of stack commit</span><br><span class="line">0000000000100000 size of heap reserve</span><br><span class="line">0000000000001000 size of heap commit</span><br><span class="line">     140  DLL characteristics</span><br><span class="line">            Dynamic base</span><br><span class="line">            NX compatible</span><br><span class="line">  101200 [    F1A3] address [size] of Export Directory</span><br><span class="line">       0 [       0] address [size] of Import Directory</span><br><span class="line">  14E000 [   5A028] address [size] of Resource Directory</span><br><span class="line">  13B000 [   127EC] address [size] of Exception Directory</span><br><span class="line">  1A2E00 [    4300] address [size] of Security Directory</span><br><span class="line">  1A9000 [     4E8] address [size] of Base Relocation Directory</span><br><span class="line">   FC58C [      38] address [size] of Debug Directory</span><br><span class="line">       0 [       0] address [size] of Description Directory</span><br><span class="line">       0 [       0] address [size] of Special Directory</span><br><span class="line">       0 [       0] address [size] of Thread Storage Directory</span><br><span class="line">       0 [       0] address [size] of Load Configuration Directory</span><br><span class="line">       0 [       0] address [size] of Bound Import Directory</span><br><span class="line">       0 [       0] address [size] of Import Address Table Directory</span><br><span class="line">       0 [       0] address [size] of Delay Import Directory</span><br><span class="line">       0 [       0] address [size] of COR20 Header Directory</span><br><span class="line">       0 [       0] address [size] of Reserved Directory</span><br><span class="line">       </span><br></pre></td></tr></table></figure>
+<p>使用!dh命令可以显示PE文件的关键信息，这里可以看到Debug Directory的偏移地址是FC58C，大小是38个字节，其对应结构体是_IMAGE_DEBUG_DIRECTORY。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_DEBUG_DIRECTORY</span> &#123;</span></span><br><span class="line">    DWORD   Characteristics;</span><br><span class="line">    DWORD   TimeDateStamp;</span><br><span class="line">    WORD    MajorVersion;</span><br><span class="line">    WORD    MinorVersion;</span><br><span class="line">    DWORD   Type;</span><br><span class="line">    DWORD   SizeOfData;</span><br><span class="line">    DWORD   AddressOfRawData;</span><br><span class="line">    DWORD   PointerToRawData;</span><br><span class="line">&#125; IMAGE_DEBUG_DIRECTORY, *PIMAGE_DEBUG_DIRECTORY;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_UNKNOWN          0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_COFF             1</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_CODEVIEW         2</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_FPO              3</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_MISC             4</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_EXCEPTION        5</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_FIXUP            6</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_OMAP_TO_SRC      7</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_OMAP_FROM_SRC    8</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_BORLAND          9</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_RESERVED10       10</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_CLSID            11</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">0:000&gt; dt ntdll+FC58C ole32!_IMAGE_DEBUG_DIRECTORY</span><br><span class="line">   +0x000 Characteristics  : 0</span><br><span class="line">   +0x004 TimeDateStamp    : 0x590288a9</span><br><span class="line">   +0x008 MajorVersion     : 0</span><br><span class="line">   +0x00a MinorVersion     : 0</span><br><span class="line">   +0x00c Type             : 2</span><br><span class="line">   +0x010 SizeOfData       : 0x22</span><br><span class="line">   +0x014 AddressOfRawData : 0xfc5c8</span><br><span class="line">   +0x018 PointerToRawData : 0xfb9c8</span><br><span class="line">   </span><br></pre></td></tr></table></figure>
+<p>需要注意的是这三个数据成员，Type，SizeOfData以及AddressOfRawData。其中Type是Debug数据类型，SizeOfData是数据大小，AddressOfRawData是数据对应的内存地址。通过dt命令，可以查看结构体和数据的对应关系。从上面的输出可知Debug数据类型是CODEVIEW，数据大小是0x22个字节，数据的内存偏移是0xfc5c8。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">0:000&gt; db ntdll+0xfc5c8</span><br><span class="line">00000000`775dc5c8  52 53 44 53 49 7b 4d 74-81 7b 0c 47 a2 d8 a8 d2  RSDSI&#123;Mt.&#123;.G....</span><br><span class="line">00000000`775dc5d8  62 fc 8a 29 02 00 00 00-6e 74 64 6c 6c 2e 70 64  b..)....ntdll.pd</span><br><span class="line">00000000`775dc5e8  62 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00  b...............</span><br><span class="line">00000000`775dc5f8  00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00  ................</span><br><span class="line">00000000`775dc608  00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00  ................</span><br><span class="line">00000000`775dc618  00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00  ................</span><br><span class="line">00000000`775dc628  00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00  ................</span><br><span class="line">00000000`775dc638  00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00  ................</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>使用db命令查看这部分数据，我们可以发现ntdll.pdb的字符串。实际上，通过type已经知道了Debug数据类型是CODEVIEW，这样就可以确定数据的结构体是：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">CV_INFO_PDB</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  DWORD  CvSignature;</span><br><span class="line">  GUID Signature;</span><br><span class="line">  DWORD Age;</span><br><span class="line">  BYTE PdbFileName[];</span><br><span class="line">&#125; ;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">0:000&gt; dt _guid ntdll+0xfc5c8+4</span><br><span class="line">ntdll!_GUID</span><br><span class="line"> &#123;744d7b49-7b81-470c-a2d8-a8d262fc8a29&#125;</span><br><span class="line">   +0x000 Data1            : 0x744d7b49</span><br><span class="line">   +0x004 Data2            : 0x7b81</span><br><span class="line">   +0x006 Data3            : 0x470c</span><br><span class="line">   +0x008 Data4            : [8]  &quot;???&quot;</span><br><span class="line">可以看到CvSignature = “RSDS”， Signature = &#123;744d7b49-7b81-470c-a2d8-a8d262fc8a29&#125;，Age = 2，PdbFileName=“ntdll.pdb”。</span><br><span class="line"></span><br><span class="line">0:000&gt; !lmi ntdll</span><br><span class="line">Loaded Module Info: [ntdll] </span><br><span class="line">         Module: ntdll</span><br><span class="line">   Base Address: 00000000774e0000</span><br><span class="line">     Image Name: ntdll.dll</span><br><span class="line">   Machine Type: 34404 (X64)</span><br><span class="line">     Time Stamp: 590296ce Thu Apr 27 18:11:42 2017</span><br><span class="line">           Size: 1aa000</span><br><span class="line">       CheckSum: 1b5db0</span><br><span class="line">Characteristics: 2022  perf</span><br><span class="line">Debug Data Dirs: Type  Size     VA  Pointer</span><br><span class="line">             CODEVIEW    22, fc5c8,   fb9c8 RSDS - GUID: &#123;744D7B49-7B81-470C-A2D8-A8D262FC8A29&#125;</span><br><span class="line">               Age: 2, Pdb: ntdll.pdb</span><br><span class="line">                CLSID     4, fc5c4,   fb9c4 [Data not mapped]</span><br><span class="line">     Image Type: FILE     - Image read successfully from debugger.</span><br><span class="line">                 C:\Windows\SYSTEM32\ntdll.dll</span><br><span class="line">    Symbol Type: PDB      - Symbols loaded successfully from image path.</span><br><span class="line">                 d:\symbols\ntdll.pdb\744D7B497B81470CA2D8A8D262FC8A292\ntdll.pdb</span><br><span class="line">    Load Report: public symbols , not source indexed </span><br><span class="line">                 d:\symbols\ntdll.pdb\744D7B497B81470CA2D8A8D262FC8A292\ntdll.pdb</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>再来看看Windbg匹配ntdll.pdb的真实路径，d:\symbols\ntdll.pdb\744D7B497B81470CA2D8A8D262FC8A292\ntdll.pdb。对比一下就可以发现其中的奥秘。原来Windbg识别执行程序的PDB路径是依赖guid，age和PdbFileName。具体来说就是 {符号设置路径}{PdbFileName}{guid}{age}{PdbFileName}。<br>如果想写程序获取这些信息并不需要像上面那样解析PE文件结构，实际上微软给我们提供了这方面的支持，在dbghelp.dll里导出了一个叫做SymSrvGetFileIndexInfo的函数，这个函数获得的SYMSRV_INDEX_INFO结构中，就包含以上我们需要的数据。</p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2017-09-18T06:31:32.000Z" itemprop="datePublished">2017-09-18</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href="/categories/Debugging/" title="">Debugging</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-test-math-plugin" class="repo-list">
+    <div class="repo-list-item">
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2017/08/17/test-math-plugin/">测试math-plugin</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="Inline"><a href="#Inline" class="headerlink" title="Inline"></a>Inline</h2><p>Simple inline \(a = b + c\).</p>
+<p>This equation \(\cos 2\theta = \cos^2 \theta - \sin^2 \theta =  2 \cos^2 \theta - 1 \) is inline.</p>
+<h2 id="Block"><a href="#Block" class="headerlink" title="Block"></a>Block</h2><p>$$\frac{\partial u}{\partial t}<br>= h^2 \left( \frac{\partial^2 u}{\partial x^2} +<br>\frac{\partial^2 u}{\partial y^2} +<br>\frac{\partial^2 u}{\partial z^2}\right)$$</p>
+<span>$$\begin{aligned}
+\dot{x} &amp; = \sigma(y-x) \\
+\dot{y} &amp; = \rho x - y - xz \\
+\dot{z} &amp; = -\beta z + xy
+\end{aligned}$$</span><!-- Has MathJax -->
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2017-08-17T02:28:17.000Z" itemprop="datePublished">2017-08-17</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href="/categories/Tips/" title="">Tips</a>
+          </span>
+        
+      
+        <!--
+          
+            <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Test/">Test</a></li></ul>
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
                   <article id="post-tip-about-com" class="repo-list">
-    <div class="repo-list-item" >
+    <div class="repo-list-item">
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -100,7 +190,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
+            <a href="/categories/Tips/" title="">Tips</a>
           </span>
         
       
@@ -113,7 +203,7 @@
   </article>
             
                   <article id="post-gotcha-sdk-monitor-update" class="repo-list">
-    <div class="repo-list-item" >
+    <div class="repo-list-item">
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -138,7 +228,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/NTInternals/' title=''>NTInternals</a>
+            <a href="/categories/NTInternals/" title="">NTInternals</a>
           </span>
         
       
@@ -151,7 +241,7 @@
   </article>
             
                   <article id="post-switch-to-session-0" class="repo-list">
-    <div class="repo-list-item" >
+    <div class="repo-list-item">
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -178,7 +268,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
+            <a href="/categories/Tips/" title="">Tips</a>
           </span>
         
       
@@ -191,7 +281,7 @@
   </article>
             
                   <article id="post-0cchext-dttoc-command" class="repo-list">
-    <div class="repo-list-item" >
+    <div class="repo-list-item">
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -214,7 +304,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Debugging/' title=''>Debugging</a>
+            <a href="/categories/Debugging/" title="">Debugging</a>
           </span>
         
       
@@ -227,7 +317,7 @@
   </article>
             
                   <article id="post-delphi-exception" class="repo-list">
-    <div class="repo-list-item" >
+    <div class="repo-list-item">
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -255,7 +345,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Debugging/' title=''>Debugging</a>
+            <a href="/categories/Debugging/" title="">Debugging</a>
           </span>
         
       
@@ -268,7 +358,7 @@
   </article>
             
                   <article id="post-set-dpi" class="repo-list">
-    <div class="repo-list-item" >
+    <div class="repo-list-item">
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -293,7 +383,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
+            <a href="/categories/Tips/" title="">Tips</a>
           </span>
         
       
@@ -306,7 +396,7 @@
   </article>
             
                   <article id="post-deprecate-a-function" class="repo-list">
-    <div class="repo-list-item" >
+    <div class="repo-list-item">
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -343,7 +433,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
+            <a href="/categories/Tips/" title="">Tips</a>
           </span>
         
       
@@ -356,7 +446,7 @@
   </article>
             
                   <article id="post-pdbdownloader" class="repo-list">
-    <div class="repo-list-item" >
+    <div class="repo-list-item">
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -381,86 +471,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-int29h" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2016/12/13/int29h/">快速抛出失败的方法 INT 29H</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>从Windows8开始，Windows设计了一个新的中断，INT 29H，用来快速的抛出失败。在sdk中，他被声明为 __fastfail:</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_LEGACY_GS_VIOLATION          0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_VTGUARD_CHECK_FAILURE        1</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_STACK_COOKIE_CHECK_FAILURE   2</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_CORRUPT_LIST_ENTRY           3</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INCORRECT_STACK              4</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_ARG                  5</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_GS_COOKIE_INIT               6</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_FATAL_APP_EXIT               7</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_RANGE_CHECK_FAILURE          8</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_UNSAFE_REGISTRY_ACCESS       9</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_GUARD_ICALL_CHECK_FAILURE    10</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_GUARD_WRITE_CHECK_FAILURE    11</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_FIBER_SWITCH         12</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_SET_OF_CONTEXT       13</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_REFERENCE_COUNT      14</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_JUMP_BUFFER          18</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_MRDATA_MODIFIED              19</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_CERTIFICATION_FAILURE        20</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_EXCEPTION_CHAIN      21</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_CRYPTO_LIBRARY               22</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_CALL_IN_DLL_CALLOUT  23</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_IMAGE_BASE           24</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_DLOAD_PROTECTION_FAILURE     25</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_UNSAFE_EXTENSION_CALL        26</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_DEPRECATED_SERVICE_INVOKED   27</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_BUFFER_ACCESS        28</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_BALANCED_TREE        29</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_NEXT_THREAD          30</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_GUARD_ICALL_CHECK_SUPPRESSED 31         <span class="comment">// Telemetry, nonfatal</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_APCS_DISABLED                32</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_IDLE_STATE           33</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_MRDATA_PROTECTION_FAILURE    34</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_UNEXPECTED_HEAP_EXCEPTION    35</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_FAST_FAIL_CODE       0xFFFFFFFF</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> _MSC_VER &gt;= 1610</span></span><br><span class="line"></span><br><span class="line">DECLSPEC_NORETURN</span><br><span class="line">VOID</span><br><span class="line">__fastfail(</span><br><span class="line">    _In_ <span class="keyword">unsigned</span> <span class="keyword">int</span> Code</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> intrinsic(__fastfail)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">	// 汇编代码为</span></span><br><span class="line"><span class="comment">	mov ecx, code</span></span><br><span class="line"><span class="comment">	int 29h</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>在中断代码执行后，操作系统会根据执行代码的环境来做出不同的处理。<br>如果<strong>fastfail发生在Ring0中，操作系统会抛出一个KERNEL_SECURITY_CHECK_FAILURE (0x139)的蓝屏。如果</strong>fastfail发生在Ring3，系统会抛出一个第二次机会的不可继续执行的异常，异常代码为0xC0000409，然后走进我们熟悉的Windows Error Reporting(WER)流程。另外，无论__fastfail发生在R0或者R3，如果有调试器正在调试系统或进程，都将得到一次中断到调试器的机会，这让我们能够看清楚具体发生了什么事情。但是正如我上面所说，这个是一个不可继续执行的异常，所以我们不能在调试器里处理了异常后让程序继续向前跑，当然也不能用try和except去捕获异常。</p>
-<p>我觉得__fastfail是个非常不错的设计，它让程序可以快速的进入内核异常处理流程，不需要执行额外的用户层的代码，也不需要额外的内存空间，提高了不可恢复的异常处理的性能，更重要的是，简单快速不依赖内存的执行方式也保证了系统的安全。所以在系统的安全检查失败处理中，大量使用了这个方式，减少被攻击的可能性。</p>
-<p>最后，如果INT 29H发生在Windows8以下的系统上，内核里会抛出一个常规的UNEXPECTED_KERNEL_MODE_TRAP的蓝屏，而用户层程序会抛出一个ACCESS VIOLATION的异常。</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2016-12-13T02:36:42.000Z" itemprop="datePublished">2016-12-13</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Debugging/' title=''>Debugging</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-luadbg-windbg-ext" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2016/11/15/luadbg-windbg-ext/">windbg的lua脚本扩展luadbg</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>2012年的时候，我在blog上写到过开发了一个windbg的lua扩展<a href="https://0cch.com/debugging/2012/08/16/dbglua-ef-bc-8c-e8-ae-a9lua-e8-84-9a-e6-9c-ac-e4-b9-9f-e8-83-bd-e6-8e-a7-e5-88-b6windbg-e8-bf-9b-e8-a1-8c-e8-b0-83-e8-af-95.html">dbglua</a>，当时觉得windbg的原生脚本语法太奇怪了，而且太不容易使用。现在来看，依旧如此，只不过我已经很熟悉这个原生脚本了。而这个lua扩展反倒是没什么用，因为用起来也不太方便，比如访问结构体。</p>
-<p>最近无意之中看了一眼pykd，他用重载.操作符的方式访问符号和结构体深深的吸引了我，感觉非常有趣。而python本身依赖比较多，这也促使我拿起之前的代码看了看，并且决定在github上重新建立这个项目叫做<a href="https://github.com/0cch/luadbg" target="_blank" rel="noopener">luadbg</a>，这次我决定长期维护这个项目，想到新的功能就往里面写，就像我一直维护的<a href="https://github.com/0cch/0cchext" target="_blank" rel="noopener">0cchext</a>一样。luadbg除了兼容了老dbglua的函数以外，还添加了几个我觉得很方便的类，主要是用重载.操作符的方式来访问模块和结构体的数据，效果如下图所示：</p>
-<p><a href="/uploads/2016/11/20161116113129.png"><img src="/uploads/2016/11/20161116113129.png" alt="20161116113129"></a></p>
-<p>当然，也可以用!luacmd命令进入input模式，从而一条一条的输入语句来测试正确性。</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2016-11-15T02:50:37.000Z" itemprop="datePublished">2016-11-15</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Debugging/' title=''>Debugging</a>
+            <a href="/categories/Tips/" title="">Tips</a>
           </span>
         
       
@@ -574,9 +585,9 @@
 
     <h3>Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
     </div>
-  </div>
+  
 
 
         </div>
@@ -585,18 +596,35 @@
     
       <div class="pagination text-align">
           <div class="btn-group">
-              <a class="extend prev" rel="prev" href="/">&laquo;</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/3/">&raquo;</a>
+              <a class="extend prev" rel="prev" href="/">&laquo;</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/3/">&raquo;</a>
           </div>
       </div>
     
-</section>
+</section><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
 
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+</body>
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+                <a href="javascript:window.scrollTo(0,0)">TOP</a>
             </li>
         </ul>
 
@@ -604,17 +632,17 @@
             
                   
                   <li>
-                    <a href="/"  title="Home">Home</a>
+                    <a href="/" title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/"  title="Category">Category</a>
+                    <a href="/categories/" title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
+                    <a href="/open-source/" title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -632,24 +660,6 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
+		 <script src="/js/popular_repo.js"></script> 
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end --> 
-
-	</body>
-</html>
+	

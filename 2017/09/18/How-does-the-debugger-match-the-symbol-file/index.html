@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   <link rel="icon" href="/favicon.ico">
   
@@ -12,8 +12,8 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
   <!--在这里倒入jquery 方便处理部分页面的jquery-->
-  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</head>
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head></html>
 
 <body>
 	<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="site-header navfixed-false">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="调试器是怎么匹配程序的符号文件的" >
+<section class="collection-head geopattern" data-pattern-id="调试器是怎么匹配程序的符号文件的">
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href='/categories/Debugging/' title=''>Debugging</a>
+                            <a href="/categories/Debugging/" title="">Debugging</a>
                         </span>
                     
                 </div>
@@ -60,7 +60,7 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths " >
+        <div class="column  three-fourths ">
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>微软的天才软件工程师们设计的PE（Portable Executable）文件数据结构有极强的扩展性和兼容性。我们关心的符号文件信息存储在PE结构中，一个叫做Debug Directory的节里。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">0:000&gt; !dh -f ntdll</span><br><span class="line"></span><br><span class="line">File Type: DLL</span><br><span class="line">FILE HEADER VALUES</span><br><span class="line">    8664 machine (X64)</span><br><span class="line">       7 number of sections</span><br><span class="line">590296CE time date stamp Thu Apr 27 18:11:42 2017</span><br><span class="line"></span><br><span class="line">       0 file pointer to symbol table</span><br><span class="line">       0 number of symbols</span><br><span class="line">      F0 size of optional header</span><br><span class="line">    2022 characteristics</span><br><span class="line">            Executable</span><br><span class="line">            App can handle &gt;2gb addresses</span><br><span class="line">            DLL</span><br><span class="line"></span><br><span class="line">OPTIONAL HEADER VALUES</span><br><span class="line">     20B magic #</span><br><span class="line">    9.00 linker version</span><br><span class="line">   FB800 size of code</span><br><span class="line">   A9600 size of initialized data</span><br><span class="line">       0 size of uninitialized data</span><br><span class="line">       0 address of entry point</span><br><span class="line">    1000 base of code</span><br><span class="line">         ----- new -----</span><br><span class="line">00000000774e0000 image base</span><br><span class="line">    1000 section alignment</span><br><span class="line">     200 file alignment</span><br><span class="line">       3 subsystem (Windows CUI)</span><br><span class="line">    6.01 operating system version</span><br><span class="line">    6.01 image version</span><br><span class="line">    6.01 subsystem version</span><br><span class="line">  1AA000 size of image</span><br><span class="line">     400 size of headers</span><br><span class="line">  1B5DB0 checksum</span><br><span class="line">0000000000040000 size of stack reserve</span><br><span class="line">0000000000001000 size of stack commit</span><br><span class="line">0000000000100000 size of heap reserve</span><br><span class="line">0000000000001000 size of heap commit</span><br><span class="line">     140  DLL characteristics</span><br><span class="line">            Dynamic base</span><br><span class="line">            NX compatible</span><br><span class="line">  101200 [    F1A3] address [size] of Export Directory</span><br><span class="line">       0 [       0] address [size] of Import Directory</span><br><span class="line">  14E000 [   5A028] address [size] of Resource Directory</span><br><span class="line">  13B000 [   127EC] address [size] of Exception Directory</span><br><span class="line">  1A2E00 [    4300] address [size] of Security Directory</span><br><span class="line">  1A9000 [     4E8] address [size] of Base Relocation Directory</span><br><span class="line">   FC58C [      38] address [size] of Debug Directory</span><br><span class="line">       0 [       0] address [size] of Description Directory</span><br><span class="line">       0 [       0] address [size] of Special Directory</span><br><span class="line">       0 [       0] address [size] of Thread Storage Directory</span><br><span class="line">       0 [       0] address [size] of Load Configuration Directory</span><br><span class="line">       0 [       0] address [size] of Bound Import Directory</span><br><span class="line">       0 [       0] address [size] of Import Address Table Directory</span><br><span class="line">       0 [       0] address [size] of Delay Import Directory</span><br><span class="line">       0 [       0] address [size] of COR20 Header Directory</span><br><span class="line">       0 [       0] address [size] of Reserved Directory</span><br><span class="line">       </span><br></pre></td></tr></table></figure>
@@ -133,14 +133,14 @@
             
         </div>
     </div>
-</section>
-
+</section><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+                <a href="javascript:window.scrollTo(0,0)">TOP</a>
             </li>
         </ul>
 
@@ -148,17 +148,17 @@
             
                   
                   <li>
-                    <a href="/"  title="Home">Home</a>
+                    <a href="/" title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/"  title="Category">Category</a>
+                    <a href="/categories/" title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
+                    <a href="/open-source/" title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -178,7 +178,6 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
+		 <script src="/js/popular_repo.js"></script> 
 
-	</body>
-</html>
+	

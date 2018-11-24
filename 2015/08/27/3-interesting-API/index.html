@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   <link rel="icon" href="/favicon.ico">
   
@@ -12,8 +12,8 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
   <!--在这里倒入jquery 方便处理部分页面的jquery-->
-  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript" ></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</head>
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head></html>
 
 <body>
 	<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="site-header navfixed-false">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="介绍三个有趣的API" >
+<section class="collection-head geopattern" data-pattern-id="介绍三个有趣的API">
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href='/categories/Tips/' title=''>Tips</a>
+                            <a href="/categories/Tips/" title="">Tips</a>
                         </span>
                     
                 </div>
@@ -60,13 +60,15 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths " >
+        <div class="column  three-fourths ">
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>####PickIconDlg</p>
 <p>相信给快捷方式指定过图标的朋友肯定看过一个这样的对话框吧，如果你看到过，你肯定已经知道了这个API是怎么一回事。这个API会弹出一个选择图标的窗口给你选择，确定后返回图标在资源中的索引值。这样你可以通过这个索引值和ExtractIcon函数获得这个图标的句柄。</p>
 <p><a href="/uploads/2015/08/20150827113011.png"><img src="/uploads/2015/08/20150827113011.png" alt="20150827113011"></a></p>
 <p>示例代码如下：</p>
-<h2 id=""><a href="#" class="headerlink" title=""></a><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> Index = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">const</span> DWORD BuffSize = MAX_PATH;</span><br><span class="line">TCHAR Path[BuffSize] = _T(<span class="string">"c:\\windows\\system32\\shell32.dll"</span>);</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> Sel = PickIconDlg(<span class="literal">NULL</span>, Path, BuffSize, &amp;Index);</span><br><span class="line"><span class="keyword">if</span>(Sel)</span><br><span class="line">&#123;</span><br><span class="line">    HMODULE hMod = ::LoadLibrary(Path);</span><br><span class="line">    HICON hIcon = ExtractIcon(hMod, Path, Index);</span><br><span class="line">    FreeLibrary(hMod);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></h2><p>####WNetConnectionDialog和WNetConnectionDialog1</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> Index = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">const</span> DWORD BuffSize = MAX_PATH;</span><br><span class="line">TCHAR Path[BuffSize] = _T(<span class="string">"c:\\windows\\system32\\shell32.dll"</span>);</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> Sel = PickIconDlg(<span class="literal">NULL</span>, Path, BuffSize, &amp;Index);</span><br><span class="line"><span class="keyword">if</span>(Sel)</span><br><span class="line">&#123;</span><br><span class="line">    HMODULE hMod = ::LoadLibrary(Path);</span><br><span class="line">    HICON hIcon = ExtractIcon(hMod, Path, Index);</span><br><span class="line">    FreeLibrary(hMod);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p>####WNetConnectionDialog和WNetConnectionDialog1</p>
 <p>这两个函数是帮助我们在程序中显示映射网络驱动器对话框的，虽然用的不多，但是也应该见到过它。这两个函数区别不大，只不过WNetConnectionDialog1比WNetConnectionDialog提供了更多的参数去设置。</p>
 <p><a href="/uploads/2015/08/20150827114516.png"><img src="/uploads/2015/08/20150827114516.png" alt="20150827114516"></a></p>
 <p>示例代码如下：</p>
@@ -131,20 +133,20 @@
 <div id="post-directory-module">
 	<section class="post-directory">
 		<p><strong class="toc-title">Article directory</strong></p>
-		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#"><span class="toc-text">12345678910int Index = 2;const DWORD BuffSize = MAX_PATH;TCHAR Path[BuffSize] = _T(&quot;c:\\windows\\system32\\shell32.dll&quot;);const int Sel = PickIconDlg(NULL, Path, BuffSize, &amp;Index);if(Sel){    HMODULE hMod = ::LoadLibrary(Path);    HICON hIcon = ExtractIcon(hMod, Path, Index);    FreeLibrary(hMod);}</span></a></li></ol>
+		
 	</section>
 </div>
             
         </div>
     </div>
-</section>
-
+</section><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+                <a href="javascript:window.scrollTo(0,0)">TOP</a>
             </li>
         </ul>
 
@@ -152,17 +154,17 @@
             
                   
                   <li>
-                    <a href="/"  title="Home">Home</a>
+                    <a href="/" title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/"  title="Category">Category</a>
+                    <a href="/categories/" title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
+                    <a href="/open-source/" title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -182,7 +184,6 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
+		 <script src="/js/popular_repo.js"></script> 
 
-	</body>
-</html>
+	
