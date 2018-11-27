@@ -74,6 +74,80 @@
     <div class="columns">
         <div class="column two-thirds">
             
+                  <article id="post-get-desktop-icon-pos" class="repo-list">
+    <div class="repo-list-item">
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2016/04/12/get-desktop-icon-pos/">获取桌面图标位置</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>用来干什么就不用说了，反正不是什么好事情 =v=</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">DESKTOP_ICON_INFO</span> &#123;</span></span><br><span class="line">    LVITEMW item;</span><br><span class="line">    WCHAR item_text[MAX_PATH];</span><br><span class="line">    RECT rc;</span><br><span class="line">&#125; DESKTOP_ICON_INFO, *PDESKTOP_ICON_INFO;</span><br><span class="line"></span><br><span class="line"><span class="function">BOOL <span class="title">GetDesktopIconInfo</span><span class="params">(LPCWSTR pattern, RECT &amp;rc, HWND &amp;desktop)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    HWND progman = FindWindow(TEXT(<span class="string">"Progman"</span>), TEXT(<span class="string">"Program Manager"</span>));</span><br><span class="line">    <span class="keyword">if</span> (progman == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    HWND def_view = FindWindowEx(progman, <span class="literal">NULL</span>, TEXT(<span class="string">"SHELLDLL_DefView"</span>), <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span> (def_view == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    HWND list_view = FindWindowEx(def_view, <span class="literal">NULL</span>, TEXT(<span class="string">"SysListView32"</span>), TEXT(<span class="string">"FolderView"</span>));</span><br><span class="line">    <span class="keyword">if</span> (list_view == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line">    desktop = list_view;</span><br><span class="line"></span><br><span class="line">    ULONG process_id = <span class="number">0</span>;</span><br><span class="line">    GetWindowThreadProcessId(progman, &amp;process_id);</span><br><span class="line">    <span class="keyword">if</span> (process_id == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> count = (<span class="keyword">int</span>)::SendMessage(list_view, LVM_GETITEMCOUNT, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    HANDLE process_handle = OpenProcess(</span><br><span class="line">        PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_QUERY_INFORMATION, FALSE, process_id);</span><br><span class="line">    <span class="keyword">if</span> (process_handle == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    PUCHAR remote_addr = (PUCHAR)VirtualAllocEx(process_handle, <span class="literal">NULL</span>, </span><br><span class="line">        <span class="keyword">sizeof</span>(DESKTOP_ICON_INFO), MEM_COMMIT, PAGE_READWRITE);</span><br><span class="line"></span><br><span class="line">    DESKTOP_ICON_INFO icon_info;</span><br><span class="line">    icon_info.item.iItem = <span class="number">0</span>;</span><br><span class="line">    icon_info.item.iSubItem = <span class="number">0</span>;</span><br><span class="line">    icon_info.item.mask = LVIF_TEXT;</span><br><span class="line">    icon_info.item.pszText = (WCHAR *)(remote_addr + offsetof(DESKTOP_ICON_INFO, item_text));</span><br><span class="line">    icon_info.item.cchTextMax = MAX_PATH;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">        icon_info.rc.left = LVIR_BOUNDS;</span><br><span class="line">        ZeroMemory(icon_info.item_text, <span class="keyword">sizeof</span>(icon_info.item_text));</span><br><span class="line">        <span class="keyword">if</span> (WriteProcessMemory(process_handle, remote_addr, &amp;icon_info, <span class="keyword">sizeof</span>(icon_info), <span class="literal">NULL</span>)) &#123;</span><br><span class="line">             ::SendMessage(list_view, LVM_GETITEMTEXT, (WPARAM)i, (LPARAM)(remote_addr + offsetof(DESKTOP_ICON_INFO, item)));</span><br><span class="line">             ::SendMessage(list_view, LVM_GETITEMRECT, (WPARAM)i, (LPARAM)(remote_addr + offsetof(DESKTOP_ICON_INFO, rc)));</span><br><span class="line">             ReadProcessMemory(process_handle, remote_addr, &amp;icon_info, <span class="keyword">sizeof</span>(icon_info), <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">             <span class="keyword">if</span> (_wcsicmp(icon_info.item_text, pattern) == <span class="number">0</span>) &#123;</span><br><span class="line">                 rc = icon_info.rc;</span><br><span class="line">                 <span class="keyword">break</span>;</span><br><span class="line">             &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    VirtualFreeEx(process_handle, remote_addr, <span class="number">0</span>, MEM_RELEASE);</span><br><span class="line">    CloseHandle(process_handle);</span><br><span class="line">    <span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2016-04-12T07:04:35.000Z" itemprop="datePublished">2016-04-12</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href="/categories/Tips/" title="">Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-msg-wnd-view" class="repo-list">
+    <div class="repo-list-item">
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2016/03/17/msg-wnd-view/">查看消息窗口工具</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>我们都知道用Spy++去查看窗口句柄的相关信息，但是这款工具无法找到消息窗口(Message-Only Windows)。所以写了个查看消息窗口的工具，帮我排查一些这方面的问题。</p>
+<p><a href="/uploads/2016/03/20160317120246.png"><img src="/uploads/2016/03/20160317120246.png" alt="20160317120246"></a></p>
+<p>下载：<a href="/uploads/2016/03/MsgOnlyWnd.zip">MsgOnlyWnd</a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2016-03-17T04:00:45.000Z" itemprop="datePublished">2016-03-17</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href="/categories/Tips/" title="">Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
                   <article id="post-delay-load-error" class="repo-list">
     <div class="repo-list-item">
       <h3 class="repo-list-name" itemprop="name">
@@ -519,96 +593,6 @@
     </div>
   </article>
             
-                  <article id="post-3-interesting-API" class="repo-list">
-    <div class="repo-list-item">
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2015/08/27/3-interesting-API/">介绍三个有趣的API</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>####PickIconDlg</p>
-<p>相信给快捷方式指定过图标的朋友肯定看过一个这样的对话框吧，如果你看到过，你肯定已经知道了这个API是怎么一回事。这个API会弹出一个选择图标的窗口给你选择，确定后返回图标在资源中的索引值。这样你可以通过这个索引值和ExtractIcon函数获得这个图标的句柄。</p>
-<p><a href="/uploads/2015/08/20150827113011.png"><img src="/uploads/2015/08/20150827113011.png" alt="20150827113011"></a></p>
-<p>示例代码如下：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> Index = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">const</span> DWORD BuffSize = MAX_PATH;</span><br><span class="line">TCHAR Path[BuffSize] = _T(<span class="string">"c:\\windows\\system32\\shell32.dll"</span>);</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> Sel = PickIconDlg(<span class="literal">NULL</span>, Path, BuffSize, &amp;Index);</span><br><span class="line"><span class="keyword">if</span>(Sel)</span><br><span class="line">&#123;</span><br><span class="line">    HMODULE hMod = ::LoadLibrary(Path);</span><br><span class="line">    HICON hIcon = ExtractIcon(hMod, Path, Index);</span><br><span class="line">    FreeLibrary(hMod);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<p>####WNetConnectionDialog和WNetConnectionDialog1</p>
-<p>这两个函数是帮助我们在程序中显示映射网络驱动器对话框的，虽然用的不多，但是也应该见到过它。这两个函数区别不大，只不过WNetConnectionDialog1比WNetConnectionDialog提供了更多的参数去设置。</p>
-<p><a href="/uploads/2015/08/20150827114516.png"><img src="/uploads/2015/08/20150827114516.png" alt="20150827114516"></a></p>
-<p>示例代码如下：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> comment(lib, <span class="meta-string">"Mpr.lib"</span>)</span></span><br><span class="line"></span><br><span class="line">CONNECTDLGSTRUCT condlg = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">condlg.cbStructure = <span class="keyword">sizeof</span>(condlg);</span><br><span class="line">condlg.hwndOwner = GetConsoleWindow();</span><br><span class="line">condlg.dwFlags =  CONNDLG_USE_MRU;</span><br><span class="line"></span><br><span class="line">NETRESOURCE nr = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">nr.dwScope = RESOURCE_GLOBALNET;</span><br><span class="line">nr.dwType = RESOURCETYPE_DISK;</span><br><span class="line">nr.lpRemoteName = <span class="literal">NULL</span>;</span><br><span class="line">nr.dwDisplayType = RESOURCEDISPLAYTYPE_DOMAIN;</span><br><span class="line"></span><br><span class="line">condlg.lpConnRes = &amp;nr;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> RetVal = WNetConnectionDialog1(&amp;condlg);</span><br></pre></td></tr></table></figure>
-<hr>
-<p>####SHOpenWithDialog</p>
-<p>这个API所显示的对话框我们应该是最多见的，它显示了一个打开方式的对话框。不过有点可惜的是，XP并不支持这个API，我们只能将它用在Vista开始的系统上。</p>
-<p><a href="/uploads/2015/08/20150827115225.png"><img src="/uploads/2015/08/20150827115225.png" alt="20150827115225"></a></p>
-<p>示例代码如下：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">OPENASINFO Info = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">Info.pcszFile = _T(<span class="string">"C:\\Windows\\win.ini"</span>);</span><br><span class="line">Info.oaifInFlags = OAIF_EXEC | OAIF_ALLOW_REGISTRATION;</span><br><span class="line">SHOpenWithDialog(<span class="literal">NULL</span>, &amp;Info);</span><br></pre></td></tr></table></figure>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2015-08-27T04:04:23.000Z" itemprop="datePublished">2015-08-27</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-ole-file-view-tool" class="repo-list">
-    <div class="repo-list-item">
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2015/08/03/ole-file-view-tool/">OleFileView 查看Ole文件数据结构的工具</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>OleFileView是一个查看结构化存储文件的工具，我们熟悉的Ole存储的文件就是这种格式，虽然很老了，但是依旧被广泛使用，例如老版本Office的文件doc，xls等，包括msi，jumplist等，都是采用的这种格式。<br>所以我也就抽了点时间研究了一下这个数据结构，可以说这就是个小型的文件系统，虽然比不上NTFS，但是对于一般的存储可以说是小菜一碟。</p>
-<p><a href="/uploads/2015/08/20150803003316.png"><img src="/uploads/2015/08/20150803003316.png" alt="20150803003316"></a></p>
-<p>下载：<a href="/uploads/2015/08/OleFileView.zip">OleFileView.zip</a></p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2015-08-02T16:21:28.000Z" itemprop="datePublished">2015-08-03</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
         </div>
         <div class="column one-third">
           <!--处理未安装 search 插件 默认 Google 搜索-->
@@ -711,7 +695,7 @@
 
     <h3>Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
     </div>
   
 
