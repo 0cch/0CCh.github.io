@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://0cch.com/"/>
-  <updated>2018-12-03T13:10:57.607Z</updated>
+  <updated>2019-01-21T13:59:29.033Z</updated>
   <id>http://0cch.com/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>在循环中使用CComPtr需要特别注意</title>
+    <link href="http://0cch.com/2019/01/20/use-ccomptr-in-loops-requires-special-attention/"/>
+    <id>http://0cch.com/2019/01/20/use-ccomptr-in-loops-requires-special-attention/</id>
+    <published>2019-01-20T13:57:37.000Z</published>
+    <updated>2019-01-21T13:59:29.033Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>CComPtr是ATL里提供给我们管理COM接口的智能指针类，使用它能够让我们无需关心接口的引用释放。例如：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CComPtr&lt;IShellFolder&gt; pDesktop;</span><br><span class="line">SHGetDesktopFolder(&amp;pDesktop);</span><br></pre></td></tr></table></figure></p><p>但是这个类在循环中使用的时候要特别注意一下，例如：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 没有问题</span></span><br><span class="line"><span class="keyword">for</span> (...) &#123;</span><br><span class="line">    CComPtr&lt;IShellFolder&gt; pDesktop;</span><br><span class="line">    SHGetDesktopFolder(&amp;pDesktop);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 有问题，接口没有调用Release，内存泄露</span></span><br><span class="line">CComPtr&lt;IShellFolder&gt; pDesktop;</span><br><span class="line"><span class="keyword">for</span> (...) &#123;</span><br><span class="line">    SHGetDesktopFolder(&amp;pDesktop);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p><p>其根本原因是，CComPtr的&amp;操作符重载的时候没有做释放操作，只有Debug版本的assert来提醒程序员这样使用的问题。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">T** <span class="keyword">operator</span>&amp;() <span class="keyword">throw</span>()</span><br><span class="line">&#123;</span><br><span class="line">    ATLASSERT(p==<span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">return</span> &amp;p;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p><p>所以我们需要手动调用Release<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CComPtr&lt;IShellFolder&gt; pDesktop;</span><br><span class="line"><span class="keyword">for</span> (...) &#123;</span><br><span class="line">    SHGetDesktopFolder(&amp;pDesktop);</span><br><span class="line">    ......</span><br><span class="line">    pDesktop.Release();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p><p>注意，这里是调用CComPtr的Release成员函数，而不是其保护的接口对象的Release函数。</p><p>另外一个解决方案就是使用&lt;comdef.h&gt;里的_com_ptr_t，这个类对于上述情况做了更加合理的处理。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Interface** <span class="keyword">operator</span>&amp;() <span class="keyword">throw</span>()</span><br><span class="line">&#123;</span><br><span class="line">    _Release();</span><br><span class="line">    m_pInterface = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">return</span> &amp;m_pInterface;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p><p>可以看到这个类里，重载&amp;操作符的函数会先调用Release，然后再取地址避免了内存泄漏的问题。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;CComPtr是ATL里提供给我们管理COM接口的智能指针类，使用它能够让我
+      
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>给程序内部菜单增加指定的explorer菜单</title>
@@ -446,29 +469,6 @@
       
       
         &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;最近给&lt;a href=&quot;https://github.com/0cch/0c
-      
-    
-    </summary>
-    
-      <category term="Debugging" scheme="http://0cch.com/categories/Debugging/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Delphi异常0EEDFADE</title>
-    <link href="http://0cch.com/2017/04/04/delphi-exception/"/>
-    <id>http://0cch.com/2017/04/04/delphi-exception/</id>
-    <published>2017-04-04T02:03:16.000Z</published>
-    <updated>2017-11-26T08:52:02.545Z</updated>
-    
-    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>0EEDFADE是Delphi内部异常代码，该异常通常有7个参数，我们用的上的是第二个参数，这个参数指向的是Exception的对象，通过这个对象，我们就可以查出异常的一些信息。</p><p>以Delphi XE2为例,Class name的偏移为（不同的版本偏移有所不同）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x86_vmtClassName = -56(0x38);</span><br><span class="line">x64_vmtClassName = -112(0x70);</span><br></pre></td></tr></table></figure></p><p>我们可以用如下命令获取相关信息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x86: da poi(poi(exception_object)-38)+1;du /c 100 poi(exception_object+4)  </span><br><span class="line">x64: da poi(poi(exception_object)-70)+1;du /c 100 poi(exception_object+8)</span><br></pre></td></tr></table></figure></p><p>以上命令就能获取异常的类名，而exception_object+sizeof(pointer)则是Exception Message的所在偏移，这是一个unicode string。实际效果如下：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0:002&gt; da poi(poi(003a2800)-38)+1;du /c 100 poi(003a2800 +4)</span><br><span class="line">00b9ec47  &quot;TTransportExceptionUnknown&quot;</span><br><span class="line">00375b8c  &quot;ServerTransport.Accept() may not return NULL&quot;</span><br></pre></td></tr></table></figure><p>当然，我们也可以设置event filter去截获异常：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x86: sxe -c &quot;da poi(poi(poi(@ebp+1c))-38)+1;du /c 100 poi(poi(@ebp+1c)+4)&quot; 0EEDFADE</span><br><span class="line">x64: sxe -c &quot;da poi(poi(poi(@rbp+48))-70)+1;du /c 100 poi(poi(@rbp+48)+8)&quot; 0EEDFADE</span><br></pre></td></tr></table></figure></p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;0EEDFADE是Delphi内部异常代码，该异常通常有7个参数，我们用的上
       
     
     </summary>
