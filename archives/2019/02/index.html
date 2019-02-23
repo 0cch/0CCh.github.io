@@ -74,39 +74,54 @@
     <div class="columns">
         <div class="column two-thirds">
             
-                  <article id="post-deprecate-a-function" class="repo-list">
+                  <article id="post-compile-gcc-in-windows" class="repo-list">
     <div class="repo-list-item">
       <h3 class="repo-list-name" itemprop="name">
         
   
-      <a class="article-title" href="/2017/02/12/deprecate-a-function/">让编译器不推荐(deprecate)使用一个函数</a>
+      <a class="article-title" href="/2019/02/22/compile-gcc-in-windows/">在Windows中编译GCC</a>
   
 
       </h3>
       <div class="repo-list-description">
         
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在开发一些公共库函数的时候，我们常常会对函数进行改写，这个时候我们会希望使用者用新的函数。为了提醒使用者，我们可以通过将函数声明为deprecated，这样编译器在编译的时候会抛出一个C4995或者C4996的警告。这个警告我们应该也经常看到过，比如使用strcpy，编译器会提示我们使用strcpy_s。  </p>
-<p>使用这个编译器特性有两种方法：  </p>
-<ol>
-<li>__declspec(deprecated)</li>
-<li>#pragma deprecated</li>
-</ol>
-<ul>
-<li>__declspec(deprecated)<br><a href="https://msdn.microsoft.com/en-us/library/044swk7y.aspx" target="_blank" rel="noopener">https://msdn.microsoft.com/en-us/library/044swk7y.aspx</a><br>这种方法直接声明在函数或者类之前，在使用函数的地方会抛出C4996的警告  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__declspec(deprecated) void func1(int) &#123;&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>当然我们还可以给警告自定义消息信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__declspec(deprecated(&quot;** this is a deprecated function **&quot;)) void func2(int) &#123;&#125;</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li>#pragma deprecated<br><a href="https://msdn.microsoft.com/en-us/library/c8xdzzhh.aspx" target="_blank" rel="noopener">https://msdn.microsoft.com/en-us/library/c8xdzzhh.aspx</a><br>这种方法可以一次性声明多个函数或者类，使用函数的地方会抛出C4995的警告  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#pragma deprecated(func1, func2)</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近心血来潮想体验下C++2a的标准，但是mingw中的GCC最新版本是8.2。于是乎就产生了编译thunk下最新代码。</p>
+<p>要在Windows上编译GCC没有在linux上方便，但是也是可以完成的。首先我们需要一个mingw的环境。自带mingw环境的软件有很多，这里我比较推荐MSYS2，因为这个环境更新的比较快。下载安装好了以后，运行MSYS2，会弹出类似linux终端窗口。这里我们首先下载需要的开发编译环境：</p>
+<blockquote>
+<p>pacman -S –needed mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain</p>
+</blockquote>
+<p>下载安装好了开发环境后，可以下载GCC源代码：</p>
+<blockquote>
+<p>mkdir gcc-latest<br>cd gcc-latest<br>git clone git://gcc.gnu.org/git/gcc.git</p>
+</blockquote>
+<p>源代码比较大（2个多G），下载需要一点耐心。<br>源代码下载完成后，创建编译目录：</p>
+<blockquote>
+<p>mkdir build</p>
+</blockquote>
+<p>在开始编译之前，有一个坑需要注意下，我们需要将usr/bin/下的makeinfo改名。不知道为什么，最新的makeinfo对gcc的texi文件不兼容会导致编译失败。这个操作之后就可以开始配置了。</p>
+<blockquote>
+<p>../gcc/configure –enable-languages=c,c++ –disable-multilib –disable-bootstrap –disable-werror –disable-nls –prefix=/mingw64/gcc-latest –build=x86_64-w64-mingw32 –host=x86_64-w64-mingw32 –target=x86_64-w64-mingw32 –with-native-system-header-dir=/mingw64/x86_64-w64-mingw32/include –with-arch=x86-64 MAKEINFO=missing<br>export LIBRARY_PATH=/mingw64/x86_64-w64-mingw32/lib</p>
+</blockquote>
+<p>配置的选项比较多，我们可以参考GCC文档进行参照。这里的配置是我尝试后感觉必须加入的，否则编译的时候会出相应的问题。可以说是编译GCC血泪史了。<br>再然后就可以开始编译了：</p>
+<blockquote>
+<p>make -j 16</p>
+</blockquote>
+<p>使用多线程编译，编译速度会快不少。编译好了以后就可以安装了，注意安装的时候可能会遇到失败，需要注释build/gcc/makefile中，对应s-tm-texi的相关代码。</p>
+<blockquote>
+<p>make install</p>
+</blockquote>
+<p>最后检查gcc版本号：</p>
+<blockquote>
+<p>gcc -v</p>
+</blockquote>
+<p>注意目前最新的版本号为9.0.1。</p>
 
         
       </div>
       <p class="repo-list-meta">
         <span class="meta-info">
           <span class="octicon octicon-calendar"></span>
-           <time datetime="2017-02-12T02:41:34.000Z" itemprop="datePublished">2017-02-12</time>
+           <time datetime="2019-02-22T11:00:12.000Z" itemprop="datePublished">2019-02-22</time>
         </span>
 
         
