@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://0cch.com/"/>
-  <updated>2019-02-23T11:48:49.060Z</updated>
+  <updated>2019-03-21T13:40:43.307Z</updated>
   <id>http://0cch.com/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>C++11新增预定义的宏</title>
+    <link href="http://0cch.com/2019/03/20/cpp11-macro/"/>
+    <id>http://0cch.com/2019/03/20/cpp11-macro/</id>
+    <published>2019-03-20T13:39:56.000Z</published>
+    <updated>2019-03-21T13:40:43.307Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>C++11中新增了4个预定义的宏，他们分别为<code>__STDC__</code>，<code>__STDC_HOSTED__</code>，<code>__STDC_VERSION__</code>和<code>__STDC_ISO_10646__</code>。</p><ol><li><p><code>__STDC__</code>用于指示编译器是否支持ISO标准C语言，如果支持ISO标准C语言则<code>_STDC__</code>定义为1，否为定义为0。这个宏在不同的编译器上可能有不同的定义，甚至有未定义的情况。例如在GCC上，编译并输出该宏的值为1，而在Visual Studio C++上，默认情况下该宏处于未定义状态。</p></li><li><p><code>__STDC_HOSTED__</code>用于指示宿主环境是否具有标准C库的完整功能，如果具有标准C库的完整功能则<code>__STDC_HOSTED__</code>定义为1，否为定义为0。</p></li><li><p><code>__STDC_VERSION__</code>用于定义C标准的版本号，但是标准文档中并没有明确规定其实现，所以在很多编译器中这个宏处于未定义状态。</p></li><li><p><code>__STDC_ISO_10646__</code>用于指示<code>wchar_t</code>是否使用Unicode，如果使用Unicode那么<code>wchar_t</code>展开为yyyymmL的形式。</p></li></ol><p>编译运行下面这段代码用于检测这些宏的定义状态：</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__cplusplus is "</span> &lt;&lt; __cplusplus &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__DATE__ is "</span> &lt;&lt; __DATE__ &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__FILE__ is "</span> &lt;&lt; __FILE__ &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__LINE__ is "</span> &lt;&lt; __LINE__ &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __STDC_HOSTED__</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__STDC_HOSTED__ is "</span> &lt;&lt; __STDC_HOSTED__ &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__STDC_HOSTED__ is not defined"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__TIME__ is "</span> &lt;&lt; __TIME__ &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __STDC__</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__STDC__ is "</span> &lt;&lt; __STDC__ &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__STDC__ is not defined"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __STDC_MB_MIGHT_NEQ_WC__</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__STDC_MB_MIGHT_NEQ_WC__ is "</span> &lt;&lt; __STDC_MB_MIGHT_NEQ_WC__ &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__STDC_MB_MIGHT_NEQ_WC__ is not defined"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __STDC_VERSION__</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__STDC_VERSION__ is "</span> &lt;&lt; __STDC_VERSION__ &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__STDC_VERSION__ is not defined"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __STDC_ISO_10646__</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__STDC_ISO_10646__ is "</span> &lt;&lt; __STDC_ISO_10646__ &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__STDC_ISO_10646__ is not defined"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __STDCPP_DEFAULT_NEW_ALIGNMENT__</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__STDCPP_DEFAULT_NEW_ALIGNMENT__ is "</span> &lt;&lt; __STDCPP_DEFAULT_NEW_ALIGNMENT__ &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__STDCPP_DEFAULT_NEW_ALIGNMENT__ is not defined"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __STDCPP_STRICT_POINTER_SAFETY__</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__STDCPP_STRICT_POINTER_SAFETY__ is "</span> &lt;&lt; __STDCPP_STRICT_POINTER_SAFETY__ &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__STDCPP_STRICT_POINTER_SAFETY__ is not defined"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __STDCPP_THREADS__</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__STDCPP_THREADS__ is "</span> &lt;&lt; __STDCPP_THREADS__ &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"__STDCPP_THREADS__ is not defined"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;C++11中新增了4个预定义的宏，他们分别为&lt;code&gt;__STDC__&lt;/
+      
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>在Windows中编译GCC</title>
@@ -451,29 +474,6 @@
     </summary>
     
       <category term="NTInternals" scheme="http://0cch.com/categories/NTInternals/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>切换到session 0</title>
-    <link href="http://0cch.com/2017/06/25/switch-to-session-0/"/>
-    <id>http://0cch.com/2017/06/25/switch-to-session-0/</id>
-    <published>2017-06-25T13:48:24.000Z</published>
-    <updated>2017-11-26T08:52:02.546Z</updated>
-    
-    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这是一个小技巧，可以帮助我们从session 1切换到session 0，并且获得system权限。有了system权限，可以做一些admin做不了的事情，具体哪些事情大伙可以自己挖掘。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">切换到session 0：    rundll32 winsta.dll WinStationSwitchToServicesSession</span><br><span class="line">切换会原session：    rundll32 winsta.dll WinStationRevertFromServicesSession</span><br></pre></td></tr></table></figure><p>但是如果直接切换到session 0，会发现一个问题，我们没有桌面程序，所以什么事情也做不了。解决方法也很简单，创建一个explorer就可以了。但是普通方法创建explorer，怎么会不能创建到session 0，于是这里可想而知，我们需要一个服务来创建explorer。专门写一个服务程序未免太麻烦，这里可以使用cmd来快速创建explorer。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sc create desktop0 binpath= &quot;cmd /c start explorer.exe&quot; type= own type= interact</span><br><span class="line">net start desktop0</span><br></pre></td></tr></table></figure><p>虽然cmd不是服务，但是也会被运行起来，只不过不能与服务管理器交互，所以在超时的时候会被结束。不过那个时候已经没关系了，因为explorer已经创建起来了。接下来就可以切换了session 0，用system权限管理电脑了。</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;这是一个小技巧，可以帮助我们从session 1切换到session 0，并
-      
-    
-    </summary>
-    
-      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
     
     
   </entry>
