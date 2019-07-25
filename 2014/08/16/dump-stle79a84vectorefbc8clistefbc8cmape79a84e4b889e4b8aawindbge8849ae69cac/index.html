@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="Dump stl的vector，list，map的三个windbg脚本">
+<section class="collection-head geopattern" data-pattern-id="Dump stl的vector，list，map的三个windbg脚本" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/Debugging/" title="">Debugging</a>
+                            <a href='/categories/Debugging/' title=''>Debugging</a>
                         </span>
                     
                 </div>
@@ -60,12 +60,14 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>用Windbg查看stl的容器实在是已经让人悲伤的事情，为了方便，所以写了这么3个脚本<br>vector:</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">r? $t0 = $&#123;$arg1&#125;</span><br><span class="line"></span><br><span class="line">.<span class="keyword">if</span> ($&#123;/d:$VectorType&#125;) &#123;</span><br><span class="line">    r? $t0 = @@C++(*(($&#123;$VectorType&#125; *)@$t0))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.<span class="keyword">if</span> ($&#123;/d:$arg2&#125;) &#123; </span><br><span class="line">    .<span class="keyword">if</span> ($sicmp(<span class="string">"$&#123;$arg2&#125;"</span>, <span class="string">"-c"</span>) == <span class="number">0</span>) &#123; </span><br><span class="line">        r $t2 = <span class="number">0</span> </span><br><span class="line">        aS $&#123;/v:command&#125; <span class="string">"$&#123;$arg3&#125;"</span> </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br><span class="line">.<span class="keyword">else</span> &#123; </span><br><span class="line">    r $t2 = <span class="number">1</span> </span><br><span class="line">    aS $&#123;/v:command&#125; <span class="string">" "</span> </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">r? $t1 = @@C++(@$t0._Mylast)</span><br><span class="line">r? $t0 = @@C++(@$t0._Myfirst)</span><br><span class="line"></span><br><span class="line">.<span class="built_in">printf</span> <span class="string">"size = %d\n"</span>, @@C++((@$t1 - @$t0))  </span><br><span class="line"></span><br><span class="line">.<span class="keyword">while</span> (@$t0 != @$t1) &#123;</span><br><span class="line">    .<span class="keyword">if</span> ($t2 == <span class="number">1</span>) &#123;</span><br><span class="line">        ?? @@c++(@$t0-&gt;_Bx)</span><br><span class="line">    &#125;</span><br><span class="line">    .<span class="keyword">else</span> &#123;</span><br><span class="line">        r? $t9 = @$t0-&gt;_Bx</span><br><span class="line">        command</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    r? $t0=@$t0+<span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ad command </span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>list:</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">r? $t0 = $&#123;$arg1&#125;</span><br><span class="line"></span><br><span class="line">.<span class="keyword">if</span> ($&#123;/d:$ListType&#125;) &#123;</span><br><span class="line">    r? $t0 = @@C++(*(($&#123;$ListType&#125; *)@$t0))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.<span class="keyword">if</span> ($&#123;/d:$arg2&#125;) &#123; </span><br><span class="line">    .<span class="keyword">if</span> ($sicmp(<span class="string">"$&#123;$arg2&#125;"</span>, <span class="string">"-c"</span>) == <span class="number">0</span>) &#123; </span><br><span class="line">        r $t2 = <span class="number">0</span> </span><br><span class="line">        aS $&#123;/v:command&#125; <span class="string">"$&#123;$arg3&#125;"</span> </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br><span class="line">.<span class="keyword">else</span> &#123; </span><br><span class="line">    r $t2 = <span class="number">1</span> </span><br><span class="line">    aS $&#123;/v:command&#125; <span class="string">" "</span> </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.<span class="built_in">printf</span> <span class="string">"size = %d\n"</span>, @@C++(@$t0._Mysize)</span><br><span class="line"></span><br><span class="line">r? $t1 = @@C++(@$t0._Myhead)</span><br><span class="line">r? $t0 = @@C++(@$t0._Myhead)</span><br><span class="line">r? $t0 = @@C++(@$t0-&gt;_Next)</span><br><span class="line"></span><br><span class="line">.<span class="keyword">while</span> (@$t0 != @$t1) &#123;</span><br><span class="line">    .<span class="keyword">if</span> ($t2 == <span class="number">1</span>) &#123;</span><br><span class="line">        ?? @@c++(@$t0-&gt;_Myval._Bx)</span><br><span class="line">    &#125;</span><br><span class="line">    .<span class="keyword">else</span> &#123;</span><br><span class="line">        r? $t9 = @$t0-&gt;_Myval._Bx</span><br><span class="line">        command</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    r? $t0 = @@C++(@$t0-&gt;_Next)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ad command </span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>map:</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">.<span class="keyword">if</span> ($sicmp(<span class="string">"$&#123;$arg1&#125;"</span>, <span class="string">"-n"</span>) == <span class="number">0</span>) &#123; </span><br><span class="line"></span><br><span class="line">    .<span class="keyword">if</span> (@@C++(@$t0-&gt;_Left) != @@C++(@$t1)) &#123; </span><br><span class="line">        .push /r /q </span><br><span class="line">        r? $t0 = @$t0-&gt;_Left </span><br><span class="line">        $$&gt;a&lt; $&#123;$arg0&#125; -n </span><br><span class="line">        .pop /r /q </span><br><span class="line">    &#125; </span><br><span class="line">    </span><br><span class="line">    .<span class="keyword">if</span> (@@C++(@$t0-&gt;_Isnil) == <span class="number">0</span>) &#123; </span><br><span class="line">        .<span class="keyword">if</span> (@$t2 == <span class="number">1</span>) &#123; </span><br><span class="line">            .<span class="built_in">printf</span> /D <span class="string">"%p\n"</span>, @$t0, @$t0 </span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"key = "</span> </span><br><span class="line">            ?? @$t0-&gt;_Myval.first </span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"value = "</span> </span><br><span class="line">            ?? @$t0-&gt;_Myval.second </span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="keyword">else</span> &#123; </span><br><span class="line">            r? $t9 = @$t0-&gt;_Myval </span><br><span class="line">            command </span><br><span class="line">        &#125; </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    .<span class="keyword">if</span> (@@C++(@$t0-&gt;_Right) != @@C++(@$t1)) &#123; </span><br><span class="line">        .push /r /q </span><br><span class="line">        r? $t0 = @$t0-&gt;_Right </span><br><span class="line">        $$&gt;a&lt; $&#123;$arg0&#125; -n </span><br><span class="line">        .pop /r /q </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line">.<span class="keyword">else</span> &#123; </span><br><span class="line"></span><br><span class="line">    r? $t0 = $&#123;$arg1&#125;</span><br><span class="line"></span><br><span class="line">    .<span class="keyword">if</span> ($&#123;/d:$MapType&#125;) &#123;</span><br><span class="line">        r? $t0 = @@C++(*(($&#123;$MapType&#125; *)@$t0))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    .<span class="keyword">if</span> ($&#123;/d:$arg2&#125;) &#123; </span><br><span class="line">        .<span class="keyword">if</span> ($sicmp(<span class="string">"$&#123;$arg2&#125;"</span>, <span class="string">"-c"</span>) == <span class="number">0</span>) &#123; </span><br><span class="line">            r $t2 = <span class="number">0</span> </span><br><span class="line">            aS $&#123;/v:command&#125; <span class="string">"$&#123;$arg3&#125;"</span> </span><br><span class="line">        &#125; </span><br><span class="line">    &#125;</span><br><span class="line">    .<span class="keyword">else</span> &#123; </span><br><span class="line">        r $t2 = <span class="number">1</span> </span><br><span class="line">        aS $&#123;/v:command&#125; <span class="string">" "</span> </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    .<span class="built_in">printf</span> <span class="string">"size = %d\n"</span>, @@C++(@$t0._Mysize)  </span><br><span class="line">     </span><br><span class="line">    r? $t0 = @$t0._Myhead-&gt;_Parent </span><br><span class="line">    r? $t1 = @$t0-&gt;_Parent</span><br><span class="line">    </span><br><span class="line">    $$&gt;a&lt; $&#123;$arg0&#125; -n</span><br><span class="line"></span><br><span class="line">    ad command </span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
 
@@ -128,31 +130,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
+</section>
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
-</body>
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -160,17 +145,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -190,6 +175,24 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
 
-	
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
+
+	</body>
+</html>

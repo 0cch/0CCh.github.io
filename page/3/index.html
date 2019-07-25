@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,13 +21,13 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
@@ -74,8 +74,46 @@
     <div class="columns">
         <div class="column two-thirds">
             
+                  <article id="post-gotcha-sdk-monitor-update" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在15年的一篇blog中，我介绍了gotcha sdk。<a href="/2015/11/24/gotcha-sdk/" title="gotcha sdk 全盘文件名搜索开发库">gotcha sdk 全盘文件名搜索开发库</a></p>
+<p>当时gotcha sdk没有提供文件监控功能，也就是说当搜索文件发生变化的时候，这个变化不会体现到搜索结果列表中。其实这个功能一直在todo list中，只不过忙的时候没时间写这部分代码，闲的时候又忘了。前几天终于有时间把这部分代码补上，升级了sdk。</p>
+<p>gotcha sdk 代码SVN:<br><a href="http://code.taobao.org/svn/gotcha_sdk/" target="_blank" rel="noopener">http://code.taobao.org/svn/gotcha_sdk/</a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2017-07-02T07:56:54.000Z" itemprop="datePublished">2017-07-02</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/NTInternals/' title=''>NTInternals</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
                   <article id="post-switch-to-session-0" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -87,8 +125,10 @@
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这是一个小技巧，可以帮助我们从session 1切换到session 0，并且获得system权限。有了system权限，可以做一些admin做不了的事情，具体哪些事情大伙可以自己挖掘。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">切换到session 0：    rundll32 winsta.dll WinStationSwitchToServicesSession</span><br><span class="line">切换会原session：    rundll32 winsta.dll WinStationRevertFromServicesSession</span><br></pre></td></tr></table></figure>
+
 <p>但是如果直接切换到session 0，会发现一个问题，我们没有桌面程序，所以什么事情也做不了。解决方法也很简单，创建一个explorer就可以了。但是普通方法创建explorer，怎么会不能创建到session 0，于是这里可想而知，我们需要一个服务来创建explorer。专门写一个服务程序未免太麻烦，这里可以使用cmd来快速创建explorer。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sc create desktop0 binpath= &quot;cmd /c start explorer.exe&quot; type= own type= interact</span><br><span class="line">net start desktop0</span><br></pre></td></tr></table></figure>
+
 <p>虽然cmd不是服务，但是也会被运行起来，只不过不能与服务管理器交互，所以在超时的时候会被结束。不过那个时候已经没关系了，因为explorer已经创建起来了。接下来就可以切换了session 0，用system权限管理电脑了。</p>
 
         
@@ -102,7 +142,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -115,7 +155,7 @@
   </article>
             
                   <article id="post-0cchext-dttoc-command" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -138,7 +178,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
           </span>
         
       
@@ -151,7 +191,7 @@
   </article>
             
                   <article id="post-delphi-exception" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -162,11 +202,18 @@
       <div class="repo-list-description">
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>0EEDFADE是Delphi内部异常代码，该异常通常有7个参数，我们用的上的是第二个参数，这个参数指向的是Exception的对象，通过这个对象，我们就可以查出异常的一些信息。</p>
-<p>以Delphi XE2为例,Class name的偏移为（不同的版本偏移有所不同）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x86_vmtClassName = -56(0x38);</span><br><span class="line">x64_vmtClassName = -112(0x70);</span><br></pre></td></tr></table></figure></p>
-<p>我们可以用如下命令获取相关信息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x86: da poi(poi(exception_object)-38)+1;du /c 100 poi(exception_object+4)  </span><br><span class="line">x64: da poi(poi(exception_object)-70)+1;du /c 100 poi(exception_object+8)</span><br></pre></td></tr></table></figure></p>
+<p>以Delphi XE2为例,Class name的偏移为（不同的版本偏移有所不同）：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x86_vmtClassName = -56(0x38);</span><br><span class="line">x64_vmtClassName = -112(0x70);</span><br></pre></td></tr></table></figure>
+
+<p>我们可以用如下命令获取相关信息：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x86: da poi(poi(exception_object)-38)+1;du /c 100 poi(exception_object+4)  </span><br><span class="line">x64: da poi(poi(exception_object)-70)+1;du /c 100 poi(exception_object+8)</span><br></pre></td></tr></table></figure>
+
 <p>以上命令就能获取异常的类名，而exception_object+sizeof(pointer)则是Exception Message的所在偏移，这是一个unicode string。实际效果如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0:002&gt; da poi(poi(003a2800)-38)+1;du /c 100 poi(003a2800 +4)</span><br><span class="line">00b9ec47  &quot;TTransportExceptionUnknown&quot;</span><br><span class="line">00375b8c  &quot;ServerTransport.Accept() may not return NULL&quot;</span><br></pre></td></tr></table></figure>
-<p>当然，我们也可以设置event filter去截获异常：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x86: sxe -c &quot;da poi(poi(poi(@ebp+1c))-38)+1;du /c 100 poi(poi(@ebp+1c)+4)&quot; 0EEDFADE</span><br><span class="line">x64: sxe -c &quot;da poi(poi(poi(@rbp+48))-70)+1;du /c 100 poi(poi(@rbp+48)+8)&quot; 0EEDFADE</span><br></pre></td></tr></table></figure></p>
+
+<p>当然，我们也可以设置event filter去截获异常：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x86: sxe -c &quot;da poi(poi(poi(@ebp+1c))-38)+1;du /c 100 poi(poi(@ebp+1c)+4)&quot; 0EEDFADE</span><br><span class="line">x64: sxe -c &quot;da poi(poi(poi(@rbp+48))-70)+1;du /c 100 poi(poi(@rbp+48)+8)&quot; 0EEDFADE</span><br></pre></td></tr></table></figure>
+
 
         
       </div>
@@ -179,7 +226,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
           </span>
         
       
@@ -192,7 +239,7 @@
   </article>
             
                   <article id="post-set-dpi" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -217,7 +264,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -230,7 +277,7 @@
   </article>
             
                   <article id="post-deprecate-a-function" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -248,11 +295,15 @@
 </ol>
 <ul>
 <li>__declspec(deprecated)<br><a href="https://msdn.microsoft.com/en-us/library/044swk7y.aspx" target="_blank" rel="noopener">https://msdn.microsoft.com/en-us/library/044swk7y.aspx</a><br>这种方法直接声明在函数或者类之前，在使用函数的地方会抛出C4996的警告  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__declspec(deprecated) void func1(int) &#123;&#125;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
-<p>当然我们还可以给警告自定义消息信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__declspec(deprecated(&quot;** this is a deprecated function **&quot;)) void func2(int) &#123;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>当然我们还可以给警告自定义消息信息  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__declspec(deprecated(&quot;** this is a deprecated function **&quot;)) void func2(int) &#123;&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>#pragma deprecated<br><a href="https://msdn.microsoft.com/en-us/library/c8xdzzhh.aspx" target="_blank" rel="noopener">https://msdn.microsoft.com/en-us/library/c8xdzzhh.aspx</a><br>这种方法可以一次性声明多个函数或者类，使用函数的地方会抛出C4995的警告  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#pragma deprecated(func1, func2)</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 
@@ -267,7 +318,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -280,7 +331,7 @@
   </article>
             
                   <article id="post-pdbdownloader" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -305,7 +356,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -318,7 +369,7 @@
   </article>
             
                   <article id="post-int29h" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -330,6 +381,7 @@
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>从Windows8开始，Windows设计了一个新的中断，INT 29H，用来快速的抛出失败。在sdk中，他被声明为 __fastfail:</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_LEGACY_GS_VIOLATION          0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_VTGUARD_CHECK_FAILURE        1</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_STACK_COOKIE_CHECK_FAILURE   2</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_CORRUPT_LIST_ENTRY           3</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INCORRECT_STACK              4</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_ARG                  5</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_GS_COOKIE_INIT               6</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_FATAL_APP_EXIT               7</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_RANGE_CHECK_FAILURE          8</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_UNSAFE_REGISTRY_ACCESS       9</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_GUARD_ICALL_CHECK_FAILURE    10</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_GUARD_WRITE_CHECK_FAILURE    11</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_FIBER_SWITCH         12</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_SET_OF_CONTEXT       13</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_REFERENCE_COUNT      14</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_JUMP_BUFFER          18</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_MRDATA_MODIFIED              19</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_CERTIFICATION_FAILURE        20</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_EXCEPTION_CHAIN      21</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_CRYPTO_LIBRARY               22</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_CALL_IN_DLL_CALLOUT  23</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_IMAGE_BASE           24</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_DLOAD_PROTECTION_FAILURE     25</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_UNSAFE_EXTENSION_CALL        26</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_DEPRECATED_SERVICE_INVOKED   27</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_BUFFER_ACCESS        28</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_BALANCED_TREE        29</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_NEXT_THREAD          30</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_GUARD_ICALL_CHECK_SUPPRESSED 31         <span class="comment">// Telemetry, nonfatal</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_APCS_DISABLED                32</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_IDLE_STATE           33</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_MRDATA_PROTECTION_FAILURE    34</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_UNEXPECTED_HEAP_EXCEPTION    35</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAST_FAIL_INVALID_FAST_FAIL_CODE       0xFFFFFFFF</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> _MSC_VER &gt;= 1610</span></span><br><span class="line"></span><br><span class="line">DECLSPEC_NORETURN</span><br><span class="line">VOID</span><br><span class="line">__fastfail(</span><br><span class="line">    _In_ <span class="keyword">unsigned</span> <span class="keyword">int</span> Code</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> intrinsic(__fastfail)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">	// 汇编代码为</span></span><br><span class="line"><span class="comment">	mov ecx, code</span></span><br><span class="line"><span class="comment">	int 29h</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 <p>在中断代码执行后，操作系统会根据执行代码的环境来做出不同的处理。<br>如果<strong>fastfail发生在Ring0中，操作系统会抛出一个KERNEL_SECURITY_CHECK_FAILURE (0x139)的蓝屏。如果</strong>fastfail发生在Ring3，系统会抛出一个第二次机会的不可继续执行的异常，异常代码为0xC0000409，然后走进我们熟悉的Windows Error Reporting(WER)流程。另外，无论__fastfail发生在R0或者R3，如果有调试器正在调试系统或进程，都将得到一次中断到调试器的机会，这让我们能够看清楚具体发生了什么事情。但是正如我上面所说，这个是一个不可继续执行的异常，所以我们不能在调试器里处理了异常后让程序继续向前跑，当然也不能用try和except去捕获异常。</p>
 <p>我觉得__fastfail是个非常不错的设计，它让程序可以快速的进入内核异常处理流程，不需要执行额外的用户层的代码，也不需要额外的内存空间，提高了不可恢复的异常处理的性能，更重要的是，简单快速不依赖内存的执行方式也保证了系统的安全。所以在系统的安全检查失败处理中，大量使用了这个方式，减少被攻击的可能性。</p>
 <p>最后，如果INT 29H发生在Windows8以下的系统上，内核里会抛出一个常规的UNEXPECTED_KERNEL_MODE_TRAP的蓝屏，而用户层程序会抛出一个ACCESS VIOLATION的异常。</p>
@@ -345,7 +397,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
           </span>
         
       
@@ -358,7 +410,7 @@
   </article>
             
                   <article id="post-luadbg-windbg-ext" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -384,7 +436,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
           </span>
         
       
@@ -397,7 +449,7 @@
   </article>
             
                   <article id="post-auto-increase-build-number" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -409,6 +461,7 @@
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近和朋友讨论版本号常用的几种规范，前三位&lt;主版本&gt;.&lt;子版本&gt;.&lt;修正版本&gt;基本上一致，不需要详说。主要区别产生在最后一位，有的是build number，有的是时间日期，还有的是git或者svn的revision。我习惯用build number，每次编译都会增加版本号最后一位的数字。但是手动去修改明显不科学也不可靠，所以给和我有一样习惯的朋友分享一个我早年写的python脚本，无论是自己的工具还是公司的产品我一直都在用这个。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">用法就是在VS的工程属性Build Event -&gt; Pre Build Event里设置x:\incbuildnum.py $(ProjectDir)$(ProjectName).rc。</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> shutil</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> os.path.isfile(sys.argv[<span class="number">1</span>] + <span class="string">".bak"</span>):</span><br><span class="line">    os.remove(sys.argv[<span class="number">1</span>] + <span class="string">".bak"</span>)</span><br><span class="line">shutil.copy(sys.argv[<span class="number">1</span>], sys.argv[<span class="number">1</span>] + <span class="string">".bak"</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> open(sys.argv[<span class="number">1</span>], <span class="string">'r+'</span>) <span class="keyword">as</span> content_file:</span><br><span class="line">    content = content_file.read()</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    m = re.search(<span class="string">"VALUE \"FileVersion\", \"(([\\d]+).[ ]*)*([\\d]+)\""</span>, content)</span><br><span class="line">    new_ver = str(int(m.group(<span class="number">3</span>)) + <span class="number">1</span>)</span><br><span class="line">    content = re.sub(<span class="string">"(VALUE \"FileVersion\", \"([\\d]+.[ ]*)*)[\\d]+\""</span>, <span class="string">"\\g&lt;1&gt;"</span> + new_ver + <span class="string">"\""</span>, content)</span><br><span class="line"></span><br><span class="line">    m = re.search(<span class="string">"FILEVERSION (([\\d]+).[ ]*)*([\\d]+)"</span>, content)</span><br><span class="line">    new_ver = str(int(m.group(<span class="number">3</span>)) + <span class="number">1</span>)</span><br><span class="line">    content = re.sub(<span class="string">"(FILEVERSION ([\\d]+.[ ]*)*)([\\d]+)"</span>, <span class="string">"\\g&lt;1&gt;"</span> + new_ver, content)</span><br><span class="line"></span><br><span class="line">    m = re.search(<span class="string">"VALUE \"ProductVersion\", \"(([\\d]+).[ ]*)*([\\d]+)\""</span>, content)</span><br><span class="line">    new_ver = str(int(m.group(<span class="number">3</span>)) + <span class="number">1</span>)</span><br><span class="line">    content = re.sub(<span class="string">"(VALUE \"ProductVersion\", \"([\\d]+.[ ]*)*)[\\d]+\""</span>, <span class="string">"\\g&lt;1&gt;"</span> + new_ver + <span class="string">"\""</span>, content)</span><br><span class="line"></span><br><span class="line">    m = re.search(<span class="string">"PRODUCTVERSION (([\\d]+).[ ]*)*([\\d]+)"</span>, content)</span><br><span class="line">    new_ver = str(int(m.group(<span class="number">3</span>)) + <span class="number">1</span>)</span><br><span class="line">    content = re.sub(<span class="string">"(PRODUCTVERSION ([\\d]+.[ ]*)*)([\\d]+)"</span>, <span class="string">"\\g&lt;1&gt;"</span> + new_ver, content)</span><br><span class="line">    </span><br><span class="line">    content_file.seek(<span class="number">0</span>)</span><br><span class="line">    content_file.write(content)</span><br><span class="line">    content_file.truncate()</span><br><span class="line">    content_file.close()</span><br><span class="line">    </span><br><span class="line"></span><br></pre></td></tr></table></figure>
         
       </div>
@@ -421,43 +474,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-verify-cert" class="repo-list">
-    <div class="repo-list-item">
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2016/09/21/verify-cert/">验证文件签名</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Sysinternal(<a href="http://forum.sysinternals.com/howto-verify-the-digital-signature-of-a-file_topic19247.html)上有关于验证签名的代码，不过代码有点问题，他只能验证PE签名，无法验证文件签名，所以我这里稍作了点修改，记录一下" target="_blank" rel="noopener">http://forum.sysinternals.com/howto-verify-the-digital-signature-of-a-file_topic19247.html)上有关于验证签名的代码，不过代码有点问题，他只能验证PE签名，无法验证文件签名，所以我这里稍作了点修改，记录一下</a></p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ENCODING (X509_ASN_ENCODING | PKCS_7_ASN_ENCODING)</span></span><br><span class="line"></span><br><span class="line"><span class="function">BOOL <span class="title">CheckFileTrust</span><span class="params">(LPCTSTR filename, CString &amp;signer_file)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    HCATADMIN cat_admin_handle = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">if</span> (!CryptCATAdminAcquireContext(&amp;cat_admin_handle, <span class="literal">NULL</span>, <span class="number">0</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    HANDLE hFile = CreateFileW(filename, GENERIC_READ, FILE_SHARE_READ,</span><br><span class="line">        <span class="literal">NULL</span>, OPEN_EXISTING, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span> (INVALID_HANDLE_VALUE == hFile)</span><br><span class="line">    &#123;</span><br><span class="line">        CryptCATAdminReleaseContext(cat_admin_handle, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    DWORD hash_count = <span class="number">100</span>;</span><br><span class="line">    BYTE hash_data[<span class="number">100</span>];</span><br><span class="line">    CryptCATAdminCalcHashFromFileHandle(hFile, &amp;hash_count, hash_data, <span class="number">0</span>);</span><br><span class="line">    CloseHandle(hFile);</span><br><span class="line"></span><br><span class="line">    LPWSTR member_tag = <span class="keyword">new</span> WCHAR[hash_count * <span class="number">2</span> + <span class="number">1</span>];</span><br><span class="line">    <span class="keyword">for</span> (DWORD dw = <span class="number">0</span>; dw &lt; hash_count; ++dw)</span><br><span class="line">    &#123;</span><br><span class="line">        wsprintfW(&amp;member_tag[dw * <span class="number">2</span>], <span class="string">L"%02X"</span>, hash_data[dw]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    WINTRUST_DATA wd = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">    WINTRUST_FILE_INFO wfi = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">    WINTRUST_CATALOG_INFO wci = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">    CATALOG_INFO ci = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">    HCATINFO cat_admin_info = CryptCATAdminEnumCatalogFromHash(cat_admin_handle,</span><br><span class="line">        hash_data, hash_count, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">NULL</span> == cat_admin_info)</span><br><span class="line">    &#123;</span><br><span class="line">        wfi.cbStruct = <span class="keyword">sizeof</span>(WINTRUST_FILE_INFO);</span><br><span class="line">        wfi.pcwszFilePath = filename;</span><br><span class="line">        wfi.hFile = <span class="literal">NULL</span>;</span><br><span class="line">        wfi.pgKnownSubject = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">        wd.cbStruct = <span class="keyword">sizeof</span>(WINTRUST_DATA);</span><br><span class="line">        wd.dwUnionChoice = WTD_CHOICE_FILE;</span><br><span class="line">        wd.pFile = &amp;wfi;</span><br><span class="line">        wd.dwUIChoice = WTD_UI_NONE;</span><br><span class="line">        wd.fdwRevocationChecks = WTD_REVOKE_NONE;</span><br><span class="line">        wd.dwStateAction = WTD_STATEACTION_IGNORE;</span><br><span class="line">        wd.dwProvFlags = WTD_SAFER_FLAG;</span><br><span class="line">        wd.hWVTStateData = <span class="literal">NULL</span>;</span><br><span class="line">        wd.pwszURLReference = <span class="literal">NULL</span>;</span><br><span class="line">        signer_file = filename;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        CryptCATCatalogInfoFromContext(cat_admin_info, &amp;ci, <span class="number">0</span>);</span><br><span class="line">        wci.cbStruct = <span class="keyword">sizeof</span>(WINTRUST_CATALOG_INFO);</span><br><span class="line">        wci.pcwszCatalogFilePath = ci.wszCatalogFile;</span><br><span class="line">        wci.pcwszMemberFilePath = filename;</span><br><span class="line">        wci.pcwszMemberTag = member_tag;</span><br><span class="line">        wci.pbCalculatedFileHash = hash_data;</span><br><span class="line">        wci.cbCalculatedFileHash = hash_count;</span><br><span class="line"></span><br><span class="line">        wd.cbStruct = <span class="keyword">sizeof</span>(WINTRUST_DATA);</span><br><span class="line">        wd.dwUnionChoice = WTD_CHOICE_CATALOG;</span><br><span class="line">        wd.pCatalog = &amp;wci;</span><br><span class="line">        wd.dwUIChoice = WTD_UI_NONE;</span><br><span class="line">        wd.fdwRevocationChecks = WTD_REVOKE_WHOLECHAIN;</span><br><span class="line">        wd.dwProvFlags = <span class="number">0</span>;</span><br><span class="line">        wd.hWVTStateData = <span class="literal">NULL</span>;</span><br><span class="line">        wd.pwszURLReference = <span class="literal">NULL</span>;</span><br><span class="line">        signer_file = ci.wszCatalogFile;</span><br><span class="line">    &#125;</span><br><span class="line">    GUID action = WINTRUST_ACTION_GENERIC_VERIFY_V2;</span><br><span class="line">    HRESULT hr = WinVerifyTrust(<span class="literal">NULL</span>, &amp;action, &amp;wd);</span><br><span class="line">    BOOL retval = SUCCEEDED(hr);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">NULL</span> != cat_admin_info) &#123;</span><br><span class="line">        CryptCATAdminReleaseCatalogContext(cat_admin_handle, cat_admin_info, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    CryptCATAdminReleaseContext(cat_admin_handle, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">delete</span>[] member_tag;</span><br><span class="line">    <span class="keyword">return</span> retval;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">BOOL <span class="title">GetCertificateInfo</span><span class="params">(PCCERT_CONTEXT cert_context, CString &amp;signer_name)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    LPTSTR name = <span class="literal">NULL</span>;</span><br><span class="line">    DWORD data;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!(data = CertGetNameString(cert_context,</span><br><span class="line">        CERT_NAME_SIMPLE_DISPLAY_TYPE,</span><br><span class="line">        <span class="number">0</span>,</span><br><span class="line">        <span class="literal">NULL</span>,</span><br><span class="line">        <span class="literal">NULL</span>,</span><br><span class="line">        <span class="number">0</span>))) &#123;</span><br><span class="line">            <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Allocate memory for subject name.</span></span><br><span class="line">    name = (LPTSTR)LocalAlloc(LPTR, data * <span class="keyword">sizeof</span>(TCHAR));</span><br><span class="line">    <span class="keyword">if</span> (!name) &#123;</span><br><span class="line">        <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Get subject name.</span></span><br><span class="line">    <span class="keyword">if</span> (!(CertGetNameString(cert_context,</span><br><span class="line">        CERT_NAME_SIMPLE_DISPLAY_TYPE,</span><br><span class="line">        <span class="number">0</span>,</span><br><span class="line">        <span class="literal">NULL</span>,</span><br><span class="line">        name,</span><br><span class="line">        data))) &#123;</span><br><span class="line"></span><br><span class="line">            LocalFree(name);</span><br><span class="line">            <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line">    signer_name = name;</span><br><span class="line">    LocalFree(name);</span><br><span class="line">    <span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function">BOOL <span class="title">GetFileSigner</span><span class="params">(LPCTSTR szFileName, CString &amp;signer_name)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    HCERTSTORE store_handle = <span class="literal">NULL</span>;</span><br><span class="line">    HCRYPTMSG msg_handle = <span class="literal">NULL</span>;</span><br><span class="line">    PCCERT_CONTEXT cert_context = <span class="literal">NULL</span>;</span><br><span class="line">    BOOL retval = FALSE;</span><br><span class="line">    DWORD encoding, content_type, format_type;</span><br><span class="line">    PCMSG_SIGNER_INFO signer_info = <span class="literal">NULL</span>;</span><br><span class="line">    DWORD signer_info_size;</span><br><span class="line">    CERT_INFO cert_info;</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Get message handle and store handle from the signed file.</span></span><br><span class="line">        retval = CryptQueryObject(CERT_QUERY_OBJECT_FILE,</span><br><span class="line">            szFileName,</span><br><span class="line">            CERT_QUERY_CONTENT_FLAG_PKCS7_SIGNED_EMBED,</span><br><span class="line">            CERT_QUERY_FORMAT_FLAG_BINARY,</span><br><span class="line">            <span class="number">0</span>,</span><br><span class="line">            &amp;encoding,</span><br><span class="line">            &amp;content_type,</span><br><span class="line">            &amp;format_type,</span><br><span class="line">            &amp;store_handle,</span><br><span class="line">            &amp;msg_handle,</span><br><span class="line">            <span class="literal">NULL</span>);</span><br><span class="line">        <span class="keyword">if</span> (!retval) &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Get signer information size.</span></span><br><span class="line">        retval = CryptMsgGetParam(msg_handle,</span><br><span class="line">            CMSG_SIGNER_INFO_PARAM,</span><br><span class="line">            <span class="number">0</span>,</span><br><span class="line">            <span class="literal">NULL</span>,</span><br><span class="line">            &amp;signer_info_size);</span><br><span class="line">        <span class="keyword">if</span> (!retval) &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Allocate memory for signer information.</span></span><br><span class="line">        signer_info = (PCMSG_SIGNER_INFO)LocalAlloc(LPTR, signer_info_size);</span><br><span class="line">        <span class="keyword">if</span> (!signer_info) &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Get Signer Information.</span></span><br><span class="line">        retval = CryptMsgGetParam(msg_handle,</span><br><span class="line">            CMSG_SIGNER_INFO_PARAM,</span><br><span class="line">            <span class="number">0</span>,</span><br><span class="line">            (PVOID)signer_info,</span><br><span class="line">            &amp;signer_info_size);</span><br><span class="line">        <span class="keyword">if</span> (!retval) &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// Search for the signer certificate in the temporary </span></span><br><span class="line">        <span class="comment">// certificate store.</span></span><br><span class="line">        cert_info.Issuer = signer_info-&gt;Issuer;</span><br><span class="line">        cert_info.SerialNumber = signer_info-&gt;SerialNumber;</span><br><span class="line"></span><br><span class="line">        cert_context = CertFindCertificateInStore(store_handle,</span><br><span class="line">            ENCODING,</span><br><span class="line">            <span class="number">0</span>,</span><br><span class="line">            CERT_FIND_SUBJECT_CERT,</span><br><span class="line">            (PVOID)&amp;cert_info,</span><br><span class="line">            <span class="literal">NULL</span>);</span><br><span class="line">        <span class="keyword">if</span> (!cert_context) &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        retval = GetCertificateInfo(cert_context, signer_name);</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">while</span> (<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (signer_info != <span class="literal">NULL</span>) &#123; </span><br><span class="line">        LocalFree(signer_info); </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (cert_context != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        CertFreeCertificateContext(cert_context);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (store_handle != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        CertCloseStore(store_handle, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (msg_handle != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        CryptMsgClose(msg_handle);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> retval;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2016-09-21T04:22:50.000Z" itemprop="datePublished">2016-09-21</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -571,9 +588,9 @@
 
     <h3>Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
     </div>
-  
+  </div>
 
 
         </div>
@@ -586,31 +603,14 @@
           </div>
       </div>
     
-</section><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
+</section>
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
-</body>
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -618,17 +618,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -646,6 +646,24 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
 
-	
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
+
+	</body>
+</html>

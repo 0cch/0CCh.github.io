@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="Python获得文件版本信息">
+<section class="collection-head geopattern" data-pattern-id="Python获得文件版本信息" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/Tips/" title="">Tips</a>
+                            <a href='/categories/Tips/' title=''>Tips</a>
                         </span>
                     
                 </div>
@@ -60,10 +60,10 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Python干啥都挺方便的，出了调用win32的api。当然了，可以用pywin32这种库。但我不喜欢为了一两个api又给简单的东西加一堆依赖。比如获取文件版本，本来想在网上找个函数复制过去用得了，却发现还真没啥好用的。无奈自己就写了一个。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">VS_FIXEDFILEINFO</span><span class="params">(Structure)</span>:</span></span><br><span class="line">    _fields_ = [</span><br><span class="line">        (<span class="string">"dwSignature"</span>, c_int), </span><br><span class="line">        (<span class="string">"dwStrucVersion"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileVersionMS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileVersionLS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwProductVersionMS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwProductVersionLS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileFlagsMask"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileFlags"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileOS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileType"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileSubtype"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileDateMS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileDateLS"</span>, c_int)</span><br><span class="line">    ]</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">LOWORD</span><span class="params">(dword)</span>:</span> <span class="keyword">return</span> dword &amp; <span class="number">0x0000ffff</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">HIWORD</span><span class="params">(dword)</span>:</span> <span class="keyword">return</span> dword &gt;&gt; <span class="number">16</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetFileVersion</span><span class="params">(filename)</span>:</span></span><br><span class="line">    size = windll.version.GetFileVersionInfoSizeW(filename, <span class="keyword">None</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> size:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line">    res = create_string_buffer(size)</span><br><span class="line">    windll.version.GetFileVersionInfoW(filename, <span class="keyword">None</span>, size, res)</span><br><span class="line">    r = VS_FIXEDFILEINFO()</span><br><span class="line">    l = c_uint()</span><br><span class="line">    p = c_void_p()</span><br><span class="line">    windll.version.VerQueryValueW(res, <span class="string">'\\'</span>, byref(p), byref(l));</span><br><span class="line">    memmove(byref(r), p, sizeof(VS_FIXEDFILEINFO))</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> l.value:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> (<span class="string">'%d.%d.%d.%d'</span> % (HIWORD(r.dwFileVersionMS), LOWORD(r.dwFileVersionMS), </span><br><span class="line">        HIWORD(r.dwProductVersionLS), LOWORD(r.dwProductVersionLS)));</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">VS_FIXEDFILEINFO</span><span class="params">(Structure)</span>:</span></span><br><span class="line">    _fields_ = [</span><br><span class="line">        (<span class="string">"dwSignature"</span>, c_int), </span><br><span class="line">        (<span class="string">"dwStrucVersion"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileVersionMS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileVersionLS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwProductVersionMS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwProductVersionLS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileFlagsMask"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileFlags"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileOS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileType"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileSubtype"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileDateMS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileDateLS"</span>, c_int)</span><br><span class="line">    ]</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">LOWORD</span><span class="params">(dword)</span>:</span> <span class="keyword">return</span> dword &amp; <span class="number">0x0000ffff</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">HIWORD</span><span class="params">(dword)</span>:</span> <span class="keyword">return</span> dword &gt;&gt; <span class="number">16</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetFileVersion</span><span class="params">(filename)</span>:</span></span><br><span class="line">    size = windll.version.GetFileVersionInfoSizeW(filename, <span class="literal">None</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> size:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line">    res = create_string_buffer(size)</span><br><span class="line">    windll.version.GetFileVersionInfoW(filename, <span class="literal">None</span>, size, res)</span><br><span class="line">    r = VS_FIXEDFILEINFO()</span><br><span class="line">    l = c_uint()</span><br><span class="line">    p = c_void_p()</span><br><span class="line">    windll.version.VerQueryValueW(res, <span class="string">'\\'</span>, byref(p), byref(l));</span><br><span class="line">    memmove(byref(r), p, sizeof(VS_FIXEDFILEINFO))</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> l.value:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> (<span class="string">'%d.%d.%d.%d'</span> % (HIWORD(r.dwFileVersionMS), LOWORD(r.dwFileVersionMS), </span><br><span class="line">        HIWORD(r.dwProductVersionLS), LOWORD(r.dwProductVersionLS)));</span><br></pre></td></tr></table></figure>
 
             </article>
             
@@ -124,14 +124,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+</section>
+
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -139,17 +139,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -169,6 +169,7 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
 
-	
+	</body>
+</html>

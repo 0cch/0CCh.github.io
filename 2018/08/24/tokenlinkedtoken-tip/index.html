@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="关于TokenLinkedToken的一点记录">
+<section class="collection-head geopattern" data-pattern-id="关于TokenLinkedToken的一点记录" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/Tips/" title="">Tips</a>
+                            <a href='/categories/Tips/' title=''>Tips</a>
                         </span>
                     
                 </div>
@@ -60,7 +60,7 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>我们用GetTokenInformation可以获得一个TokenLinkedToken，简单的说就是要获得与我们进程token关联的token。  </p>
 <p>接下来就有趣了，如果当你的进程是一个提权的管理员权限的进程，那么你获得的token会是一个标准用户进程的token，也就是一个提权之前进程。那么这有什么用呢？比如我们的子程序需要运行其他开发者开发的插件，而我们不想给予他们过高的权限，那么这个就有用了。当然，如果你更谨慎一些，你希望给予他更低的权限，那就得实用CreateRestrictedToken来创建一个新的token了。  </p>
@@ -127,14 +127,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+</section>
+
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -142,17 +142,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -172,6 +172,7 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
 
-	
+	</body>
+</html>

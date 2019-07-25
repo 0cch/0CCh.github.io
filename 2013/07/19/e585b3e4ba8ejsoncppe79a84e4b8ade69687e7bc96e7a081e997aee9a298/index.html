@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="关于JsonCpp的中文编码问题">
+<section class="collection-head geopattern" data-pattern-id="关于JsonCpp的中文编码问题" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/Tips/" title="">Tips</a>
+                            <a href='/categories/Tips/' title=''>Tips</a>
                         </span>
                     
                 </div>
@@ -60,7 +60,7 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近工作中用到了jsoncpp来解析json文件。但是遇到了一个这样的问题，如果json代码中有中文，并且用“\u594E\u6258\u65AF”这样的方式表示，那么jsoncpp解析的时候，就会把他转换成UTF-8。到这一步还是OK的，然后我就试图把这段中文写回文件，问题就来了，jsoncpp不会把中文转换为“\u594E\u6258\u65AF”这样的形式在存储，而是直接存储为UTF-8格式的文件。如图所示：</p>
 <p><a href="/uploads/2013/07/20130719231900.png"><img src="/uploads/2013/07/20130719231900.png" alt="20130719231900"></a></p>
@@ -68,14 +68,19 @@
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">UTF8TocodePoint</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *c, <span class="keyword">unsigned</span> <span class="keyword">int</span> *result)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (((*c) &amp; <span class="number">0x80</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;(*c);</span><br><span class="line">count = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xe0</span>) == <span class="number">0xc0</span>) &#123;</span><br><span class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0x1f</span>) &lt;&lt; <span class="number">6</span>) | ((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>));</span><br><span class="line">count = <span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xf0</span>) == <span class="number">0xe0</span>) &#123;</span><br><span class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0xf</span>) &lt;&lt; <span class="number">12</span>) | (((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">6</span>) | (((*(c + <span class="number">2</span>)) &amp; <span class="number">0x3f</span>)));</span><br><span class="line">count = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xf8</span>) == <span class="number">0xf0</span>) &#123;</span><br><span class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0x7</span>) &lt;&lt; <span class="number">18</span>) | (((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">12</span>) | (((*(c + <span class="number">2</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">6</span>) | (((*(c + <span class="number">3</span>)) &amp; <span class="number">0x3f</span>)));</span><br><span class="line">count = <span class="number">4</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xfc</span>) == <span class="number">0xf8</span>) &#123;</span><br><span class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0x3</span>) &lt;&lt; <span class="number">24</span>) | (((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">18</span>) | (((*(c + <span class="number">2</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">12</span>) | (((*(c + <span class="number">3</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">6</span>) | (((*(c + <span class="number">4</span>)) &amp; <span class="number">0x3f</span>)));</span><br><span class="line">count = <span class="number">5</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xfe</span>) == <span class="number">0xfc</span>) &#123;</span><br><span class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0x1</span>) &lt;&lt; <span class="number">30</span>) | (((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">24</span>) | (((*(c + <span class="number">2</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">18</span>) | (((*(c + <span class="number">3</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">12</span>) | (((*(c + <span class="number">4</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">6</span>) | (((*(c + <span class="number">5</span>)) &amp; <span class="number">0x3f</span>)));</span><br><span class="line">count = <span class="number">6</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> count;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
 <p>然后把这个函数的调用加入到valueToQuotedString中，将原始的代码：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">if</span> ( isControlCharacter( *c ) )</span><br><span class="line">&#123;</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">ostringstream</span> oss;</span><br><span class="line">oss &lt;&lt; <span class="string">"\\u"</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; <span class="built_in">std</span>::uppercase &lt;&lt; <span class="built_in">std</span>::setfill(<span class="string">'0'</span>) &lt;&lt; <span class="built_in">std</span>::setw(<span class="number">4</span>) &lt;&lt; <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(*c);</span><br><span class="line">result += oss.str();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">result += *c;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>修改为：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">if</span> ( isControlCharacter( *c ) )</span><br><span class="line">&#123;</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">ostringstream</span> oss;</span><br><span class="line">oss &lt;&lt; <span class="string">"\\u"</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; <span class="built_in">std</span>::uppercase &lt;&lt; <span class="built_in">std</span>::setfill(<span class="string">'0'</span>) &lt;&lt; <span class="built_in">std</span>::setw(<span class="number">4</span>) &lt;&lt; <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(*c);</span><br><span class="line">result += oss.str();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> ((*c) &amp; <span class="number">0x80</span>) &#123;</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> num = <span class="number">0</span>;</span><br><span class="line">c += UTF8TocodePoint(c, &amp;num) - <span class="number">1</span>;</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">ostringstream</span> oss;</span><br><span class="line">oss &lt;&lt; <span class="string">"\\u"</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; <span class="built_in">std</span>::uppercase &lt;&lt; <span class="built_in">std</span>::setfill(<span class="string">'0'</span>) &lt;&lt; <span class="built_in">std</span>::setw(<span class="number">4</span>) &lt;&lt; <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(num);</span><br><span class="line">result += oss.str();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">result += *c;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>这样还没算结束，因为这个函数开头的地方还有一个判断，我们也需要修改一下，将原始代码：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">strpbrk</span>(value, <span class="string">"\"\\\b\f\n\r\t"</span>) == <span class="literal">NULL</span> &amp;&amp; !containsControlCharacter( value ))</span><br><span class="line"><span class="keyword">return</span> <span class="built_in">std</span>::<span class="built_in">string</span>(<span class="string">"\""</span>) + value + <span class="string">"\""</span>;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>修改为：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">strpbrk</span>(value, <span class="string">"\"\\\b\f\n\r\t"</span>) == <span class="literal">NULL</span> &amp;&amp; !containsControlCharacter( value ) &amp;&amp; !containsMultiByte( value ))</span><br><span class="line"><span class="keyword">return</span> <span class="built_in">std</span>::<span class="built_in">string</span>(<span class="string">"\""</span>) + value + <span class="string">"\""</span>;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>containsMultiByte的实现是这样的：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">containsMultiByte</span><span class="params">( <span class="keyword">const</span> <span class="keyword">char</span>* str )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">while</span> ( *str )</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">if</span> ( ( *(str++) ) &amp; <span class="number">0x80</span> )</span><br><span class="line"><span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>好了，万事俱备，现在试一试效果，结果如图：</p>
 <p><a href="/uploads/2013/07/20130719232025.png"><img src="/uploads/2013/07/20130719232025.png" alt="20130719232025"></a></p>
 <p>现在这个jsoncpp看起来已经满足了我的需求，但是不确定的是，不知道这样修改会不会引起其他问题。现在也只能说暂时不去管他，有问题再一步一步的修改吧。</p>
@@ -139,14 +144,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+</section>
+
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -154,17 +159,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -184,6 +189,7 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
 
-	
+	</body>
+</html>

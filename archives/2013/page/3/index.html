@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,13 +21,13 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
@@ -75,7 +75,7 @@
         <div class="column two-thirds">
             
                   <article id="post-e585b3e4ba8edlle58aa0e8bdbde5928ce8bf90e8a18ce680a7e883bde4bc98e58c96e680bbe7bb93" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -114,7 +114,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a><a href="/categories/Debugging/NTInternals/" title="">NTInternals</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/NTInternals/' title=''>NTInternals</a>
           </span>
         
       
@@ -127,7 +127,7 @@
   </article>
             
                   <article id="post-gdi_handle_study-e69fa5e79c8be8bf9be7a88bgdie8b584e6ba90e68385e586b5e79a84e5b7a5e585b7" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -139,6 +139,7 @@
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>gdi_handle_study 是一个用于查看进程中gdi句柄资源的工具。可以用于监控gdi资源是否泄露，已经对gdi资源的使用情况。使用方法非常简单：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;blockquote&gt;usage: gdi_handle_study.exe [-c] [-v [-f &lt;filter&gt;]] [processname|pid]</span><br><span class="line">processname    List GDI handles loaded by process (partial name accepted)</span><br><span class="line">pid                   List GDI handles associated with the specified process id</span><br><span class="line">-c                    Show GDI count information.</span><br><span class="line">-v                    Show GDI handle information.</span><br><span class="line">-f                    Filter the GDI handle type.&lt;/blockquote&gt;</span><br></pre></td></tr></table></figure>
+
 <p>在不用任何参数的情况下，工具会显示所有进程的gdi资源使用概况，如图所示：<br><a href="/uploads/2013/05/20130504154700.png"><img src="/uploads/2013/05/20130504154700.png" alt="20130504154700"></a></p>
 <p>值得注意的是，GDI Total和GDI All的区别在于，GDI Total统计出来的数量，是通过工具本身枚举可统计GDI资源后得出统计值，而GDI All是通过系统API直接获得的值，有些的情况下，GDI Total的值是小于GDI All的值的。这种情况可能因为某些GDI资源是系统保留的。另外一个要注意的是，如果要显示所有进程的gdi情况，需要有管理员权限运行该工具。</p>
 <p>processname和pid参数能让我们指定需要查看的进程名或者进程ID。参数-c能查看更为详细的gdi资源的统计情况。如下图所示：<br><a href="/uploads/2013/05/20130504155533.png"><img src="/uploads/2013/05/20130504155533.png" alt="20130504155533"></a></p>
@@ -159,7 +160,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/NTInternals/" title="">NTInternals</a>
+            <a href='/categories/NTInternals/' title=''>NTInternals</a>
           </span>
         
       
@@ -172,7 +173,7 @@
   </article>
             
                   <article id="post-procmem-e8bf9be7a88be58685e5ad98e69fa5e79c8be5b7a5e585b7" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -202,7 +203,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a><a href="/categories/Debugging/NTInternals/" title="">NTInternals</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/NTInternals/' title=''>NTInternals</a>
           </span>
         
       
@@ -215,7 +216,7 @@
   </article>
             
                   <article id="post-e8aeb0vc6e4b8adstle79a84mape79a84e4b880e5a484bug" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -248,7 +249,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a><a href="/categories/Debugging/Tips/" title="">Tips</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -261,7 +262,7 @@
   </article>
             
                   <article id="post-e69687e4bbb6e6909ce7b4a2e5b7a5e585b7everythingse5b7a5e4bd9ce58e9fe79086e7ae80e4bb8b" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -273,7 +274,7 @@
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>everythings是一个非常强大而且好用的文件搜索工具。他搜索文件的速度非常之快，基本上刚刚输入要查找的文件名，文件已经搜索了出来。这里就简单介绍一下他的工作原理。</p>
 <p>有一点已经非常明显，everythings在查找工作开始之前会建立全盘文件索引的数据库，那么这个数据库必然就是搜索文件快速的最重要的原因。而这个数据库的建立的用时似乎非常之短，是普通方法下遍历整个卷所不能及的。</p>
-<p>实际上，建立数据库的方法确实比较特殊。简单来说就是遍历目标卷NTFS文件系统的Master File Table（简称MFT）的记录，这也解释了为什么everythings只能工作在是NTFS的文件系统的卷上。MFT可以看成ntfs中文件的索引，MFT中的每条记录都是指向卷中的一个文件。遍历这个索引的速度可要比按照目录递归整个卷的速度要快得多了。不过可惜的是，Windows并没有提供能够直接访问MFT的API，除非你直接解析NTFS磁盘格式（参考<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="noopener">这篇文章</a>）。而且就算让你直接遍历的MFT，要监控文件的变化并且写入数据库也是一个不好办的工作。不过可喜的是，微软提供了一种间接遍历MFT记录的方式，并且通过这样的方式可以监控卷上文件的变化，他就是Change Journal（<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa363798(v=vs.85" target="_blank" rel="noopener">官方文档</a>.aspx)）。</p>
+<p>实际上，建立数据库的方法确实比较特殊。简单来说就是遍历目标卷NTFS文件系统的Master File Table（简称MFT）的记录，这也解释了为什么everythings只能工作在是NTFS的文件系统的卷上。MFT可以看成ntfs中文件的索引，MFT中的每条记录都是指向卷中的一个文件。遍历这个索引的速度可要比按照目录递归整个卷的速度要快得多了。不过可惜的是，Windows并没有提供能够直接访问MFT的API，除非你直接解析NTFS磁盘格式（参考<a href="http://0cch.net/wordpress/?p=117" target="_blank" rel="noopener">这篇文章</a>）。而且就算让你直接遍历的MFT，要监控文件的变化并且写入数据库也是一个不好办的工作。不过可喜的是，微软提供了一种间接遍历MFT记录的方式，并且通过这样的方式可以监控卷上文件的变化，他就是Change Journal（<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa363798(v=vs.85).aspx" target="_blank" rel="noopener">官方文档</a>）。</p>
 <p>Change Journal实际上是Windows 2000的NTFS文件系统就提供了的功能。其目的就是如同名字一样，记录文件改变的日志，方便NTFS文件系统对文件的恢复，这确实是个不错的特性。如何使用这个功能去遍历和监控MFT的记录，我这里就不做详细介绍了。因为有一片更加好的文章已经写的非常的清楚，我的demo也参考了他的很多代码。这篇文章叫做《<a href="http://www.microsoft.com/msj/0999/journal/journal.aspx" target="_blank" rel="noopener">Keeping an Eye on Your NTFS Drives: the Windows 2000 Change Journal Explained</a>》是1999年9月份的msdn杂志发表的。</p>
 <p>我这里假设你已经阅读了这篇文章。我们已经知道了遍历和监控MFT记录的方法，并且通过这个方法获得了每个文件的文件名，file reference和parent reference（可以理解为文件id和其父目录id）。那么这里就可以把这三个元素作为一条记录存储在我们制定的数据库中。</p>
 <p>下面简单说下如何利用这个数据库，当需要查找文件的时候：<br>1.获得用户输入的文件名。<br>2.通过文件名A可以从数据库中筛选出一些记录，而这些记录中就包括了文件的parent reference。<br>3.通过parent reference再次查找数据库的file reference字段，获得对应的文件名B，这个文件名B就是文件A的父目录了。重复这一步直到根目录为止。<br>这样就能找到文件的详细路径了。  </p>
@@ -298,7 +299,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/NTInternals/" title="">NTInternals</a>
+            <a href='/categories/NTInternals/' title=''>NTInternals</a>
           </span>
         
       
@@ -311,7 +312,7 @@
   </article>
             
                   <article id="post-proc_dump_study-e8bf9be7a88bdumpe5b7a5e585b7" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -339,7 +340,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a><a href="/categories/Debugging/NTInternals/" title="">NTInternals</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/NTInternals/' title=''>NTInternals</a>
           </span>
         
       
@@ -352,7 +353,7 @@
   </article>
             
                   <article id="post-find_links_study-e4bbbffindlinkse79a84e69687e4bbb6e7a1ace993bee68ea5e69fa5e689bee5b7a5e585b7" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -378,7 +379,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/NTInternals/" title="">NTInternals</a>
+            <a href='/categories/NTInternals/' title=''>NTInternals</a>
           </span>
         
       
@@ -391,7 +392,7 @@
   </article>
             
                   <article id="post-e4bdbfe794a8ntfs_studye68ea2e5afbbhardlinke79a84e69cace8b4a8" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -430,7 +431,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/NTInternals/" title="">NTInternals</a>
+            <a href='/categories/NTInternals/' title=''>NTInternals</a>
           </span>
         
       
@@ -443,7 +444,7 @@
   </article>
             
                   <article id="post-access_enum_study-e4bbbfaccessenume79a84e5b7a5e585b7" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -468,7 +469,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/NTInternals/" title="">NTInternals</a>
+            <a href='/categories/NTInternals/' title=''>NTInternals</a>
           </span>
         
       
@@ -481,7 +482,7 @@
   </article>
             
                   <article id="post-ntfs_info_study-e4bbbfntfsinfoe5b7a5e585b7" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -497,7 +498,7 @@
 <p><a href="/uploads/2013/02/20130227235402.png"><img src="/uploads/2013/02/20130227235402.png" alt="20130227235402"></a></p>
 <p>以上是一副对比图，其他功能是一样的，唯一的区别就是最后一项中，ntfs_info_study能够显示部分NTFS系统文件信息。</p>
 <blockquote>
-<p>Usage: ntfs_info_study.exe <drive letter=""></drive></p>
+<p>Usage: ntfs_info_study.exe <drive letter></drive></p>
 </blockquote>
 <p>使用方法自然也不必说明了，有兴趣的各位可以下载玩玩。</p>
 <p>下载<a href="/uploads/2013/02/ntfs_info_study.zip">ntfs_info_study</a></p>
@@ -513,7 +514,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/NTInternals/" title="">NTInternals</a>
+            <a href='/categories/NTInternals/' title=''>NTInternals</a>
           </span>
         
       
@@ -627,9 +628,9 @@
 
     <h3>Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
     </div>
-  
+  </div>
 
 
         </div>
@@ -642,31 +643,14 @@
           </div>
       </div>
     
-</section><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
+</section>
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
-</body>
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -674,17 +658,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -702,6 +686,24 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
 
-	
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
+
+	</body>
+</html>

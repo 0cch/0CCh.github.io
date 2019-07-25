@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="使用可编程间隔定时器(Programmable Interval Timer)编写系统时钟">
+<section class="collection-head geopattern" data-pattern-id="使用可编程间隔定时器(Programmable Interval Timer)编写系统时钟" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/MiniKernel/" title="">MiniKernel</a>
+                            <a href='/categories/MiniKernel/' title=''>MiniKernel</a>
                         </span>
                     
                 </div>
@@ -60,7 +60,7 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>很久没有写关于MiniKernel的文章了，这周末看着有点时间，就写一点关于定时器的东西吧。</p>
 <p><a href="/uploads/2013/08/8253.jpg"><img src="/uploads/2013/08/8253.jpg" alt="8253"></a></p>
@@ -70,10 +70,14 @@
 <p>PIT定时器的准确度依赖于所使用的振荡器，一般来说，一天的浮动为+/- 1.73秒。不过这种浮动，对我们影响并不大，所以也不必过于在意。</p>
 <p>PIT的输出通道一共有三个：通道0，直接连接到IRQ0，并且触发时钟中断（这个通道是我们写MiniKernel最重要的一个。）。通道1，貌似以前是定时刷新内存的，但是现在没什么用了。通道2是连接到PC扬声器的，目前我也没有研究过它的作用。</p>
 <p>这里再重点介绍一下通道0：PIT通道0的输出是连接到PIC芯片上的（8259A，以后有空也可以写一篇简单的介绍），因此，它能生成一个IRQ0的中断。通常情况下，在开机时，BIOS会将通道0的计数器的值设置为65535或0（其中如果是0，硬件会自动转化为65536），这样，它的输出频率就是18.2065Hz。另外，之所以说通道0最重要，主要原因就是它是三个通道中，唯一一个能连接到IRQ的，对于编写系统时钟至关重要。</p>
-<h2 id="编程相关"><a href="#编程相关" class="headerlink" title="编程相关"></a>编程相关</h2><p>PIT是使用以下IO端口进行控制：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">I/O 端口     用途</span><br><span class="line">0x40         通道0的数据端口</span><br><span class="line">0x41         通道1的数据端口</span><br><span class="line">0x42         通道2的数据端口</span><br><span class="line">0x43         控制字寄存器</span><br></pre></td></tr></table></figure></p>
+<h2 id="编程相关"><a href="#编程相关" class="headerlink" title="编程相关"></a>编程相关</h2><p>PIT是使用以下IO端口进行控制：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">I/O 端口     用途</span><br><span class="line">0x40         通道0的数据端口</span><br><span class="line">0x41         通道1的数据端口</span><br><span class="line">0x42         通道2的数据端口</span><br><span class="line">0x43         控制字寄存器</span><br></pre></td></tr></table></figure>
+
 <p>控制字寄存器的具体内容如下：</p>
 <p><a href="/uploads/2013/08/8253cw.png"><img src="/uploads/2013/08/8253cw.png" alt="8253cw"></a></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Bits</span><br><span class="line">6 7选择通道：</span><br><span class="line">0 0 =通道0</span><br><span class="line">0 1 =通道1</span><br><span class="line">1 0 =通道2</span><br><span class="line">1 1 =回读命令（只有8254支持）</span><br><span class="line">4 5访问模式：</span><br><span class="line">0 0 =锁存计数值命令</span><br><span class="line">0 1 =访问模式：读写最低有效字节</span><br><span class="line">1 0 =访问模式：读写最高有效字节</span><br><span class="line">1 1 =访问模式：先读写最低有效字节，然后读写高位字节</span><br><span class="line">1-3工作模式：</span><br><span class="line">0 0 0 =模式0（计数结束中断）</span><br><span class="line">0 0 1 =模式1（硬件再触发单稳）</span><br><span class="line">0 1 0 =模式2（速率发生器）</span><br><span class="line">0 1 1 =模式3（方波发生器）</span><br><span class="line">1 0 0 =模式4（软件触发闸门）</span><br><span class="line">1 0 1 =模式5（硬件触发闸门）</span><br><span class="line">1 1 0 =模式2（速率发生器，与010B相同）</span><br><span class="line">1 1 1 =模式3（方波发生器，与011B相同）</span><br><span class="line">0 BCD /二进制模式：0 = 16位二进制数，1 =四位BCD&lt;/blockquote&gt;</span><br></pre></td></tr></table></figure>
+
+
 <p>这里，我们要写系统时钟，那么就应该这样选择：</p>
 <ol>
 <li>选择通道，必须是通道0，那么bit 6 7 就分别为 0 0。  </li>
@@ -83,6 +87,8 @@
 </ol>
 <h2 id="例子："><a href="#例子：" class="headerlink" title="例子："></a>例子：</h2><p>现在假设，系统的时钟中断例程已经设置好了，并且设置好了PIC的IRQ0到这个例程。下面要做的事情就是，设置时钟中断的频率了。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mov dx, 1193180 / 100 ; 没10ms触发一次中断</span><br><span class="line">mov al, 110110b ; 设置控制字寄存器，上面已经介绍过每个位的含意</span><br><span class="line">out 0x43, al</span><br><span class="line">mov ax, dx</span><br><span class="line">out 0x40, al   ;先设置低位的值</span><br><span class="line">xchg ah, al</span><br><span class="line">out 0x40, al   ;再设置高位的值</span><br></pre></td></tr></table></figure>
+
+
 <p>总的来说8253 和 8254 是很有用的芯片。他们可以用在很多不同的设备，并用于很多不同的目的。不过就目前的PC来说，系统对他们的依赖已经不像以前那样严重了。随着科技的进步，APIC Timer已经可以取代他们。另外2005年，Intel和MS已经联合开发了新的高精度的定时器芯片High Precision Event Timer（HPET）。</p>
 <p>虽然成熟的系统可能已经不用8253 和 8254了，但是对于我们自己的迷你内核来说，使用它们就完全足够了</p>
 
@@ -145,14 +151,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+</section>
+
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -160,17 +166,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -190,6 +196,7 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
 
-	
+	</body>
+</html>

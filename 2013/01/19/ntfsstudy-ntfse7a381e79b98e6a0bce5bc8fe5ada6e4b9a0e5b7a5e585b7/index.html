@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="NtfsStudy —— ntfs磁盘格式学习工具">
+<section class="collection-head geopattern" data-pattern-id="NtfsStudy —— ntfs磁盘格式学习工具" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/NTInternals/" title="">NTInternals</a>
+                            <a href='/categories/NTInternals/' title=''>NTInternals</a>
                         </span>
                     
                 </div>
@@ -60,7 +60,7 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>经过将近一个月业余时间的开发，终于完成了NtfsStudy这个小工具的第一版。</p>
 <p>简单介绍一下这个工具，NtfsStudy这个工具是我在学习Ntfs文件系统磁盘格式的时候，为了自己更加方便快捷的查看磁盘格式而开发的工具。可以说这个工具从开始写到现在发布，实际上也是一个学习ntfs的过程。我一边研究理解这个格式，一边把理解的东西写成代码，加入这个工具，然后再用这些功能去理解新的内容。反复这样做，这个工具就也不知不觉成型了。</p>
@@ -69,6 +69,7 @@
 <p>更多的详细用法和例子等我有空会在blog里面写一些。</p>
 <p>下面就是他的Usage，也是目前该工具具有的功能。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">NtfsStudy v1.0 - Ntfs format study tool.</span><br><span class="line">Copyright (C) 2012-2013 nightxie</span><br><span class="line">0CCh - www.0cch.net</span><br><span class="line"></span><br><span class="line">Usage : NtfsStudy.exe [options] -f file_path_name</span><br><span class="line">-f file_path_name Specifies the target file path to parse.</span><br><span class="line"></span><br><span class="line">options:</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[-r file_reference]   Specifies the target file reference.</span><br><span class="line">NtfsStudy will parse the REFERENCE rather than the path which</span><br><span class="line">Specifies by -f. NtfsStudy will just use the path root.</span><br><span class="line">[-a] Show the file record information of the target file.</span><br><span class="line">[-l]   List the files in the directory.</span><br><span class="line">[-w attribute_id output_file_path] Write target attribute to a file.</span><br><span class="line">(The attribute size must less than 128mb)</span><br><span class="line">[-v attribute_type] Show detail attribute information specified by attribute_type.</span><br><span class="line">[-d attribute_type [start_offset range]] Show binary information specified by attribute_type.</span><br><span class="line">[-s secure_id] Show the security descriptor specified by secure_id.</span><br><span class="line">[-c] Show the attributes definition columns.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">About attribute type:</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$STANDARD_INFORMATION         = 1</span><br><span class="line">$ATTRIBUTE_LIST               = 2</span><br><span class="line">$FILE_NAME                    = 3</span><br><span class="line">$OBJECT_ID                    = 4</span><br><span class="line">$SECURITY_DESCRIPTOR          = 5</span><br><span class="line">$VOLUME_NAME                  = 6</span><br><span class="line">$VOLUME_INFORMATION           = 7</span><br><span class="line">$DATA                         = 8</span><br><span class="line">$INDEX_ROOT                   = 9</span><br><span class="line">$INDEX_ALLOCATION             = 10</span><br><span class="line">$BITMAP                       = 11</span><br><span class="line">$REPARSE_POINT                = 12</span><br><span class="line">$EA_INFORMATION               = 13</span><br><span class="line">$EA                           = 14</span><br><span class="line">$LOGGED_UTILITY_STREAM        = 16</span><br><span class="line"></span><br><span class="line">About secure id:</span><br><span class="line"></span><br><span class="line">To get the secure id of target file.</span><br><span class="line">Use &apos;-v 1&apos; command, secure id will displayed in STANDARD_INFORMATION.</span><br></pre></td></tr></table></figure>
+
 <p>另外我还会继续完善这个工具。如果发现bug请与我联系。</p>
 <p>下载<a href="/uploads/2013/01/NtfsStudy.zip">NtfsStudy</a></p>
 
@@ -131,31 +132,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
+</section>
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
-</body>
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -163,17 +147,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -193,6 +177,24 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
 
-	
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
+
+	</body>
+</html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="关于判断文件是否存在最高效的函数">
+<section class="collection-head geopattern" data-pattern-id="关于判断文件是否存在最高效的函数" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/NTInternals/" title="">NTInternals</a>
+                            <a href='/categories/NTInternals/' title=''>NTInternals</a>
                         </span>
                     
                 </div>
@@ -60,11 +60,12 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>判断文件存在方法有很多，例如CreateFile，FindFirstFile，GetFileAttributes，PathFileExists等等。但是哪一种更加高效呢？其实作为常识，可能都能判断出GetFileAttributes和PathFileExists会比较快（而实际上PathFileExists就是调用的GetFileAttributes）。</p>
 <p>下面是google一份开源代码中提到的统计结果</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// <span class="doctag">NOTE:</span> This is the fastest implementation I found. The results were:</span></span><br><span class="line"><span class="comment">// CreateFile 1783739 avg ticks/call</span></span><br><span class="line"><span class="comment">// FindFirstFile 634148 avg ticks/call</span></span><br><span class="line"><span class="comment">// GetFileAttributes 428714 avg ticks/call</span></span><br><span class="line"><span class="comment">// GetFileAttributesEx 396324 avg ticks/call&lt;/blockquote&gt;</span></span><br></pre></td></tr></table></figure>
+
 <p>为什么会这样呢？大概了看了下，原因应该是这样的。</p>
 <p>1.CreateFile会创建句柄，需要一个完整IO流程，所以需要的时间比如非常长。<br>2.FindFirstFile回去查询文件夹的文件，虽然不会真正的打开文件句柄，并且在文件已经被缓存的情况下，走的是fastio流程，所以查询时间大幅下降，但是操作略微繁琐，导致他不是最好的选择。  </p>
 <ol start="3">
@@ -73,6 +74,8 @@
 <p>那么为什么GetFileAttributesEx 会快那么一点点呢？因为这个函数少了一个获取BasicInformation，也就是少了一个fastio流程。所以速度更快。这样看来，自己实现一个PathFileExistsEx效率可以高过PathFileExists了。（其实没多大实际意义）</p>
 <p>google就是这样做的：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">bool</span> File::Exists(<span class="keyword">const</span> TCHAR* file_name) &#123;</span><br><span class="line">ASSERT1(file_name &amp;&amp; *file_name);</span><br><span class="line">ASSERT1(lstrlen(file_name) &gt; <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// <span class="doctag">NOTE:</span> This is the fastest implementation I found. The results were:</span></span><br><span class="line"><span class="comment">// CreateFile 1783739 avg ticks/call</span></span><br><span class="line"><span class="comment">// FindFirstFile 634148 avg ticks/call</span></span><br><span class="line"><span class="comment">// GetFileAttributes 428714 avg ticks/call</span></span><br><span class="line"><span class="comment">// GetFileAttributesEx 396324 avg ticks/call</span></span><br><span class="line">WIN32_FILE_ATTRIBUTE_DATA attrs = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span> != ::GetFileAttributesEx(file_name, ::GetFileExInfoStandard, &amp;attrs);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+
 
             </article>
             
@@ -133,14 +136,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+</section>
+
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -148,17 +151,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -178,6 +181,7 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
 
-	
+	</body>
+</html>

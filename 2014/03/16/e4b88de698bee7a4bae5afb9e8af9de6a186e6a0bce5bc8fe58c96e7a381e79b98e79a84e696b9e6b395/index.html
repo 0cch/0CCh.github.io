@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="不显示对话框格式化磁盘的方法">
+<section class="collection-head geopattern" data-pattern-id="不显示对话框格式化磁盘的方法" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/Tips/" title="">Tips</a>
+                            <a href='/categories/Tips/' title=''>Tips</a>
                         </span>
                     
                 </div>
@@ -60,7 +60,7 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>我们都知道格式化磁盘会弹出如下图所示的这样的一个对话框。</p>
 <p><a href="/uploads/2014/03/20140316210304.png"><img src="/uploads/2014/03/20140316210304-177x300.png" alt="20140316210304"></a></p>
@@ -68,12 +68,16 @@
 <p>怎么找的就不想说了，无非用ProcMon看一下堆栈就清楚明白了。在fmifs.dll中有一些导出的API可以帮助完成这一的任务，比如FormatEx，FormatEx2。</p>
 <p>这里简单的描述下FormatEx的用法：<br>函数原型是</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">VOID WINAPI <span class="title">FormatEx</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	LPCWSTR DriveRoot,</span></span></span><br><span class="line"><span class="function"><span class="params">	MEDIA_TYPE MediaType,</span></span></span><br><span class="line"><span class="function"><span class="params">	LPCWSTR FileSystemTypeName,</span></span></span><br><span class="line"><span class="function"><span class="params">	LPCWSTR Label,</span></span></span><br><span class="line"><span class="function"><span class="params">	BOOL QuickFormat,</span></span></span><br><span class="line"><span class="function"><span class="params">	ULONG ClusterSize,</span></span></span><br><span class="line"><span class="function"><span class="params">	FILE_SYSTEM_CALLBACK Callback</span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>参数<br>DriveRoot —— 盘符，如”K:\”<br>MediaType —— 磁盘类型，如FixedMedia<br>FileSystemTypeName —— 要格式化的文件系统，如”NTFS”<br>Label —— 标签，随便写吧<br>QuickFormat —— 快速格式化<br>ClusterSize —— 簇大小<br>Callback —— 状态回调函数  </p>
+
+<p>参数<br>DriveRoot —— 盘符，如”K:&quot;<br>MediaType —— 磁盘类型，如FixedMedia<br>FileSystemTypeName —— 要格式化的文件系统，如”NTFS”<br>Label —— 标签，随便写吧<br>QuickFormat —— 快速格式化<br>ClusterSize —— 簇大小<br>Callback —— 状态回调函数  </p>
 <p>回调函数原型</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">BOOLEAN</span> <span class="params">(__stdcall *FILE_SYSTEM_CALLBACK)</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	ULONG                        Command,</span></span></span><br><span class="line"><span class="function"><span class="params">	ULONG                        Action,</span></span></span><br><span class="line"><span class="function"><span class="params">	PVOID                        pData</span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>Command 表示Action和pData的意义，比如Command = 0表示pData是进度，Command = 11表示完成。还有其他的状态，例如错误等等，这些google一下就知道了。这个函数返回TRUE表示函数继续运行，FALSE表示停止格式化。</p>
 <p>比如，下面是格式化K盘：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">FormatEx(<span class="string">L"K:\", FixedMedia, L"</span>NTFS<span class="string">", L"</span><span class="number">0</span>CCh<span class="string">", TRUE, 4096, FormatExCallback);</span></span><br><span class="line"><span class="string"> </span></span><br></pre></td></tr></table></figure>
+
+
 
             </article>
             
@@ -134,14 +138,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+</section>
+
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -149,17 +153,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -179,6 +183,7 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
 
-	
+	</body>
+</html>

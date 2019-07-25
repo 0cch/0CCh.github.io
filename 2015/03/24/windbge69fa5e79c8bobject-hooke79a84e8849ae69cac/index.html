@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="Windbg查看Object Hook的脚本">
+<section class="collection-head geopattern" data-pattern-id="Windbg查看Object Hook的脚本" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/Tips/" title="">Tips</a>
+                            <a href='/categories/Tips/' title=''>Tips</a>
                         </span>
                     
                 </div>
@@ -60,10 +60,11 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>学好Windbg，基本上可以代替很多工具，这次分享一个查看Object Hook的脚本：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">r @$t0 = <span class="number">2</span>;</span><br><span class="line">r? @$t1 = ((nt!_OBJECT_TYPE**)@@(nt!ObTypeIndexTable))[@$t0];</span><br><span class="line"></span><br><span class="line">.<span class="keyword">while</span> ((@$t1 &amp; <span class="number">0xffffffff</span>) != <span class="number">0</span>) &#123;</span><br><span class="line">    .<span class="built_in">printf</span> <span class="string">"Type Name:%-20msu\t"</span>, @@C++(&amp;@$t1-&gt;Name);</span><br><span class="line">    .<span class="built_in">printf</span> /D <span class="string">"detail\n"</span>, @$t1;</span><br><span class="line">    .<span class="built_in">printf</span> <span class="string">"DumpProcedure        : %y\n"</span>, @@C++(@$t1-&gt;TypeInfo.DumpProcedure);</span><br><span class="line">    .<span class="built_in">printf</span> <span class="string">"OpenProcedure        : %y\n"</span>, @@C++(@$t1-&gt;TypeInfo.OpenProcedure);</span><br><span class="line">    .<span class="built_in">printf</span> <span class="string">"CloseProcedure       : %y\n"</span>, @@C++(@$t1-&gt;TypeInfo.CloseProcedure);</span><br><span class="line">    .<span class="built_in">printf</span> <span class="string">"DeleteProcedure      : %y\n"</span>, @@C++(@$t1-&gt;TypeInfo.DeleteProcedure);</span><br><span class="line">    .<span class="built_in">printf</span> <span class="string">"ParseProcedure       : %y\n"</span>, @@C++(@$t1-&gt;TypeInfo.ParseProcedure);</span><br><span class="line">    .<span class="built_in">printf</span> <span class="string">"SecurityProcedure    : %y\n"</span>, @@C++(@$t1-&gt;TypeInfo.SecurityProcedure);</span><br><span class="line">    .<span class="built_in">printf</span> <span class="string">"QueryNameProcedure   : %y\n"</span>, @@C++(@$t1-&gt;TypeInfo.QueryNameProcedure);</span><br><span class="line">    .<span class="built_in">printf</span> <span class="string">"OkayToCloseProcedure : %y\n\n"</span>, @@C++(@$t1-&gt;TypeInfo.OkayToCloseProcedure);</span><br><span class="line">    </span><br><span class="line">    r @$t0 = @$t0 + <span class="number">1</span>;</span><br><span class="line">    r? @$t1 = ((nt!_OBJECT_TYPE**)@@(nt!ObTypeIndexTable))[@$t0];</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p><a href="/uploads/2015/03/20150324095806.png"><img src="/uploads/2015/03/20150324095806.png" alt="20150324095806"></a></p>
 
             </article>
@@ -125,31 +126,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
+</section>
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
-</body>
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -157,17 +141,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -187,6 +171,24 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
 
-	
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
+
+	</body>
+</html>

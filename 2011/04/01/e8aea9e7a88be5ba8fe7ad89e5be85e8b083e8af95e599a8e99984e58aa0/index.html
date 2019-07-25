@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="让程序等待调试器附加">
+<section class="collection-head geopattern" data-pattern-id="让程序等待调试器附加" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/Debugging/" title="">Debugging</a>
+                            <a href='/categories/Debugging/' title=''>Debugging</a>
                         </span>
                     
                 </div>
@@ -60,14 +60,16 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>有的时候出于一些目的，我们会希望程序等待调试器Attach上去以后才开始继续往前跑。例如，我们写了一堆console程序，同时又有个shell去调用这些console，而这个时候我们却想去调试shell运行起来的这个console。当然Windbg本身就有调试debugee子进程的功能，但是身为懒人，这种方式太麻烦。我还是更愿意加入几行代码解决这个问题。</p>
 <p>要解决这个问题，原理上很简单。无非是程序运行初期不断的去检测本进程是否被调试，如果是就把自己断下来，如果不是继续等待。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">WaitDebuggerAttach</span><span class="params">(DWORD Second)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    DWORD CurSec = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span>((!IsDebuggerPresent()) &amp;&amp; (CurSec &lt; Second)) &#123;</span><br><span class="line">        </span><br><span class="line">        CurSec++;</span><br><span class="line">        Sleep(<span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (IsDebuggerPresent()) &#123;</span><br><span class="line"></span><br><span class="line">        __asm <span class="keyword">int</span> <span class="number">3</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>这个函数可以指定等待时间，如果Debugger Attach上去了，那么就断下来方便调试，否则会超时，正常执行。<br>这里我是用的IsDebuggerPresent这个API来获得进程的调试状态。实际上检测自己调试状态的方法很多，只不过这个用起来最方便而已。比如可以用测试断点异常的方法来检测自己的调试状态。  </p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">CheckForDebugger</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    __try </span><br><span class="line">    &#123;</span><br><span class="line">        DebugBreak();</span><br><span class="line">    &#125;</span><br><span class="line">    __except(GetExceptionCode() == EXCEPTION_BREAKPOINT ? </span><br><span class="line">             EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH) </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// No debugger is attached, so return FALSE </span></span><br><span class="line">        <span class="comment">// and continue.</span></span><br><span class="line">        <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>本Blog的第一篇文章总算是出炉了~~~我太懒了哇~</p>
+
+<p>本Blog的第一篇文章总算是出炉了<del>我太懒了哇</del></p>
 
             </article>
             
@@ -128,14 +130,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+</section>
+
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -143,17 +145,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -173,6 +175,7 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
 
-	
+	</body>
+</html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,13 +21,13 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
@@ -74,8 +74,58 @@
     <div class="columns">
         <div class="column two-thirds">
             
+                  <article id="post-e4b880e4b8aae69c89e6848fe6809de79a84warning-c4930" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2014/03/01/e4b880e4b8aae69c89e6848fe6809de79a84warning-c4930/">一个有意思的warning —— C4930</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>C4930是微软的C++编译器提示的一个警告，在维基百科中，把造成这种警告的语句描述成最让人为难的解析的语句。那么这里我们看看到底是有多么为难，这个可以帮助我们进一步了解C++和编译器。</p>
+<p>那么首先，我最开始发现这个问题是在类似这样的代码中碰到的。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="function">ifstream <span class="title">s</span><span class="params">(<span class="string">"d:\\xxx.txt"</span>)</span></span>;</span><br><span class="line"><span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">str</span><span class="params">(<span class="built_in">std</span>::istream_iterator&lt;<span class="keyword">char</span>&gt;(s), <span class="built_in">std</span>::istream_iterator&lt;<span class="keyword">char</span>&gt;())</span></span>;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+<p>如果编译这个，编译器会毫不留情地扔给你一个C4930警告，提示编译器不知道怎么做，所以跳过编译。如果你没看懂这警告，后果就是这句话根本不会编译进去，即使编译通过了，运行也会和设想的不同。</p>
+<p>先说个简单的C4930的例子吧。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">MyClass <span class="title">sample</span><span class="params">()</span></span>;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+<p>这句代码非常简单，也很容易明白。如果这么写，那么编译器就混乱，因为这句话可以是描述：<br>1.一个变量的定义，调用默认构造。<br>2.一个函数的声明。<br>所以编译器就傻了，他把这个认为是函数声明，所以不会做任何事情。<br>同样的事情发生在  </p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">str</span><span class="params">(<span class="built_in">std</span>::istream_iterator&lt;<span class="keyword">char</span>&gt;(s), <span class="built_in">std</span>::istream_iterator&lt;<span class="keyword">char</span>&gt;())</span></span>;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+<p>这里，我们实际上就是给string的构造函数传入iterator来构造这个string。但是编译器可不是这么觉得，他认为这句话应该这样解析：一个返回string的函数，函数名为str，函数参数有两个并且类型相同，都是istream_iterator<char>，不同的是一个有参数名s，一个省略了参数名！</char></p>
+<p>编译器这么解析，也真没错，我们就只能通过修改代码来明确目的了。通常的做法是给第一个iterator外加上括<br>号：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">str</span><span class="params">((<span class="built_in">std</span>::istream_iterator&lt;<span class="keyword">char</span>&gt;(s)), <span class="built_in">std</span>::istream_iterator&lt;<span class="keyword">char</span>&gt;())</span></span>;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+<p>不过，我写这两行代码也就是为了偷懒读取一个文件的字符串，所以我可以干脆改成一行：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">str</span><span class="params">(<span class="built_in">std</span>::istream_iterator&lt;<span class="keyword">char</span>&gt;(<span class="built_in">std</span>::ifstream(<span class="string">"d:\\xxx.txt"</span>)), <span class="built_in">std</span>::istream_iterator&lt;<span class="keyword">char</span>&gt;())</span></span>;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+<p>这样就能顺利编译运行了。</p>
+<p>最近在看新版的《The C++ Standard Library A Tutorial and Reference》里面也看到了这个东西，很有意思所<br>以拿出来说下。而且新版的书中，已经包含了C++11的解释，很有意思。</p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2014-03-01T07:06:06.000Z" itemprop="datePublished">2014-03-01</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
                   <article id="post-guid-tool-e4b880e4b8aae8bdace68da2guide6a0bce5bc8fe79a84e5b08fe5b7a5e585b7" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -86,7 +136,7 @@
       <div class="repo-list-description">
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>周末闲来无事，逆向点有趣的功能的时候遇到这样一个问题。有些16进制的数貌似就是GUID，但是需要转换为注册表形式，才方便在注册表里面搜索。所以就写了个小工具转换16进制，C语言格式以及注册表格式的GUID。</p>
-<p>usage: guid.exe &lt;&lt;-r|-c|-h&gt; guid_string&gt; | <-g><br>-r Format registry guid string.<br>-c Format C code guid string.<br>-x Format HEX guid string.<br>-g Create new guid.  </-g></p>
+<p>usage: guid.exe &lt;&lt;-r|-c|-h&gt; guid_string&gt; | &lt;-g&gt;<br>-r Format registry guid string.<br>-c Format C code guid string.<br>-x Format HEX guid string.<br>-g Create new guid.  </p>
 <p><a href="/uploads/2014/02/20140223220404.png"><img src="/uploads/2014/02/20140223220404-1024x549.png" alt="20140223220404"></a></p>
 <p><a href="/uploads/2014/02/20140223220314.png"><img src="/uploads/2014/02/20140223220314-1024x570.png" alt="20140223220314"></a></p>
 <p>下载：<a href="/uploads/2014/02/guid.zip">guid</a></p>
@@ -102,7 +152,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -115,7 +165,7 @@
   </article>
             
                   <article id="post-ssd-trime58a9fe883bde79a84e4b880e4ba9be8aeb0e5bd95" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -171,7 +221,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -184,7 +234,7 @@
   </article>
             
                   <article id="post-e4b880e782b9e69c89e585b3ntdlle4b8ade68f90e4be9be79a84bitmape7b3bbe58897e587bde695b0" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -209,7 +259,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -222,7 +272,7 @@
   </article>
             
                   <article id="post-e680bbe7bb93e5928ce5b195e69c9befbc9ae8b4a8e9878fe6af94e8be83e5a4a7e782b9efbc8ce5b0b1e4b88de5aeb9e69893e8a2abe9a38ee590b9e58aa8" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -257,7 +307,7 @@
   </article>
             
                   <article id="post-showiedevtool-e68993e5bc80iee68ea7e4bbb6e79a84e5bc80e58f91e4babae59198e5b7a5e585b7" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -281,7 +331,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -294,7 +344,7 @@
   </article>
             
                   <article id="post-xperfhelper-xperfe79a84windowse591bde4bba4e8a18ce8849ae69cace7949fe68890e5b7a5e585b7" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -321,7 +371,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
           </span>
         
       
@@ -334,7 +384,7 @@
   </article>
             
                   <article id="post-e4bdbfe794a8etwe5afb9e7a88be5ba8fe8bf9be8a18ce79b91e68ea7e5928ce58886e69e90" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -361,6 +411,7 @@
 <p>接下来我们MC来生成一个头文件，一个资源文件和两个二进制文件。命令行如：<br>mc -um C:\etw\0CChProvider.man<br><a href="/uploads/2013/11/20131117114801.png"><img src="/uploads/2013/11/20131117114801.png" alt="20131117114801"></a></p>
 <p>然后我们可以创建一个工程，加入这个头文件和资源文件。并且在代码中插入写事件的代码，例如：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdafx.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"../../0CChProvider.h"</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">    EventRegisterMy0CChProvider();</span><br><span class="line">    EventWriteFirstEvent(<span class="string">L"Hello ETW World!"</span>);</span><br><span class="line">    Sleep(<span class="number">1000</span>);</span><br><span class="line">    EventWriteFirstEvent(<span class="string">L"Bye ETW World!"</span>);</span><br><span class="line">    EventUnregisterMy0CChProvider();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>在这里，我们利用EventRegisterMy0CChProvider先注册自己的Provider，接下写事件才会发挥作用。记录事件后，我们需要反注册Provider。<br>好了，演示代码就这么一点，然后编译即可。</p>
 <p>接下来我们需要注册这个Provider给系统，需要使用到系统自带的工具WEVTUtil.exe。<br>wevtutil im C:\etw\0CChProvider.man</p>
 <p>注册成功后就可以利用XPerf开启ETW，然后运行程序，查看记录的事件了。</p>
@@ -386,7 +437,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a><a href="/categories/Debugging/NTInternals/" title="">NTInternals</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/NTInternals/' title=''>NTInternals</a>
           </span>
         
       
@@ -399,7 +450,7 @@
   </article>
             
                   <article id="post-windbg-scripte4b8ade88eb7e5be97e8b083e8af95e78eafe5a283e79a84e59fbae69cace4bfa1e681af" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -412,6 +463,8 @@
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>今天继续来玩Windbg script。在写复杂的脚本的时候，可能需要根据调试的环境，指定不同的脚本代码来运行。而Windbg貌似没有提供很好的方式，让脚本得知调试环境。还好，我们可以用一些其他的方式获得这些信息，例如：写一个扩展程序来设置这些信息到Aliase上，<a href="https://github.com/0cch/0cchext" target="_blank" rel="noopener">0cchext</a>就实现了这个功能。另外一个方式就是使用脚本自身来获得一些简单的信息，算是个windbg script中的小把戏吧。脚本如下：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">$$ Initialize script environment</span><br><span class="line">$$ Author: nighxie </span><br><span class="line">$$ Blog: <span class="number">0</span>cch.net</span><br><span class="line">$$ @#NtMajorVersion @#NtMinorVersion - System version number.</span><br><span class="line">$$ @#DebugMode - <span class="number">0</span>:kd <span class="number">1</span>:lkd <span class="number">2</span>:user</span><br><span class="line"></span><br><span class="line">ad /q $&#123;/v:$sharedata&#125; </span><br><span class="line"></span><br><span class="line">.<span class="keyword">catch</span> &#123;</span><br><span class="line">    .foreach /pS <span class="number">2</span> ($&#123;/v:$addr&#125; &#123;!kuser&#125;) &#123;</span><br><span class="line">        aS $&#123;/v:$sharedata&#125; $&#123;$addr&#125;;</span><br><span class="line">        .leave;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.block &#123;</span><br><span class="line">    r @$t0=$&#123;$sharedata&#125;;</span><br><span class="line">    aS /x $&#123;/v:@#NtMajorVersion&#125; @@C++(((nt!_KUSER_SHARED_DATA *)@$t0)-&gt;NtMajorVersion);</span><br><span class="line">    aS /x $&#123;/v:@#NtMinorVersion&#125; @@C++(((nt!_KUSER_SHARED_DATA *)@$t0)-&gt;NtMinorVersion);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ad /q $&#123;/v:$sharedata&#125; </span><br><span class="line"></span><br><span class="line">.<span class="keyword">catch</span> &#123;</span><br><span class="line">    r @$t0 = <span class="number">0</span>;</span><br><span class="line">    .foreach ($&#123;/v:$addr&#125; &#123;lm1m m nt&#125;) &#123;</span><br><span class="line">        r @$t0 = $&#123;$addr&#125;;</span><br><span class="line">        .leave;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.<span class="keyword">if</span> ($vvalid(@$t0, <span class="number">1</span>)) &#123;</span><br><span class="line">    aS $&#123;/v:@#DebugMode&#125; <span class="number">0</span>;</span><br><span class="line">     .foreach ($&#123;/v:$val&#125; &#123;.<span class="keyword">catch</span>&#123;? @eax&#125;&#125;) &#123;</span><br><span class="line">        .<span class="keyword">if</span> ($scmp(<span class="string">"$&#123;$val&#125;"</span>, <span class="string">"\'@eax\'"</span>)==<span class="number">0</span>) &#123;</span><br><span class="line">            aS $&#123;/v:@#DebugMode&#125; <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">.<span class="keyword">else</span> &#123;</span><br><span class="line">    aS $&#123;/v:@#DebugMode&#125; <span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
+
+
         
       </div>
       <p class="repo-list-meta">
@@ -423,7 +476,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a><a href="/categories/Debugging/Tips/" title="">Tips</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -436,7 +489,7 @@
   </article>
             
                   <article id="post-windbg-scripte79a84notepade8afade6b395e9ab98e4baaee9858de7bdaee69687e4bbb6" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -463,45 +516,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-windbge58685e6a0b8e8b083e8af95e69fa5e79c8be7aa97e58fa3e58fa5e69f84e4bfa1e681afe79a84e8849ae69cac" class="repo-list">
-    <div class="repo-list-item">
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2013/10/07/windbge58685e6a0b8e8b083e8af95e69fa5e79c8be7aa97e58fa3e58fa5e69f84e4bfa1e681afe79a84e8849ae69cac/">Windbg内核调试查看窗口句柄信息的脚本</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>十一长假瞬间就结束了，整一周都在玩，也没有研究什么好玩的东西，这里就分享一个以前写的windbg脚本吧。通途是内核调试查看窗口句柄信息。用法很简单，例如 $$&gt;a&lt;hwnd.wds 000207B8。运行结果如下图：</p>
-<p><a href="/uploads/2013/10/20131007195716.png"><img src="/uploads/2013/10/20131007195716.png" alt="20131007195716"></a></p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line">$$ Convert HWND to tagWnd</span><br><span class="line">$$ Author: nighxie </span><br><span class="line">$$ Blog: <span class="number">0</span>cch.net</span><br><span class="line"></span><br><span class="line">.<span class="keyword">if</span> ($&#123;/d:$arg1&#125;) &#123;</span><br><span class="line"></span><br><span class="line">    .<span class="keyword">if</span> ($&#123;/d:$arg2&#125;) &#123;</span><br><span class="line">            .<span class="keyword">if</span> ($&#123;$arg2&#125; == <span class="number">1</span>) &#123;</span><br><span class="line">                r $t0 = nt!PsActiveProcessHead</span><br><span class="line">                .<span class="keyword">for</span> (r $t1 = poi(@$t0);(@$t1 != <span class="number">0</span>) &amp; (@$t1 != @$t0);r $t1 = poi(@$t1)) &#123;</span><br><span class="line">                r? $t2 = #CONTAINING_RECORD(@$t1, nt!_EPROCESS, ActiveProcessLinks);</span><br><span class="line">                as /x $&#123;/v:$ProcAddr&#125; @$t2;</span><br><span class="line">                as /ma $&#123;/v:$ImageName&#125; @@c++(&amp;@$t2-&gt;ImageFileName[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">                .block &#123;</span><br><span class="line">                    $$ .echo $&#123;$ImageName&#125;</span><br><span class="line">                    .<span class="keyword">if</span> ($sicmp(<span class="string">"$&#123;$ImageName&#125;"</span>, <span class="string">"explorer.exe"</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">                        .echo Found the process at $&#123;$ProcAddr&#125;;</span><br><span class="line">                        .process /p /r $&#123;$ProcAddr&#125;;</span><br><span class="line">                        ad $&#123;/v:$ImageName&#125;;</span><br><span class="line">                        ad $&#123;/v:$ProcAddr&#125;;</span><br><span class="line">                        .<span class="keyword">break</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                ad $&#123;/v:$ImageName&#125;;</span><br><span class="line">                ad $&#123;/v:$ProcAddr&#125;;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    r @$t1 = $&#123;$arg1&#125;;</span><br><span class="line">    r @$t0 = win32k!gSharedInfo;</span><br><span class="line">    .<span class="keyword">if</span> ((@$t1&amp;<span class="number">0xffff</span>) &lt; @@C++(((win32k!tagSHAREDINFO *)@$t0)-&gt;psi-&gt;cHandleEntries)) &#123;</span><br><span class="line">        r @$t0 = @@C++(((win32k!tagSHAREDINFO *)@$t0)-&gt;aheList);</span><br><span class="line">        r @$t0 = @@C++(@$t0+(@$t1&amp;<span class="number">0xffff</span>)*<span class="keyword">sizeof</span>(win32k!_HANDLEENTRY));</span><br><span class="line">        r @$t0 = poi(@$t0);</span><br><span class="line">        .<span class="built_in">printf</span> <span class="string">"HWND: %p\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;head.h);</span><br><span class="line">        .<span class="built_in">printf</span> /D <span class="string">"tagWnd * @ %p\n"</span>, @$t0;</span><br><span class="line">        .<span class="keyword">if</span> (@@C++(((win32k!tagWnd *)@$t0)-&gt;strName.Buffer) != <span class="number">0</span>) &#123;</span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"Window Name: %mu\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;strName.Buffer);</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="built_in">printf</span> /D <span class="string">"tagCLS * @ pcls) win32k!tagCLS\"&gt;%p\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;pcls);</span><br><span class="line">        .<span class="keyword">if</span> (@@C++(((win32k!tagWnd *)@$t0)-&gt;pcls-&gt;lpszAnsiClassName) != <span class="number">0</span>) &#123;</span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"Window Class Name: %ma\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;pcls-&gt;lpszAnsiClassName);</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="keyword">if</span> (@@C++(((win32k!tagWnd *)@$t0)-&gt;spwndNext) != <span class="number">0</span>) &#123;</span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"Next Wnd:     %p\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;spwndNext-&gt;head.h);</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="keyword">if</span> (@@C++(((win32k!tagWnd *)@$t0)-&gt;spwndPrev) != <span class="number">0</span>) &#123;</span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"Previous Wnd: %p\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;spwndPrev-&gt;head.h);</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="keyword">if</span> (@@C++(((win32k!tagWnd *)@$t0)-&gt;spwndParent) != <span class="number">0</span>) &#123;</span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"Parent Wnd:   %p\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;spwndParent-&gt;head.h);</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="keyword">if</span> (@@C++(((win32k!tagWnd *)@$t0)-&gt;spwndChild) != <span class="number">0</span>) &#123;</span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"Child Wnd:    %p\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;spwndChild-&gt;head.h);</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="keyword">if</span> (@@C++(((win32k!tagWnd *)@$t0)-&gt;spwndOwner) != <span class="number">0</span>) &#123;</span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"Own Wnd:      %p\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;spwndOwner-&gt;head.h);</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="keyword">if</span> (@@C++(((win32k!tagWnd *)@$t0)-&gt;lpfnWndProc) != <span class="number">0</span>) &#123;</span><br><span class="line">            .<span class="built_in">printf</span> /D <span class="string">"pfnWndProc:   head.pti-&gt;pEThread)-&gt;Tcb.Process);u @@C++(((win32k!tagWnd *)@$t0)-&gt;lpfnWndProc)\"&gt;%p\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;lpfnWndProc);</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="built_in">printf</span> <span class="string">"Visiable: %d\n"</span>, @@C++((((win32k!tagWnd *)@$t0)-&gt;style &amp; (<span class="number">1</span>&lt;&lt;<span class="number">28</span>)) != <span class="number">0</span>);</span><br><span class="line">        .<span class="built_in">printf</span> <span class="string">"Child:    %d\n"</span>, @@C++((((win32k!tagWnd *)@$t0)-&gt;style &amp; (<span class="number">1</span>&lt;&lt;<span class="number">30</span>)) != <span class="number">0</span>);</span><br><span class="line">        .<span class="built_in">printf</span> <span class="string">"Minimized:%d\n"</span>, @@C++((((win32k!tagWnd *)@$t0)-&gt;style &amp; (<span class="number">1</span>&lt;&lt;<span class="number">29</span>)) != <span class="number">0</span>);</span><br><span class="line">        .<span class="built_in">printf</span> <span class="string">"Disabled: %d\n"</span>, @@C++((((win32k!tagWnd *)@$t0)-&gt;style &amp; (<span class="number">1</span>&lt;&lt;<span class="number">27</span>)) != <span class="number">0</span>);</span><br><span class="line">        .<span class="built_in">printf</span> <span class="string">"Window Rect &#123; %d, %d, %d, %d&#125;\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;rcWindow.left), @@C++(((win32k!tagWnd *)@$t0)-&gt;rcWindow.top), @@C++(((win32k!tagWnd *)@$t0)-&gt;rcWindow.right), @@C++(((win32k!tagWnd *)@$t0)-&gt;rcWindow.bottom);</span><br><span class="line">        .<span class="built_in">printf</span> <span class="string">"Clent Rect  &#123; %d, %d, %d, %d&#125;\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;rcClient.left), @@C++(((win32k!tagWnd *)@$t0)-&gt;rcClient.top), @@C++(((win32k!tagWnd *)@$t0)-&gt;rcClient.right), @@C++(((win32k!tagWnd *)@$t0)-&gt;rcClient.bottom);</span><br><span class="line">    </span><br><span class="line">    &#125;</span><br><span class="line">    .<span class="keyword">else</span> &#123;</span><br><span class="line">        .<span class="built_in">printf</span> <span class="string">"HWND is out of range.\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line">.<span class="keyword">else</span> &#123;</span><br><span class="line">    .echo <span class="string">"Usage $$&gt;a&lt;$&#123;$arg0&#125; HWND(HEX)"</span></span><br><span class="line">    .echo <span class="string">"e.g. $$&gt;a&lt;$&#123;$arg0&#125; 0x60962"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2013-10-07T06:00:26.000Z" itemprop="datePublished">2013-10-07</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a><a href="/categories/Debugging/Tips/" title="">Tips</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
           </span>
         
       
@@ -615,9 +630,9 @@
 
     <h3>Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
     </div>
-  
+  </div>
 
 
         </div>
@@ -630,31 +645,14 @@
           </div>
       </div>
     
-</section><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
+</section>
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
-</body>
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -662,17 +660,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -690,6 +688,24 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
 
-	
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
+
+	</body>
+</html>

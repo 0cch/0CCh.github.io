@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="系统进程创建管理员进程的方法">
+<section class="collection-head geopattern" data-pattern-id="系统进程创建管理员进程的方法" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/Tips/" title="">Tips</a>
+                            <a href='/categories/Tips/' title=''>Tips</a>
                         </span>
                     
                 </div>
@@ -60,10 +60,14 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>代码如下：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> ProcessHelper &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">typedef</span> <span class="title">BOOL</span> <span class="params">(__stdcall *CREATEENVIRONMENTBLOCK)</span><span class="params">(LPVOID *lpEnvironment,</span></span></span><br><span class="line"><span class="function"><span class="params">		HANDLE hToken,</span></span></span><br><span class="line"><span class="function"><span class="params">		BOOL bInherit)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">BOOL <span class="title">CreateProcessAsExplorer</span><span class="params">(LPCTSTR AppName, LPTSTR CommandLine, PPROCESS_INFORMATION pi)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">        ULONG ExplorerID = <span class="number">0</span>;</span><br><span class="line">        HANDLE ExplorerHandle;</span><br><span class="line">        HANDLE Snapshot;</span><br><span class="line">        ULONG CreationFlags = <span class="number">0</span>;</span><br><span class="line">        CREATEENVIRONMENTBLOCK CreateEnvironmentBlock;</span><br><span class="line">        HANDLE ExplorerToken;</span><br><span class="line">        HANDLE NewToken = <span class="number">0</span>;</span><br><span class="line">        LPVOID Environment = <span class="literal">NULL</span>;</span><br><span class="line">        ULONG ReturnLength = <span class="number">0</span>;</span><br><span class="line">        TOKEN_LINKED_TOKEN LinkedToken = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">        STARTUPINFO si = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">        PROCESSENTRY32 pe;</span><br><span class="line">        BOOL Ret;</span><br><span class="line">        HMODULE UserenvModule;</span><br><span class="line">        LUID Luid = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        Snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">if</span> (Snapshot == INVALID_HANDLE_VALUE) &#123;</span><br><span class="line">            <span class="keyword">return</span> FALSE;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        pe.dwSize = <span class="keyword">sizeof</span>(pe);</span><br><span class="line">        <span class="keyword">if</span> (Process32FirstW(Snapshot, &amp;pe;)) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span>(;;) &#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (_tcsicmp(pe.szExeFile, <span class="string">L"explorer.exe"</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">                    ProcessIdToSessionId(pe.th32ProcessID, &amp;Luid.LowPart;);</span><br><span class="line">                    ExplorerID = pe.th32ProcessID;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (!Process32Next(Snapshot, &amp;pe;)) &#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        CloseHandle(Snapshot);</span><br><span class="line">        <span class="keyword">if</span> (ExplorerID == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> FALSE;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        ExplorerHandle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, ExplorerID);</span><br><span class="line">        <span class="keyword">if</span> (ExplorerHandle == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> FALSE;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!OpenProcessToken(ExplorerHandle, TOKEN_ALL_ACCESS_P, &amp;ExplorerToken;)) &#123;</span><br><span class="line">            CloseHandle(ExplorerHandle);</span><br><span class="line">            <span class="keyword">return</span> FALSE;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        CloseHandle(ExplorerHandle);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (GetTokenInformation(ExplorerToken, </span><br><span class="line">            TokenLinkedToken, </span><br><span class="line">            &amp;LinkedToken;, </span><br><span class="line">            <span class="keyword">sizeof</span>(TOKEN_LINKED_TOKEN), </span><br><span class="line">            &amp;ReturnLength;)) &#123;</span><br><span class="line"></span><br><span class="line">                NewToken = LinkedToken.LinkedToken;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            </span><br><span class="line">            LookupPrivilegeValueW(<span class="number">0</span>, <span class="string">L"SeDebugPrivilege"</span>, &amp;Luid;);</span><br><span class="line">            DuplicateTokenEx(ExplorerToken, MAXIMUM_ALLOWED, <span class="literal">NULL</span>, SecurityIdentification, TokenPrimary, &amp;NewToken;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        CloseHandle(ExplorerToken);</span><br><span class="line"></span><br><span class="line">        UserenvModule = LoadLibrary(TEXT(<span class="string">"Userenv.dll"</span>));</span><br><span class="line">        <span class="keyword">if</span> (UserenvModule == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> FALSE;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        CreateEnvironmentBlock = (CREATEENVIRONMENTBLOCK)GetProcAddress(UserenvModule, <span class="string">"CreateEnvironmentBlock"</span>);</span><br><span class="line">        <span class="keyword">if</span> (CreateEnvironmentBlock == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            FreeLibrary(UserenvModule);</span><br><span class="line">            <span class="keyword">return</span> FALSE;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (CreateEnvironmentBlock(&amp;Environment;, NewToken, TRUE)) &#123;</span><br><span class="line">            CreationFlags = CREATE_UNICODE_ENVIRONMENT;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        si.cb = <span class="keyword">sizeof</span>(si);</span><br><span class="line">        Ret = CreateProcessAsUser(</span><br><span class="line">            NewToken,</span><br><span class="line">            AppName,</span><br><span class="line">            CommandLine,</span><br><span class="line">            <span class="literal">NULL</span>,</span><br><span class="line">            <span class="literal">NULL</span>,</span><br><span class="line">            FALSE,</span><br><span class="line">            CreationFlags,</span><br><span class="line">            Environment,</span><br><span class="line">            <span class="literal">NULL</span>,</span><br><span class="line">            &amp;si;,</span><br><span class="line">            pi);</span><br><span class="line"></span><br><span class="line">        CloseHandle(NewToken);</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (Environment != <span class="literal">NULL</span>) &#123;</span><br><span class="line">            DestroyEnvironmentBlock(Environment);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!Ret) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> FALSE;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> TRUE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
 
             </article>
             
@@ -124,14 +128,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+</section>
+
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -139,17 +143,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -169,6 +173,7 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
 
-	
+	</body>
+</html>

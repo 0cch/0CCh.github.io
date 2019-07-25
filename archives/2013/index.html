@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,13 +21,13 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
@@ -75,7 +75,7 @@
         <div class="column two-thirds">
             
                   <article id="post-e680bbe7bb93e5928ce5b195e69c9befbc9ae8b4a8e9878fe6af94e8be83e5a4a7e782b9efbc8ce5b0b1e4b88de5aeb9e69893e8a2abe9a38ee590b9e58aa8" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -110,7 +110,7 @@
   </article>
             
                   <article id="post-showiedevtool-e68993e5bc80iee68ea7e4bbb6e79a84e5bc80e58f91e4babae59198e5b7a5e585b7" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -134,7 +134,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -147,7 +147,7 @@
   </article>
             
                   <article id="post-xperfhelper-xperfe79a84windowse591bde4bba4e8a18ce8849ae69cace7949fe68890e5b7a5e585b7" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -174,7 +174,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
           </span>
         
       
@@ -187,7 +187,7 @@
   </article>
             
                   <article id="post-e4bdbfe794a8etwe5afb9e7a88be5ba8fe8bf9be8a18ce79b91e68ea7e5928ce58886e69e90" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -214,6 +214,7 @@
 <p>接下来我们MC来生成一个头文件，一个资源文件和两个二进制文件。命令行如：<br>mc -um C:\etw\0CChProvider.man<br><a href="/uploads/2013/11/20131117114801.png"><img src="/uploads/2013/11/20131117114801.png" alt="20131117114801"></a></p>
 <p>然后我们可以创建一个工程，加入这个头文件和资源文件。并且在代码中插入写事件的代码，例如：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdafx.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"../../0CChProvider.h"</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">    EventRegisterMy0CChProvider();</span><br><span class="line">    EventWriteFirstEvent(<span class="string">L"Hello ETW World!"</span>);</span><br><span class="line">    Sleep(<span class="number">1000</span>);</span><br><span class="line">    EventWriteFirstEvent(<span class="string">L"Bye ETW World!"</span>);</span><br><span class="line">    EventUnregisterMy0CChProvider();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>在这里，我们利用EventRegisterMy0CChProvider先注册自己的Provider，接下写事件才会发挥作用。记录事件后，我们需要反注册Provider。<br>好了，演示代码就这么一点，然后编译即可。</p>
 <p>接下来我们需要注册这个Provider给系统，需要使用到系统自带的工具WEVTUtil.exe。<br>wevtutil im C:\etw\0CChProvider.man</p>
 <p>注册成功后就可以利用XPerf开启ETW，然后运行程序，查看记录的事件了。</p>
@@ -239,7 +240,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a><a href="/categories/Debugging/NTInternals/" title="">NTInternals</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/NTInternals/' title=''>NTInternals</a>
           </span>
         
       
@@ -252,7 +253,7 @@
   </article>
             
                   <article id="post-windbg-scripte4b8ade88eb7e5be97e8b083e8af95e78eafe5a283e79a84e59fbae69cace4bfa1e681af" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -265,6 +266,8 @@
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>今天继续来玩Windbg script。在写复杂的脚本的时候，可能需要根据调试的环境，指定不同的脚本代码来运行。而Windbg貌似没有提供很好的方式，让脚本得知调试环境。还好，我们可以用一些其他的方式获得这些信息，例如：写一个扩展程序来设置这些信息到Aliase上，<a href="https://github.com/0cch/0cchext" target="_blank" rel="noopener">0cchext</a>就实现了这个功能。另外一个方式就是使用脚本自身来获得一些简单的信息，算是个windbg script中的小把戏吧。脚本如下：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">$$ Initialize script environment</span><br><span class="line">$$ Author: nighxie </span><br><span class="line">$$ Blog: <span class="number">0</span>cch.net</span><br><span class="line">$$ @#NtMajorVersion @#NtMinorVersion - System version number.</span><br><span class="line">$$ @#DebugMode - <span class="number">0</span>:kd <span class="number">1</span>:lkd <span class="number">2</span>:user</span><br><span class="line"></span><br><span class="line">ad /q $&#123;/v:$sharedata&#125; </span><br><span class="line"></span><br><span class="line">.<span class="keyword">catch</span> &#123;</span><br><span class="line">    .foreach /pS <span class="number">2</span> ($&#123;/v:$addr&#125; &#123;!kuser&#125;) &#123;</span><br><span class="line">        aS $&#123;/v:$sharedata&#125; $&#123;$addr&#125;;</span><br><span class="line">        .leave;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.block &#123;</span><br><span class="line">    r @$t0=$&#123;$sharedata&#125;;</span><br><span class="line">    aS /x $&#123;/v:@#NtMajorVersion&#125; @@C++(((nt!_KUSER_SHARED_DATA *)@$t0)-&gt;NtMajorVersion);</span><br><span class="line">    aS /x $&#123;/v:@#NtMinorVersion&#125; @@C++(((nt!_KUSER_SHARED_DATA *)@$t0)-&gt;NtMinorVersion);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ad /q $&#123;/v:$sharedata&#125; </span><br><span class="line"></span><br><span class="line">.<span class="keyword">catch</span> &#123;</span><br><span class="line">    r @$t0 = <span class="number">0</span>;</span><br><span class="line">    .foreach ($&#123;/v:$addr&#125; &#123;lm1m m nt&#125;) &#123;</span><br><span class="line">        r @$t0 = $&#123;$addr&#125;;</span><br><span class="line">        .leave;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.<span class="keyword">if</span> ($vvalid(@$t0, <span class="number">1</span>)) &#123;</span><br><span class="line">    aS $&#123;/v:@#DebugMode&#125; <span class="number">0</span>;</span><br><span class="line">     .foreach ($&#123;/v:$val&#125; &#123;.<span class="keyword">catch</span>&#123;? @eax&#125;&#125;) &#123;</span><br><span class="line">        .<span class="keyword">if</span> ($scmp(<span class="string">"$&#123;$val&#125;"</span>, <span class="string">"\'@eax\'"</span>)==<span class="number">0</span>) &#123;</span><br><span class="line">            aS $&#123;/v:@#DebugMode&#125; <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">.<span class="keyword">else</span> &#123;</span><br><span class="line">    aS $&#123;/v:@#DebugMode&#125; <span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
+
+
         
       </div>
       <p class="repo-list-meta">
@@ -276,7 +279,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a><a href="/categories/Debugging/Tips/" title="">Tips</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -289,7 +292,7 @@
   </article>
             
                   <article id="post-windbg-scripte79a84notepade8afade6b395e9ab98e4baaee9858de7bdaee69687e4bbb6" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -316,7 +319,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
           </span>
         
       
@@ -329,7 +332,7 @@
   </article>
             
                   <article id="post-windbge58685e6a0b8e8b083e8af95e69fa5e79c8be7aa97e58fa3e58fa5e69f84e4bfa1e681afe79a84e8849ae69cac" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -354,7 +357,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a><a href="/categories/Debugging/Tips/" title="">Tips</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -367,7 +370,7 @@
   </article>
             
                   <article id="post-e8a7a3e69e90youkue8a786e9a291e59cb0e59d80e79a84pythone8849ae69cac" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -392,7 +395,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -405,7 +408,7 @@
   </article>
             
                   <article id="post-floppy-disk-controllere7bc96e7a88b" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -421,6 +424,7 @@
 <p>对于CPU还运行在实模式下的启动引导程序和内核程序，我们可以调用BIOS提供的函数来完成软盘的访问，其中中断号是13h（INT13h），功能号为2（AH=2）是读取操作，功能号为3（AH=3）时是写入操作。实模式下通过中断读写软盘的资料很多（包括中文资料），如果想了解更多的实模式下访问软盘的知识，可以上网google一下，我这里就不做详细的介绍了。</p>
 <p>虽然调用中断访问软盘简单，但是我们不能让自己的内核总是跑在实模式下啊。所以我们需要写一个能跑在保护模式下的软驱驱动，要完成这样的驱动，就必须对FDC进行编程了。不过在此之前，我们需要知道，到底PC上有没有软驱。要获得这个信息，我们需要读取CMOS，然后解析读取的信息即可。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mov dx, 70h</span><br><span class="line">mov al, 10h</span><br><span class="line">out dx, al</span><br><span class="line"></span><br><span class="line">mov dx, 71h</span><br><span class="line">in  al, dx</span><br><span class="line"></span><br><span class="line">mov f_b, al</span><br><span class="line">and f_b, 0fh</span><br><span class="line">shr al, 4</span><br><span class="line">mov f_a, al</span><br><span class="line"></span><br><span class="line">f_a db	0h</span><br><span class="line">f_b db	0h</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>要从CMOS中获得软盘信息，我们需要先给对应的端口设置正确的索引，然后再去数据端口读取数据。具体做法是设置0x70端口为0x10，然后读取0x71端口。读取到的信息都放在一个字节中，需要把字节分为两个部分，高四位是驱动器A的类型索引号，低四位是驱动器B的类型索引号。索引号与软盘类型的对应关系如下图所示：<br><a href="/uploads/2013/09/cmos_floppytype.png"><img src="/uploads/2013/09/cmos_floppytype.png" alt="cmos_floppytype"></a></p>
 <p>在确认了软驱存在的情况下，接下来就可以对FDC进行编程了。先来看看FDC的几个基本知识。</p>
 <p><strong>寻址方式</strong><br>软盘驱动器使用CHS寻址方式。软盘介质总是有两个头（面），但磁道数和每个磁道的扇区扇区数是不一定的。通常情况下，1.44mb的软盘，他有80个磁道和每个磁道有18个扇区。另外值得注意的是，磁道和磁头是从0开始计算，但是扇区是从1开始计数的。即，有效的磁道通常为0到79，磁头为0或1，而扇区号是1到18的。如果访问0号扇区，那么一定会引起访问错误的。</p>
@@ -431,6 +435,7 @@
 <p>如上图所示，上面的寄存器我们不会都用到，一般情况下大概只会用到一半的样子，其他的我们可以暂时不去理会。另外我在这里不会列出每个寄存器的详细参数，因为这些参数很多而且复杂，不仅单调乏味，而且容易让初学者望而却步。我采取的做法是，先列出控制FDC的代码，然后在需要讲解的地方详细的说明。</p>
 <p><strong>实践</strong><br>下面就是一段控制FDC读取软盘数据的代码。需要说明的是这份代码为了保持简洁易学，它没有任何的错误检测，另外代码也假设了你已经初始化了PIC，并且设置好了IRQ6。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br></pre></td><td class="code"><pre><span class="line">; MASM的宏应该不陌生吧，就不做解释了。</span><br><span class="line">outb macro port:req, b:req</span><br><span class="line">    mov dx, port</span><br><span class="line">    mov al, b</span><br><span class="line">    out dx, al</span><br><span class="line">endm</span><br><span class="line"></span><br><span class="line">inb macro port:req</span><br><span class="line">    mov dx, port</span><br><span class="line">    in al, dx</span><br><span class="line">endm</span><br><span class="line"></span><br><span class="line">wait_status macro</span><br><span class="line">    inb 3f4h</span><br><span class="line">@@:</span><br><span class="line">    test al, 80h</span><br><span class="line">    jz @B</span><br><span class="line">endm</span><br><span class="line"></span><br><span class="line">; ISA DMA 初始化部分， 由于ISA DMA不是这篇文章的重点</span><br><span class="line">; 所以这里只说明大概的用途。</span><br><span class="line">outb 0dh, 0ffh      ; 重置DMA控制器</span><br><span class="line">outb 0ah, 6h        ; 选择设置2号DMA通道</span><br><span class="line">outb 0ch, 0ffh      ; 重置Flipflop寄存器</span><br><span class="line">outb 4h, 0h         ; 设置DMA的物理地址，需要设置两次</span><br><span class="line">outb 4h, 0f0h       ; 我这里设置的是0xf000</span><br><span class="line">outb 81h, 0h        ; 设置地址24bit的高8bit为0，也就是0x00f000</span><br><span class="line">outb 0ch, 0ffh      ; 重置Flipflop寄存器</span><br><span class="line">outb 5h, 0ffh       ; 设置物理内存大小，其大小为Length-1</span><br><span class="line">outb 5h, 0fh        ; 我这里的内存大小是0x1000，所以设置为0xfff</span><br><span class="line">outb 0ah, 2h        ; 选择清除2号DMA通道</span><br><span class="line"></span><br><span class="line">; FDC的初始化过程</span><br><span class="line">outb 3f2h, 0h       ; 1.重置数字输出寄存器</span><br><span class="line">outb 3f2h, 0ch</span><br><span class="line">call WaitIrq</span><br><span class="line"></span><br><span class="line">mov ecx, 4</span><br><span class="line">check_int:</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 8h       ; 发送8号命令，该命令清除控制器触发的中断</span><br><span class="line">wait_status         ; 并且返回结果，这里重复4次，是为了清除4个软驱的状态</span><br><span class="line">inb 3f5h</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">wait_status</span><br><span class="line">loop check_int</span><br><span class="line"></span><br><span class="line">outb 3f7h, 0h       ; 2.设置传输速度为500kb/s</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 3h       ; 3.设置FDC里面三个时钟以及DMA。</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0dfh</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 2h</span><br><span class="line"></span><br><span class="line">outb 3f2h, 1ch      ; 开启软驱电动机</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 7h       ; 发送校验命令</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h       ; 选择0号软驱</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 8h       ; 发送清楚中断命令，获得结果</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">outb 3f2h, 4h       ; 关闭电动机</span><br><span class="line"></span><br><span class="line">; 接下来是软盘的读取操作</span><br><span class="line">outb 3f2h, 1ch      ; 开启电动机</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0fh      ; 4.发送0f寻道命令</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 8h       ; 发送清楚中断命令，获得结果</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line"></span><br><span class="line">; 设置ISA DMA为读取</span><br><span class="line">outb 0ah, 6h</span><br><span class="line">outb 0bh, 46h</span><br><span class="line">outb 0ah, 2h</span><br><span class="line"></span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0e6h     ; 5.发送读取扇区命令</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h       ; 设置磁头和驱动器号</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h       ; 设置磁道</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h       ; 设置磁头</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 1h       ; 设置扇区号</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 2h       ; 设置扇区大小</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 8h       ; 设置读取扇区数量</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 1bh      ; 设置磁盘为3.5英寸</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0ffh     ; 设置读取长度，总是0xff</span><br><span class="line"></span><br><span class="line">call WaitIrq</span><br><span class="line"></span><br><span class="line">mov ecx, 7</span><br><span class="line">loop_ret:</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">loop loop_ret</span><br><span class="line"></span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 8h       ; 发送清楚中断命令，获得结果</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">outb 3f2h, 4h       ; 关闭电动机</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>1.重置数字输出寄存器<br>这是一个只写寄存器，可以用来控制FDC，例如控制软驱电动机，重置控制器，选择目标软驱，设置数据模式，以下是他的详细参数<br>Bits 0-1<br>00 - 软驱 0<br>01 - 软驱 1<br>10 - 软驱 2<br>11 - 软驱 3<br>Bit 2 重置<br>0 - 重置控制器<br>1 - 开启控制器<br>Bit 3 模式<br>0 - IRQ 模式<br>1 - DMA 模式<br>Bits 4 - 7 电动机控制器 (软驱 0 - 3)<br>0 - 停止电动机<br>1 - 开启电动机  </p>
 <p>我这里设置的是0Ch也就是说，选择了0号软驱，开启了控制器和DMA模式。</p>
 <p>2.设置传输速度为500kb/s<br>这个寄存器只有前两位有效，下面两位不同的组合表达了不同的速度，如下表：<br>00 500 Kbps<br>10 250 Kbps<br>01 300 Kbps<br>11 1 Mbps  </p>
@@ -450,7 +455,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/MiniKernel/" title="">MiniKernel</a>
+            <a href='/categories/MiniKernel/' title=''>MiniKernel</a>
           </span>
         
       
@@ -463,7 +468,7 @@
   </article>
             
                   <article id="post-e4bdbfe794a8windbg-logextse79b91e68ea7e7a88be5ba8fapie8b083e794a8" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -487,8 +492,10 @@
 <p>!logexts.logm<br>显示和创建模块的包含/排除列表。这可以帮助我们指定记录那些特定模块中的API调用。</p>
 <p>上面图中我所使用的命令是这样的：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;!logexts.loge D:\  </span><br><span class="line">!logexts.logc d *  </span><br><span class="line">!logexts.logc e 15 16 19  </span><br><span class="line">!logexts.logo e *  </span><br><span class="line">!logexts.logm i notepad.exe</span><br></pre></td></tr></table></figure>
+
 <p>其输出结果是：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">!logexts.loge D:\  </span><br><span class="line">Windows API Logging Extensions v3.01  </span><br><span class="line">Parsing the manifest files...  </span><br><span class="line">Location: C:\Program Files (x86)\Windows Kits\8.0\Debuggers\x64\winext\manifest\main.h  </span><br><span class="line">Parsing file &quot;main.h&quot; ...  </span><br><span class="line">Parsing file &quot;winerror.h&quot; ...  </span><br><span class="line">Parsing file &quot;kernel32.h&quot; ...  </span><br><span class="line">Parsing file &quot;debugging.h&quot; ...  </span><br><span class="line">Parsing file &quot;processes.h&quot; ...  </span><br><span class="line">Parsing file &quot;memory.h&quot; ...  </span><br><span class="line">Parsing file &quot;registry.h&quot; ...  </span><br><span class="line">Parsing file &quot;fileio.h&quot; ...  </span><br><span class="line">Parsing file &quot;strings.h&quot; ...  </span><br><span class="line">Parsing file &quot;user32.h&quot; ...  </span><br><span class="line">Parsing file &quot;clipboard.h&quot; ...  </span><br><span class="line">Parsing file &quot;hook.h&quot; ...  </span><br><span class="line">Parsing file &quot;gdi32.h&quot; ...  </span><br><span class="line">Parsing file &quot;winspool.h&quot; ...  </span><br><span class="line">Parsing file &quot;version.h&quot; ...  </span><br><span class="line">Parsing file &quot;winsock2.h&quot; ...  </span><br><span class="line">Parsing file &quot;advapi32.h&quot; ...  </span><br><span class="line">Parsing file &quot;uuids.h&quot; ...  </span><br><span class="line">Parsing file &quot;com.h&quot; ...  </span><br><span class="line">Parsing file &quot;shell.h&quot; ...  </span><br><span class="line">Parsing file &quot;ole32.h&quot; ...  </span><br><span class="line">Parsing file &quot;ddraw.h&quot; ...  </span><br><span class="line">Parsing file &quot;winmm.h&quot; ...  </span><br><span class="line">Parsing file &quot;avifile.h&quot; ...  </span><br><span class="line">Parsing file &quot;dplay.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3d.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3dtypes.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3dcaps.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3d8.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3d8types.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3d8caps.h&quot; ...  </span><br><span class="line">Parsing file &quot;dsound.h&quot; ...  </span><br><span class="line">Parsing completed.  </span><br><span class="line">Logexts injected. Output: &quot;D:\\LogExts\&quot;  </span><br><span class="line">Logging enabled.  </span><br><span class="line">0:000&gt; !logexts.logc d *  </span><br><span class="line">All categories disabled.  </span><br><span class="line">0:000&gt; !logexts.logc e 15 16 19  </span><br><span class="line">15 IOFunctions Enabled  </span><br><span class="line">16 MemoryManagementFunctions Enabled  </span><br><span class="line">19 ProcessesAndThreads Enabled  </span><br><span class="line">0:000&gt; !logexts.logo e *  </span><br><span class="line">Debugger Enabled  </span><br><span class="line">Text file Enabled  </span><br><span class="line">Verbose log Enabled  </span><br><span class="line">0:000&gt; !logexts.logm i notepad.exe  </span><br><span class="line">Included modules:  </span><br><span class="line">notepad.exe</span><br></pre></td></tr></table></figure>
+
 <p>简单说明一下这些命令：<br>!logexts.loge D:\<br>设置log的保持路径，并且开启监控  </p>
 <p>!logexts.logc d *<br>先关闭所有API分类的监控  </p>
 <p>!logexts.logc e 15 16 19<br>然后设置我们想监控分类，这里是IOFunctions，MemoryManagementFunctions和ProcessesAndThreads。至于如何查询分类对于的id，可以直接输入!logexts.logc进行查看。</p>
@@ -497,11 +504,12 @@
 <p>按下F5，让程序跑起来看看效果吧。先别着急惊叹，Logexts还有更惊艳的地方。那就是他的高度可配置性。如果你想监控他描述以外的API，那么你可以自己写这个API的“头文件”。这里用引号是因为，它并不是真正的头文件，只不过他的语法和C的头文件非常的相似。我们可以看一个例子：</p>
 <p>创建%windbg_dir%\winext\manifest\Context.h<br>并且写入这些内容</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">category ActivationContext:</span><br><span class="line"><span class="keyword">module</span> KERNEL32.DLL:</span><br><span class="line"></span><br><span class="line"><span class="function">FailOnFalse <span class="title">ActivateActCtx</span><span class="params">(HANDLE hActCtx, [out] PULONG_PTR lpCookie)</span></span>;</span><br><span class="line"><span class="function">FailOnFalse <span class="title">DeactivateActCtx</span><span class="params">(DWORD dwFlags, ULONG_PTR upCookie)</span></span>;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>在%windbg_dir%\winext\manifest\main.h文件的最后加入一行 #include “Context.h”</p>
 <p>保存后，重启调试程序，输入!logexts.logc，可以看了多出了ActivationContext这一项。现在就可以选择这一项分类来监控ActivateActCtx和DeactivateActCtx了。</p>
-<p>最后，大家应该发现了这样一个问题，开启这个API监控还是比较麻烦的，需要输入好几条命令。为了更方便的使用这个功能，我写了一个脚本来解决这个问题，这样就可以用一行命令来开启监控。使用方法是：<br>Usage $$&gt;a&lt;logger.wds output_dir categories include_modules<br>e.g. $$&gt;a&lt;logger.wds “d:\” “15 16 19” “notepad.exe”  </p>
+<p>最后，大家应该发现了这样一个问题，开启这个API监控还是比较麻烦的，需要输入好几条命令。为了更方便的使用这个功能，我写了一个脚本来解决这个问题，这样就可以用一行命令来开启监控。使用方法是：<br>Usage $$&gt;a&lt;logger.wds output_dir categories include_modules<br>e.g. $$&gt;a&lt;logger.wds “d:&quot; “15 16 19” “notepad.exe”  </p>
 <p>下载<a href="/uploads/2013/09/logger.zip">logger</a></p>
-<p>关于Logexts的更多详细信息请参考msdn：<a href="http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85).aspx</a>.aspx)</p>
+<p>关于Logexts的更多详细信息请参考msdn：<a href="http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85).aspx" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85).aspx</a></p>
 
         
       </div>
@@ -514,7 +522,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a><a href="/categories/Debugging/Tips/" title="">Tips</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -628,9 +636,9 @@
 
     <h3>Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
     </div>
-  
+  </div>
 
 
         </div>
@@ -643,31 +651,14 @@
           </div>
       </div>
     
-</section><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
+</section>
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
-</body>
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -675,17 +666,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -703,6 +694,24 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
 
-	
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
+
+	</body>
+</html>

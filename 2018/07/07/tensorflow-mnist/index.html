@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="tensorflow入门 —— mnist">
+<section class="collection-head geopattern" data-pattern-id="tensorflow入门 —— mnist" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/machinelearning/" title="">machinelearning</a>
+                            <a href='/categories/machinelearning/' title=''>machinelearning</a>
                         </span>
                     
                 </div>
@@ -60,7 +60,7 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>自从有tensorflow这样的平台工具横空出世，机器学习的代码编写逐渐变的平民化了。我们不需要太多的数学理论知识就能够完成一些机器学习的项目。比如在使用tensorflow的时候，我们只需要定义好损失函数，tensorflow会自动的帮我们完成反向传播改善参数。我们所需要做的就是合理利用tensorflow创建模型。</p>
 <p>当然，我并不是在鼓动初学者跳过数学原理部分，而是认为，如果没有数学基础，入门就死磕原理容易产生挫败感导致放弃。这样就不如先接触简单的项目，在有了一定的体会后，再回头去看看数学原理的东西，这样会更容易接受。比如，当能用tensorflow完成对mnist的训练之后，再去理解反向传播这四个公式，应该会更有感觉。</p>
@@ -70,8 +70,10 @@
 \frac{\partial C}{\partial b^l_j} &amp;= \delta^l_j \tag{3}\\
 \frac{\partial C}{\partial w^l_{jk}} &amp;= a^{l-1}_k \delta^l_j \tag{4}
 \end{align}$$</span><!-- Has MathJax -->
+
 <p>接下来相信看看这份代码</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> tensorflow.examples.tutorials.mnist <span class="keyword">import</span> input_data</span><br><span class="line"></span><br><span class="line"><span class="comment"># step1</span></span><br><span class="line">mnist = input_data.read_data_sets(<span class="string">"."</span>, one_hot=<span class="keyword">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># step2</span></span><br><span class="line">INPUT_PARAMETERS = <span class="number">784</span></span><br><span class="line">L1_PARAMETERS = <span class="number">300</span></span><br><span class="line">W1 = tf.Variable(tf.truncated_normal([INPUT_PARAMETERS, L1_PARAMETERS], stddev=<span class="number">0.1</span>))</span><br><span class="line">b1 = tf.Variable(tf.truncated_normal([L1_PARAMETERS], stddev=<span class="number">0.1</span>))</span><br><span class="line">W2 = tf.Variable(tf.truncated_normal([L1_PARAMETERS, <span class="number">10</span>], stddev=<span class="number">0.1</span>))</span><br><span class="line">b2 = tf.Variable(tf.truncated_normal([<span class="number">10</span>], stddev=<span class="number">0.1</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># step3</span></span><br><span class="line">x = tf.placeholder(tf.float32, [<span class="keyword">None</span>, INPUT_PARAMETERS])</span><br><span class="line">y_ = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">10</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># step4</span></span><br><span class="line">hidden1 = tf.nn.sigmoid(tf.matmul(x, W1) + b1)</span><br><span class="line">y =  tf.matmul(hidden1, W2) + b2</span><br><span class="line"></span><br><span class="line"><span class="comment"># step5</span></span><br><span class="line">loss = (tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(</span><br><span class="line">    logits=y, labels=y_)))</span><br><span class="line">train_step = tf.train.GradientDescentOptimizer(<span class="number">0.3</span>).minimize(loss)</span><br><span class="line"></span><br><span class="line"><span class="comment"># step6</span></span><br><span class="line">correct_prediction = tf.equal(tf.argmax(y, <span class="number">1</span>), tf.argmax(y_, <span class="number">1</span>))</span><br><span class="line">accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))</span><br><span class="line"></span><br><span class="line"><span class="comment"># step7</span></span><br><span class="line">loss_array = []</span><br><span class="line">accuracy_array = []</span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    tf.global_variables_initializer().run()</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10000</span>):</span><br><span class="line">        batch_xs, batch_ys = mnist.train.next_batch(<span class="number">100</span>)</span><br><span class="line">        _, step_loss = sess.run([train_step, loss], feed_dict=&#123;x: batch_xs, y_: batch_ys&#125;)</span><br><span class="line">        <span class="keyword">if</span> i % <span class="number">500</span> == <span class="number">0</span>:</span><br><span class="line">            step_accuracy = accuracy.eval(&#123;x: mnist.test.images, y_: mnist.test.labels&#125;)</span><br><span class="line">            loss_array.append(step_loss)</span><br><span class="line">            accuracy_array.append(step_accuracy)</span><br><span class="line">            print(step_loss, step_accuracy)</span><br><span class="line"></span><br><span class="line">loss_array.append(step_loss)</span><br><span class="line">accuracy_array.append(step_accuracy)</span><br><span class="line">print(step_loss, step_accuracy)</span><br><span class="line"></span><br><span class="line">plt.plot([i*<span class="number">500</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(len(loss_array))], loss_array, <span class="string">'b-'</span>,</span><br><span class="line">          [i*<span class="number">500</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(len(accuracy_array))], accuracy_array, <span class="string">'r-'</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> tensorflow.examples.tutorials.mnist <span class="keyword">import</span> input_data</span><br><span class="line"></span><br><span class="line"><span class="comment"># step1</span></span><br><span class="line">mnist = input_data.read_data_sets(<span class="string">"."</span>, one_hot=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># step2</span></span><br><span class="line">INPUT_PARAMETERS = <span class="number">784</span></span><br><span class="line">L1_PARAMETERS = <span class="number">300</span></span><br><span class="line">W1 = tf.Variable(tf.truncated_normal([INPUT_PARAMETERS, L1_PARAMETERS], stddev=<span class="number">0.1</span>))</span><br><span class="line">b1 = tf.Variable(tf.truncated_normal([L1_PARAMETERS], stddev=<span class="number">0.1</span>))</span><br><span class="line">W2 = tf.Variable(tf.truncated_normal([L1_PARAMETERS, <span class="number">10</span>], stddev=<span class="number">0.1</span>))</span><br><span class="line">b2 = tf.Variable(tf.truncated_normal([<span class="number">10</span>], stddev=<span class="number">0.1</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># step3</span></span><br><span class="line">x = tf.placeholder(tf.float32, [<span class="literal">None</span>, INPUT_PARAMETERS])</span><br><span class="line">y_ = tf.placeholder(tf.float32, [<span class="literal">None</span>, <span class="number">10</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># step4</span></span><br><span class="line">hidden1 = tf.nn.sigmoid(tf.matmul(x, W1) + b1)</span><br><span class="line">y =  tf.matmul(hidden1, W2) + b2</span><br><span class="line"></span><br><span class="line"><span class="comment"># step5</span></span><br><span class="line">loss = (tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(</span><br><span class="line">    logits=y, labels=y_)))</span><br><span class="line">train_step = tf.train.GradientDescentOptimizer(<span class="number">0.3</span>).minimize(loss)</span><br><span class="line"></span><br><span class="line"><span class="comment"># step6</span></span><br><span class="line">correct_prediction = tf.equal(tf.argmax(y, <span class="number">1</span>), tf.argmax(y_, <span class="number">1</span>))</span><br><span class="line">accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))</span><br><span class="line"></span><br><span class="line"><span class="comment"># step7</span></span><br><span class="line">loss_array = []</span><br><span class="line">accuracy_array = []</span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    tf.global_variables_initializer().run()</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10000</span>):</span><br><span class="line">        batch_xs, batch_ys = mnist.train.next_batch(<span class="number">100</span>)</span><br><span class="line">        _, step_loss = sess.run([train_step, loss], feed_dict=&#123;x: batch_xs, y_: batch_ys&#125;)</span><br><span class="line">        <span class="keyword">if</span> i % <span class="number">500</span> == <span class="number">0</span>:</span><br><span class="line">            step_accuracy = accuracy.eval(&#123;x: mnist.test.images, y_: mnist.test.labels&#125;)</span><br><span class="line">            loss_array.append(step_loss)</span><br><span class="line">            accuracy_array.append(step_accuracy)</span><br><span class="line">            print(step_loss, step_accuracy)</span><br><span class="line"></span><br><span class="line">loss_array.append(step_loss)</span><br><span class="line">accuracy_array.append(step_accuracy)</span><br><span class="line">print(step_loss, step_accuracy)</span><br><span class="line"></span><br><span class="line">plt.plot([i*<span class="number">500</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(len(loss_array))], loss_array, <span class="string">'b-'</span>,</span><br><span class="line">          [i*<span class="number">500</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(len(accuracy_array))], accuracy_array, <span class="string">'r-'</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <p><strong>step1：</strong>read_data_sets是tf提供读取mnist数据的函数，运行时会有函数过时的警告提示，但是不用管它，因为用起来完全没有问题。one_hot参数在这里很重要，他将实际的标签值转化为一个向量，例如，将标签值3，转化成表示0-9是否置位的向量：\( \left(\begin{array}{cccccccccc}0;0;0;1;0;0;0;0;0;0;\end{array}\right)^T \)</p>
 </blockquote>
@@ -82,7 +84,7 @@
 <p><strong>step3：</strong>创建输入层和标签的placeholder，大概的意思是占住空间，以方便后续数据喂给模型。</p>
 </blockquote>
 <blockquote>
-<p><strong>step4：</strong>实际上是向前传播 \( z = w^{T}x\,+\,b\)，\( a = sigmoid(z)\)，其中sigmoid是\( \frac{1}{1+\exp(-z)}\)。这里可能有一个疑问，第二个隐藏层到输出层，没有使用sigmoid函数。原因继续往下看就知道了。</p>
+<p><strong>step4：</strong>实际上是向前传播 \( z = w^{T}x,+,b\)，\( a = sigmoid(z)\)，其中sigmoid是\( \frac{1}{1+\exp(-z)}\)。这里可能有一个疑问，第二个隐藏层到输出层，没有使用sigmoid函数。原因继续往下看就知道了。</p>
 </blockquote>
 <blockquote>
 <p><strong>step5：</strong>计算损失函数，调用了tf的sigmoid_cross_entropy_with_logits，这个函数把交叉熵和sigmoid的计算放在了一起，所以上面不需要去计算sigmoid了。这样做的好处很明显，就是方便我们修改从最后一个隐藏层到输出层的激活函数，比如将sigmoid_cross_entropy_with_logits替换为softmax_cross_entropy_with_logits，那么我们最后一个激活函数就变成了softmax。最后设置学习率并且把我们的损失函数传给梯度下降类的最小化函数中，tf就会自动的帮我们优化参数，从而最小化损失值了。</p>
@@ -155,31 +157,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
+</section>
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
-</body>
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -187,17 +172,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -217,6 +202,24 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
 
-	
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
+
+	</body>
+</html>

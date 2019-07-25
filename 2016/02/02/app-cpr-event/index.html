@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="调试器最早的中断应用程序的方法">
+<section class="collection-head geopattern" data-pattern-id="调试器最早的中断应用程序的方法" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/debugging/" title="">debugging</a>
+                            <a href='/categories/debugging/' title=''>debugging</a>
                         </span>
                     
                 </div>
@@ -60,15 +60,17 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这篇Blog分享一个Windbg的小技巧，就是让被调试程序更早的中断到调试器。熟悉Windbg的朋友都知道，用调试器运行程序，默认情况下都会中断到ntdll!LdrpDoDebuggerBreak。但是有时候我们会想去调试程序加载的过程，这个时候就需要我们更早的中断下来。那么这里就用利用到调试器最早接受到的调试事件了。CREATE_PROCESS_DEBUG_EVENT，这个调试事件是创建进程的时候进程发给调试器的，在这个时候，你甚至连ntdll都没有完成加载，这也导致ntdll的符号无法加载，很多有用的功能用不上。但幸运的是，虽然ntdll没有完成加载，但是已经加载到了内存，另外我们可以用手动加载符号的方法，把符号文件加载到ntdll的内存上去。</p>
 <p>演示如下：</p>
 <p>windbg.EXE -xe cpr -xe ld notepad.exe</p>
 <p>这里设置中断系统事件cpr，也就是CREATE_PROCESS_DEBUG_EVENT</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">0:000&gt; lm</span><br><span class="line">start             end                 module name</span><br><span class="line">00007ff7`3f6e0000 00007ff7`3f721000   notepad    (deferred)             </span><br><span class="line">0:000&gt; !teb</span><br><span class="line">TEB at 000000d995d21000</span><br><span class="line">error InitTypeRead( TEB )...</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 <p>中断下来后我们可以看到，!teb是没法用的</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">0:000&gt; .imgscan</span><br><span class="line">MZ at 00007ff7`3f6e0000, prot 00000002, type 01000000 - size 41000</span><br><span class="line">  Name: notepad.exe</span><br><span class="line">MZ at 00007ffb`7c7b0000, prot 00000002, type 01000000 - size 1c1000</span><br><span class="line">  Name: ntdll.dll</span><br><span class="line">0:000&gt; .reload /f ntdll.dll=00007ffb`7c7b0000</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 <p>我们需要找到ntdll的模块，然后手动加载符号，然后就可以使用和ntdll有关系的命令了。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">0:000&gt; lm</span><br><span class="line">start             end                 module name</span><br><span class="line">00007ff7`3f6e0000 00007ff7`3f721000   notepad    (deferred)             </span><br><span class="line">00007ffb`7c7b0000 00007ffb`7c971000   ntdll      (pdb symbols)          e:\workspace\mysymbols\ntdll.pdb\F296699DB5314A06935E88564D8CD2731\ntdll.pdb</span><br><span class="line"></span><br><span class="line">0:000&gt; !teb</span><br><span class="line">TEB at 000000d995d21000</span><br><span class="line">    ExceptionList:        0000000000000000</span><br><span class="line">    StackBase:            000000d995af0000</span><br><span class="line">    StackLimit:           000000d995adf000</span><br><span class="line">    SubSystemTib:         0000000000000000</span><br><span class="line">    FiberData:            0000000000001e00</span><br><span class="line">    ArbitraryUserPointer: 0000000000000000</span><br><span class="line">    Self:                 000000d995d21000</span><br><span class="line">    EnvironmentPointer:   0000000000000000</span><br><span class="line">    ClientId:             0000000000001c8c . 00000000000017c4</span><br><span class="line">    RpcHandle:            0000000000000000</span><br><span class="line">    Tls Storage:          0000000000000000</span><br><span class="line">    PEB Address:          000000d995d20000</span><br><span class="line">    LastErrorValue:       0</span><br><span class="line">    LastStatusValue:      0</span><br><span class="line">    Count Owned Locks:    0</span><br><span class="line">    HardErrorMode:        0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
             </article>
@@ -130,14 +132,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+</section>
+
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -145,17 +147,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -175,6 +177,7 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
 
-	
+	</body>
+</html>

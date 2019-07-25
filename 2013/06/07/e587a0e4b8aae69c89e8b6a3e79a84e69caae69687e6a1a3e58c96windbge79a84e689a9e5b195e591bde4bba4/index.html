@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="几个有趣的未文档化Windbg的扩展命令">
+<section class="collection-head geopattern" data-pattern-id="几个有趣的未文档化Windbg的扩展命令" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/Tips/" title="">Tips</a>
+                            <a href='/categories/Tips/' title=''>Tips</a>
                         </span>
                     
                 </div>
@@ -60,21 +60,27 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这里使用的是Windbg最新版本，版本号是6.2.9200，可以在Windows8的SDK中获得。</p>
 <p>1.eflags 用更加友好的方式显示被设置的标志寄存器</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; r efl</span><br><span class="line">efl=00000246</span><br><span class="line"></span><br><span class="line">0:000&gt; !eflags</span><br><span class="line">BIT_1_RESERVED</span><br><span class="line">PARITY_FLAG</span><br><span class="line">ZERO_FLAG</span><br><span class="line">INTERRUPTS_ENABLED</span><br><span class="line"></span><br><span class="line">0:000&gt; r zf</span><br><span class="line">zf=1</span><br><span class="line">0:000&gt; r if</span><br><span class="line">if=1</span><br></pre></td></tr></table></figure>
+
 <p>2.frame 用module!function的方式设置栈帧</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; kn L3</span><br><span class="line"># ChildEBP RetAddr</span><br><span class="line">00 0018df2c 7586d7db kernel32!CreateFileW</span><br><span class="line">01 0018e024 7586d9d1 apphelp!IdentifyCandidates+0x176</span><br><span class="line">02 0018e054 7586d87b apphelp!ApphelpQueryExe+0xb8</span><br><span class="line"></span><br><span class="line">0:000&gt; .frame</span><br><span class="line">00 0018df2c 7586d7db kernel32!CreateFileW</span><br><span class="line"></span><br><span class="line">0:000&gt; !frame apphelp!ApphelpQueryExe</span><br><span class="line">Frame Set to 0x00000002</span><br><span class="line"></span><br><span class="line">0:000&gt; .frame</span><br><span class="line">02 0018e054 7586d87b apphelp!ApphelpQueryExe+0xb8</span><br></pre></td></tr></table></figure>
+
 <p>3.hashblob 计算指定内存的hash，hash方式包括md5和sha1</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; !hashblob</span><br><span class="line">Not enough parameters 0</span><br><span class="line">!hashblob &lt;hash&gt; &lt;Start&gt; &lt;End&gt;</span><br><span class="line">&lt;hash&gt;: 1 for MD5</span><br><span class="line">&lt;hash&gt;: 2 for SHA1</span><br><span class="line"></span><br><span class="line">0:000&gt; !hashblob 1 001f0000 001f0100</span><br><span class="line">DCC4E0B6659F6887DEC24A9FF2D57DC8</span><br></pre></td></tr></table></figure>
+
 <p>4.imports 列出指定模块的导入函数</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; !imports notepad</span><br><span class="line"></span><br><span class="line">notepad notepad Imports from file: ADVAPI32.dll</span><br><span class="line">RegSetValueExW</span><br><span class="line">RegQueryValueExW</span><br><span class="line">...</span><br><span class="line">notepad Imports from file: KERNEL32.dll</span><br><span class="line">FindNLSString</span><br><span class="line">GlobalAlloc</span><br><span class="line">GlobalUnlock</span><br><span class="line">GlobalLock</span><br><span class="line">GetTimeFormatW</span><br><span class="line">GetDateFormatW</span><br><span class="line">GetLocalTime</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
 <p>5.inframe 找出指定地址所在的栈帧范围</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ChildEBP RetAddr</span><br><span class="line">0018df2c 7586d7db kernel32!CreateFileW</span><br><span class="line">0018e024 7586d9d1 apphelp!IdentifyCandidates+0x176</span><br><span class="line"></span><br><span class="line">0:000&gt; !inframe 0018df8c</span><br><span class="line">0018df8c 0 00001714 0018df34 &lt; 0018df8c &lt; 0018e02c</span><br><span class="line">Frame: 1</span><br></pre></td></tr></table></figure>
+
 <p>6.inmodule 找出指定地址所在的模块</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; !inmodule 7586d9d1</span><br><span class="line">0x7586d9d1: apphelp!ApphelpQueryExe</span><br></pre></td></tr></table></figure>
+
 <p>7.url 用默认浏览器打开指定网页</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; !url</span><br><span class="line">Please provide a valid URL (http://... or https://... )</span><br><span class="line">USAGE: !url &lt;url&gt;</span><br><span class="line"></span><br><span class="line">0:000&gt; !url http://0cch.net</span><br></pre></td></tr></table></figure>
             </article>
@@ -136,14 +142,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+</section>
+
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -151,17 +157,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -181,6 +187,7 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
 
-	
+	</body>
+</html>

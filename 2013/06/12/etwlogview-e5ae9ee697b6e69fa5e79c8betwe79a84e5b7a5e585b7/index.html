@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="EtwLogView —— 实时查看ETW的工具">
+<section class="collection-head geopattern" data-pattern-id="EtwLogView —— 实时查看ETW的工具" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/Debugging/" title="">Debugging</a>
+                            <a href='/categories/Debugging/' title=''>Debugging</a>
                         </span>
                     
                 </div>
@@ -60,7 +60,7 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近玩XPerf玩的比较多，也经常和cradiator(<a href="http://sysdbg.com" target="_blank" rel="noopener">blog</a>)讨论xperf和etw的话题。上周吃饭的时候就讨论到，貌似没找到一款实时记录查看etw的工具。当时我的观点是，只是看etw的原始记录很难分析出什么东西，必须配合很细工具，例如xperfview。这样才能有效的发挥出etw的威力，所以实时工具用处不大。而cradiator认为，除了这些常规的用法外，如果能实时记录查看etw的信息，那么把etw当作平时的log输出方式也是不错的选择。这样的好处就是，不需要额外的加入log机制，使用etw就足够强大，其次如果遇上了问题，这些etw的记录又可以作为event，帮助xperfview的分析。然后这家伙就怂恿我写一个:-)</p>
 <p>经过上面的一番介绍，应该就能知道EtwLogView的用处何在了。他是一个“实时”记录查看etw的工具。之所以用上了引号。是因为这个实时是有不确定性的。例如，如果一个provider输出了大量的事件信息。那么这个工具就会遇上麻烦，因为更新记录，和刷新界面的速度很可能跟不上provider的输出速度。这样，这个实时就大打折扣。不过就像cradiator所说的，只用来监控自己的事件，倒没什么问题。</p>
@@ -134,14 +134,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+</section>
+
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -149,17 +149,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -179,6 +179,7 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
 
-	
+	</body>
+</html>

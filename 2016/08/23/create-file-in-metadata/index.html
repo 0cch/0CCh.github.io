@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="在NTFS元文件目录里创建文件">
+<section class="collection-head geopattern" data-pattern-id="在NTFS元文件目录里创建文件" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/Tips/" title="">Tips</a>
+                            <a href='/categories/Tips/' title=''>Tips</a>
                         </span>
                     
                 </div>
@@ -60,12 +60,13 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>说到Rootkit就不能提到他的文件隐藏，Rootkit隐藏文件的方式千奇百怪，这里说其中一个通过NTFS元文件目录无法被普通程序显示的特性隐藏文件的方法。</p>
 <p>我们都知道NTFS是有元文件的，比如$MFT(NTFS主文件表)，这种文件是我们看不到的，但是系统能访问。同样还有一种元文件目录，这个目录也是看不到的，无论你是否打开了显示系统文件，隐藏文件的选项。那么如果我们把要隐藏的文件放在这种目录下，那么就达到了隐藏的效果。</p>
 <p>举个例子 $Extend\$RmMetadata 这个目录。我们可以通过Winhex解析NTFS来读取这个目录的情况，而普通程序不行。这里我们通过这样的代码来创建文件。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> GPA(x) *(FARPROC *)&amp;My##x = GetProcAddress(GetModuleHandle(<span class="meta-string">L"ntdll.dll"</span>), #x)	</span></span><br><span class="line">    GPA(NtCreateFile);</span><br><span class="line">    GPA(RtlInitUnicodeString);</span><br><span class="line">    IO_STATUS_BLOCK iob;</span><br><span class="line">    HANDLE h;</span><br><span class="line">    UNICODE_STRING uni_str;</span><br><span class="line">    MyRtlInitUnicodeString(&amp;uni_str, <span class="string">L"\\??\\Global\\D:\\$Extend\\$RmMetadata\\$0cch"</span>);</span><br><span class="line"></span><br><span class="line">    OBJECT_ATTRIBUTES oa;</span><br><span class="line">    InitializeObjectAttributes(&amp;oa, &amp;uni_str, OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE, <span class="literal">NULL</span>, <span class="literal">NULL</span>)</span><br><span class="line"></span><br><span class="line">    LONG l = MyNtCreateFile(&amp;h, </span><br><span class="line">    FILE_APPEND_DATA | SYNCHRONIZE, </span><br><span class="line">    &amp;oa, </span><br><span class="line">    &amp;iob, </span><br><span class="line">    <span class="number">0</span>, </span><br><span class="line">    FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM, </span><br><span class="line">    <span class="number">0</span>, </span><br><span class="line">    FILE_SUPERSEDE, </span><br><span class="line">    FILE_SYNCHRONOUS_IO_NONALERT | FILE_NON_DIRECTORY_FILE, </span><br><span class="line">    <span class="literal">NULL</span>, </span><br><span class="line">    <span class="number">0</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">char</span> buffer[] = <span class="string">"0123456789"</span>;</span><br><span class="line">    WriteFile(h, buffer, <span class="built_in">strlen</span>(buffer), (ULONG *)&amp;l, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">    CloseHandle(h);</span><br></pre></td></tr></table></figure>
+
 <p>值得注意的是我们必须用System用户权限去运行这个程序，才能创建文件到元文件目录，这里要用到psexec：</p>
 <p>psexec  -s C:\0cch\Test.exe</p>
 <p>然后我们看看效果</p>
@@ -130,31 +131,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
+</section>
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
-</body>
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -162,17 +146,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -192,6 +176,24 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
 
-	
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
+
+	</body>
+</html>

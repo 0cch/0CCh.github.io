@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="关于Zone.Identifier的一点记录">
+<section class="collection-head geopattern" data-pattern-id="关于Zone.Identifier的一点记录" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/NTInternals/" title="">NTInternals</a><a href="/categories/NTInternals/Tips/" title="">Tips</a>
+                            <a href='/categories/NTInternals/' title=''>NTInternals</a><a href='/categories/NTInternals/Tips/' title=''>Tips</a>
                         </span>
                     
                 </div>
@@ -60,13 +60,14 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>自从Windows XP SP2开始，微软对文件加入了Zone.Identifier的数据流，所以这个也不算什么新东西了，最近偶然有机会研究了下所以就记录了下来。<br>说起Zone.Identifier，我们最常见的应用就是在我们从Internet上下载了可执行文件后，运行的时候会弹出如下图的警告窗口：</p>
 <p><a href="/uploads/2015/06/20150615150628.png"><img src="/uploads/2015/06/20150615150628.png" alt="20150615150628"></a></p>
 <p>弹出这个窗口就是因为Explorer在运行这个文件的时候先检查了Zone.Identifier的数据，发现了如下文本<br>[ZoneTransfer]<br>ZoneId=3</p>
 <p>这个ZoneId=3，就是指明这个文件是由Internet上下载的。根据MSDN，这个id有以下几种：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span> tagURLZONE &#123; </span><br><span class="line">  URLZONE_INVALID         = <span class="number">-1</span>,</span><br><span class="line">  URLZONE_PREDEFINED_MIN  = <span class="number">0</span>,</span><br><span class="line">  URLZONE_LOCAL_MACHINE   = <span class="number">0</span>,</span><br><span class="line">  URLZONE_INTRANET,</span><br><span class="line">  URLZONE_TRUSTED,</span><br><span class="line">  URLZONE_INTERNET,</span><br><span class="line">  URLZONE_UNTRUSTED,</span><br><span class="line">  URLZONE_PREDEFINED_MAX  = <span class="number">999</span>,</span><br><span class="line">  URLZONE_USER_MIN        = <span class="number">1000</span>,</span><br><span class="line">  URLZONE_USER_MAX        = <span class="number">10000</span></span><br><span class="line">&#125; URLZONE; </span><br></pre></td></tr></table></figure>
+
 <p>查看这个数据流的方法也很简单，用notepad就行了。</p>
 <p><a href="/uploads/2015/06/20150615153805.png"><img src="/uploads/2015/06/20150615153805.png" alt="20150615153805"></a></p>
 <p>另外如果想给添加或者去除这个数据流，我们这里有两种方法：<br>1.直接读写数据流，其实这个跟普通文件读写没什么两样。<br>2.调用微软提供的com接口，这个比较是规范的。  </p>
@@ -133,14 +134,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+</section>
+
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -148,17 +149,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -178,6 +179,7 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
 
-	
+	</body>
+</html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,13 +21,13 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
@@ -74,8 +74,47 @@
     <div class="columns">
         <div class="column two-thirds">
             
+                  <article id="post-e794a8service-tage58cbae58886e585b1e4baabe7b1bbe59e8be69c8de58aa1e7babfe7a88b" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2015/01/24/e794a8service-tage58cbae58886e585b1e4baabe7b1bbe59e8be69c8de58aa1e7babfe7a88b/">用Service Tag区分共享类型服务线程</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Windows中有一种共享类型的服务，这种服务的特点是，他们可能同时有多个不同服务运行在同一个进程内。这些服务通常都是一些dll，他们被加载到宿主进程内运行，这个宿主进程我们见到最多的就是svchost了，如下图所示：</p>
+<p><a href="/uploads/2015/01/20150124220922.png"><img src="/uploads/2015/01/20150124220922.png" alt="20150124220922"></a></p>
+<p>Windows这样做的好处就是尽可能的节约资源，当然不好地方就是，如果出了问题那么难以调试和定位。所以，为了更好的定位共享服务的工作线程，微软支持了一种叫做Service Tag的东西。Service Tag简单的说就是标注线程属于哪个服务的，这个是由Service Control Manager支持的。在TEB中有一个SubProcessTag字段，每当一个服务注册并且运行的时候，Service Control Manager会分配给服务线程一个id，这个id就是SubProcessTag，它能够唯一的表示服务，而且这个值是一直都被继承的，也就是说，如果服务线程再创建线程，那么新的线程的SubProcessTag也会被标记为父线程的id。当然，也有一种例外，那就是如果用了线程池，就不会继承SubProcessTag了。</p>
+<p>在Advapi32.dll中有一个函数，叫做I_QueryTagInformation，这个函数可以根据SubProcessTag去查询Service的信息，有兴趣的同学可以看看下面的链接：<a href="http://wj32.org/wp/2010/03/30/howto-use-i_querytaginformation/" target="_blank" rel="noopener">http://wj32.org/wp/2010/03/30/howto-use-i_querytaginformation/</a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2015-01-24T06:29:31.000Z" itemprop="datePublished">2015-01-24</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
                   <article id="post-e680bbe7bb93e5928ce5b195e69c9befbc9ae4b89ce696b9e4b88de4baaee8a5bfe696b9e4baae" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -111,7 +150,7 @@
   </article>
             
                   <article id="post-pythone88eb7e5be97e69687e4bbb6e78988e69cace4bfa1e681af" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -122,7 +161,7 @@
       <div class="repo-list-description">
         
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Python干啥都挺方便的，出了调用win32的api。当然了，可以用pywin32这种库。但我不喜欢为了一两个api又给简单的东西加一堆依赖。比如获取文件版本，本来想在网上找个函数复制过去用得了，却发现还真没啥好用的。无奈自己就写了一个。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">VS_FIXEDFILEINFO</span><span class="params">(Structure)</span>:</span></span><br><span class="line">    _fields_ = [</span><br><span class="line">        (<span class="string">"dwSignature"</span>, c_int), </span><br><span class="line">        (<span class="string">"dwStrucVersion"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileVersionMS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileVersionLS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwProductVersionMS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwProductVersionLS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileFlagsMask"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileFlags"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileOS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileType"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileSubtype"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileDateMS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileDateLS"</span>, c_int)</span><br><span class="line">    ]</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">LOWORD</span><span class="params">(dword)</span>:</span> <span class="keyword">return</span> dword &amp; <span class="number">0x0000ffff</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">HIWORD</span><span class="params">(dword)</span>:</span> <span class="keyword">return</span> dword &gt;&gt; <span class="number">16</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetFileVersion</span><span class="params">(filename)</span>:</span></span><br><span class="line">    size = windll.version.GetFileVersionInfoSizeW(filename, <span class="keyword">None</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> size:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line">    res = create_string_buffer(size)</span><br><span class="line">    windll.version.GetFileVersionInfoW(filename, <span class="keyword">None</span>, size, res)</span><br><span class="line">    r = VS_FIXEDFILEINFO()</span><br><span class="line">    l = c_uint()</span><br><span class="line">    p = c_void_p()</span><br><span class="line">    windll.version.VerQueryValueW(res, <span class="string">'\\'</span>, byref(p), byref(l));</span><br><span class="line">    memmove(byref(r), p, sizeof(VS_FIXEDFILEINFO))</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> l.value:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> (<span class="string">'%d.%d.%d.%d'</span> % (HIWORD(r.dwFileVersionMS), LOWORD(r.dwFileVersionMS), </span><br><span class="line">        HIWORD(r.dwProductVersionLS), LOWORD(r.dwProductVersionLS)));</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">VS_FIXEDFILEINFO</span><span class="params">(Structure)</span>:</span></span><br><span class="line">    _fields_ = [</span><br><span class="line">        (<span class="string">"dwSignature"</span>, c_int), </span><br><span class="line">        (<span class="string">"dwStrucVersion"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileVersionMS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileVersionLS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwProductVersionMS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwProductVersionLS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileFlagsMask"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileFlags"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileOS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileType"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileSubtype"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileDateMS"</span>, c_int),</span><br><span class="line">        (<span class="string">"dwFileDateLS"</span>, c_int)</span><br><span class="line">    ]</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">LOWORD</span><span class="params">(dword)</span>:</span> <span class="keyword">return</span> dword &amp; <span class="number">0x0000ffff</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">HIWORD</span><span class="params">(dword)</span>:</span> <span class="keyword">return</span> dword &gt;&gt; <span class="number">16</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetFileVersion</span><span class="params">(filename)</span>:</span></span><br><span class="line">    size = windll.version.GetFileVersionInfoSizeW(filename, <span class="literal">None</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> size:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line">    res = create_string_buffer(size)</span><br><span class="line">    windll.version.GetFileVersionInfoW(filename, <span class="literal">None</span>, size, res)</span><br><span class="line">    r = VS_FIXEDFILEINFO()</span><br><span class="line">    l = c_uint()</span><br><span class="line">    p = c_void_p()</span><br><span class="line">    windll.version.VerQueryValueW(res, <span class="string">'\\'</span>, byref(p), byref(l));</span><br><span class="line">    memmove(byref(r), p, sizeof(VS_FIXEDFILEINFO))</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> l.value:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> (<span class="string">'%d.%d.%d.%d'</span> % (HIWORD(r.dwFileVersionMS), LOWORD(r.dwFileVersionMS), </span><br><span class="line">        HIWORD(r.dwProductVersionLS), LOWORD(r.dwProductVersionLS)));</span><br></pre></td></tr></table></figure>
 
         
       </div>
@@ -135,7 +174,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -148,7 +187,7 @@
   </article>
             
                   <article id="post-dnsswitcher-e4b880e4b8aae696b9e4bebfe58887e68da2dnse79a84e5b08fe5b7a5e585b7" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -174,7 +213,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -187,7 +226,7 @@
   </article>
             
                   <article id="post-tcpview_study-e69fa5e79c8btcpe8bf9ee68ea5e5b7a5e585b7" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -212,7 +251,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -225,7 +264,7 @@
   </article>
             
                   <article id="post-e88eb7e5be97e4bdbfe794a8e68993e5bc80e4bf9de5ad98e5afb9e8af9de6a186e6938de4bd9ce69687e4bbb6e79a84e8aeb0e5bd95" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -251,7 +290,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -264,7 +303,7 @@
   </article>
             
                   <article id="post-e4b8bbe7babfe7a88be98080e587bae5898de8afb7e58588e98080e587bae5ad90e7babfe7a88b" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -288,7 +327,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -301,7 +340,7 @@
   </article>
             
                   <article id="post-clipmonitor-e7ae80e58d95e79a84e589aae58887e69dbfe79b91e68ea7e5b7a5e585b7" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -328,7 +367,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -341,7 +380,7 @@
   </article>
             
                   <article id="post-e588a9e794a8windbge8849ae69cace79b91e68ea7dlle58aa0e8bdbde78ab6e68081" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -354,6 +393,7 @@
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>开发过大型程序的人都遇到过这样的问题，一个版本Release后，发现有的功能怎么也不对。但是每个模块在开发人员单独的环境下又是正常运行。那么遇到这样的问题，其中一个能想到的就是DLL模块没有加载正确。一般情况下，这种时候我们可以使用depends这样的工具查看模块的依赖情况，以判断出哪个模块是出问题的那个。但是如果如果真的遇上大型的程序，DLL模块很多，而且动态静态加载不一，这样光靠depends这样的工具是不能满足需求的。所以我这里写了个Windbg脚本来监控DLL加载状态，因为是动态调试，所以很轻松的就能找到加载问题，无论DLL是静态加载还是动态加载。</p>
 <p>以下脚本是Windows 7 32Bit，对于64bit，稍微修改下就行。不过如果是Windows 8，DLL的加载细节已经发生变化，所以这个脚本就不适用了。希望能抛砖引玉一下，期待更多系统的脚本分享出来。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">bp ntdll!LdrpFindOrMapDll <span class="string">"</span></span><br><span class="line"><span class="string">.push /r /q</span></span><br><span class="line"><span class="string">r @$t0 = poi(@esp+4)</span></span><br><span class="line"><span class="string">r @$t1 = poi(@esp+8)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">g @$ra</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">.printf \"name         = %msu\\n\", @$t0</span></span><br><span class="line"><span class="string">.printf \"path         = %msu\\n\", @$t1</span></span><br><span class="line"><span class="string">.printf \"Load status  = %08X\", @eax</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">.if((@eax&amp;0xffffffff) != 0) &#123;.printf /D \" WARNNING\\n\"&#125; .else &#123;.printf \"\\n\"&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">.pop /r /q</span></span><br><span class="line"><span class="string">g</span></span><br><span class="line"><span class="string">"</span></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>最后看看脚本的效果吧，如果加载失败了，那么返回的状态值就不是0。<br><a href="/uploads/2014/10/20141027164220.png"><img src="/uploads/2014/10/20141027164220.png" alt="20141027164220"></a><br><a href="/uploads/2014/10/20141027164424.png"><img src="/uploads/2014/10/20141027164424.png" alt="20141027164424"></a></p>
 
         
@@ -367,7 +407,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -380,7 +420,7 @@
   </article>
             
                   <article id="post-e794a8windows-evente79b91e68ea7e5898de58fb0e7aa97e58fa3e58f98e58c96" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -409,48 +449,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-e69bb4e696b0windbge689a9e5b1950cchext" class="repo-list">
-    <div class="repo-list-item">
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2014/09/20/e69bb4e696b0windbge689a9e5b1950cchext/">更新Windbg扩展0cchext</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>更新了pe_export和pe_import两个命令，功能如图</p>
-<p><a href="/uploads/2014/09/20140919095914.png"><img src="/uploads/2014/09/20140919095914.png" alt="20140919095914"></a></p>
-<p><a href="/uploads/2014/09/20140919100003.png"><img src="/uploads/2014/09/20140919100003.png" alt="20140919100003"></a></p>
-<p><a href="/uploads/2014/09/20140919100101.png"><img src="/uploads/2014/09/20140919100101.png" alt="20140919100101"></a></p>
-<p>Commands for 0cchext.dll:<br>  !autocmd         - Execute the debugger commands.(The config file is<br>                     autocmd.ini)<br>  !dpx             - Display the contents of memory in the given range.<br>  !dtx             - Displays information about structures. (The config file is<br>                     struct.ini)<br>  !favcmd          - Display the favorite debugger commands.(The config file is<br>                     favcmd.ini)<br>  !grep            - Search plain-text data sets for lines matching a regular<br>                     expression.<br>  !help            - Displays information on available extension commands<br>  !hwnd            - Show window information by handle.<br>  !init_script_env - Initialize script environment.<br>  !pe_export       - Dump PE export functions<br>  !pe_import       - Dump PE import modules and functions<br>  !setvprot        - Set the protection on a region of committed pages in the<br>                     virtual address space of the debuggee process.<br>  !url             - Open a URL in a default browser.<br>  !version         - Displays the version information for 0cchext.dll<br>!help  will give more information for a particular command  </p>
-<p>下载：<a href="/uploads/2014/09/0cchext.zip">0cchext</a></p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2014-09-20T02:02:14.000Z" itemprop="datePublished">2014-09-20</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a><a href="/categories/Debugging/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -564,9 +563,9 @@
 
     <h3>Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
     </div>
-  
+  </div>
 
 
         </div>
@@ -579,31 +578,14 @@
           </div>
       </div>
     
-</section><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
+</section>
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
-</body>
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -611,17 +593,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -639,6 +621,24 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
 
-	
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
+
+	</body>
+</html>

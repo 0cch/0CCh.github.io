@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,13 +21,13 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
@@ -74,8 +74,53 @@
     <div class="columns">
         <div class="column two-thirds">
             
+                  <article id="post-ntfsstudy-ntfse7a381e79b98e6a0bce5bc8fe5ada6e4b9a0e5b7a5e585b7" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2013/01/19/ntfsstudy-ntfse7a381e79b98e6a0bce5bc8fe5ada6e4b9a0e5b7a5e585b7/">NtfsStudy —— ntfs磁盘格式学习工具</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>经过将近一个月业余时间的开发，终于完成了NtfsStudy这个小工具的第一版。</p>
+<p>简单介绍一下这个工具，NtfsStudy这个工具是我在学习Ntfs文件系统磁盘格式的时候，为了自己更加方便快捷的查看磁盘格式而开发的工具。可以说这个工具从开始写到现在发布，实际上也是一个学习ntfs的过程。我一边研究理解这个格式，一边把理解的东西写成代码，加入这个工具，然后再用这些功能去理解新的内容。反复这样做，这个工具就也不知不觉成型了。</p>
+<p>NtfsStudy这个工具的主要功能是：枚举目录文件，查看和dump文件属性。这些功能都没用调用windows 文件操作类的API完成，而是依靠直接读取磁盘信息，并且解析磁盘信息来完成的。例如，如果尝试去复制注册表的系统hive文件，那是一定会被系统拒绝的，这个文件是系统读写独占的，但是通过这个工具就能绕过“ntfsstudy.exe -f c:\ -r e0a2 -w 3 d:\system.hiv”， 这个命令行的意思是把volume C上的引用数为0xe0a2文件中的3号属性的内容写到d:\system.hiv文件中。其实id为3的属性正好就是data属性，也就是文件本身的内容。这样就可以dump不能读的注册表hive文件了。下面是“ntfsstudy.exe -f c:\ -r e0a2 -d 8”的结果：</p>
+<p><a href="/uploads/2013/01/ntfs_hive.png"><img src="/uploads/2013/01/ntfs_hive.png" alt="ntfs_hive"></a></p>
+<p>更多的详细用法和例子等我有空会在blog里面写一些。</p>
+<p>下面就是他的Usage，也是目前该工具具有的功能。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">NtfsStudy v1.0 - Ntfs format study tool.</span><br><span class="line">Copyright (C) 2012-2013 nightxie</span><br><span class="line">0CCh - www.0cch.net</span><br><span class="line"></span><br><span class="line">Usage : NtfsStudy.exe [options] -f file_path_name</span><br><span class="line">-f file_path_name Specifies the target file path to parse.</span><br><span class="line"></span><br><span class="line">options:</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[-r file_reference]   Specifies the target file reference.</span><br><span class="line">NtfsStudy will parse the REFERENCE rather than the path which</span><br><span class="line">Specifies by -f. NtfsStudy will just use the path root.</span><br><span class="line">[-a] Show the file record information of the target file.</span><br><span class="line">[-l]   List the files in the directory.</span><br><span class="line">[-w attribute_id output_file_path] Write target attribute to a file.</span><br><span class="line">(The attribute size must less than 128mb)</span><br><span class="line">[-v attribute_type] Show detail attribute information specified by attribute_type.</span><br><span class="line">[-d attribute_type [start_offset range]] Show binary information specified by attribute_type.</span><br><span class="line">[-s secure_id] Show the security descriptor specified by secure_id.</span><br><span class="line">[-c] Show the attributes definition columns.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">About attribute type:</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$STANDARD_INFORMATION         = 1</span><br><span class="line">$ATTRIBUTE_LIST               = 2</span><br><span class="line">$FILE_NAME                    = 3</span><br><span class="line">$OBJECT_ID                    = 4</span><br><span class="line">$SECURITY_DESCRIPTOR          = 5</span><br><span class="line">$VOLUME_NAME                  = 6</span><br><span class="line">$VOLUME_INFORMATION           = 7</span><br><span class="line">$DATA                         = 8</span><br><span class="line">$INDEX_ROOT                   = 9</span><br><span class="line">$INDEX_ALLOCATION             = 10</span><br><span class="line">$BITMAP                       = 11</span><br><span class="line">$REPARSE_POINT                = 12</span><br><span class="line">$EA_INFORMATION               = 13</span><br><span class="line">$EA                           = 14</span><br><span class="line">$LOGGED_UTILITY_STREAM        = 16</span><br><span class="line"></span><br><span class="line">About secure id:</span><br><span class="line"></span><br><span class="line">To get the secure id of target file.</span><br><span class="line">Use &apos;-v 1&apos; command, secure id will displayed in STANDARD_INFORMATION.</span><br></pre></td></tr></table></figure>
+
+<p>另外我还会继续完善这个工具。如果发现bug请与我联系。</p>
+<p>下载<a href="/uploads/2013/01/NtfsStudy.zip">NtfsStudy</a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2013-01-18T23:52:28.000Z" itemprop="datePublished">2013-01-19</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/NTInternals/' title=''>NTInternals</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
                   <article id="post-e8aebee7bdaee7babfe7a88be5908d" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -85,8 +130,8 @@
       </h3>
       <div class="repo-list-description">
         
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>给线程命名的作用主要还是为了调试方便。其他的好处也没有了，至少我没想出来。这里说一下MS_VC_EXCEPTION这个异常，调试器（vs，windbg）默认情况下应该会在收到这个异常的时候，他会自动处理这个异常，具体操作应该是记录下线程对应的名称，然后将异常设置为Handle状态。什么意思呢？就是说，即使下面这段代码中的RaiseException不在try-except中，在调试器attach的情况下也能顺畅执行，调试器不会因为异常把执行中断下了，而是默默设置了线程名之后继续后面的代码。而下面的代码之所以要放在try-except中，是因为希望没有调试器的情况下，也能顺利执行不被中断。另外一点，windbg可以设置让这个异常中断下来（命令 sxe vcpp），而vs貌似没有这样的方法，可能是我vs调试器用的比较少，没找到吧。对于托管代码，设置这个就更简单了，详见 <a href="http://msdn.microsoft.com/en-us/library/581hfskb(v=vs.100" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/581hfskb(v=vs.100).aspx</a>.aspx)</p>
-<p><a href="/uploads/2013/01/QQ截图20130112151544.png"><img src="/uploads/2013/01/QQ截图20130112151544.png" alt=""></a></p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>给线程命名的作用主要还是为了调试方便。其他的好处也没有了，至少我没想出来。这里说一下MS_VC_EXCEPTION这个异常，调试器（vs，windbg）默认情况下应该会在收到这个异常的时候，他会自动处理这个异常，具体操作应该是记录下线程对应的名称，然后将异常设置为Handle状态。什么意思呢？就是说，即使下面这段代码中的RaiseException不在try-except中，在调试器attach的情况下也能顺畅执行，调试器不会因为异常把执行中断下了，而是默默设置了线程名之后继续后面的代码。而下面的代码之所以要放在try-except中，是因为希望没有调试器的情况下，也能顺利执行不被中断。另外一点，windbg可以设置让这个异常中断下来（命令 sxe vcpp），而vs貌似没有这样的方法，可能是我vs调试器用的比较少，没找到吧。对于托管代码，设置这个就更简单了，详见 <a href="http://msdn.microsoft.com/en-us/library/581hfskb(v=vs.100).aspx" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/581hfskb(v=vs.100).aspx</a></p>
+<p><a href="/uploads/2013/01/QQ截图20130112151544.png"><img src="/uploads/2013/01/QQ%E6%88%AA%E5%9B%BE20130112151544.png" alt></a></p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> </span></span><br><span class="line"><span class="keyword">const</span> DWORD MS_VC_EXCEPTION=<span class="number">0x406D1388</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> pack(push,8)</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">tagTHREADNAME_INFO</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    DWORD dwType; <span class="comment">// Must be 0x1000.</span></span><br><span class="line">    LPCSTR szName; <span class="comment">// Pointer to name (in user addr space).</span></span><br><span class="line">    DWORD dwThreadID; <span class="comment">// Thread ID (-1=caller thread).</span></span><br><span class="line">    DWORD dwFlags; <span class="comment">// Reserved for future use, must be zero.</span></span><br><span class="line">&#125; THREADNAME_INFO;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> pack(pop)</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">SetThreadName</span><span class="params">( DWORD dwThreadID, <span class="keyword">char</span>* threadName)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    THREADNAME_INFO info;</span><br><span class="line">    info.dwType = <span class="number">0x1000</span>;</span><br><span class="line">    info.szName = threadName;</span><br><span class="line">    info.dwThreadID = dwThreadID;</span><br><span class="line">    info.dwFlags = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    __try</span><br><span class="line">    &#123;</span><br><span class="line">        RaiseException( MS_VC_EXCEPTION, <span class="number">0</span>, <span class="keyword">sizeof</span>(info)/<span class="keyword">sizeof</span>(ULONG_PTR), (ULONG_PTR*)&amp;info; );</span><br><span class="line">    &#125;</span><br><span class="line">    __except(EXCEPTION_EXECUTE_HANDLER)</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
 
         
@@ -100,7 +145,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -113,7 +158,7 @@
   </article>
             
                   <article id="post-r3e58db8e8bdbde4bbbbe6848fe6b688e681afe992a9e5ad90" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -128,6 +173,7 @@
 <p>虽然说用驱动写这个功能看起来比较轻松，实际上R3实现也很简单。这里用到的关键之时是Desktop Heap会在GUI进程中映射到用户态内存上，这也就给了我们可乘之机。简单介绍一些Desktop Heap是什么。我们都知道一个桌面都有个Desktop Object的对象，而实际上美国Desktop Object都会有一个对应他的Desktop Heap。Desktop Heap主要存储用户交互对象（user interface objects），这其中就包括Window，Menu，Hook等等。既然Hook存储在Desktop heap，而且Desktop heap又刚好映射到R3内存，那么我们就可以顺利的读取他了。这里，可能会有一个疑问，怎么知道Hook存储在Desktop Heap，而不是Share Heap或者其他。实际上Windows的Win32k中有一个Handle Information Table，指明了每种Object的存储类型。</p>
 <p>现在是已经知道了可以去读Hook对象，但是上哪去读就是要解决的问题了。这里就要提到老生常谈的Sharedinfo了。用户态的Sharedinfo获取方法很多，顺手就行。与上面问题相关的就是Sharedinfo里面会有一个Handle Entry Table，里面存储的就是包括Hook在内的User Object。Entry的结构如下（来自reactos）：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">HANDLEENTRY</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">PHEAD pHead;</span><br><span class="line">PVOID pOwner;</span><br><span class="line">BYTE bType;</span><br><span class="line">BYTE bFlags;</span><br><span class="line">WORD wUniq;</span><br><span class="line">&#125; HANDLEENTRY, *PHE, *PHANDLEENTRY;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>其中pHead指向Object，bType表示object类型。HOOK的bType是5。所以这里我们只需要在bType为5的时候继续下面的操作。</p>
 <p>pHead肯定是指向的内核内存，所以我们无法直接访问HOOK的内部情况。我们需要找到这个Object映射到R3的内存地址才行。幸运的是这种关系也比较简单明了。在Teb-&gt;Win32ClientInfo.ulClientDelta就存放了对应的关系Delta值。计算方法如下</p>
 <p>ObjectInR3 = HANDLEENTRY.pHead - Teb-&gt;Win32ClientInfo.ulClientDelta。</p>
@@ -145,7 +191,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/NTInternals/" title="">NTInternals</a>
+            <a href='/categories/NTInternals/' title=''>NTInternals</a>
           </span>
         
       
@@ -158,7 +204,7 @@
   </article>
             
                   <article id="post-e585b3e4ba8ee695b4e59e8be695b0e7aca6e58fb7e4bd8de689a9e5b195e79a84e4b880e782b9e5bf83e5be97" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -171,9 +217,16 @@
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近写的程序中遇到了整型数符号位扩展的小问题。稍稍看了下，写在这里备忘。</p>
 <p>这里举个例子：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// case 1</span></span><br><span class="line"><span class="keyword">long</span> i = <span class="number">-1</span>;</span><br><span class="line"><span class="keyword">long</span> <span class="keyword">long</span> q = i;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// case 2</span></span><br><span class="line"><span class="keyword">long</span> i = <span class="number">-1</span>;</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> q = i;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// case 3</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> i = <span class="number">0xffffffff</span>;</span><br><span class="line"><span class="keyword">long</span> <span class="keyword">long</span> q = i;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// case 4</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> i = <span class="number">0xffffffff</span>;</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> q = i;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>那么这4肿情况中q都是多少呢？<br>实验结果是case 1 和 2，他们的q的值（这里都表示为无符号）0xffffffff<code>ffffffff，而case 3 和 4 中q的值为0x00000000</code>ffffffff。<br>看到这里，大概就能推测c++的转换策略。即以源操作数的类型为依据，对其进行扩展，然后赋值到目标操作数，他并不在乎目标的类型有无符号。</p>
 <p>看了相关编译完成后的汇编代码可以确认这一点，case 1和2的汇编代码完全相同，而3和4也是一样。更具体一点来说。有符号的情况下调用了cdq对符号位进行扩展，然后将edx赋值到q的高位，而无符号的情况下，简单xor了寄存器，然后赋值到q的高位。</p>
 
@@ -188,7 +241,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -201,7 +254,7 @@
   </article>
             
                   <article id="post-dbgluaefbc8ce8aea9luae8849ae69cace4b99fe883bde68ea7e588b6windbge8bf9be8a18ce8b083e8af95" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -215,6 +268,7 @@
 <p>使用方法：将dbgLua.dll拷贝到windbg的winext下，编写lua脚本。调试的时候，在输入框中输入“!dbgLua.run d:\sample.lua”其中“d:\sample.lua”是你的脚步路径。</p>
 <p>以下是1.0.0.1版本所支持的lua函数（后续可能会慢慢添加更多，看需求了）</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">dbgLua 1.0.1.1 API</span><br><span class="line"></span><br><span class="line">dprint 输出信息到windbg command窗口，例如dprint(&quot;hello&quot;)</span><br><span class="line">exec 执行一条windbg命令，例如exec(&quot;bp kernel32!CreateFileW&quot;)</span><br><span class="line">getreg 获得当前被调试对象的寄存器数据，例如eax_val = getreg(&quot;eax&quot;)</span><br><span class="line">setreg 设置当前被调试对象的寄存器数据，例如setreg(&quot;eax&quot;, 123456)</span><br><span class="line">readbyte 读取当前被调试对象的内存器数据，大小1字节</span><br><span class="line">readword 同上，大小为2字节</span><br><span class="line">readdword 同上，大小为4字节，例如mem_val = readxxxx(0x410000)</span><br><span class="line">writebyte 写入当前被调试对象的内存器数据，大小1自己</span><br><span class="line">writeword 同上，大小为2字节</span><br><span class="line">writedword 同上，大小为4字节，例如writexxxx(0x410000, 654321)</span><br><span class="line">readunicode 读取一个unicode字符串，例如str = readunicode(0x410000)</span><br><span class="line">readascii 读取一个ascii字符串，例如str = readascii(0x410000)</span><br><span class="line">wait 等待事件，例如exec(&quot;bp kernel32!CreateFileW;g&quot;);wait();</span><br><span class="line">evalmasm masm表达式求值，例如val = evalmasm(&quot;11+2*3&quot;)</span><br><span class="line">evalcpp cpp表达式求值，例如val = evalcpp(&quot;sizeof(char)&quot;)</span><br><span class="line">getmoduleinfo 通过模块名获得模块基址和大学，例如base,size = getmoduleinfo(&quot;kernel32&quot;)</span><br><span class="line">search 二进制查找，例如found = search(base, size, &quot;cc 89 75 fc eb &quot;)&lt;/blockquote&gt;</span><br></pre></td></tr></table></figure>
+
 <p>具体的结合这些函数进行调试的例子还没有准备好，等有机会了，我会准备好调试案例放到这里来。</p>
 <p>另外这是一个初始版本，不保证没有bug，如果你在使用中发现了bug，或者有好的想法，例如添加什么函数功能，不妨联系我。</p>
 <p>下载：</p>
@@ -232,7 +286,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Debugging/" title="">Debugging</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
           </span>
         
       
@@ -245,7 +299,7 @@
   </article>
             
                   <article id="post-e585b3e4ba8ee588a4e696ade69687e4bbb6e698afe590a6e5ad98e59ca8e69c80e9ab98e69588e79a84e587bde695b0" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -258,6 +312,7 @@
           <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>判断文件存在方法有很多，例如CreateFile，FindFirstFile，GetFileAttributes，PathFileExists等等。但是哪一种更加高效呢？其实作为常识，可能都能判断出GetFileAttributes和PathFileExists会比较快（而实际上PathFileExists就是调用的GetFileAttributes）。</p>
 <p>下面是google一份开源代码中提到的统计结果</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// <span class="doctag">NOTE:</span> This is the fastest implementation I found. The results were:</span></span><br><span class="line"><span class="comment">// CreateFile 1783739 avg ticks/call</span></span><br><span class="line"><span class="comment">// FindFirstFile 634148 avg ticks/call</span></span><br><span class="line"><span class="comment">// GetFileAttributes 428714 avg ticks/call</span></span><br><span class="line"><span class="comment">// GetFileAttributesEx 396324 avg ticks/call&lt;/blockquote&gt;</span></span><br></pre></td></tr></table></figure>
+
 <p>为什么会这样呢？大概了看了下，原因应该是这样的。</p>
 <p>1.CreateFile会创建句柄，需要一个完整IO流程，所以需要的时间比如非常长。<br>2.FindFirstFile回去查询文件夹的文件，虽然不会真正的打开文件句柄，并且在文件已经被缓存的情况下，走的是fastio流程，所以查询时间大幅下降，但是操作略微繁琐，导致他不是最好的选择。  </p>
 <ol start="3">
@@ -266,6 +321,8 @@
 <p>那么为什么GetFileAttributesEx 会快那么一点点呢？因为这个函数少了一个获取BasicInformation，也就是少了一个fastio流程。所以速度更快。这样看来，自己实现一个PathFileExistsEx效率可以高过PathFileExists了。（其实没多大实际意义）</p>
 <p>google就是这样做的：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">bool</span> File::Exists(<span class="keyword">const</span> TCHAR* file_name) &#123;</span><br><span class="line">ASSERT1(file_name &amp;&amp; *file_name);</span><br><span class="line">ASSERT1(lstrlen(file_name) &gt; <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// <span class="doctag">NOTE:</span> This is the fastest implementation I found. The results were:</span></span><br><span class="line"><span class="comment">// CreateFile 1783739 avg ticks/call</span></span><br><span class="line"><span class="comment">// FindFirstFile 634148 avg ticks/call</span></span><br><span class="line"><span class="comment">// GetFileAttributes 428714 avg ticks/call</span></span><br><span class="line"><span class="comment">// GetFileAttributesEx 396324 avg ticks/call</span></span><br><span class="line">WIN32_FILE_ATTRIBUTE_DATA attrs = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span> != ::GetFileAttributesEx(file_name, ::GetFileExInfoStandard, &amp;attrs);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+
 
         
       </div>
@@ -278,7 +335,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/NTInternals/" title="">NTInternals</a>
+            <a href='/categories/NTInternals/' title=''>NTInternals</a>
           </span>
         
       
@@ -291,7 +348,7 @@
   </article>
             
                   <article id="post-pioe8afbbide" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -301,11 +358,11 @@
       </h3>
       <div class="repo-list-description">
         
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p><a href="/uploads/2012/02/read.jpg"><img src="/uploads/2012/02/read.jpg" alt=""></a></p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p><a href="/uploads/2012/02/read.jpg"><img src="/uploads/2012/02/read.jpg" alt></a></p>
 <p>经过各种代码的东拼西凑、改来改去，总算是把PIO读取硬盘信息的代码“写”好了，上图是读取硬盘的前512字节的效果图。目前看来还是很挫，原因有两点：</p>
 <p>1.只支持LBA48的读取方法，不支持CHS，LBA28，虽然这两个方法的读取范围很有限，但是感觉至少要把LBA28给支持了才行。<br>2.很郁闷的一点，这个读取代码读取成功了，但是IO后返回的状态值是错误的。不知道哪里出了问题，会不会是虚拟硬盘太小而不能用LBA48的问题呢？没有头绪。  </p>
 <hr>
-<p>补充1.通过IDENTIFY DEVICE命令发现，可能由于设置的虚拟硬盘比较小的原因，虚拟硬盘不支持48bit的地址。IDENTIFY DEVICE会通过PIO方式返回一个256字（512字节）的数据。其中第83个字的第10位表示是否支持48bit的地址。如下图（来自ATA官方手册AT Attachment with Packet Interface - 6）。<br><a href="/uploads/2012/02/48bitaddress.jpg"><img src="/uploads/2012/02/48bitaddress.jpg" alt=""></a><br>补充2.由于不支持LBA48，我还是实现了LBA28。不过这个只能访问128G的硬盘了。至于CHS目前还是不考虑实现。<br>补充3.PIO写的方式大概也是差不多的。准备慢慢实现，还有DMA读写硬盘也需要了解下。不过好消息是现在基本能看懂ATA的手册了。<br>补充4.MiniKernel的代码依然写得很挫，暂时不准备共享出来，因为共享出来也没啥用，想学写系统的也看不懂那种烂代码。<br>补充5.感觉读写硬盘是一个挺有意思地方，完全可以单独拿出来写一个系列的blog。只是有没有时间和懒不懒的问题。<br>补充6.补充5的最后一句是P话，时间肯定是有的，就是懒而已。。。  </p>
+<p>补充1.通过IDENTIFY DEVICE命令发现，可能由于设置的虚拟硬盘比较小的原因，虚拟硬盘不支持48bit的地址。IDENTIFY DEVICE会通过PIO方式返回一个256字（512字节）的数据。其中第83个字的第10位表示是否支持48bit的地址。如下图（来自ATA官方手册AT Attachment with Packet Interface - 6）。<br><a href="/uploads/2012/02/48bitaddress.jpg"><img src="/uploads/2012/02/48bitaddress.jpg" alt></a><br>补充2.由于不支持LBA48，我还是实现了LBA28。不过这个只能访问128G的硬盘了。至于CHS目前还是不考虑实现。<br>补充3.PIO写的方式大概也是差不多的。准备慢慢实现，还有DMA读写硬盘也需要了解下。不过好消息是现在基本能看懂ATA的手册了。<br>补充4.MiniKernel的代码依然写得很挫，暂时不准备共享出来，因为共享出来也没啥用，想学写系统的也看不懂那种烂代码。<br>补充5.感觉读写硬盘是一个挺有意思地方，完全可以单独拿出来写一个系列的blog。只是有没有时间和懒不懒的问题。<br>补充6.补充5的最后一句是P话，时间肯定是有的，就是懒而已。。。  </p>
 <p>一个月一篇文章。。。多一点都没有。。。我果然是个需要被监督的人。。。  </p>
 
         
@@ -319,7 +376,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/MiniKernel/" title="">MiniKernel</a>
+            <a href='/categories/MiniKernel/' title=''>MiniKernel</a>
           </span>
         
       
@@ -334,7 +391,7 @@
   </article>
             
                   <article id="post-e680bbe7bb932011efbc8ce5b195e69c9b2012" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -377,7 +434,7 @@
   </article>
             
                   <article id="post-e68891e69cace69da5e4b88de683b3e58699kernelefbc8ce79bb4e588b0e68891e79a84e8869de79b96e4b8ade4ba86e4b880e7aead" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -391,7 +448,7 @@
 <p>正像标题写的，恩，我开始写kernel玩了。其实写一个简单，功能单一的kernel并不难。麻烦的只是搭建环境等等。kernel的编写资料也很多，但是可惜的是，绝大部分都是应用在linux环境。我是那种看到linux就头晕的人。所以还是坚持用windows和vc来开发kernel。令人惊喜的是grub能够帮助我们map kernel到内存中，所以boot loader这一步可以想放下。等kernel写了个大概再来写boot loader也不迟。</p>
 <p>环境和工具：<br>环境正如我上面提到了windows xp 和 vs 2008。其他工具包括winimage，virtual pc，bochsdbg（+ IDA）。当然还有grub4dos。</p>
 <p>要高效的起步，先要了解mulitBoot的一些知识。还有就是写一套能够在text mode下打印信息的函数，例如printf。这样在不用调试的情况下，就能了解一些信息。说实在的bochsdbg的调试功能真心不好用，但是加上IDA可能是一个比较好的做法。具备以上条件后，就可以开始kernel之旅了。</p>
-<p><a href="/uploads/2011/12/20111211174748.png"><img src="/uploads/2011/12/20111211174748.png" alt=""></a></p>
+<p><a href="/uploads/2011/12/20111211174748.png"><img src="/uploads/2011/12/20111211174748.png" alt></a></p>
 <p>可以看出内存的基本状况已经可以从boot_info中获取了。接下来要做的事情也很明了。就是需要一个物理内存管理器，实现最基本的物理内存管理器也不算难，不过那就是下篇文章的事情了。现在的kernel大小为7168字节，慢慢玩，看我能坚持多久。</p>
 
         
@@ -405,7 +462,7 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/MiniKernel/" title="">MiniKernel</a>
+            <a href='/categories/MiniKernel/' title=''>MiniKernel</a>
           </span>
         
       
@@ -420,7 +477,7 @@
   </article>
             
                   <article id="post-e4b8bae4bb80e4b988e5bf85e9a1bbe794a8deletee9878ae694bee695b0e7bb84" class="repo-list">
-    <div class="repo-list-item">
+    <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
@@ -438,21 +495,32 @@
 <p>知其然，不足以满足好奇心。下面才是拿手的，精彩的要放在后面嘛。</p>
 <p>先看测试代码</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> &#123;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">A() &#123;<span class="built_in">cout</span> &lt;&lt; <span class="string">"start 1"</span> &lt;&lt; <span class="built_in">endl</span>;&#125;</span><br><span class="line">~A() &#123;<span class="built_in">cout</span> &lt;&lt; <span class="string">"End 1"</span> &lt;&lt; <span class="built_in">endl</span>;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">A *a = <span class="keyword">new</span> A[<span class="number">10</span>]();</span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span>[] a;</span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>编译后看到代码如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0040103D push 0Eh</span><br><span class="line">0040103F call operator new[] (403ED0h)</span><br></pre></td></tr></table></figure><br>注意到这里传入的大小时0Eh，也就是说申请分配14个字节大小的内存。但是我们知道C++标准中空类的大小应该是1字节。那么多出的dword我们就很容易想到他的用处，应该是记录数组大小的。事实也确实如此。</p>
+
+<p>编译后看到代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0040103D push 0Eh</span><br><span class="line">0040103F call operator new[] (403ED0h)</span><br></pre></td></tr></table></figure>  
+<p>注意到这里传入的大小时0Eh，也就是说申请分配14个字节大小的内存。但是我们知道C++标准中空类的大小应该是1字节。那么多出的dword我们就很容易想到他的用处，应该是记录数组大小的。事实也确实如此。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mov dword ptr [eax],0Ah</span><br></pre></td></tr></table></figure>  
 <p>这里明确交代，给分配内存的第一个dword传入10。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">00401069 push offset A::~A (4011D0h)</span><br><span class="line">0040106E push offset A::A (401120h)</span><br><span class="line">00401073 push 0Ah</span><br><span class="line">00401075 push 1</span><br><span class="line">00401077 mov ecx,dword ptr [ebp-0F8h]</span><br><span class="line">0040107D add ecx,4</span><br><span class="line">00401080 push ecx</span><br><span class="line">00401081 call `eh vector constructor iterator&apos; (40A010h)</span><br></pre></td></tr></table></figure>  
 <p>这里是调用构造函数，注意是vector版本的构造函数。参数分别是数组的this指针，sizeof(A)，数组数量，构造和析构函数。这样，在这个函数内部循环10次调用构造函数，构造完毕。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">004010BD mov eax,dword ptr [ebp-14h]</span><br><span class="line">004010C0 mov dword ptr [ebp-0E0h],eax</span><br><span class="line">004010C6 mov ecx,dword ptr [ebp-0E0h]</span><br><span class="line">004010CC mov dword ptr [ebp-0ECh],ecx</span><br><span class="line">004010D2 cmp dword ptr [ebp-0ECh],0</span><br><span class="line">004010D9 je main+0F0h (4010F0h)</span><br><span class="line">004010DB push 3</span><br><span class="line">004010DD mov ecx,dword ptr [ebp-0ECh]</span><br><span class="line">004010E3 call A::`vector deleting destructor&apos; (401230h)</span><br></pre></td></tr></table></figure>  
 <p>这里是析构部分传入数组的this指针，传入flag(3)，调用析构函数。</p>
-<p>继续看call之后的代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">00401253 mov eax,dword ptr [ebp+8]</span><br><span class="line">00401256 and eax,2</span><br><span class="line">00401259 je A::`vector deleting destructor&apos;+61h (401291h)</span><br><span class="line">0040125B push offset A::~A (4011D0h)</span><br><span class="line">00401260 mov eax,dword ptr [this]</span><br><span class="line">00401263 mov ecx,dword ptr [eax-4]</span><br><span class="line">00401266 push ecx</span><br><span class="line">00401267 push 1</span><br><span class="line">00401269 mov edx,dword ptr [this]</span><br><span class="line">0040126C push edx</span><br><span class="line">0040126D call `eh vector destructor iterator&apos; (40A920h)</span><br><span class="line">00401272 mov eax,dword ptr [ebp+8]</span><br></pre></td></tr></table></figure><br>如果flag中位1是set，那么调用eh_vector_destructor_iterator调用每个析构函数。参数分别是this，sizeof(A)，数组个数（这里很明显是从eax-4中拿出来的）以及析构函数地址。</p>
-<p>OK，明白了delete[]的做法，我们看看delete为什么失败。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">004010BD mov eax,dword ptr [ebp-14h]</span><br><span class="line">004010C0 mov dword ptr [ebp-0E0h],eax</span><br><span class="line">004010C6 mov ecx,dword ptr [ebp-0E0h]</span><br><span class="line">004010CC mov dword ptr [ebp-0ECh],ecx</span><br><span class="line">004010D2 cmp dword ptr [ebp-0ECh],0</span><br><span class="line">004010D9 je main+0F0h (4010F0h)</span><br><span class="line">004010DB push 1</span><br><span class="line">004010DD mov ecx,dword ptr [ebp-0ECh]</span><br><span class="line">004010E3 call A::`scalar deleting destructor&apos; (4012D0h)</span><br></pre></td></tr></table></figure><br>这里调用的析构函数都不一样是一个scalar版本的函数。</p>
-<p>继续看这个函数的关键部分<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">004012F3 mov ecx,dword ptr [this]</span><br><span class="line">004012F6 call A::~A (4011D0h)</span><br><span class="line">004012FB mov eax,dword ptr [ebp+8]</span><br><span class="line">004012FE and eax,1</span><br><span class="line">00401301 je A::`scalar deleting destructor&apos;+3Fh (40130Fh)</span><br><span class="line">00401303 mov eax,dword ptr [this]</span><br><span class="line">00401306 push eax</span><br><span class="line">00401307 call operator delete (40A890h)</span><br></pre></td></tr></table></figure><br>这里很清楚的看到，只进行一次析构，然后就释放内存。所以我们看到的现象是只调用一次析构函数。那么为什么会崩溃呢？因为delete错了地址。看上面的对比的值，eax-4才是new返回的地址，所以delete的不应该是eax，而是eax-4。</p>
+<p>继续看call之后的代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">00401253 mov eax,dword ptr [ebp+8]</span><br><span class="line">00401256 and eax,2</span><br><span class="line">00401259 je A::`vector deleting destructor&apos;+61h (401291h)</span><br><span class="line">0040125B push offset A::~A (4011D0h)</span><br><span class="line">00401260 mov eax,dword ptr [this]</span><br><span class="line">00401263 mov ecx,dword ptr [eax-4]</span><br><span class="line">00401266 push ecx</span><br><span class="line">00401267 push 1</span><br><span class="line">00401269 mov edx,dword ptr [this]</span><br><span class="line">0040126C push edx</span><br><span class="line">0040126D call `eh vector destructor iterator&apos; (40A920h)</span><br><span class="line">00401272 mov eax,dword ptr [ebp+8]</span><br></pre></td></tr></table></figure>
+<p>如果flag中位1是set，那么调用eh_vector_destructor_iterator调用每个析构函数。参数分别是this，sizeof(A)，数组个数（这里很明显是从eax-4中拿出来的）以及析构函数地址。</p>
+<p>OK，明白了delete[]的做法，我们看看delete为什么失败。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">004010BD mov eax,dword ptr [ebp-14h]</span><br><span class="line">004010C0 mov dword ptr [ebp-0E0h],eax</span><br><span class="line">004010C6 mov ecx,dword ptr [ebp-0E0h]</span><br><span class="line">004010CC mov dword ptr [ebp-0ECh],ecx</span><br><span class="line">004010D2 cmp dword ptr [ebp-0ECh],0</span><br><span class="line">004010D9 je main+0F0h (4010F0h)</span><br><span class="line">004010DB push 1</span><br><span class="line">004010DD mov ecx,dword ptr [ebp-0ECh]</span><br><span class="line">004010E3 call A::`scalar deleting destructor&apos; (4012D0h)</span><br></pre></td></tr></table></figure>
+<p>这里调用的析构函数都不一样是一个scalar版本的函数。</p>
+<p>继续看这个函数的关键部分</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">004012F3 mov ecx,dword ptr [this]</span><br><span class="line">004012F6 call A::~A (4011D0h)</span><br><span class="line">004012FB mov eax,dword ptr [ebp+8]</span><br><span class="line">004012FE and eax,1</span><br><span class="line">00401301 je A::`scalar deleting destructor&apos;+3Fh (40130Fh)</span><br><span class="line">00401303 mov eax,dword ptr [this]</span><br><span class="line">00401306 push eax</span><br><span class="line">00401307 call operator delete (40A890h)</span><br></pre></td></tr></table></figure>
+<p>这里很清楚的看到，只进行一次析构，然后就释放内存。所以我们看到的现象是只调用一次析构函数。那么为什么会崩溃呢？因为delete错了地址。看上面的对比的值，eax-4才是new返回的地址，所以delete的不应该是eax，而是eax-4。</p>
 <p>真相大白？NO，还有一个问题，delete[] 和delete 内建类型真的成功了么？<br>看看我贴出的代码吧，这里不解释了。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">;delete[] version</span><br><span class="line">0040101E push 0Ah</span><br><span class="line">00401020 call operator new[] (4014C0h)</span><br><span class="line">00401025 add esp,4</span><br><span class="line">00401028 mov dword ptr [ebp-0E0h],eax</span><br><span class="line">0040102E mov eax,dword ptr [ebp-0E0h]</span><br><span class="line">00401034 mov dword ptr [a],eax</span><br><span class="line">00401037 mov eax,dword ptr [a]</span><br><span class="line">0040103A mov dword ptr [ebp-0D4h],eax</span><br><span class="line">00401040 mov ecx,dword ptr [ebp-0D4h]</span><br><span class="line">00401046 push ecx</span><br><span class="line">00401047 call operator delete[] (401600h) `</span><br><span class="line"></span><br><span class="line">;delete version</span><br><span class="line">0040101E push 0Ah</span><br><span class="line">00401020 call operator new[] (4014C0h)</span><br><span class="line">00401025 add esp,4</span><br><span class="line">00401028 mov dword ptr [ebp-0E0h],eax</span><br><span class="line">0040102E mov eax,dword ptr [ebp-0E0h]</span><br><span class="line">00401034 mov dword ptr [a],eax</span><br><span class="line">00401037 mov eax,dword ptr [a]</span><br><span class="line">0040103A mov dword ptr [ebp-0D4h],eax</span><br><span class="line">00401040 mov ecx,dword ptr [ebp-0D4h]</span><br><span class="line">00401046 push ecx</span><br><span class="line">00401047 call operator delete (401600h)</span><br></pre></td></tr></table></figure>
+
 <p>就像我刚刚所说的delete[]会调用delete。所以不会出任何问题。</p>
 <p>如果汇编看的头疼的话，这里我写了两个函数的逆向代码（说了精彩的应该放在后面的）：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">void A::'scalar deleting destructor'(unsigned int flags)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">this</span>-&gt;~A();</span><br><span class="line">    <span class="keyword">if</span> (flags &amp; <span class="number">1</span>) &#123;</span><br><span class="line">    A::<span class="function"><span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="keyword">this</span>)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void A::'vector deleting destructor'(unsigned int flags)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (flags &amp; <span class="number">2</span>) &#123;</span><br><span class="line">        count = *(<span class="keyword">int</span> *)((<span class="keyword">int</span>)<span class="keyword">this</span> - <span class="number">4</span>);</span><br><span class="line">        'eh vector destructor iterator'(this, sizeof(A), count, A::~A);</span><br><span class="line">        <span class="keyword">if</span> (flags&amp;<span class="number">1</span>) &#123;</span><br><span class="line">            A::operator delete((void *)((int)this - 4));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">this</span>-&gt;~A();</span><br><span class="line">        <span class="keyword">if</span> (flags &amp; <span class="number">1</span>) &#123;</span><br><span class="line">            A::<span class="function"><span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="keyword">this</span>)</span></span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">void A::'scalar deleting destructor'(unsigned int flags)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">this</span>-&gt;~A();</span><br><span class="line">    <span class="keyword">if</span> (flags &amp; <span class="number">1</span>) &#123;</span><br><span class="line">    A::<span class="function"><span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="keyword">this</span>)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void A::'vector deleting destructor'(unsigned int flags)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (flags &amp; <span class="number">2</span>) &#123;</span><br><span class="line">        count = *(<span class="keyword">int</span> *)((<span class="keyword">int</span>)<span class="keyword">this</span> - <span class="number">4</span>);</span><br><span class="line">        'eh vector destructor iterator'(this, sizeof(A), count, A::~A);</span><br><span class="line">        <span class="keyword">if</span> (flags&amp;<span class="number">1</span>) &#123;</span><br><span class="line">            A::<span class="function"><span class="keyword">operator</span> <span class="title">delete</span><span class="params">((<span class="keyword">void</span> *)((<span class="keyword">int</span>)<span class="keyword">this</span> - <span class="number">4</span>))</span></span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">this</span>-&gt;~A();</span><br><span class="line">        <span class="keyword">if</span> (flags &amp; <span class="number">1</span>) &#123;</span><br><span class="line">            A::<span class="function"><span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="keyword">this</span>)</span></span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>分析到这，终于明白。数组一定要用delete[]释放才安全。所以千万不要用auto_ptr作为数组的智能指针，不然会死的很惨。这里还要提一点，auto_ptr也不要用到容器里面去了，也是不允许的。非要这么做就用shared_ptr吧， C++0x已经在stl中加入的这部分。从vs2008 sp1开始支持。低版本的vs的话就去boost里面找吧。</p>
 
         
@@ -466,52 +534,11 @@
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/Tips/" title="">Tips</a>
+            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
         <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-volume-snapshot" class="repo-list">
-    <div class="repo-list-item">
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2011/10/30/volume-snapshot/">Volume snapshot</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>上个月说了，准备放一份基于卷磁盘快照代码。拖到现在也没有更新了，就把它放出来，留着也没啥用。本来就是为了做一个演示demo，没考虑效率和稳定性，只是提供一种思路，其实思路也很简单，有人已经把他完善的很好了。感觉博客更新确实慢，但是也没什么想写的，其实也写不出来什么。悲剧啊！</p>
-<p>和我其他代码一样，这么代码同样没有注释。需要的讲究读读吧。那啥，最近昨天把google的代码规范看了看，确实有很多值得学习的地方。不过呢，有些地方可能个性使然，不太认同。不过风格的问题，其实也没什么。</p>
-<p>最近还写了hive文件读解析的代码，还没完善，然后又转去看系统缓存那部分的东西了。有时间完善完善。还要完善了是自己写的一个ini文件解析的类。哎，都是一些自己造轮子的活。不过还挺有意思。</p>
-<p>下载：<a href="/uploads/2011/10/SectorMon.zip">SectorMon</a></p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2011-10-30T01:03:12.000Z" itemprop="datePublished">2011-10-30</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href="/categories/NTInternals/" title="">NTInternals</a>
-          </span>
-        
-      
-        <!--
-          
-            <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Volume/">Volume</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
           
         -->
 
@@ -621,9 +648,9 @@
 
     <h3>Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
     </div>
-  
+  </div>
 
 
         </div>
@@ -636,31 +663,14 @@
           </div>
       </div>
     
-</section><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
+</section>
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
-</body>
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -668,17 +678,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -696,6 +706,24 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
 
-	
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
+
+	</body>
+</html>

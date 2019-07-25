@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="一个查找指定栈回溯符号并执行命令的Windbg脚本">
+<section class="collection-head geopattern" data-pattern-id="一个查找指定栈回溯符号并执行命令的Windbg脚本" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/Debugging/" title="">Debugging</a>
+                            <a href='/categories/Debugging/' title=''>Debugging</a>
                         </span>
                     
                 </div>
@@ -60,12 +60,13 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这是自己没事在家调试程序的一个小需求。</p>
 <p>有时候比如IE这样的程序，线程实在是非常的多，我想操作某个特殊线程就比较麻烦，需要先找到线程然后再实行命令，为了偷懒就写了这个脚本。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$$ If a frame of a thread has the target symbol, we execute the command.</span><br><span class="line">$$ Author: nighxie </span><br><span class="line">$$ Blog: <span class="number">0</span>cch.net</span><br><span class="line"></span><br><span class="line">.<span class="keyword">if</span> ($&#123;/d:$arg1&#125; &amp; $&#123;/d:$arg2&#125; &amp; $&#123;/d:$arg3&#125;) &#123;</span><br><span class="line">    .<span class="keyword">for</span> (r @$t0 = <span class="number">0</span>; @$t0 &lt; <span class="number">0</span>n$&#123;$arg1&#125;; r @$t0 = @$t0 + <span class="number">1</span>) &#123;</span><br><span class="line">        r @$t1 = <span class="number">0</span>;</span><br><span class="line">        ~[@$t0]s;</span><br><span class="line">        !for_each_frame .<span class="keyword">if</span>($spat(<span class="string">"$&#123;@#SymbolName&#125;"</span>, <span class="string">"$&#123;$arg2&#125;"</span>)) &#123;r @$t1 = <span class="number">1</span>&#125;</span><br><span class="line">        .<span class="keyword">if</span> (@$t1 == <span class="number">1</span>) &#123;</span><br><span class="line">            $&#123;$arg3&#125;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">.<span class="keyword">else</span> &#123;</span><br><span class="line">    .echo <span class="string">"Usage $$&gt;a&lt;$&#123;$arg0&#125; thread_count pattern cmd"</span>;</span><br><span class="line">    .echo <span class="string">"e.g. $$&gt;a&lt;$&#123;$arg0&#125; 5 ntdll* ~n"</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>就如同上面的例子指定线程数量，要匹配的符号，最后就是要执行的命令。<br>$$&gt;a&lt;${$arg0} 5 ntdll* ~n就表示在前5个线程里寻找栈回溯有关ntdll的线程，然后执行~n命令挂起线程。</p>
+
+<p>就如同上面的例子指定线程数量，要匹配的符号，最后就是要执行的命令。<br>$$&gt;a&lt;${$arg0} 5 ntdll* <del>n就表示在前5个线程里寻找栈回溯有关ntdll的线程，然后执行</del>n命令挂起线程。</p>
 
             </article>
             
@@ -126,31 +127,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
+</section>
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
-</body>
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -158,17 +142,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -188,6 +172,24 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
 
-	
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
+
+	</body>
+</html>

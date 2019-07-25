@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="使用Windbg Logexts监控程序API调用">
+<section class="collection-head geopattern" data-pattern-id="使用Windbg Logexts监控程序API调用" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/Debugging/" title="">Debugging</a><a href="/categories/Debugging/Tips/" title="">Tips</a>
+                            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/Tips/' title=''>Tips</a>
                         </span>
                     
                 </div>
@@ -60,7 +60,7 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在我们调试BUG和逆向程序的时候，往往需要监控一些API的调用。这个时候我们可以借助调试器和第三方工具完成这样的任务。例如调试器可以下断点查看栈状态得到相关信息，或者使用第三方工具如API Monitor可以方便的监控API的调用。不过，这篇文章中想说的是另一个工具，Windbg的扩展程序Logexts.dll。闲话少说，我们先看一看监控的效果如何吧。</p>
 <p><a href="/uploads/2013/09/20130914230701.png"><img src="/uploads/2013/09/20130914230701.png" alt="20130914230701"></a></p>
@@ -76,8 +76,10 @@
 <p>!logexts.logm<br>显示和创建模块的包含/排除列表。这可以帮助我们指定记录那些特定模块中的API调用。</p>
 <p>上面图中我所使用的命令是这样的：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;!logexts.loge D:\  </span><br><span class="line">!logexts.logc d *  </span><br><span class="line">!logexts.logc e 15 16 19  </span><br><span class="line">!logexts.logo e *  </span><br><span class="line">!logexts.logm i notepad.exe</span><br></pre></td></tr></table></figure>
+
 <p>其输出结果是：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">!logexts.loge D:\  </span><br><span class="line">Windows API Logging Extensions v3.01  </span><br><span class="line">Parsing the manifest files...  </span><br><span class="line">Location: C:\Program Files (x86)\Windows Kits\8.0\Debuggers\x64\winext\manifest\main.h  </span><br><span class="line">Parsing file &quot;main.h&quot; ...  </span><br><span class="line">Parsing file &quot;winerror.h&quot; ...  </span><br><span class="line">Parsing file &quot;kernel32.h&quot; ...  </span><br><span class="line">Parsing file &quot;debugging.h&quot; ...  </span><br><span class="line">Parsing file &quot;processes.h&quot; ...  </span><br><span class="line">Parsing file &quot;memory.h&quot; ...  </span><br><span class="line">Parsing file &quot;registry.h&quot; ...  </span><br><span class="line">Parsing file &quot;fileio.h&quot; ...  </span><br><span class="line">Parsing file &quot;strings.h&quot; ...  </span><br><span class="line">Parsing file &quot;user32.h&quot; ...  </span><br><span class="line">Parsing file &quot;clipboard.h&quot; ...  </span><br><span class="line">Parsing file &quot;hook.h&quot; ...  </span><br><span class="line">Parsing file &quot;gdi32.h&quot; ...  </span><br><span class="line">Parsing file &quot;winspool.h&quot; ...  </span><br><span class="line">Parsing file &quot;version.h&quot; ...  </span><br><span class="line">Parsing file &quot;winsock2.h&quot; ...  </span><br><span class="line">Parsing file &quot;advapi32.h&quot; ...  </span><br><span class="line">Parsing file &quot;uuids.h&quot; ...  </span><br><span class="line">Parsing file &quot;com.h&quot; ...  </span><br><span class="line">Parsing file &quot;shell.h&quot; ...  </span><br><span class="line">Parsing file &quot;ole32.h&quot; ...  </span><br><span class="line">Parsing file &quot;ddraw.h&quot; ...  </span><br><span class="line">Parsing file &quot;winmm.h&quot; ...  </span><br><span class="line">Parsing file &quot;avifile.h&quot; ...  </span><br><span class="line">Parsing file &quot;dplay.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3d.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3dtypes.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3dcaps.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3d8.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3d8types.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3d8caps.h&quot; ...  </span><br><span class="line">Parsing file &quot;dsound.h&quot; ...  </span><br><span class="line">Parsing completed.  </span><br><span class="line">Logexts injected. Output: &quot;D:\\LogExts\&quot;  </span><br><span class="line">Logging enabled.  </span><br><span class="line">0:000&gt; !logexts.logc d *  </span><br><span class="line">All categories disabled.  </span><br><span class="line">0:000&gt; !logexts.logc e 15 16 19  </span><br><span class="line">15 IOFunctions Enabled  </span><br><span class="line">16 MemoryManagementFunctions Enabled  </span><br><span class="line">19 ProcessesAndThreads Enabled  </span><br><span class="line">0:000&gt; !logexts.logo e *  </span><br><span class="line">Debugger Enabled  </span><br><span class="line">Text file Enabled  </span><br><span class="line">Verbose log Enabled  </span><br><span class="line">0:000&gt; !logexts.logm i notepad.exe  </span><br><span class="line">Included modules:  </span><br><span class="line">notepad.exe</span><br></pre></td></tr></table></figure>
+
 <p>简单说明一下这些命令：<br>!logexts.loge D:\<br>设置log的保持路径，并且开启监控  </p>
 <p>!logexts.logc d *<br>先关闭所有API分类的监控  </p>
 <p>!logexts.logc e 15 16 19<br>然后设置我们想监控分类，这里是IOFunctions，MemoryManagementFunctions和ProcessesAndThreads。至于如何查询分类对于的id，可以直接输入!logexts.logc进行查看。</p>
@@ -86,11 +88,12 @@
 <p>按下F5，让程序跑起来看看效果吧。先别着急惊叹，Logexts还有更惊艳的地方。那就是他的高度可配置性。如果你想监控他描述以外的API，那么你可以自己写这个API的“头文件”。这里用引号是因为，它并不是真正的头文件，只不过他的语法和C的头文件非常的相似。我们可以看一个例子：</p>
 <p>创建%windbg_dir%\winext\manifest\Context.h<br>并且写入这些内容</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">category ActivationContext:</span><br><span class="line"><span class="keyword">module</span> KERNEL32.DLL:</span><br><span class="line"></span><br><span class="line"><span class="function">FailOnFalse <span class="title">ActivateActCtx</span><span class="params">(HANDLE hActCtx, [out] PULONG_PTR lpCookie)</span></span>;</span><br><span class="line"><span class="function">FailOnFalse <span class="title">DeactivateActCtx</span><span class="params">(DWORD dwFlags, ULONG_PTR upCookie)</span></span>;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>在%windbg_dir%\winext\manifest\main.h文件的最后加入一行 #include “Context.h”</p>
 <p>保存后，重启调试程序，输入!logexts.logc，可以看了多出了ActivationContext这一项。现在就可以选择这一项分类来监控ActivateActCtx和DeactivateActCtx了。</p>
-<p>最后，大家应该发现了这样一个问题，开启这个API监控还是比较麻烦的，需要输入好几条命令。为了更方便的使用这个功能，我写了一个脚本来解决这个问题，这样就可以用一行命令来开启监控。使用方法是：<br>Usage $$&gt;a&lt;logger.wds output_dir categories include_modules<br>e.g. $$&gt;a&lt;logger.wds “d:\” “15 16 19” “notepad.exe”  </p>
+<p>最后，大家应该发现了这样一个问题，开启这个API监控还是比较麻烦的，需要输入好几条命令。为了更方便的使用这个功能，我写了一个脚本来解决这个问题，这样就可以用一行命令来开启监控。使用方法是：<br>Usage $$&gt;a&lt;logger.wds output_dir categories include_modules<br>e.g. $$&gt;a&lt;logger.wds “d:&quot; “15 16 19” “notepad.exe”  </p>
 <p>下载<a href="/uploads/2013/09/logger.zip">logger</a></p>
-<p>关于Logexts的更多详细信息请参考msdn：<a href="http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85).aspx</a>.aspx)</p>
+<p>关于Logexts的更多详细信息请参考msdn：<a href="http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85).aspx" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85).aspx</a></p>
 
             </article>
             
@@ -151,31 +154,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config("");
-</script>
+</section>
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
-</body>
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -183,17 +169,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -213,6 +199,24 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
 
-	
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
+
+	</body>
+</html>

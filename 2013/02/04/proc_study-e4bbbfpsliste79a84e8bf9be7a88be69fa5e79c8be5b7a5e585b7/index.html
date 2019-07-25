@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="proc_study —— 仿PsList的进程查看工具">
+<section class="collection-head geopattern" data-pattern-id="proc_study —— 仿PsList的进程查看工具" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/NTInternals/" title="">NTInternals</a>
+                            <a href='/categories/NTInternals/' title=''>NTInternals</a>
                         </span>
                     
                 </div>
@@ -60,12 +60,13 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
-                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>proc_study 是我通过逆向PsList而写出来的小工具，如果在本地查看进程，这个工具和pslist没有任何区别。因为实现查看进程的方式也是和pslist一模一样的。另一方面，他缺乏pslist的查看远程计算机的进程的功能。没有实现这个并不是不知道怎么实现，是我半天也没搭建出这样的一个远程环境，真够郁闷的。这个应该是年前的最后一个study系列的工具了。期待蛇年有时间山寨更多工具，嘿嘿~~~</p>
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>proc_study 是我通过逆向PsList而写出来的小工具，如果在本地查看进程，这个工具和pslist没有任何区别。因为实现查看进程的方式也是和pslist一模一样的。另一方面，他缺乏pslist的查看远程计算机的进程的功能。没有实现这个并不是不知道怎么实现，是我半天也没搭建出这样的一个远程环境，真够郁闷的。这个应该是年前的最后一个study系列的工具了。期待蛇年有时间山寨更多工具，嘿嘿<del>~</del></p>
 <p><a href="/uploads/2013/02/20130204204101.png"><img src="/uploads/2013/02/20130204204101.png" alt="20130204204101"></a></p>
 <p>这个工具的使用方法和命令行参数可以直接参看PsList的。因为整个Usage我都是直接山寨过来的。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Usage: proc_study [-d][-m][-x][-t][name|pid]</span><br><span class="line">-d      Show thread detail.</span><br><span class="line">-m     Show memory detail.</span><br><span class="line">-x      Show processes, memory information and threads.</span><br><span class="line">-t       Show process tree.</span><br><span class="line">name Show information about processes that begin with the name</span><br><span class="line">specified.</span><br><span class="line">-e      Exact match the process name.</span><br><span class="line">pid Show information about specified process.</span><br><span class="line"></span><br><span class="line">All memory values are displayed in KB.</span><br><span class="line">Abbreviation key:</span><br><span class="line">Pri Priority</span><br><span class="line">Thd Number of Threads</span><br><span class="line">Hnd Number of Handles</span><br><span class="line">VM Virtual Memory</span><br><span class="line">WS Working Set</span><br><span class="line">Priv Private Virtual Memory</span><br><span class="line">Priv Pk Private Virtual Memory Peak</span><br><span class="line">Faults Page Faults</span><br><span class="line">NonP Non-Paged Pool</span><br><span class="line">Page Paged Pool</span><br><span class="line">Cswtch Context Switches</span><br></pre></td></tr></table></figure>
+
 <p>下载<a href="/uploads/2013/02/proc_study.zip">proc_study</a></p>
 
             </article>
@@ -127,14 +128,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+</section>
+
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -142,17 +143,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -172,6 +173,7 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
 
-	
+	</body>
+</html>

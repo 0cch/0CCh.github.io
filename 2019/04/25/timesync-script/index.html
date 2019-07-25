@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <link rel="icon" href="/favicon.ico">
+  
+  <title>0CCh Blog | 一个时间同步脚本</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
+  <!--在这里倒入jquery 方便处理部分页面的jquery-->
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head></html>
+
+<body>
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="site-header navfixed-false">
+  <div class="container">
+      <h1><a href="/" title="0CCh Blog"><span class="octicon octicon-mark-github"></span> 0CCh Blog</a></h1>
+      <nav class="site-header-nav" role="navigation">
+        
+              
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+        
+              
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+        
+              
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+        
+      </nav>
+  </div>
+</header>
+
+	
+<section class="collection-head geopattern" data-pattern-id="一个时间同步脚本" >
+    <div class="container">
+        <div class="collection-title">
+            <h1 class="collection-header">
+                一个时间同步脚本
+            </h1>
+            
+                <div class="collection-info">
+                    <span class="meta-info">
+                        <span class="octicon octicon-calendar"></span>
+                        <time datetime="2019-04-25T09:07:46.000Z" itemprop="datePublished">2019-04-25</time>
+                    </span>
+                    
+                        <span class="meta-info">
+                            <span class="octicon octicon-file-directory"></span>
+                            <a href='/categories/Tips/' title=''>Tips</a>
+                        </span>
+                    
+                </div>
+            
+        </div>
+    </div>
+</section>
+	<section class="container">
+    <div class="columns">
+        <div class="column  three-fourths " >
+            <article class="article-content markdown-body">
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>家里有台电脑不知道为啥一直同步不了网络时间，每隔一段时间就慢个几分钟，于是在网上找了点资料和代码拼凑了一个用于Windows时间同步的python脚本。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">@author: 0cch</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> socket <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> datetime</span><br><span class="line"><span class="keyword">from</span> ctypes             <span class="keyword">import</span> Structure, windll, pointer</span><br><span class="line"><span class="keyword">from</span> ctypes.wintypes    <span class="keyword">import</span> WORD</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SYSTEMTIME</span><span class="params">(Structure)</span>:</span></span><br><span class="line">  _fields_ = [</span><br><span class="line">      ( <span class="string">'wYear'</span>,            WORD ),</span><br><span class="line">      ( <span class="string">'wMonth'</span>,           WORD ),</span><br><span class="line">      ( <span class="string">'wDayOfWeek'</span>,       WORD ),</span><br><span class="line">      ( <span class="string">'wDay'</span>,             WORD ),</span><br><span class="line">      ( <span class="string">'wHour'</span>,            WORD ),</span><br><span class="line">      ( <span class="string">'wMinute'</span>,          WORD ),</span><br><span class="line">      ( <span class="string">'wSecond'</span>,          WORD ),</span><br><span class="line">      ( <span class="string">'wMilliseconds'</span>,    WORD ),</span><br><span class="line">    ]</span><br><span class="line">SetLocalTime = windll.kernel32.SetLocalTime</span><br><span class="line"></span><br><span class="line">NTP_SERVER = <span class="string">"pool.ntp.org"</span></span><br><span class="line">TIME1970 = <span class="number">2208988800</span></span><br><span class="line"></span><br><span class="line">clientSocket = socket(AF_INET, SOCK_DGRAM)</span><br><span class="line">clientSocket.settimeout(<span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">portNumber = <span class="number">123</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sntp_client</span><span class="params">()</span>:</span></span><br><span class="line">    data = <span class="string">'\x1b'</span> + <span class="number">47</span> * <span class="string">'\0'</span></span><br><span class="line">    clientSocket.sendto( data.encode(<span class="string">'utf-8'</span>), ( NTP_SERVER, portNumber ))</span><br><span class="line">    data, address = clientSocket.recvfrom(<span class="number">1024</span>)</span><br><span class="line">    <span class="keyword">if</span> data:</span><br><span class="line">        <span class="keyword">print</span> (<span class="string">'Response received from:'</span>, address)</span><br><span class="line">        t_time = struct.unpack( <span class="string">'!12I'</span>, data )[<span class="number">10</span>]</span><br><span class="line">        t_time -= TIME1970</span><br><span class="line">        </span><br><span class="line">        dt = datetime.datetime.fromtimestamp( t_time )</span><br><span class="line">        </span><br><span class="line">        dt_tuple = dt.timetuple()</span><br><span class="line">        st = SYSTEMTIME()</span><br><span class="line">        st.wYear            = dt_tuple.tm_year</span><br><span class="line">        st.wMonth           = dt_tuple.tm_mon</span><br><span class="line">        st.wDayOfWeek       = ( dt_tuple.tm_wday + <span class="number">1</span> ) % <span class="number">7</span></span><br><span class="line">        st.wDay             = dt_tuple.tm_mday</span><br><span class="line">        st.wHour            = dt_tuple.tm_hour</span><br><span class="line">        st.wMinute          = dt_tuple.tm_min</span><br><span class="line">        st.wSecond          = dt_tuple.tm_sec</span><br><span class="line">        st.wMilliseconds    = <span class="number">0</span></span><br><span class="line">         </span><br><span class="line">        ret = SetLocalTime( pointer( st ) )</span><br><span class="line">        <span class="keyword">if</span> ret == <span class="number">0</span>:</span><br><span class="line">            print( <span class="string">'Setting failed. Try as administrator.'</span> )</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            print( <span class="string">'Successfully.'</span> )</span><br><span class="line">        </span><br><span class="line">    clientSocket.close()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    sntp_client()</span><br></pre></td></tr></table></figure>
+
+
+            </article>
+            
+                <div class="share">
+                    <!--开启分享-->
+<div class="share-component" data-disabled="google,twitter,facebook" data-description=""></div>
+
+<script src="/js/share.min.js"></script>
+
+                </div>    
+            
+
+            
+            
+                
+<div class="comments">
+    <div id="disqus_thread"></div>
+    <script>
+
+        var host = window.location.host;
+        var disqus_shortname = host.includes('127.0.0.1') || host.includes('0.0.0.0') || host.includes('localhost') ? '0cchDev' : '0cch'
+
+        var disqus_title = '一个时间同步脚本';
+        var disqus_config = function () {
+            this.page.url = 'http://0cch.com/2019/04/25/timesync-script/';
+        };
+        
+        (function() {
+            var d = document, s = d.createElement('script');
+
+            s.src = '//0cch.disqus.com/embed.js';
+
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>
+        请启用JavaScript来查看 <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+    </noscript>
+</div>
+             
+
+        </div>
+        <div class="column one-fourth">
+            
+                
+                
+
+
+<h3>Post Directory</h3>
+
+<div id="post-directory-module">
+	<section class="post-directory">
+		<p><strong class="toc-title">Article directory</strong></p>
+		
+	</section>
+</div>
+            
+        </div>
+    </div>
+</section>
+
+<footer class="container">
+    <div class="site-footer" role="contentinfo">
+        
+        <ul class="site-footer-links right mobile-hidden">
+            <li>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+            </li>
+        </ul>
+
+        <ul class="site-footer-links mobile-hidden">
+            
+                  
+                  <li>
+                    <a href="/"  title="Home">Home</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/categories/"  title="Category">Category</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
+                  </li>
+            
+            <li>
+                <a href="/atom.xml">
+                    <span class="octicon octicon-rss" style="color:orange;"></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</footer>
+
+		<script src="/js/geopattern.js"></script>
+		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+		
+			<script src="/js/toc.js"></script>
+		
+
+		<script src="/js/index.js"></script>
+
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
+
+	</body>
+</html>

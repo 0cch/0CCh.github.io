@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,20 +22,20 @@
       <nav class="site-header-nav" role="navigation">
         
               
-              <a href="/" class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
         
               
-              <a href="/categories/" class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
         
               
-              <a href="/open-source/" class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
         
       </nav>
   </div>
 </header>
 
 	
-<section class="collection-head geopattern" data-pattern-id="Windows 8.1中获得系统版本信息的方法">
+<section class="collection-head geopattern" data-pattern-id="Windows 8.1中获得系统版本信息的方法" >
     <div class="container">
         <div class="collection-title">
             <h1 class="collection-header">
@@ -50,7 +50,7 @@
                     
                         <span class="meta-info">
                             <span class="octicon octicon-file-directory"></span>
-                            <a href="/categories/Tips/" title="">Tips</a>
+                            <a href='/categories/Tips/' title=''>Tips</a>
                         </span>
                     
                 </div>
@@ -60,16 +60,17 @@
 </section>
 	<section class="container">
     <div class="columns">
-        <div class="column  three-fourths ">
+        <div class="column  three-fourths " >
             <article class="article-content markdown-body">
-                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在Windows 8.1之前的系统版本上，我们一直可以使用 <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms724451(v=vs.85" target="_blank" rel="noopener">GetVersionEx</a>.aspx) 这个函数来获取当前系统的MajorVersion和MinorVersion。但是当Windows系统来到8.1时代，这个API似乎就不好用了。如果在Windows 8.1上调用这个函数，我们更有可能获得的版本号是Windows 8的版本6.2，而不是我们想要的6.3。在MSDN上提供了这样一段说明：</p>
-<blockquote>With the release of Windows 8.1, the behavior of the <strong>GetVersionEx</strong> API has changed in the value it will return for the operating system version. The value returned by the <strong>GetVersionEx</strong> function now depends on how the application is manifested.<br><br>Applications not manifested for Windows 8.1 will return the Windows 8 OS version value (6.2). Once an application is manifested for a given operating system version, <strong>GetVersionEx</strong> will always return the version that the application is manifested for in future releases.</blockquote>
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在Windows 8.1之前的系统版本上，我们一直可以使用 <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms724451(v=vs.85).aspx" target="_blank" rel="noopener">GetVersionEx</a> 这个函数来获取当前系统的MajorVersion和MinorVersion。但是当Windows系统来到8.1时代，这个API似乎就不好用了。如果在Windows 8.1上调用这个函数，我们更有可能获得的版本号是Windows 8的版本6.2，而不是我们想要的6.3。在MSDN上提供了这样一段说明：</p>
+<blockquote>With the release of Windows 8.1, the behavior of the **GetVersionEx** API has changed in the value it will return for the operating system version. The value returned by the **GetVersionEx** function now depends on how the application is manifested.
 
-
-<p>好了，既然微软都这么说了，也没办法，还好微软也给我们提供了另一套函数，叫做<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/dn424972(v=vs.85" target="_blank" rel="noopener">Version Helper functions</a>.aspx) ，看起来是一套很不错的API，能帮助我们方便的判断系统版本。但是，仔细一看，这套函数需要头文件VersionHelpers.h，而这个文件是 Windows 8.1 software development kit 的一部分。对于使用低版本的VS还得装新版SDK，岂不麻烦。那么我们希望能找到一套更好的解决方法。</p>
+<p>Applications not manifested for Windows 8.1 will return the Windows 8 OS version value (6.2). Once an application is manifested for a given operating system version, <strong>GetVersionEx</strong> will always return the version that the application is manifested for in future releases.</p></blockquote><p></p>
+<p>好了，既然微软都这么说了，也没办法，还好微软也给我们提供了另一套函数，叫做<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/dn424972(v=vs.85).aspx" target="_blank" rel="noopener">Version Helper functions</a> ，看起来是一套很不错的API，能帮助我们方便的判断系统版本。但是，仔细一看，这套函数需要头文件VersionHelpers.h，而这个文件是 Windows 8.1 software development kit 的一部分。对于使用低版本的VS还得装新版SDK，岂不麻烦。那么我们希望能找到一套更好的解决方法。</p>
 <p>我第一个能想到了，当然就是万能的WMI，使用Win32_OperatingSystem class中的Version可以获得一个形如6.3.9600的字符串，我们就能通过解析这个获得系统的版本了。但是说实话，不到万不得已我不太喜欢用WMI这套API，总感觉为了一个小功能，牵扯了一堆东西。</p>
-<p>那么第二套方案，是我觉得比较满意的，那就是调用<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms725493(v=vs.85" target="_blank" rel="noopener">VerSetConditionMask</a>.aspx)和<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms725492(v=vs.85" target="_blank" rel="noopener">VerifyVersionInfo</a>.aspx)来完成对系统版本的判断。具体做法如下：</p>
+<p>那么第二套方案，是我觉得比较满意的，那就是调用<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms725493(v=vs.85).aspx" target="_blank" rel="noopener">VerSetConditionMask</a>和<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms725492(v=vs.85).aspx" target="_blank" rel="noopener">VerifyVersionInfo</a>来完成对系统版本的判断。具体做法如下：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">IsWindows8Point1</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    OSVERSIONINFOEX version_info = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    version_info.dwOSVersionInfoSize = <span class="keyword">sizeof</span>(OSVERSIONINFOEX);</span><br><span class="line">    version_info.dwMajorVersion = <span class="number">6</span>;</span><br><span class="line">    version_info.dwMinorVersion = <span class="number">3</span>;</span><br><span class="line">    ULONGLONG mask = VerSetConditionMask(<span class="number">0</span>, VER_MAJORVERSION, VER_EQUAL);</span><br><span class="line">    mask = VerSetConditionMask(mask, VER_MINORVERSION, VER_EQUAL);</span><br><span class="line">    <span class="keyword">return</span> VerifyVersionInfo(&amp;version;_info, VER_MAJORVERSION | VER_MINORVERSION, mask);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
 <p>那么，我们就可以用这个函数来判断系统是否是Windows 8.1，如果不是，我们就可以用老办法，GetVersionEx来获得系统的版本号作判断了。当然了，大家看到这估计也能看出，我们自己也能用这两个函数实现一套所谓的Version Helper functions。举个例子：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL WINAPI <span class="title">IsWindowsVersionOrGreater</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	WORD wMajorVersion,</span></span></span><br><span class="line"><span class="function"><span class="params">	WORD wMinorVersion,</span></span></span><br><span class="line"><span class="function"><span class="params">	WORD wServicePackMajor</span></span></span><br><span class="line"><span class="function"><span class="params">	)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    OSVERSIONINFOEX version_info = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">    version_info.dwOSVersionInfoSize = <span class="keyword">sizeof</span>(OSVERSIONINFOEX);</span><br><span class="line">    version_info.dwMajorVersion = wMajorVersion;</span><br><span class="line">    version_info.dwMinorVersion = wMinorVersion;</span><br><span class="line">    version_info.wServicePackMajor = wServicePackMajor;</span><br><span class="line"></span><br><span class="line">    ULONGLONG mask = VerSetConditionMask(<span class="number">0</span>, VER_MAJORVERSION, VER_GREATER_EQUAL);</span><br><span class="line">    mask = VerSetConditionMask(mask, VER_MINORVERSION, VER_GREATER_EQUAL);</span><br><span class="line">    mask = VerSetConditionMask(mask, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> VerifyVersionInfo(&amp;version;_info, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, mask);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
 <p>怎么样，是不是达到了以假乱真的效果了。那么最后，咱再看看这么写出来的API的效果如何：</p>
@@ -137,14 +138,14 @@
             
         </div>
     </div>
-</section><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-</body>
+</section>
+
 <footer class="container">
     <div class="site-footer" role="contentinfo">
         
         <ul class="site-footer-links right mobile-hidden">
             <li>
-                <a href="javascript:window.scrollTo(0,0)">TOP</a>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
             </li>
         </ul>
 
@@ -152,17 +153,17 @@
             
                   
                   <li>
-                    <a href="/" title="Home">Home</a>
+                    <a href="/"  title="Home">Home</a>
                   </li>
             
                   
                   <li>
-                    <a href="/categories/" title="Category">Category</a>
+                    <a href="/categories/"  title="Category">Category</a>
                   </li>
             
                   
                   <li>
-                    <a href="/open-source/" title="Open-Source">Open-Source</a>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
                   </li>
             
             <li>
@@ -182,6 +183,7 @@
 
 		<script src="/js/index.js"></script>
 
-		 <script src="/js/popular_repo.js"></script> 
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
 
-	
+	</body>
+</html>
