@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://0cch.com/"/>
-  <updated>2019-07-25T09:11:55.718Z</updated>
+  <updated>2019-07-29T06:20:03.813Z</updated>
   <id>http://0cch.com/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>windbg监听QT事件</title>
+    <link href="http://0cch.com/2019/05/29/qt-event-wds/"/>
+    <id>http://0cch.com/2019/05/29/qt-event-wds/</id>
+    <published>2019-05-29T06:18:58.000Z</published>
+    <updated>2019-07-29T06:20:03.813Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Windows平台下做过界面开发的程序员肯定知道窗口界面是由消息驱动的。为了能方便的调试窗口消息循环，Windows提供了spy++这样的工具帮助我们监控消息。但是Windows的消息在QT的程序上可能只有部分有用。所以我们还需要一个监控QT窗口事件的工具，不过可惜的是我并没有找到这样现成的工具。于是我用Windbg的断点命令写了一个。</p><p>不过写断点命令之前必须先搞清楚在QT中事件都是怎么发出来的。经过调试确认了几个函数，分别是：</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">QCoreApplication::sendEvent</span><br><span class="line">QCoreApplication::sendSpontaneousEvent</span><br><span class="line">QCoreApplication::postEvent</span><br></pre></td></tr></table></figure><p>接下来我们可以对它们下断点了。当然，这里不是直接了当下断点那么的简单。我们需要在断点中插入命令，让断点命中后打印我们想要的内容，然后继续运行。我这里的写法是：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">bm /( qtcored4!QCoreApplication::postEvent &quot;.printf \&quot;P  \&quot;;?? @@C++(static_cast&lt;QtGuid4!QEvent::Type&gt;(event-&gt;t));g&quot;</span><br><span class="line">bc 2</span><br><span class="line">bm /( qtcored4!QCoreApplication::sendEvent &quot;.printf \&quot;S  \&quot;;?? @@C++(static_cast&lt;QtGuid4!QEvent::Type&gt;(event-&gt;t));g&quot;</span><br><span class="line">bm /( qtcored4!QCoreApplication::sendSpontaneousEvent &quot;.printf \&quot;SS \&quot;;?? @@C++(static_cast&lt;QtGuid4!QEvent::Type&gt;(event-&gt;t));g&quot;</span><br></pre></td></tr></table></figure><p>在windbg中执行后，运行程序就能看到事件一个一个的打印出来了，而且打印出来的并不是冷冰冰的事件数字，而是数字所代表的含义：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">SS QEvent::Type WindowDeactivate (0n25)</span><br><span class="line">P  QEvent::Type UpdateRequest (0n77)</span><br><span class="line">S  QEvent::Type WindowDeactivate (0n25)</span><br><span class="line">S  QEvent::Type WindowDeactivate (0n25)</span><br><span class="line">SS QEvent::Type ActivationChange (0n99)</span><br><span class="line">SS QEvent::Type ApplicationDeactivate (0n122)</span><br><span class="line">S  QEvent::Type UpdateRequest (0n77)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type ApplicationActivate (0n121)</span><br><span class="line">SS QEvent::Type WindowActivate (0n24)</span><br><span class="line">P  QEvent::Type UpdateRequest (0n77)</span><br><span class="line">S  QEvent::Type WindowActivate (0n24)</span><br><span class="line">S  QEvent::Type WindowActivate (0n24)</span><br><span class="line">S  QEvent::Type WindowActivate (0n24)</span><br><span class="line">SS QEvent::Type ActivationChange (0n99)</span><br><span class="line">S  QEvent::Type UpdateRequest (0n77)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type Paint (0n12)</span><br><span class="line">SS QEvent::Type NonClientAreaMouseMove (0n173)</span><br><span class="line">S  QEvent::Type Enter (0n10)</span><br><span class="line">S  QEvent::Type Enter (0n10)</span><br><span class="line">SS QEvent::Type MouseMove (0n5)</span><br><span class="line">S  QEvent::Type Leave (0n11)</span><br><span class="line">S  QEvent::Type Enter (0n10)</span><br><span class="line">SS QEvent::Type MouseMove (0n5)</span><br><span class="line">SS QEvent::Type MouseMove (0n5)</span><br><span class="line">SS QEvent::Type MouseMove (0n5)</span><br><span class="line">SS QEvent::Type MouseMove (0n5)</span><br><span class="line">SS QEvent::Type MouseMove (0n5)</span><br><span class="line">SS QEvent::Type MouseMove (0n5)</span><br><span class="line">S  QEvent::Type Leave (0n11)</span><br><span class="line">S  QEvent::Type Leave (0n11)</span><br><span class="line">SS QEvent::Type WindowDeactivate (0n25)</span><br><span class="line">P  QEvent::Type UpdateRequest (0n77)</span><br><span class="line">S  QEvent::Type WindowDeactivate (0n25)</span><br><span class="line">S  QEvent::Type WindowDeactivate (0n25)</span><br><span class="line">S  QEvent::Type WindowDeactivate (0n25)</span><br><span class="line">SS QEvent::Type ActivationChange (0n99)</span><br><span class="line">SS QEvent::Type ApplicationDeactivate (0n122)</span><br><span class="line">S  QEvent::Type UpdateRequest (0n77)</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;Windows平台下做过界面开发的程序员肯定知道窗口界面是由消息驱动的。为了
+      
+    
+    </summary>
+    
+      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>一个时间同步脚本</title>
@@ -452,29 +475,6 @@
     
     
       <category term="Test" scheme="http://0cch.com/tags/Test/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>调试COM的一个tip</title>
-    <link href="http://0cch.com/2017/07/09/tip-about-com/"/>
-    <id>http://0cch.com/2017/07/09/tip-about-com/</id>
-    <published>2017-07-09T03:28:15.000Z</published>
-    <updated>2019-07-24T07:55:31.780Z</updated>
-    
-    <content type="html"><![CDATA[<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近遇到朋友的一个程序崩溃，原因是接口没有释放的时候调用了CoUninitialize，接着才释放接口。这个应该是个很明显的问题，但是朋友告诉我以前代码就是这个样子的，没有崩溃过，最近修改了部分代码但并不是这一块的。为了看看究竟什么回事，我把没有崩溃的程序抓了dump，看了COM的初始化引用计数：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; dt _teb @$teb ReservedForOle</span><br><span class="line">ntdll!_TEB</span><br><span class="line">   +0x1758 ReservedForOle : 0x00000000`00271b00 Void</span><br><span class="line"></span><br><span class="line">0:000&gt; dt ole32!SOleTlsData 0x00000000`00271b00 cComInits pNativeApt</span><br><span class="line">   +0x028 cComInits  : 5</span><br><span class="line">   +0x080 pNativeApt : 0x00000000`00272680 CComApartment</span><br><span class="line">   </span><br><span class="line">0:000&gt; dt 0x00000000`00272680 CComApartment _AptKind</span><br><span class="line">ole32!CComApartment</span><br><span class="line">   +0x010 _AptKind : 4 ( APTKIND_APARTMENTTHREADED )</span><br></pre></td></tr></table></figure><p>没有崩溃的时候，引用计数确实不为0，也能看出是个STA。后来朋友发现，之所以之前没有崩溃，是因为之前线程加载的某个dll中，有初始化COM的调用，所以引用计数不为0。后来移开了这个dll，问题就出现了。</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css&quot;&gt;&lt;p&gt;最近遇到朋友的一个程序崩溃，原因是接口没有释放的时候调用了CoUniniti
-      
-    
-    </summary>
-    
-      <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
-    
     
   </entry>
   
