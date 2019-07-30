@@ -74,6 +74,72 @@
     <div class="columns">
         <div class="column two-thirds">
             
+                  <article id="post-e4bdbfe794a8etwe5afb9e7a88be5ba8fe8bf9be8a18ce79b91e68ea7e5928ce58886e69e90" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2013/11/17/e4bdbfe794a8etwe5afb9e7a88be5ba8fe8bf9be8a18ce79b91e68ea7e5928ce58886e69e90/">使用ETW对程序进行监控和分析</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>ETW（Event Tracing for Windows）是Windows提供的对程序进行事件记录，跟踪，使用的机制。我们可以利用这个机制对程序进行调试和性能分析。从Windows Vista开始，ETW已经非常好的融合在Windows内核之中了，在Windows 7开始，这一个机制更加完善，几乎记录了Windows运行的每一个细节。我个人猜测，从Windows Vista开始到Windows 7直到现在的Windows 8，性能都在不断提高，ETW机制应该是功不可没的。</p>
+<p>ETW是Windows提供的机制，我们要使用他还需要工具，这些工具我们可以自己开发，因为Windows提供了调用接口。当然，更惬意的选择就是直接使用Windows提供的工具集WPT（Windows Performance Toolkit）。利用WPT和SDK，我们可以将ETW融入到我们自己的程序中，帮助我们调试程序和提升性能。</p>
+<p>以下是我们需要的工具：<br>SDK:  </p>
+<ol>
+<li>ECMangen.exe  </li>
+<li>mc.exe  </li>
+</ol>
+<p>Windows:<br>WEVTUtil.exe  </p>
+<p>WPT:  </p>
+<ol>
+<li>XPerf.exe  </li>
+<li>XPerfView.exe  </li>
+</ol>
+<p>首先我们需要用SDK中的工具ECMangen，生成一个manifest文件，这个文件用来描述记录的事件，如图。<br><a href="/uploads/2013/11/20131117114336.png"><img src="/uploads/2013/11/20131117114336.png" alt="20131117114336"></a><br>这里，我们首先创建一个Provider，接下来创建一个Event，参数可以随便填下，就像上图所示。作为演示，这里一个Event就够了（FirstEvent）。<br>然后保存为0CChProvider.man。</p>
+<p>接下来我们MC来生成一个头文件，一个资源文件和两个二进制文件。命令行如：<br>mc -um C:\etw\0CChProvider.man<br><a href="/uploads/2013/11/20131117114801.png"><img src="/uploads/2013/11/20131117114801.png" alt="20131117114801"></a></p>
+<p>然后我们可以创建一个工程，加入这个头文件和资源文件。并且在代码中插入写事件的代码，例如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdafx.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"../../0CChProvider.h"</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">    EventRegisterMy0CChProvider();</span><br><span class="line">    EventWriteFirstEvent(<span class="string">L"Hello ETW World!"</span>);</span><br><span class="line">    Sleep(<span class="number">1000</span>);</span><br><span class="line">    EventWriteFirstEvent(<span class="string">L"Bye ETW World!"</span>);</span><br><span class="line">    EventUnregisterMy0CChProvider();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<p>在这里，我们利用EventRegisterMy0CChProvider先注册自己的Provider，接下写事件才会发挥作用。记录事件后，我们需要反注册Provider。<br>好了，演示代码就这么一点，然后编译即可。</p>
+<p>接下来我们需要注册这个Provider给系统，需要使用到系统自带的工具WEVTUtil.exe。<br>wevtutil im C:\etw\0CChProvider.man</p>
+<p>注册成功后就可以利用XPerf开启ETW，然后运行程序，查看记录的事件了。</p>
+<ol>
+<li>xperf -start 0cch -on My0CChProvider:::’stack’</li>
+<li>xperf -on base</li>
+<li>Run 0CChProvider.exe</li>
+<li>xperf -stop 0cch -stop -d d:\0cch.etl</li>
+<li>xperf d:\0cch.etl</li>
+</ol>
+<p>XPerfView会生成分析数据如图：<br><a href="/uploads/2013/11/20131117115853.png"><img src="/uploads/2013/11/20131117115853.png" alt="20131117115853"></a></p>
+<p><a href="/uploads/2013/11/20131117120007.png"><img src="/uploads/2013/11/20131117120007-1024x622.png" alt="20131117120007"></a></p>
+<p>整体来说，想简单的使用ETW也就是这么简单，当然你也可以把他弄得很复杂，这里就不介绍了。话说<a href="http://sysdbg.com/" target="_blank" rel="noopener">sysdbg</a>早就让我写点XPerf的东西，但是因为各种懒没写，刚好最近终于有空了，就先写了这么个简单的介绍，就当作一个开篇吧，话说某人的Blog好久没更新了呀。。。</p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2013-11-16T20:20:11.000Z" itemprop="datePublished">2013-11-17</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/NTInternals/' title=''>NTInternals</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
                   <article id="post-windbg-scripte4b8ade88eb7e5be97e8b083e8af95e78eafe5a283e79a84e59fbae69cace4bfa1e681af" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
@@ -499,66 +565,6 @@
     </div>
   </article>
             
-                  <article id="post-e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-0" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2013/08/17/e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-0/">使用PCI IDE Controller读写硬盘 - 0</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>依稀记得我一年半以前曾经写过一篇关于PIO读硬盘数据的文章，当时就提到了读写硬盘操作很复杂，完全可以拿来做一个系列来写。当时也是真有写出一个系列的冲动，不过不巧的是，由于那段时间换工作，新的工作和底层的关系不太大，也就没时间继续读相关文档来把这个系列写下来。我现在还很清楚的记得当时有关使用IDE接口读写硬盘的中文资料特别的少，虽然英文资料倒是挺全面，但是对于英语不好的我来说，看起来还是挺吃力的。一年半后，我又好奇的搜索的这方面的中文资料，结果依旧令人失望。于是，我就决定我把知道的IDE方面的知识写出来，一方面算是自己的一个学习笔记，另一方面也算是一种分享。我将这个系列定位为学习笔记，就是说，文章的很多地方都是自己的理解，不能保证所提到的知识都是正确的。所以如果这篇文章有幸被你看见，并且发现了问题，请使用email联系我。</p>
-<h1 id="IDE介绍"><a href="#IDE介绍" class="headerlink" title="IDE介绍"></a>IDE介绍</h1><p><a href="/uploads/2013/08/hdd-sata-pata-ide-aussie-pc-fix.png"><img src="/uploads/2013/08/hdd-sata-pata-ide-aussie-pc-fix.png" alt="hdd-sata-pata-ide-aussie-pc-fix"></a></p>
-<p>IDE是Integrated Drive Electronics的简称，wiki上翻译的中文是“集成驱动电子设备”。我们可以认为它是一种接口，可以管理控制IDE的驱动器，比如硬盘，光驱等等。事实上，现在所谓的ATA/ATAPI接口的第一个版本的名称就叫做IDE，所以现在人们通常认为IDE就是PATA。如果现在去买主板，我们会发现集成PATA/IDE的主板已经消失了，现在主流主板都是使用的SATA，这是一套新的接口。那么，我们干嘛要学习一个已经淘汰的技术呢？其实不然，虽然硬件的接口被淘汰了，但是IDE的驱动器的控制模式还是存在的。现在的BIOS设置中，通常有一种叫做“legacy mode”或者“IDE”的选项，开启这个选项，系统就能如同操作IDE/PATA一样操作SATA了。而对于我这有写迷你内核的人来说，学习IDE是非常好的，因为虚拟机bochs模拟的硬盘设备就是IDE/PATA的，另一方面，把迷你内核拿到真机上做实验的时候，开启“legacy mode”或者“IDE”也能够很顺利的进行实验。</p>
-<p><a href="/uploads/2013/08/bios-sata-native-mode-ide-raid-ahci-ca184a.jpg"><img src="/uploads/2013/08/bios-sata-native-mode-ide-raid-ahci-ca184a.jpg" alt="bios-sata-native-mode-ide-raid-ahci-ca184a"></a></p>
-<h1 id="IDE通道以及通道寄存器地址"><a href="#IDE通道以及通道寄存器地址" class="headerlink" title="IDE通道以及通道寄存器地址"></a>IDE通道以及通道寄存器地址</h1><p>IDE有2个通道，可以管理4个驱动器，分别是：<br>通道1：<br>第一主驱动器<br>第一从驱动器<br>通道2：<br>第二主驱动器<br>第二从驱动器  </p>
-<p>每个通道都有两套用于控制其主从驱动器的寄存器，他们分别是 Control Block Registers 和 Command Block Registers。这些寄存器首先是有一个基础地址，然后通过按顺序可以获得整套寄存器地址，而寄存器的基础地址可以通过PCI Configuration Space来获得，更多情况下，我们不妨直接使用下面这张表来配置寄存器的基础地址。</p>
-<p><a href="/uploads/2013/08/2013-08-18_142953.png"><img src="/uploads/2013/08/2013-08-18_142953.png" alt="2013-08-18_142953"></a></p>
-<p>事实上，这个基础地址是根据PCI IDE Controller模式不同而确定的。Compatibility模式下，寄存器的基础地址是固定的，但是在Native-PCI模式下，这个就需要读取具体的配置信息了。不过，大部分情况下，用上述地址不会有什么问题，所以这里就略过读取PCI Configuration Space的步骤了。</p>
-<p>现在既然知道了寄存器的Base Address，那么下一步就是获得每个寄存器的地址了，其实这也非常简单。</p>
-<p>Command Block Registers<br>1F0 （170）（读取和写入）：数据寄存器<br>1F1 （171）（读）：错误寄存器<br>1F1 （171）（写入）：特性寄存器<br>1F2 （172）（读取和写入）：扇区数寄存器<br>1F3 （173）（读取和写入）：低LBA寄存器<br>1F4 （174）（读取和写入）：中LBA寄存器<br>1F5 （175）（读取和写入）：高LBA寄存器<br>1F6 （176）（读取和写入）：驱动器/磁头寄存器<br>1F7 （177）（读）：状态寄存器<br>1F7 （177）（写入）：命令寄存器  </p>
-<p>Control Block Registers<br>3F6 （376）（读取）：备用状态寄存器<br>3F6 （376）（写入）：设备控制寄存器  </p>
-<p>另外还有一组寄存器叫做Bus Master IDE Register，我们使用DMA进行数据传输的时候会用到这类寄存器。现在就不去了解了，以免东西太多，造成不必要的混乱。</p>
-<p>判断驱动器类型</p>
-<p>前面说了很多的理论上的东西，现在我们看看怎么运用它们判断驱动器类型，比如是PATA还是SATA。当然，在做判断它们的类型之前，我们需要检测驱动器是否存在。判断方法很简单，先选择驱动器，对扇区数寄存器（1F2）和低LBA寄存器（1F3）写两个非0的数字，然后进行读取。如果读出的内容和写入的相同，那么我们可以认为驱动存在。就拿第一主驱动器举个例子：<br>mov dx, 1f6h ; 驱动器寄存器<br>xor al, al ; 选择驱动器，如果al第4位是0，那么选择0号设备，否则选择1号设备<br>out dx, al  </p>
-<p>mov dx, 1f2h<br>mov al, 55h ; 随意写一个数<br>out dx, al  </p>
-<p>mov dx, 1f3h<br>mov al, aah<br>out dx, al  </p>
-<p>mov dx, 1f2h<br>in al, dx ; 读取后比较<br>cmp al, 55h<br>jnz not_exist  </p>
-<p>mov dx, 1f3h<br>in al, dx<br>cmp al, aah<br>jnz not_exist  </p>
-<p>我用bochs测试的结果是，如果驱动器不存在，读出的数字总是0。接下来就可以获得驱动器的类型了，步骤是：1.选择驱动器（前面的操作以及做完这步了）2.软件复位驱动器。3.读取高LBA寄存器和中LBA寄存器。  </p>
-<p>mov dx, 3f6h ; 选择设备控制寄存器<br>mov al, 4h ; 设置第二位，表示软件复位<br>out dx, al  </p>
-<p>mov dx, 3f6h ; 选择设备控制寄存器<br>mov al, 0h<br>out dx, al  </p>
-<p>mov dx, 1f4h<br>in al, dx<br>mov id1, al  </p>
-<p>mov dx, 1f5h<br>in al, dx<br>mov id2, al  </p>
-<p>当ID1和ID2为不同的数值的时候，表示的设备不同，如下表所示<br><a href="/uploads/2013/08/20130818152800.png"><img src="/uploads/2013/08/20130818152800.png" alt="20130818152800"></a><br>我在bochs实验的得到的结果是PATA，虽然模拟的设备比较老，但是这正是我想要的。  </p>
-<p>这样，我们读写硬盘的第一步，环境检测已经完成了。这个系列的下一篇文章，我们就来了解下通过PIO的方式读写硬盘。  </p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2013-08-17T07:51:35.000Z" itemprop="datePublished">2013-08-17</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/MiniKernel/' title=''>MiniKernel</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
         </div>
         <div class="column one-third">
           <!--处理未安装 search 插件 默认 Google 搜索-->
@@ -661,7 +667,7 @@
 
     <h3>Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
     </div>
   </div>
 
@@ -672,7 +678,7 @@
     
       <div class="pagination text-align">
           <div class="btn-group">
-              <a class="extend prev" rel="prev" href="/archives/page/9/">&laquo;</a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><a class="page-number" href="/archives/page/3/">3</a><a class="page-number" href="/archives/page/4/">4</a><a class="page-number" href="/archives/page/5/">5</a><a class="page-number" href="/archives/page/6/">6</a><a class="page-number" href="/archives/page/7/">7</a><a class="page-number" href="/archives/page/8/">8</a><a class="page-number" href="/archives/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/archives/page/11/">11</a><a class="page-number" href="/archives/page/12/">12</a><a class="page-number" href="/archives/page/13/">13</a><a class="page-number" href="/archives/page/14/">14</a><a class="extend next" rel="next" href="/archives/page/11/">&raquo;</a>
+              <a class="extend prev" rel="prev" href="/archives/page/9/">&laquo;</a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><a class="page-number" href="/archives/page/3/">3</a><a class="page-number" href="/archives/page/4/">4</a><a class="page-number" href="/archives/page/5/">5</a><a class="page-number" href="/archives/page/6/">6</a><a class="page-number" href="/archives/page/7/">7</a><a class="page-number" href="/archives/page/8/">8</a><a class="page-number" href="/archives/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/archives/page/11/">11</a><a class="page-number" href="/archives/page/12/">12</a><a class="page-number" href="/archives/page/13/">13</a><a class="page-number" href="/archives/page/14/">14</a><a class="page-number" href="/archives/page/15/">15</a><a class="extend next" rel="next" href="/archives/page/11/">&raquo;</a>
           </div>
       </div>
     
