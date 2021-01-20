@@ -74,38 +74,30 @@
     <div class="columns">
         <div class="column two-thirds">
             
-                  <article id="post-e585b3e4ba8ee588a4e696ade69687e4bbb6e698afe590a6e5ad98e59ca8e69c80e9ab98e69588e79a84e587bde695b0" class="repo-list">
+                  <article id="post-proc_study-e4bbbfpsliste79a84e8bf9be7a88be69fa5e79c8be5b7a5e585b7" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
-      <a class="article-title" href="/2012/08/01/e585b3e4ba8ee588a4e696ade69687e4bbb6e698afe590a6e5ad98e59ca8e69c80e9ab98e69588e79a84e587bde695b0/">关于判断文件是否存在最高效的函数</a>
+      <a class="article-title" href="/2013/02/04/proc_study-e4bbbfpsliste79a84e8bf9be7a88be69fa5e79c8be5b7a5e585b7/">proc_study —— 仿PsList的进程查看工具</a>
   
 
       </h3>
       <div class="repo-list-description">
         
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>判断文件存在方法有很多，例如CreateFile，FindFirstFile，GetFileAttributes，PathFileExists等等。但是哪一种更加高效呢？其实作为常识，可能都能判断出GetFileAttributes和PathFileExists会比较快（而实际上PathFileExists就是调用的GetFileAttributes）。</p>
-<p>下面是google一份开源代码中提到的统计结果</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// <span class="doctag">NOTE:</span> This is the fastest implementation I found. The results were:</span></span><br><span class="line"><span class="comment">// CreateFile 1783739 avg ticks/call</span></span><br><span class="line"><span class="comment">// FindFirstFile 634148 avg ticks/call</span></span><br><span class="line"><span class="comment">// GetFileAttributes 428714 avg ticks/call</span></span><br><span class="line"><span class="comment">// GetFileAttributesEx 396324 avg ticks/call&lt;/blockquote&gt;</span></span><br></pre></td></tr></table></figure>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>proc_study 是我通过逆向PsList而写出来的小工具，如果在本地查看进程，这个工具和pslist没有任何区别。因为实现查看进程的方式也是和pslist一模一样的。另一方面，他缺乏pslist的查看远程计算机的进程的功能。没有实现这个并不是不知道怎么实现，是我半天也没搭建出这样的一个远程环境，真够郁闷的。这个应该是年前的最后一个study系列的工具了。期待蛇年有时间山寨更多工具，嘿嘿~~~</p>
+<p><a href="/uploads/2013/02/20130204204101.png"><img src="/uploads/2013/02/20130204204101.png" alt="20130204204101"></a></p>
+<p>这个工具的使用方法和命令行参数可以直接参看PsList的。因为整个Usage我都是直接山寨过来的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Usage: proc_study [-d][-m][-x][-t][name|pid]</span><br><span class="line">-d      Show thread detail.</span><br><span class="line">-m     Show memory detail.</span><br><span class="line">-x      Show processes, memory information and threads.</span><br><span class="line">-t       Show process tree.</span><br><span class="line">name Show information about processes that begin with the name</span><br><span class="line">specified.</span><br><span class="line">-e      Exact match the process name.</span><br><span class="line">pid Show information about specified process.</span><br><span class="line"></span><br><span class="line">All memory values are displayed in KB.</span><br><span class="line">Abbreviation key:</span><br><span class="line">Pri Priority</span><br><span class="line">Thd Number of Threads</span><br><span class="line">Hnd Number of Handles</span><br><span class="line">VM Virtual Memory</span><br><span class="line">WS Working Set</span><br><span class="line">Priv Private Virtual Memory</span><br><span class="line">Priv Pk Private Virtual Memory Peak</span><br><span class="line">Faults Page Faults</span><br><span class="line">NonP Non-Paged Pool</span><br><span class="line">Page Paged Pool</span><br><span class="line">Cswtch Context Switches</span><br></pre></td></tr></table></figure>
 
-<p>为什么会这样呢？大概了看了下，原因应该是这样的。</p>
-<p>1.CreateFile会创建句柄，需要一个完整IO流程，所以需要的时间比如非常长。<br>2.FindFirstFile回去查询文件夹的文件，虽然不会真正的打开文件句柄，并且在文件已经被缓存的情况下，走的是fastio流程，所以查询时间大幅下降，但是操作略微繁琐，导致他不是最好的选择。  </p>
-<ol start="3">
-<li>GetFileAttributes 和GetFileAttributesEx 也设置了QueryOnly标志，不需要获得真正的句柄，并且能够走fastio流程，也没有文件夹查询等工作，所以速度最快。  </li>
-</ol>
-<p>那么为什么GetFileAttributesEx 会快那么一点点呢？因为这个函数少了一个获取BasicInformation，也就是少了一个fastio流程。所以速度更快。这样看来，自己实现一个PathFileExistsEx效率可以高过PathFileExists了。（其实没多大实际意义）</p>
-<p>google就是这样做的：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">bool</span> File::Exists(<span class="keyword">const</span> TCHAR* file_name) &#123;</span><br><span class="line">ASSERT1(file_name &amp;&amp; *file_name);</span><br><span class="line">ASSERT1(lstrlen(file_name) &gt; <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// <span class="doctag">NOTE:</span> This is the fastest implementation I found. The results were:</span></span><br><span class="line"><span class="comment">// CreateFile 1783739 avg ticks/call</span></span><br><span class="line"><span class="comment">// FindFirstFile 634148 avg ticks/call</span></span><br><span class="line"><span class="comment">// GetFileAttributes 428714 avg ticks/call</span></span><br><span class="line"><span class="comment">// GetFileAttributesEx 396324 avg ticks/call</span></span><br><span class="line">WIN32_FILE_ATTRIBUTE_DATA attrs = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span> != ::GetFileAttributesEx(file_name, ::GetFileExInfoStandard, &amp;attrs);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-
+<p>下载<a href="/uploads/2013/02/proc_study.zip">proc_study</a></p>
 
         
       </div>
       <p class="repo-list-meta">
         <span class="meta-info">
           <span class="octicon octicon-calendar"></span>
-           <time datetime="2012-07-31T22:08:16.000Z" itemprop="datePublished">2012-08-01</time>
+           <time datetime="2013-02-04T04:45:01.000Z" itemprop="datePublished">2013-02-04</time>
         </span>
 
         
@@ -123,128 +115,81 @@
     </div>
   </article>
             
-                  <article id="post-pioe8afbbide" class="repo-list">
+                  <article id="post-hive_study-e6b3a8e5868ce8a1a8e69687e4bbb6e6a0bce5bc8fe8a7a3e69e90e5b7a5e585b7" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
-      <a class="article-title" href="/2012/02/12/pioe8afbbide/">PIO读IDE</a>
+      <a class="article-title" href="/2013/01/23/hive_study-e6b3a8e5868ce8a1a8e69687e4bbb6e6a0bce5bc8fe8a7a3e69e90e5b7a5e585b7/">hive_study —— 注册表文件格式解析工具</a>
   
 
       </h3>
       <div class="repo-list-description">
         
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p><a href="/uploads/2012/02/read.jpg"><img src="/uploads/2012/02/read.jpg" alt></a></p>
-<p>经过各种代码的东拼西凑、改来改去，总算是把PIO读取硬盘信息的代码“写”好了，上图是读取硬盘的前512字节的效果图。目前看来还是很挫，原因有两点：</p>
-<p>1.只支持LBA48的读取方法，不支持CHS，LBA28，虽然这两个方法的读取范围很有限，但是感觉至少要把LBA28给支持了才行。<br>2.很郁闷的一点，这个读取代码读取成功了，但是IO后返回的状态值是错误的。不知道哪里出了问题，会不会是虚拟硬盘太小而不能用LBA48的问题呢？没有头绪。  </p>
-<hr>
-<p>补充1.通过IDENTIFY DEVICE命令发现，可能由于设置的虚拟硬盘比较小的原因，虚拟硬盘不支持48bit的地址。IDENTIFY DEVICE会通过PIO方式返回一个256字（512字节）的数据。其中第83个字的第10位表示是否支持48bit的地址。如下图（来自ATA官方手册AT Attachment with Packet Interface - 6）。<br><a href="/uploads/2012/02/48bitaddress.jpg"><img src="/uploads/2012/02/48bitaddress.jpg" alt></a><br>补充2.由于不支持LBA48，我还是实现了LBA28。不过这个只能访问128G的硬盘了。至于CHS目前还是不考虑实现。<br>补充3.PIO写的方式大概也是差不多的。准备慢慢实现，还有DMA读写硬盘也需要了解下。不过好消息是现在基本能看懂ATA的手册了。<br>补充4.MiniKernel的代码依然写得很挫，暂时不准备共享出来，因为共享出来也没啥用，想学写系统的也看不懂那种烂代码。<br>补充5.感觉读写硬盘是一个挺有意思地方，完全可以单独拿出来写一个系列的blog。只是有没有时间和懒不懒的问题。<br>补充6.补充5的最后一句是P话，时间肯定是有的，就是懒而已。。。  </p>
-<p>一个月一篇文章。。。多一点都没有。。。我果然是个需要被监督的人。。。  </p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这几天又写了个小工具，刚下班就在这发了算了。</p>
+<p>hive_study 是一个注册表文件格式解析工具。功能也比较的简单，主要是dump出注册表里面的数据信息。例如显示子项，子键，显示键值以及他们的安全描述符。当然了，还是那样，注册表的hive文件实际上是不可读的，因为内核独占他了。想要获得可以读的hive文件，可以用ntfsstudy把hive文件dump出来，然后去读这个新的hive文件。以下是他的Usage。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Usage : hive_study.exe -f hive_path [-options]</span><br><span class="line"></span><br><span class="line">Options:</span><br><span class="line">[-k key_path] Specifies key path (e.g.: -k &quot;ControlSet001\Control\Session Manager&quot;)</span><br><span class="line">[-v value_name] Specifies value name (e.g.: -v BootExecute)</span><br><span class="line">[-l] List subkeys information</span><br><span class="line">[-e] List values information</span><br><span class="line">[-s] Show key security description information</span><br><span class="line">[-w output_file] Dump attribute to a file</span><br></pre></td></tr></table></figure>
+
+<p><a href="/uploads/2013/01/20130123181723.png"><img src="/uploads/2013/01/20130123181723.png" alt="20130123181723"></a></p>
+<p>下载<a href="/uploads/2013/01/hive_study.zip">hive_study</a></p>
 
         
       </div>
       <p class="repo-list-meta">
         <span class="meta-info">
           <span class="octicon octicon-calendar"></span>
-           <time datetime="2012-02-11T23:26:09.000Z" itemprop="datePublished">2012-02-12</time>
+           <time datetime="2013-01-23T02:21:18.000Z" itemprop="datePublished">2013-01-23</time>
         </span>
 
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/MiniKernel/' title=''>MiniKernel</a>
+            <a href='/categories/NTInternals/' title=''>NTInternals</a>
           </span>
         
       
         <!--
           
-            <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/IDE/">IDE</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MiniKernel/">MiniKernel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OS/">OS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PIO/">PIO</a></li></ul>
-          
         -->
 
       </p>
     </div>
   </article>
             
-                  <article id="post-e680bbe7bb932011efbc8ce5b195e69c9b2012" class="repo-list">
+                  <article id="post-e58886e4baabe887aae5b7b1e68993e980a0e79a84bugreporter" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
-      <a class="article-title" href="/2011/12/31/e680bbe7bb932011efbc8ce5b195e69c9b2012/">总结2011，展望2012</a>
+      <a class="article-title" href="/2013/01/20/e58886e4baabe887aae5b7b1e68993e980a0e79a84bugreporter/">分享自己打造的BugReporter</a>
   
 
       </h3>
       <div class="repo-list-description">
         
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>2011还是过去了，2012来了。觉得有点必要写点东西，总结一下过去，展望一下未来。如果要用几个词来总结我的2011，那应该是天真，失望，浮躁。可以说我对我的2011是比较不满意的。</p>
-<p>天真，我自认为自己还算是个性情中人，所以很多事情对我来说就是讲得就是个胃口。我是很愿意把结识的人当作朋友处。但是，在工作中，有些“朋友”确实是建立在利益基础上的。如果把所有说过“我们是朋友”的人当作朋友，很有可能吃亏是自己。工作也是一样，代入太多感情色彩也是很天真的一种做法。为了讲胃口，有时候退一步，多干一些活。做的好当然没事，但是做的不尽如人意有时候给你带来的真的会是麻烦。</p>
-<p>失望，在去年对一些人失望了，对工作的事情也失望，对自己也挺失望的。有些事情自己也不想拿出来说，也不想以后看到在想起，能快点忘记就忘记。但是对自己失望需要深刻的自我剖析检讨了。技术上提高真的不大，基本上都看不出自己做成了什么厉害的事情，决定的事情大部分没有坚持下来，空余的时间大部分花在娱乐上。</p>
-<p>浮躁，一整年，都是浮躁的。买的书一本一本的增多，耐心看完的，甚至说看了一大半的都没几本。想学习的东西很多很多，但是没有一个耐心去学习的。给自己开的代码项目很多，也没见过几个写成的。做事情的思路大概是这样的：哎哟，这个东西挺好玩，去实现一个呗；恩，找点资料吧；我靠，资料不是很多嘛；晕，环境怎么这么难搭建；耐心点，慢慢来；好，环境搭建好了，可以开始了；哎，细节问题好多啊，一个人写这个真的大丈夫么；妈的，确实很难写，比想的难好多啊；不行了，弄不下去了；哎哟，弄这个意义大么；意义不是很多大吧，哎，还是弄点别的吧……</p>
-<p>所以我觉得，我的2011基本上就是失败的。但是，我的字典里面没有后悔，因为后悔不能改变任何事情。而且不也不会激励自己明年一定要怎么样。因为貌似这种自我暗示已经被我免疫了。当然如果从过得怎么样的角度来看，我的2011还是相当精彩和快乐的。只不过说，这个人有点贱，快乐的事情总是记不住。</p>
-<p>虽然说我现在已经不喜欢那些所谓的立志大湿，但是还是应该给自己一个2012的展望。怎么说呢？继续浮躁吧，想做的事情很多很多。</p>
-<p>1.写完自己的mini kernel。</p>
-<p>2.看完几本书，包括：nt 文件系统的后半部分，编译原理，算法导论。说实话，我还是感觉自己能看完其中两本就算不错了。</p>
-<p>3.完善自己的BaseLib，加上自己实现各种算法。</p>
-<p>4.实现一个简单的脚本语言。</p>
-<p>5.最后多看两眼wrk吧。</p>
-<p>看吧，我真的很浮躁很浮躁，如果明年的这个时候的总结（当然，前提是别2012-12-21就结束了），其中有三条圆满完成，我就觉得很奇迹了。</p>
-<p>最后，无论怎么说，2011已经过去，过去的事情无论好坏都过去了。期待2012自己的改变吧。祝福我的家人，朋友和我自己，新年快乐，健康平安，家庭和睦温馨。</p>
-
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这份代码应该是将近一年前写的吧，应该是去年年初了。不像ntfsstudy和dia_study，这个工具应该比较的实用吧，实用场合可以比较多。所以也把源代码发出来。看工具名称基本上已经知道了是报告bug用的。其实这种工具倒是挺多的。不过我个人感觉自己写一个用起来顺手，而且代码量小，容易修改自定义。</p>
+<p>工具代码有三个工程，分别是minidump_generator，dump_minidump，BugReporter。<br>minidump_generator是一个dll，当然也可以编译成静态库，他需要加入到你想使用BugReporter的工程里面。<br>dump_minidump是一个dump文件的解析库，他是BugReporter工程的依赖库。<br>BugReporter是一个窗口程序，在你融合了minidump_generator的程序崩溃的时候会弹出窗口。就像图中那样。  </p>
+<p><a href="/uploads/2013/01/20130120193015.png"><img src="/uploads/2013/01/20130120193015.png" alt="20130120193015"></a></p>
+<p>勾选send bug report并且点击ok，窗口里的完整log和dump文件会打包为zip文件储存，储存的地方可以由程序指定，也可以写注册表键值，reporter会去都键值然后存储到相应的位置。具体什么键值，看源代码吧。不完整和遗憾的地方也有，就是还没有http上传到提交dump收集服务器的代码。因为确实不会写php啥的。另外这个工程也用了不少开源代码，这里也感谢一下，其中包括反汇编引擎和ZIP代码。</p>
+<p>下载源代码：<a href="/uploads/2013/01/BugReporter.zip">BugReporter</a></p>
+<p>以下是完整的dump log：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">SYSTEM INFORMATIONS</span><br><span class="line">---------------</span><br><span class="line">ProcessorArchitecture : x86</span><br><span class="line">Number Of Processors : 16</span><br><span class="line">OS Version : 6.1</span><br><span class="line">BuildNumber : 7600</span><br><span class="line">CSDVersion :</span><br><span class="line">Platform : Windows Server 2003, Windows XP, or Windows 2000</span><br><span class="line"></span><br><span class="line">EXCEPTION INFORMATIONS</span><br><span class="line">---------------</span><br><span class="line">Thread id : 5744</span><br><span class="line">ExceptionCode : c00000fd</span><br><span class="line">ExceptionFlags : 00000000</span><br><span class="line">ExceptionRecord : 0000000000000000</span><br><span class="line">ExceptionAddress : 0000000000dea637</span><br><span class="line">ExceptionInformation0 = 0000000000000000</span><br><span class="line">ExceptionInformation1 = 0000000000102000</span><br><span class="line">Thread Context :</span><br><span class="line">EAX = 00102000 ECX = 00102050 EDX = 5eea2408 EBX = 7efde000</span><br><span class="line">ESP = 00103120 EBP = 00103128 ESI = 001ff9c8 EDI = 00104210</span><br><span class="line">EFLAGS = 00010206</span><br><span class="line"></span><br><span class="line">MODULE INFORMATIONS</span><br><span class="line">---------------</span><br><span class="line">Base Size Name FileVersion ProductVersion</span><br><span class="line">0000000000de0000 0001a000 D:\crashme\Debug\crashme.exe 0 0</span><br><span class="line">00000000772b0000 00180000 C:\Windows\SysWOW64\ntdll.dll 600011db040af 600011db040af</span><br><span class="line">0000000075ef0000 00100000 C:\Windows\SysWOW64\kernel32.dll 600011db04001 600011db04001</span><br><span class="line">00000000750f0000 00046000 C:\Windows\SysWOW64\KERNELBASE.dll 600011db04001 600011db04001</span><br><span class="line">000000005ed90000 00124000 C:\Windows\winsxs\x86_microsoft.vc90.debugcrt_1fc8b3b9a1e18e3b_9.0.30729.4148_none_2a4cbfc25558bcd3\msvcr90d.dll 9000078091034 9000078091034</span><br><span class="line">0000000074330000 000eb000 C:\Windows\System32\dbghelp.dll 600011db04001 600011db04001</span><br><span class="line">0000000076e00000 000ac000 C:\Windows\SysWOW64\msvcrt.dll 700001db04001 6000121be4001</span><br><span class="line">0000000076d10000 000f0000 C:\Windows\SysWOW64\rpcrt4.dll 600011db04001 600011db04001</span><br><span class="line">0000000074e20000 00060000 C:\Windows\SysWOW64\sspicli.dll 600011db04064 600011db04064</span><br><span class="line">0000000074e10000 0000c000 C:\Windows\SysWOW64\CRYPTBASE.dll 600011db04001 600011db04001</span><br><span class="line">00000000761e0000 00019000 C:\Windows\SysWOW64\sechost.dll 600011db04001 600011db04001</span><br><span class="line">00000000763e0000 000a0000 C:\Windows\SysWOW64\advapi32.dll 600011db04001 600011db04001</span><br><span class="line">000000006e810000 00025000 C:\Windows\System32\powrprof.dll 600011db04001 600011db04001</span><br><span class="line">00000000768e0000 0019d000 C:\Windows\SysWOW64\setupapi.dll 600011db04001 600011db04001</span><br><span class="line">0000000074f70000 00027000 C:\Windows\SysWOW64\cfgmgr32.dll 600011db04001 600011db04001</span><br><span class="line">0000000076c80000 00090000 C:\Windows\SysWOW64\gdi32.dll 600011db04001 600011db04001</span><br><span class="line">0000000076a80000 00100000 C:\Windows\SysWOW64\user32.dll 600011db04001 600011db04001</span><br><span class="line">0000000077280000 0000a000 C:\Windows\SysWOW64\lpk.dll 600011db04001 600011db04001</span><br><span class="line">0000000075140000 0009d000 C:\Windows\SysWOW64\usp10.dll 102721db04001 102721db04001</span><br><span class="line">0000000076150000 0008f000 C:\Windows\SysWOW64\oleaut32.dll 600011db04001 600011db04001</span><br><span class="line">0000000075ff0000 0015c000 C:\Windows\SysWOW64\ole32.dll 600011db04001 600011db04001</span><br><span class="line">0000000074fa0000 00012000 C:\Windows\SysWOW64\devobj.dll 600011db04001 600011db04001</span><br><span class="line">0000000074f10000 00060000 C:\Windows\System32\imm32.dll 600011db04001 600011db04001</span><br><span class="line">0000000075020000 000cc000 C:\Windows\SysWOW64\msctf.dll 600011db04001 600011db04001</span><br><span class="line">000000006fa00000 0003e000 C:\Program Files (x86)\Sophos\Sophos Anti-Virus\sophos_detoured.dll 900000000235f 9000000000000</span><br><span class="line">00000000763d0000 00005000 C:\Windows\SysWOW64\psapi.dll 600011db04001 600011db04001</span><br><span class="line"></span><br><span class="line">Crash IP Disasm :</span><br><span class="line">test dword ptr [eax], eax</span><br></pre></td></tr></table></figure>
         
       </div>
       <p class="repo-list-meta">
         <span class="meta-info">
           <span class="octicon octicon-calendar"></span>
-           <time datetime="2011-12-31T09:47:26.000Z" itemprop="datePublished">2011-12-31</time>
-        </span>
-
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-e68891e69cace69da5e4b88de683b3e58699kernelefbc8ce79bb4e588b0e68891e79a84e8869de79b96e4b8ade4ba86e4b880e7aead" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2011/12/11/e68891e69cace69da5e4b88de683b3e58699kernelefbc8ce79bb4e588b0e68891e79a84e8869de79b96e4b8ade4ba86e4b880e7aead/">我本来不想写kernel，直到我的膝盖中了一箭</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近中箭体很火，我也凑个热闹。话说自从delete那篇文章过后，又有一个多月没写了。其实不是不想写，是不知道些什么才好。简单的东西不想写，难的东西写不出来。</p>
-<p>正像标题写的，恩，我开始写kernel玩了。其实写一个简单，功能单一的kernel并不难。麻烦的只是搭建环境等等。kernel的编写资料也很多，但是可惜的是，绝大部分都是应用在linux环境。我是那种看到linux就头晕的人。所以还是坚持用windows和vc来开发kernel。令人惊喜的是grub能够帮助我们map kernel到内存中，所以boot loader这一步可以想放下。等kernel写了个大概再来写boot loader也不迟。</p>
-<p>环境和工具：<br>环境正如我上面提到了windows xp 和 vs 2008。其他工具包括winimage，virtual pc，bochsdbg（+ IDA）。当然还有grub4dos。</p>
-<p>要高效的起步，先要了解mulitBoot的一些知识。还有就是写一套能够在text mode下打印信息的函数，例如printf。这样在不用调试的情况下，就能了解一些信息。说实在的bochsdbg的调试功能真心不好用，但是加上IDA可能是一个比较好的做法。具备以上条件后，就可以开始kernel之旅了。</p>
-<p><a href="/uploads/2011/12/20111211174748.png"><img src="/uploads/2011/12/20111211174748.png" alt></a></p>
-<p>可以看出内存的基本状况已经可以从boot_info中获取了。接下来要做的事情也很明了。就是需要一个物理内存管理器，实现最基本的物理内存管理器也不算难，不过那就是下篇文章的事情了。现在的kernel大小为7168字节，慢慢玩，看我能坚持多久。</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2011-12-11T02:32:55.000Z" itemprop="datePublished">2011-12-11</time>
+           <time datetime="2013-01-20T04:18:44.000Z" itemprop="datePublished">2013-01-20</time>
         </span>
 
         
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/MiniKernel/' title=''>MiniKernel</a>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
           </span>
         
       
         <!--
-          
-            <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Windows/">Windows</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/grub/">grub</a></li></ul>
           
         -->
 
@@ -252,59 +197,115 @@
     </div>
   </article>
             
-                  <article id="post-e4b8bae4bb80e4b988e5bf85e9a1bbe794a8deletee9878ae694bee695b0e7bb84" class="repo-list">
+                  <article id="post-dia_study-pdbe69fa5e79c8be5b7a5e585b7" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
-      <a class="article-title" href="/2011/10/31/e4b8bae4bb80e4b988e5bf85e9a1bbe794a8deletee9878ae694bee695b0e7bb84/">为什么必须用delete[]释放数组</a>
+      <a class="article-title" href="/2013/01/20/dia_study-pdbe69fa5e79c8be5b7a5e585b7/">Dia_study —— PDB查看工具</a>
   
 
       </h3>
       <div class="repo-list-description">
         
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近不知哪来的好奇心，对C++产生了一些兴趣，要知道我通常情况下都是cpp文件中写c代码，c代码中嵌汇编。不过，在做了一些大点的项目之后，确确实实发现了，这种编码方式麻烦的一面。有时候甚至自己都难得维护以前写的东西。所以选择性看了google的c++编程规范，而且对scoped_ptr和auto_ptr的区别参数兴趣。然后我得出的结论是这两种实际上是其实差不多，只不过scoped_ptr拷贝构造函数和赋值构造函数都是私有的。这样就避免粗心大意的程序员调用他。其他的区别还真没看出来。</p>
-<p>OK，这些都不是记录这篇tip的重点。重点在于boost，或者说是google的scoped_ptr代码里面实现了scoped_array。而要用在数组上使用智能指针，就必须用数组的智能指针类。而auto_ptr刚好没有数组部分，所以对于数组，就不能用auto_ptr了。（为什么不用vector？这也不是重点）</p>
-<p>作为一个蹩脚的C++程序员，我这时候开始犯晕了。我们知道只能指针都是帮助程序员去释放资源，让程序员把精力放到更重要的地方。那么在我看来那么所需要做的就是析构的时候 delete 或者 delete[] 就行了。要知道，delete[] 就是调用的delete，他们只是单纯的释放内存。那么数组和非数组又有什么区别？</p>
-<p>光想肯定不行，写两个例子。</p>
-<p>首先是new 一个char数组，分别用delete和delete[]释放。结果表明，没有任何问题，而且不会产生内存泄露。坑爹么？NO，还没完，其实咱们最怀疑的一直都是数组对象，因为他们都有构造和析构函数。而char这样的系统内建类型，想象得出不会出什么问题。new一个对象数组，分别用delete和delete[] 释放。果然问题暴露了，delete的时候出了问题。</p>
-<p>知其然，不足以满足好奇心。下面才是拿手的，精彩的要放在后面嘛。</p>
-<p>先看测试代码</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> &#123;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">A() &#123;<span class="built_in">cout</span> &lt;&lt; <span class="string">"start 1"</span> &lt;&lt; <span class="built_in">endl</span>;&#125;</span><br><span class="line">~A() &#123;<span class="built_in">cout</span> &lt;&lt; <span class="string">"End 1"</span> &lt;&lt; <span class="built_in">endl</span>;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">A *a = <span class="keyword">new</span> A[<span class="number">10</span>]();</span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span>[] a;</span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>编译后看到代码如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0040103D push 0Eh</span><br><span class="line">0040103F call operator new[] (403ED0h)</span><br></pre></td></tr></table></figure>  
-<p>注意到这里传入的大小时0Eh，也就是说申请分配14个字节大小的内存。但是我们知道C++标准中空类的大小应该是1字节。那么多出的dword我们就很容易想到他的用处，应该是记录数组大小的。事实也确实如此。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mov dword ptr [eax],0Ah</span><br></pre></td></tr></table></figure>  
-<p>这里明确交代，给分配内存的第一个dword传入10。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">00401069 push offset A::~A (4011D0h)</span><br><span class="line">0040106E push offset A::A (401120h)</span><br><span class="line">00401073 push 0Ah</span><br><span class="line">00401075 push 1</span><br><span class="line">00401077 mov ecx,dword ptr [ebp-0F8h]</span><br><span class="line">0040107D add ecx,4</span><br><span class="line">00401080 push ecx</span><br><span class="line">00401081 call `eh vector constructor iterator&apos; (40A010h)</span><br></pre></td></tr></table></figure>  
-<p>这里是调用构造函数，注意是vector版本的构造函数。参数分别是数组的this指针，sizeof(A)，数组数量，构造和析构函数。这样，在这个函数内部循环10次调用构造函数，构造完毕。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">004010BD mov eax,dword ptr [ebp-14h]</span><br><span class="line">004010C0 mov dword ptr [ebp-0E0h],eax</span><br><span class="line">004010C6 mov ecx,dword ptr [ebp-0E0h]</span><br><span class="line">004010CC mov dword ptr [ebp-0ECh],ecx</span><br><span class="line">004010D2 cmp dword ptr [ebp-0ECh],0</span><br><span class="line">004010D9 je main+0F0h (4010F0h)</span><br><span class="line">004010DB push 3</span><br><span class="line">004010DD mov ecx,dword ptr [ebp-0ECh]</span><br><span class="line">004010E3 call A::`vector deleting destructor&apos; (401230h)</span><br></pre></td></tr></table></figure>  
-<p>这里是析构部分传入数组的this指针，传入flag(3)，调用析构函数。</p>
-<p>继续看call之后的代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">00401253 mov eax,dword ptr [ebp+8]</span><br><span class="line">00401256 and eax,2</span><br><span class="line">00401259 je A::`vector deleting destructor&apos;+61h (401291h)</span><br><span class="line">0040125B push offset A::~A (4011D0h)</span><br><span class="line">00401260 mov eax,dword ptr [this]</span><br><span class="line">00401263 mov ecx,dword ptr [eax-4]</span><br><span class="line">00401266 push ecx</span><br><span class="line">00401267 push 1</span><br><span class="line">00401269 mov edx,dword ptr [this]</span><br><span class="line">0040126C push edx</span><br><span class="line">0040126D call `eh vector destructor iterator&apos; (40A920h)</span><br><span class="line">00401272 mov eax,dword ptr [ebp+8]</span><br></pre></td></tr></table></figure>
-<p>如果flag中位1是set，那么调用eh_vector_destructor_iterator调用每个析构函数。参数分别是this，sizeof(A)，数组个数（这里很明显是从eax-4中拿出来的）以及析构函数地址。</p>
-<p>OK，明白了delete[]的做法，我们看看delete为什么失败。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">004010BD mov eax,dword ptr [ebp-14h]</span><br><span class="line">004010C0 mov dword ptr [ebp-0E0h],eax</span><br><span class="line">004010C6 mov ecx,dword ptr [ebp-0E0h]</span><br><span class="line">004010CC mov dword ptr [ebp-0ECh],ecx</span><br><span class="line">004010D2 cmp dword ptr [ebp-0ECh],0</span><br><span class="line">004010D9 je main+0F0h (4010F0h)</span><br><span class="line">004010DB push 1</span><br><span class="line">004010DD mov ecx,dword ptr [ebp-0ECh]</span><br><span class="line">004010E3 call A::`scalar deleting destructor&apos; (4012D0h)</span><br></pre></td></tr></table></figure>
-<p>这里调用的析构函数都不一样是一个scalar版本的函数。</p>
-<p>继续看这个函数的关键部分</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">004012F3 mov ecx,dword ptr [this]</span><br><span class="line">004012F6 call A::~A (4011D0h)</span><br><span class="line">004012FB mov eax,dword ptr [ebp+8]</span><br><span class="line">004012FE and eax,1</span><br><span class="line">00401301 je A::`scalar deleting destructor&apos;+3Fh (40130Fh)</span><br><span class="line">00401303 mov eax,dword ptr [this]</span><br><span class="line">00401306 push eax</span><br><span class="line">00401307 call operator delete (40A890h)</span><br></pre></td></tr></table></figure>
-<p>这里很清楚的看到，只进行一次析构，然后就释放内存。所以我们看到的现象是只调用一次析构函数。那么为什么会崩溃呢？因为delete错了地址。看上面的对比的值，eax-4才是new返回的地址，所以delete的不应该是eax，而是eax-4。</p>
-<p>真相大白？NO，还有一个问题，delete[] 和delete 内建类型真的成功了么？<br>看看我贴出的代码吧，这里不解释了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">;delete[] version</span><br><span class="line">0040101E push 0Ah</span><br><span class="line">00401020 call operator new[] (4014C0h)</span><br><span class="line">00401025 add esp,4</span><br><span class="line">00401028 mov dword ptr [ebp-0E0h],eax</span><br><span class="line">0040102E mov eax,dword ptr [ebp-0E0h]</span><br><span class="line">00401034 mov dword ptr [a],eax</span><br><span class="line">00401037 mov eax,dword ptr [a]</span><br><span class="line">0040103A mov dword ptr [ebp-0D4h],eax</span><br><span class="line">00401040 mov ecx,dword ptr [ebp-0D4h]</span><br><span class="line">00401046 push ecx</span><br><span class="line">00401047 call operator delete[] (401600h) `</span><br><span class="line"></span><br><span class="line">;delete version</span><br><span class="line">0040101E push 0Ah</span><br><span class="line">00401020 call operator new[] (4014C0h)</span><br><span class="line">00401025 add esp,4</span><br><span class="line">00401028 mov dword ptr [ebp-0E0h],eax</span><br><span class="line">0040102E mov eax,dword ptr [ebp-0E0h]</span><br><span class="line">00401034 mov dword ptr [a],eax</span><br><span class="line">00401037 mov eax,dword ptr [a]</span><br><span class="line">0040103A mov dword ptr [ebp-0D4h],eax</span><br><span class="line">00401040 mov ecx,dword ptr [ebp-0D4h]</span><br><span class="line">00401046 push ecx</span><br><span class="line">00401047 call operator delete (401600h)</span><br></pre></td></tr></table></figure>
-
-<p>就像我刚刚所说的delete[]会调用delete。所以不会出任何问题。</p>
-<p>如果汇编看的头疼的话，这里我写了两个函数的逆向代码（说了精彩的应该放在后面的）：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">void A::'scalar deleting destructor'(unsigned int flags)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">this</span>-&gt;~A();</span><br><span class="line">    <span class="keyword">if</span> (flags &amp; <span class="number">1</span>) &#123;</span><br><span class="line">    A::<span class="function"><span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="keyword">this</span>)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void A::'vector deleting destructor'(unsigned int flags)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (flags &amp; <span class="number">2</span>) &#123;</span><br><span class="line">        count = *(<span class="keyword">int</span> *)((<span class="keyword">int</span>)<span class="keyword">this</span> - <span class="number">4</span>);</span><br><span class="line">        'eh vector destructor iterator'(this, sizeof(A), count, A::~A);</span><br><span class="line">        <span class="keyword">if</span> (flags&amp;<span class="number">1</span>) &#123;</span><br><span class="line">            A::<span class="function"><span class="keyword">operator</span> <span class="title">delete</span><span class="params">((<span class="keyword">void</span> *)((<span class="keyword">int</span>)<span class="keyword">this</span> - <span class="number">4</span>))</span></span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">this</span>-&gt;~A();</span><br><span class="line">        <span class="keyword">if</span> (flags &amp; <span class="number">1</span>) &#123;</span><br><span class="line">            A::<span class="function"><span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="keyword">this</span>)</span></span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>分析到这，终于明白。数组一定要用delete[]释放才安全。所以千万不要用auto_ptr作为数组的智能指针，不然会死的很惨。这里还要提一点，auto_ptr也不要用到容器里面去了，也是不允许的。非要这么做就用shared_ptr吧， C++0x已经在stl中加入的这部分。从vs2008 sp1开始支持。低版本的vs的话就去boost里面找吧。</p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>没事在家翻代码，发现大半年前的一份代码，写的是一个调用DIA SDK查看PDB文件的小工具。仔细想想我觉得还有点用处，而且使用方式简单，所以现在就发到blog上来吧。</p>
+<p>简单介绍一下这个小工具。它可以dump出pdb的函数和数据结构的信息。下面两张图分别dump的是数据结构和函数的信息。</p>
+<p>图一中，命令行为 dia_study.exe -p xxx.pdb -n <em>processor</em> -t 其实 -p是指pdb路径，-n是要获得的符号（支持通配符），-t说明要看的是数据结构而不是函数。然后所有带有processor的数据结构就会dump出来了。</p>
+<p><a href="/uploads/2013/01/20130120165712.png"><img src="/uploads/2013/01/20130120165712.png" alt="20130120165712"></a></p>
+<p>图二中，命令行为 dia_study.exe -p xxx.pdb -n <em>processor</em> -f 唯一的区别就是-t变成了-f。指明要dump的是函数而非数据结构。</p>
+<p><a href="/uploads/2013/01/20130120165737.png"><img src="/uploads/2013/01/20130120165737.png" alt="20130120165737"></a></p>
+<p>ok，使用方式就是如此简单。注意一点，请自备vs2010的c runtime 以及 msdia100.dll（需要注册），否则程序无法运行。</p>
+<p>下载 <a href="/uploads/2013/01/dia_study.zip">dia_study</a></p>
 
         
       </div>
       <p class="repo-list-meta">
         <span class="meta-info">
           <span class="octicon octicon-calendar"></span>
-           <time datetime="2011-10-31T08:54:55.000Z" itemprop="datePublished">2011-10-31</time>
+           <time datetime="2013-01-20T01:17:01.000Z" itemprop="datePublished">2013-01-20</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-ntfsstudy-ntfse7a381e79b98e6a0bce5bc8fe5ada6e4b9a0e5b7a5e585b7" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2013/01/19/ntfsstudy-ntfse7a381e79b98e6a0bce5bc8fe5ada6e4b9a0e5b7a5e585b7/">NtfsStudy —— ntfs磁盘格式学习工具</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>经过将近一个月业余时间的开发，终于完成了NtfsStudy这个小工具的第一版。</p>
+<p>简单介绍一下这个工具，NtfsStudy这个工具是我在学习Ntfs文件系统磁盘格式的时候，为了自己更加方便快捷的查看磁盘格式而开发的工具。可以说这个工具从开始写到现在发布，实际上也是一个学习ntfs的过程。我一边研究理解这个格式，一边把理解的东西写成代码，加入这个工具，然后再用这些功能去理解新的内容。反复这样做，这个工具就也不知不觉成型了。</p>
+<p>NtfsStudy这个工具的主要功能是：枚举目录文件，查看和dump文件属性。这些功能都没用调用windows 文件操作类的API完成，而是依靠直接读取磁盘信息，并且解析磁盘信息来完成的。例如，如果尝试去复制注册表的系统hive文件，那是一定会被系统拒绝的，这个文件是系统读写独占的，但是通过这个工具就能绕过“ntfsstudy.exe -f c:\ -r e0a2 -w 3 d:\system.hiv”， 这个命令行的意思是把volume C上的引用数为0xe0a2文件中的3号属性的内容写到d:\system.hiv文件中。其实id为3的属性正好就是data属性，也就是文件本身的内容。这样就可以dump不能读的注册表hive文件了。下面是“ntfsstudy.exe -f c:\ -r e0a2 -d 8”的结果：</p>
+<p><a href="/uploads/2013/01/ntfs_hive.png"><img src="/uploads/2013/01/ntfs_hive.png" alt="ntfs_hive"></a></p>
+<p>更多的详细用法和例子等我有空会在blog里面写一些。</p>
+<p>下面就是他的Usage，也是目前该工具具有的功能。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">NtfsStudy v1.0 - Ntfs format study tool.</span><br><span class="line">Copyright (C) 2012-2013 nightxie</span><br><span class="line">0CCh - www.0cch.net</span><br><span class="line"></span><br><span class="line">Usage : NtfsStudy.exe [options] -f file_path_name</span><br><span class="line">-f file_path_name Specifies the target file path to parse.</span><br><span class="line"></span><br><span class="line">options:</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[-r file_reference]   Specifies the target file reference.</span><br><span class="line">NtfsStudy will parse the REFERENCE rather than the path which</span><br><span class="line">Specifies by -f. NtfsStudy will just use the path root.</span><br><span class="line">[-a] Show the file record information of the target file.</span><br><span class="line">[-l]   List the files in the directory.</span><br><span class="line">[-w attribute_id output_file_path] Write target attribute to a file.</span><br><span class="line">(The attribute size must less than 128mb)</span><br><span class="line">[-v attribute_type] Show detail attribute information specified by attribute_type.</span><br><span class="line">[-d attribute_type [start_offset range]] Show binary information specified by attribute_type.</span><br><span class="line">[-s secure_id] Show the security descriptor specified by secure_id.</span><br><span class="line">[-c] Show the attributes definition columns.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">About attribute type:</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$STANDARD_INFORMATION         = 1</span><br><span class="line">$ATTRIBUTE_LIST               = 2</span><br><span class="line">$FILE_NAME                    = 3</span><br><span class="line">$OBJECT_ID                    = 4</span><br><span class="line">$SECURITY_DESCRIPTOR          = 5</span><br><span class="line">$VOLUME_NAME                  = 6</span><br><span class="line">$VOLUME_INFORMATION           = 7</span><br><span class="line">$DATA                         = 8</span><br><span class="line">$INDEX_ROOT                   = 9</span><br><span class="line">$INDEX_ALLOCATION             = 10</span><br><span class="line">$BITMAP                       = 11</span><br><span class="line">$REPARSE_POINT                = 12</span><br><span class="line">$EA_INFORMATION               = 13</span><br><span class="line">$EA                           = 14</span><br><span class="line">$LOGGED_UTILITY_STREAM        = 16</span><br><span class="line"></span><br><span class="line">About secure id:</span><br><span class="line"></span><br><span class="line">To get the secure id of target file.</span><br><span class="line">Use &apos;-v 1&apos; command, secure id will displayed in STANDARD_INFORMATION.</span><br></pre></td></tr></table></figure>
+
+<p>另外我还会继续完善这个工具。如果发现bug请与我联系。</p>
+<p>下载<a href="/uploads/2013/01/NtfsStudy.zip">NtfsStudy</a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2013-01-18T23:52:28.000Z" itemprop="datePublished">2013-01-19</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/NTInternals/' title=''>NTInternals</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-e8aebee7bdaee7babfe7a88be5908d" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2013/01/12/e8aebee7bdaee7babfe7a88be5908d/">设置线程名</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>给线程命名的作用主要还是为了调试方便。其他的好处也没有了，至少我没想出来。这里说一下MS_VC_EXCEPTION这个异常，调试器（vs，windbg）默认情况下应该会在收到这个异常的时候，他会自动处理这个异常，具体操作应该是记录下线程对应的名称，然后将异常设置为Handle状态。什么意思呢？就是说，即使下面这段代码中的RaiseException不在try-except中，在调试器attach的情况下也能顺畅执行，调试器不会因为异常把执行中断下了，而是默默设置了线程名之后继续后面的代码。而下面的代码之所以要放在try-except中，是因为希望没有调试器的情况下，也能顺利执行不被中断。另外一点，windbg可以设置让这个异常中断下来（命令 sxe vcpp），而vs貌似没有这样的方法，可能是我vs调试器用的比较少，没找到吧。对于托管代码，设置这个就更简单了，详见 <a href="http://msdn.microsoft.com/en-us/library/581hfskb(v=vs.100).aspx" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/581hfskb(v=vs.100).aspx</a></p>
+<p><a href="/uploads/2013/01/QQ%E6%88%AA%E5%9B%BE20130112151544.png"><img src="/uploads/2013/01/QQ%E6%88%AA%E5%9B%BE20130112151544.png"></a></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> </span></span><br><span class="line"><span class="keyword">const</span> DWORD MS_VC_EXCEPTION=<span class="number">0x406D1388</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> pack(push,8)</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">tagTHREADNAME_INFO</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    DWORD dwType; <span class="comment">// Must be 0x1000.</span></span><br><span class="line">    LPCSTR szName; <span class="comment">// Pointer to name (in user addr space).</span></span><br><span class="line">    DWORD dwThreadID; <span class="comment">// Thread ID (-1=caller thread).</span></span><br><span class="line">    DWORD dwFlags; <span class="comment">// Reserved for future use, must be zero.</span></span><br><span class="line">&#125; THREADNAME_INFO;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> pack(pop)</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">SetThreadName</span><span class="params">( DWORD dwThreadID, <span class="keyword">char</span>* threadName)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    THREADNAME_INFO info;</span><br><span class="line">    info.dwType = <span class="number">0x1000</span>;</span><br><span class="line">    info.szName = threadName;</span><br><span class="line">    info.dwThreadID = dwThreadID;</span><br><span class="line">    info.dwFlags = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    __try</span><br><span class="line">    &#123;</span><br><span class="line">        RaiseException( MS_VC_EXCEPTION, <span class="number">0</span>, <span class="keyword">sizeof</span>(info)/<span class="keyword">sizeof</span>(ULONG_PTR), (ULONG_PTR*)&amp;info; );</span><br><span class="line">    &#125;</span><br><span class="line">    __except(EXCEPTION_EXECUTE_HANDLER)</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2013-01-11T23:04:10.000Z" itemprop="datePublished">2013-01-12</time>
         </span>
 
         
@@ -322,28 +323,35 @@
     </div>
   </article>
             
-                  <article id="post-volume-snapshot" class="repo-list">
+                  <article id="post-r3e58db8e8bdbde4bbbbe6848fe6b688e681afe992a9e5ad90" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
-      <a class="article-title" href="/2011/10/30/volume-snapshot/">Volume snapshot</a>
+      <a class="article-title" href="/2012/12/26/r3e58db8e8bdbde4bbbbe6848fe6b688e681afe992a9e5ad90/">R3卸载任意消息钩子</a>
   
 
       </h3>
       <div class="repo-list-description">
         
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>上个月说了，准备放一份基于卷磁盘快照代码。拖到现在也没有更新了，就把它放出来，留着也没啥用。本来就是为了做一个演示demo，没考虑效率和稳定性，只是提供一种思路，其实思路也很简单，有人已经把他完善的很好了。感觉博客更新确实慢，但是也没什么想写的，其实也写不出来什么。悲剧啊！</p>
-<p>和我其他代码一样，这么代码同样没有注释。需要的讲究读读吧。那啥，最近昨天把google的代码规范看了看，确实有很多值得学习的地方。不过呢，有些地方可能个性使然，不太认同。不过风格的问题，其实也没什么。</p>
-<p>最近还写了hive文件读解析的代码，还没完善，然后又转去看系统缓存那部分的东西了。有时间完善完善。还要完善了是自己写的一个ini文件解析的类。哎，都是一些自己造轮子的活。不过还挺有意思。</p>
-<p>下载：<a href="/uploads/2011/10/SectorMon.zip">SectorMon</a></p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这是工作中遇到的一个问题。一个程序每次起来后会去挂鼠标键盘低级钩子，这类钩子恶心的地方是如果你用调试工具attach上去，鼠标键盘就会急剧的延时，就跟挂起差不多了，根本无法使用键盘鼠标。MSDN上面指明，设置LowLevelHooksTimeout可以帮助解决这个问题。但是无奈的是，似乎没起什么作用，渣英语，不知道是不是我的理解有误。</p>
+<p>其他比较好的解决方案也有。比较好的一个就是用远程调试的方式，这种方式可以在hook存在的情况下调试程序，甚至调试hook的函数。另一个办法就是attach之前，卸载低级钩子。对于调试和钩子无关地方的时候，第二个选择也还是不错的。所以，Xuetr的卸载消息钩子的功能派上了用场。每次调试此程序之前，都先卸载钩子。但是还是有问题，我们都有这样的经验，在进行调试的时候经常需要restart程序，并且重新开始调试。这样可就恶心了，每次都要卸载一次钩子。于是，我就写了一个程序，循环查询低级鼠标键盘钩子，发现后立刻卸载，这样调试这个程序就会比较轻松了。</p>
+<p>虽然说用驱动写这个功能看起来比较轻松，实际上R3实现也很简单。这里用到的关键之时是Desktop Heap会在GUI进程中映射到用户态内存上，这也就给了我们可乘之机。简单介绍一些Desktop Heap是什么。我们都知道一个桌面都有个Desktop Object的对象，而实际上美国Desktop Object都会有一个对应他的Desktop Heap。Desktop Heap主要存储用户交互对象（user interface objects），这其中就包括Window，Menu，Hook等等。既然Hook存储在Desktop heap，而且Desktop heap又刚好映射到R3内存，那么我们就可以顺利的读取他了。这里，可能会有一个疑问，怎么知道Hook存储在Desktop Heap，而不是Share Heap或者其他。实际上Windows的Win32k中有一个Handle Information Table，指明了每种Object的存储类型。</p>
+<p>现在是已经知道了可以去读Hook对象，但是上哪去读就是要解决的问题了。这里就要提到老生常谈的Sharedinfo了。用户态的Sharedinfo获取方法很多，顺手就行。与上面问题相关的就是Sharedinfo里面会有一个Handle Entry Table，里面存储的就是包括Hook在内的User Object。Entry的结构如下（来自reactos）：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">HANDLEENTRY</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">PHEAD pHead;</span><br><span class="line">PVOID pOwner;</span><br><span class="line">BYTE bType;</span><br><span class="line">BYTE bFlags;</span><br><span class="line">WORD wUniq;</span><br><span class="line">&#125; HANDLEENTRY, *PHE, *PHANDLEENTRY;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<p>其中pHead指向Object，bType表示object类型。HOOK的bType是5。所以这里我们只需要在bType为5的时候继续下面的操作。</p>
+<p>pHead肯定是指向的内核内存，所以我们无法直接访问HOOK的内部情况。我们需要找到这个Object映射到R3的内存地址才行。幸运的是这种关系也比较简单明了。在Teb-&gt;Win32ClientInfo.ulClientDelta就存放了对应的关系Delta值。计算方法如下</p>
+<p>ObjectInR3 = HANDLEENTRY.pHead - Teb-&gt;Win32ClientInfo.ulClientDelta。</p>
+<p><a href="/uploads/2012/12/20121226220202.png"><img src="/uploads/2012/12/20121226220202.png" alt="20121226220202"></a></p>
+<p>这样也就得到了HOOK Object。接下来的事情就好办了，HOOK Object的第一项就是HHOOK。只需要UnhookWindowsHookEx((HHOOK)Hook-&gt;head.h);就能卸载钩子了。</p>
 
         
       </div>
       <p class="repo-list-meta">
         <span class="meta-info">
           <span class="octicon octicon-calendar"></span>
-           <time datetime="2011-10-30T01:03:12.000Z" itemprop="datePublished">2011-10-30</time>
+           <time datetime="2012-12-26T06:03:49.000Z" itemprop="datePublished">2012-12-26</time>
         </span>
 
         
@@ -355,7 +363,55 @@
       
         <!--
           
-            <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Volume/">Volume</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/snapshot/">snapshot</a></li></ul>
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-e585b3e4ba8ee695b4e59e8be695b0e7aca6e58fb7e4bd8de689a9e5b195e79a84e4b880e782b9e5bf83e5be97" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2012/11/13/e585b3e4ba8ee695b4e59e8be695b0e7aca6e58fb7e4bd8de689a9e5b195e79a84e4b880e782b9e5bf83e5be97/">关于整型数符号位扩展的一点心得</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近写的程序中遇到了整型数符号位扩展的小问题。稍稍看了下，写在这里备忘。</p>
+<p>这里举个例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// case 1</span></span><br><span class="line"><span class="keyword">long</span> i = <span class="number">-1</span>;</span><br><span class="line"><span class="keyword">long</span> <span class="keyword">long</span> q = i;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// case 2</span></span><br><span class="line"><span class="keyword">long</span> i = <span class="number">-1</span>;</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> q = i;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// case 3</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> i = <span class="number">0xffffffff</span>;</span><br><span class="line"><span class="keyword">long</span> <span class="keyword">long</span> q = i;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// case 4</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> i = <span class="number">0xffffffff</span>;</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> q = i;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<p>那么这4肿情况中q都是多少呢？<br>实验结果是case 1 和 2，他们的q的值（这里都表示为无符号）0xffffffff<code>ffffffff，而case 3 和 4 中q的值为0x00000000</code>ffffffff。<br>看到这里，大概就能推测c++的转换策略。即以源操作数的类型为依据，对其进行扩展，然后赋值到目标操作数，他并不在乎目标的类型有无符号。</p>
+<p>看了相关编译完成后的汇编代码可以确认这一点，case 1和2的汇编代码完全相同，而3和4也是一样。更具体一点来说。有符号的情况下调用了cdq对符号位进行扩展，然后将edx赋值到q的高位，而无符号的情况下，简单xor了寄存器，然后赋值到q的高位。</p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2012-11-13T08:56:17.000Z" itemprop="datePublished">2012-11-13</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
           
         -->
 
@@ -363,29 +419,34 @@
     </div>
   </article>
             
-                  <article id="post-ntstatus-lookup" class="repo-list">
+                  <article id="post-dbgluaefbc8ce8aea9luae8849ae69cace4b99fe883bde68ea7e588b6windbge8bf9be8a18ce8b083e8af95" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
-      <a class="article-title" href="/2011/09/17/ntstatus-lookup/">NTSTATUS Lookup</a>
+      <a class="article-title" href="/2012/08/15/dbgluaefbc8ce8aea9luae8849ae69cace4b99fe883bde68ea7e588b6windbge8bf9be8a18ce8b083e8af95/">dbgLua，让lua脚本也能控制windbg进行调试(更新1.0.1.1)</a>
   
 
       </h3>
       <div class="repo-list-description">
         
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>磁盘快照写好了后，闲着无聊写了个nslookup，用来看驱动返回值解释的。写这个程序还先写了个nsstatus.h的解析工具。生成了一个超大的switch case。没啥技术含量。至于那个磁盘快照的代码，过段时间如果合适也可以共享出来。</p>
-<p><a href="/uploads/2011/09/ntstatus.jpg"><img src="/uploads/2011/09/ntstatus.jpg" alt></a></p>
-<p>1.0.0.2 更新：</p>
-<p>1.增加程序初始化时，直接读取剪切板中的数据功能。<br>2.增加对输入的判断，支持“0x”前缀。</p>
-<p>下载：<a href="/uploads/2011/09/nslookup1002.zip">nslookup</a></p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>关于dbgLua：<br>这是一个让windbg支持lua脚步的扩展程序。写这个程序的主要目的是希望能简单的取代windbg本身的脚本。因为我确实不喜欢windbg那种形式的脚本。</p>
+<p>使用方法：将dbgLua.dll拷贝到windbg的winext下，编写lua脚本。调试的时候，在输入框中输入“!dbgLua.run d:\sample.lua”其中“d:\sample.lua”是你的脚步路径。</p>
+<p>以下是1.0.0.1版本所支持的lua函数（后续可能会慢慢添加更多，看需求了）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">dbgLua 1.0.1.1 API</span><br><span class="line"></span><br><span class="line">dprint 输出信息到windbg command窗口，例如dprint(&quot;hello&quot;)</span><br><span class="line">exec 执行一条windbg命令，例如exec(&quot;bp kernel32!CreateFileW&quot;)</span><br><span class="line">getreg 获得当前被调试对象的寄存器数据，例如eax_val = getreg(&quot;eax&quot;)</span><br><span class="line">setreg 设置当前被调试对象的寄存器数据，例如setreg(&quot;eax&quot;, 123456)</span><br><span class="line">readbyte 读取当前被调试对象的内存器数据，大小1字节</span><br><span class="line">readword 同上，大小为2字节</span><br><span class="line">readdword 同上，大小为4字节，例如mem_val = readxxxx(0x410000)</span><br><span class="line">writebyte 写入当前被调试对象的内存器数据，大小1自己</span><br><span class="line">writeword 同上，大小为2字节</span><br><span class="line">writedword 同上，大小为4字节，例如writexxxx(0x410000, 654321)</span><br><span class="line">readunicode 读取一个unicode字符串，例如str = readunicode(0x410000)</span><br><span class="line">readascii 读取一个ascii字符串，例如str = readascii(0x410000)</span><br><span class="line">wait 等待事件，例如exec(&quot;bp kernel32!CreateFileW;g&quot;);wait();</span><br><span class="line">evalmasm masm表达式求值，例如val = evalmasm(&quot;11+2*3&quot;)</span><br><span class="line">evalcpp cpp表达式求值，例如val = evalcpp(&quot;sizeof(char)&quot;)</span><br><span class="line">getmoduleinfo 通过模块名获得模块基址和大学，例如base,size = getmoduleinfo(&quot;kernel32&quot;)</span><br><span class="line">search 二进制查找，例如found = search(base, size, &quot;cc 89 75 fc eb &quot;)&lt;/blockquote&gt;</span><br></pre></td></tr></table></figure>
+
+<p>具体的结合这些函数进行调试的例子还没有准备好，等有机会了，我会准备好调试案例放到这里来。</p>
+<p>另外这是一个初始版本，不保证没有bug，如果你在使用中发现了bug，或者有好的想法，例如添加什么函数功能，不妨联系我。</p>
+<p>下载：</p>
+<p><a href="/uploads/2012/08/dbgLua1.zip">dbgLua</a>(v1.0.1.1)</p>
+<p><a href="/uploads/2012/08/dbgLua.zip">dbgLua</a>(v1.0.0.1)</p>
 
         
       </div>
       <p class="repo-list-meta">
         <span class="meta-info">
           <span class="octicon octicon-calendar"></span>
-           <time datetime="2011-09-17T06:39:26.000Z" itemprop="datePublished">2011-09-17</time>
+           <time datetime="2012-08-15T09:09:50.000Z" itemprop="datePublished">2012-08-15</time>
         </span>
 
         
@@ -397,36 +458,41 @@
       
         <!--
           
-            <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NTSTATUS/">NTSTATUS</a></li></ul>
-          
         -->
 
       </p>
     </div>
   </article>
             
-                  <article id="post-e4b880e4bbbde7ae80e9998be79a84ntfs-parsee4bba3e7a081" class="repo-list">
+                  <article id="post-e585b3e4ba8ee588a4e696ade69687e4bbb6e698afe590a6e5ad98e59ca8e69c80e9ab98e69588e79a84e587bde695b0" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
         
   
-      <a class="article-title" href="/2011/08/28/e4b880e4bbbde7ae80e9998be79a84ntfs-parsee4bba3e7a081/">一份简陋的NTFS Parse代码</a>
+      <a class="article-title" href="/2012/08/01/e585b3e4ba8ee588a4e696ade69687e4bbb6e698afe590a6e5ad98e59ca8e69c80e9ab98e69588e79a84e587bde695b0/">关于判断文件是否存在最高效的函数</a>
   
 
       </h3>
       <div class="repo-list-description">
         
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>研究了近两周的NTFS文件格式，初步了解了一些NTFS基本属性的解析方法。<br>为了自己研究方便，写了点简单的解析代码。发出来以方便需要的人。<br>话说这份代码的解析类只是属于demo阶段，而且没有注释。不过代码写的还算清晰。  </p>
-<p>参考资料方面，我是转了一份NTFS 3G的文档，这份文档把NTFS的基本特点写的比较清晰了。值得一看</p>
-<p><a href="http://0cch.net/ntfsdoc/" target="_blank" rel="noopener">http://0cch.net/ntfsdoc/</a></p>
-<p>代码：<a href="/uploads/2011/08/NtfsParse.zip">NtfsParse</a></p>
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>判断文件存在方法有很多，例如CreateFile，FindFirstFile，GetFileAttributes，PathFileExists等等。但是哪一种更加高效呢？其实作为常识，可能都能判断出GetFileAttributes和PathFileExists会比较快（而实际上PathFileExists就是调用的GetFileAttributes）。</p>
+<p>下面是google一份开源代码中提到的统计结果</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// <span class="doctag">NOTE:</span> This is the fastest implementation I found. The results were:</span></span><br><span class="line"><span class="comment">// CreateFile 1783739 avg ticks/call</span></span><br><span class="line"><span class="comment">// FindFirstFile 634148 avg ticks/call</span></span><br><span class="line"><span class="comment">// GetFileAttributes 428714 avg ticks/call</span></span><br><span class="line"><span class="comment">// GetFileAttributesEx 396324 avg ticks/call&lt;/blockquote&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>为什么会这样呢？大概了看了下，原因应该是这样的。</p>
+<p>1.CreateFile会创建句柄，需要一个完整IO流程，所以需要的时间比如非常长。<br>2.FindFirstFile回去查询文件夹的文件，虽然不会真正的打开文件句柄，并且在文件已经被缓存的情况下，走的是fastio流程，所以查询时间大幅下降，但是操作略微繁琐，导致他不是最好的选择。<br>3. GetFileAttributes 和GetFileAttributesEx 也设置了QueryOnly标志，不需要获得真正的句柄，并且能够走fastio流程，也没有文件夹查询等工作，所以速度最快。  </p>
+<p>那么为什么GetFileAttributesEx 会快那么一点点呢？因为这个函数少了一个获取BasicInformation，也就是少了一个fastio流程。所以速度更快。这样看来，自己实现一个PathFileExistsEx效率可以高过PathFileExists了。（其实没多大实际意义）</p>
+<p>google就是这样做的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">File::Exists</span><span class="params">(<span class="keyword">const</span> TCHAR* file_name)</span> </span>&#123;</span><br><span class="line">ASSERT1(file_name &amp;&amp; *file_name);</span><br><span class="line">ASSERT1(lstrlen(file_name) &gt; <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// <span class="doctag">NOTE:</span> This is the fastest implementation I found. The results were:</span></span><br><span class="line"><span class="comment">// CreateFile 1783739 avg ticks/call</span></span><br><span class="line"><span class="comment">// FindFirstFile 634148 avg ticks/call</span></span><br><span class="line"><span class="comment">// GetFileAttributes 428714 avg ticks/call</span></span><br><span class="line"><span class="comment">// GetFileAttributesEx 396324 avg ticks/call</span></span><br><span class="line">WIN32_FILE_ATTRIBUTE_DATA attrs = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span> != ::GetFileAttributesEx(file_name, ::GetFileExInfoStandard, &amp;attrs);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+
 
         
       </div>
       <p class="repo-list-meta">
         <span class="meta-info">
           <span class="octicon octicon-calendar"></span>
-           <time datetime="2011-08-28T01:20:09.000Z" itemprop="datePublished">2011-08-28</time>
+           <time datetime="2012-07-31T22:08:16.000Z" itemprop="datePublished">2012-08-01</time>
         </span>
 
         
@@ -434,359 +500,6 @@
             <span class="octicon octicon-file-directory"></span>
             <a href='/categories/NTInternals/' title=''>NTInternals</a>
           </span>
-        
-      
-        <!--
-          
-            <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kernel/">Kernel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/System/">System</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Windows/">Windows</a></li></ul>
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-reactos-freeldre7a381e79b98e58f8ae69687e4bbb6e7aea1e790862" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2011/06/10/reactos-freeldre7a381e79b98e58f8ae69687e4bbb6e7aea1e790862/">ReactOS-Freeldr磁盘及文件管理2</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>ArcOpen的大体流程我们看过了。大致分为这几步</p>
-<ol>
-<li>函数会尝试找到文件所在分区的设备句柄，如果还没有对应的句柄。那么使用DEVICE.FuncTable中的Open函数打开设备，并为这个设备分配句柄。</li>
-</ol>
-<ol start="2">
-<li>打开设备后条用XxxMount识别分区格式，识别成功返回另外的FuncTable，存储到设备的FileData.FileFuncTable域。</li>
-</ol>
-<ol start="3">
-<li>为文件分配一个句柄，在对应的FileData.DeviceId为上面创建设备句柄，FileData.FuncTable为设备的FileData.FileFuncTable。</li>
-</ol>
-<ol start="4">
-<li>最后调用文件的FileData.FuncTable.Open函数打开文件。</li>
-</ol>
-<p><strong>挂载分区时做了什么</strong></p>
-<p>之前我们忽略了XxxMount函数。现在来读读比较简单的FatMount (freeldr\freeldr\fs\fat.c)。</p>
-<ol>
-<li><p><em>const</em> DEVVTBL<strong>*** FatMount</strong>(<strong>ULONG DeviceId</strong>)**</p>
-</li>
-<li><p><strong>{</strong></p>
-</li>
-<li><p><strong>.**</strong>.<strong><strong>.</strong></strong>.<strong><strong>.</strong></strong>.<strong><strong>.</strong></strong>.**</p>
-</li>
-<li><p>// 生成一个FAT_VOLUME_INFO结构</p>
-</li>
-<li><p>Volume <strong>=</strong> MmHeapAlloc<strong>(</strong><em>sizeof</em><strong>(</strong>FAT_VOLUME_INFO<strong>)**</strong>)<strong>**;</strong></p>
-</li>
-<li><p><em>if</em> <strong>(**</strong>!<strong>Volume</strong>)**</p>
-</li>
-<li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
-</li>
-<li><p><em>RtlZeroMemory</em><strong>(</strong>Volume, <em>sizeof</em><strong>(</strong>FAT_VOLUME_INFO<strong>)**</strong>)<strong>**;</strong></p>
-</li>
-<li><p>// 读第一个扇区</p>
-</li>
-<li><p>Position<strong>.</strong>HighPart <strong>=</strong> 0<strong>;</strong></p>
-</li>
-<li><p>Position<strong>.</strong>LowPart <strong>=</strong> 0<strong>;</strong></p>
-</li>
-<li><p>ret <strong>=</strong> ArcSeek<strong>(</strong>DeviceId, <strong>&amp;</strong>Position, SeekAbsolute<strong>)**</strong>;**</p>
-</li>
-<li><p><em>if</em> <strong>(</strong>ret <strong>!**</strong>=** ESUCCESS<strong>)</strong></p>
-</li>
-<li><p><strong>{</strong></p>
-</li>
-<li><p>MmHeapFree<strong>(</strong>Volume<strong>)**</strong>;**</p>
-</li>
-<li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
-</li>
-<li><p><strong>}</strong></p>
-</li>
-<li><p>ret <strong>=</strong> ArcRead<strong>(</strong>DeviceId, Buffer, <em>sizeof</em><strong>(</strong>Buffer<strong>)</strong>, <strong>&amp;</strong>Count<strong>)**</strong>;**</p>
-</li>
-<li><p><em>if</em> <strong>(</strong>ret <strong>!**</strong>=** ESUCCESS <strong>|**</strong>|** Count <strong>!**</strong>=** <em>sizeof</em><strong>(</strong>Buffer<strong>)**</strong>)**</p>
-</li>
-<li><p><strong>{</strong></p>
-</li>
-<li><p>MmHeapFree<strong>(</strong>Volume<strong>)**</strong>;**</p>
-</li>
-<li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
-</li>
-<li><p><strong>}</strong></p>
-</li>
-<li><p>// 判断是否有fat分区标志</p>
-</li>
-<li><p><em>if</em> <strong>(**</strong>!<strong>RtlEqualMemory</strong>(<strong>BootSector</strong>-<strong>**&gt;</strong>FileSystemType, “FAT12 “, 8<strong>)</strong> <strong>&amp;**</strong>&amp;**</p>
-</li>
-<li><p><strong>!</strong>RtlEqualMemory<strong>(</strong>BootSector<strong>-**</strong>&gt;<strong>FileSystemType, “FAT16 “, 8</strong>)** <strong>&amp;**</strong>&amp;**</p>
-</li>
-<li><p><strong>!</strong>RtlEqualMemory<strong>(</strong>BootSector32<strong>-**</strong>&gt;<strong>FileSystemType, “FAT32 “, 8</strong>)** <strong>&amp;**</strong>&amp;**</p>
-</li>
-<li><p><strong>!</strong>RtlEqualMemory<strong>(</strong>BootSectorX<strong>-**</strong>&gt;<strong>FileSystemType, “FATX”, 4</strong>)<strong>**)</strong></p>
-</li>
-<li><p><strong>{</strong></p>
-</li>
-<li><p>MmHeapFree<strong>(</strong>Volume<strong>)**</strong>;**</p>
-</li>
-<li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
-</li>
-<li><p><strong>}</strong></p>
-</li>
-<li><p>// 获得分区大小等信息</p>
-</li>
-<li><p>ret <strong>=</strong> ArcGetFileInformation<strong>(</strong>DeviceId, <strong>&amp;</strong>FileInformation<strong>)**</strong>;**</p>
-</li>
-<li><p><em>if</em> <strong>(</strong>ret <strong>!**</strong>=** ESUCCESS<strong>)</strong></p>
-</li>
-<li><p><strong>{</strong></p>
-</li>
-<li><p>MmHeapFree<strong>(</strong>Volume<strong>)**</strong>;**</p>
-</li>
-<li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
-</li>
-<li><p><strong>}</strong></p>
-</li>
-<li><p>SectorCount<strong>.</strong>HighPart <strong>=</strong> FileInformation<strong>.</strong>EndingAddress<strong>.</strong>HighPart<strong>;</strong></p>
-</li>
-<li><p>SectorCount<strong>.</strong>LowPart <strong>=</strong> FileInformation<strong>.</strong>EndingAddress<strong>.</strong>LowPart<strong>;</strong></p>
-</li>
-<li><p>SectorCount<strong>.</strong>QuadPart <strong>/**</strong>=** SECTOR_SIZE<strong>;</strong></p>
-</li>
-<li><p>Volume<strong>-**</strong>&gt;<strong>DeviceId **=</strong> DeviceId<strong>;</strong></p>
-</li>
-<li><p>// 打开分区</p>
-</li>
-<li><p><em>if</em> <strong>(**</strong>!<strong>FatOpenVolume</strong>(<strong>Volume, BootSector, SectorCount</strong>.<strong>QuadPart</strong>)<strong>**)</strong></p>
-</li>
-<li><p><strong>{</strong></p>
-</li>
-<li><p>MmHeapFree<strong>(</strong>Volume<strong>)**</strong>;**</p>
-</li>
-<li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
-</li>
-<li><p><strong>}</strong></p>
-</li>
-<li><p>// 存储FAT_VOLUME_INFO结构</p>
-</li>
-<li><p>FatVolumes<strong>[</strong>DeviceId<strong>]</strong> <strong>=</strong> Volume<strong>;</strong></p>
-</li>
-<li><p>// 返回fat文件读写的FuncTable</p>
-</li>
-<li><p><em>return</em> <strong>&amp;</strong>FatFuncTable<strong>;</strong></p>
-</li>
-<li><p><strong>}</strong></p>
-</li>
-<li><p>**<br>**</p>
-</li>
-</ol>
-<p>函数中的DeviceId是设备的句柄。</p>
-<p>生成FAT_VOLUME_INFO结构。这个结构里面存储了FAT分区的基本信息。包括扇区大小，每个簇的扇区数等等。</p>
-<ol>
-<li><p><em>typedef</em> <em>struct</em> _FAT_VOLUME_INFO </p>
-</li>
-<li><p><strong>{</strong></p>
-</li>
-<li><p>ULONG BytesPerSector<strong>;</strong> /* Number of bytes per sector */</p>
-</li>
-<li><p>ULONG SectorsPerCluster<strong>;</strong> /* Number of sectors per cluster */</p>
-</li>
-<li><p>ULONG FatSectorStart<strong>;</strong> /* Starting sector of 1st FAT table */</p>
-</li>
-<li><p>ULONG ActiveFatSectorStart<strong>;</strong> /* Starting sector of active FAT table */</p>
-</li>
-<li><p>ULONG NumberOfFats<strong>;</strong> /* Number of FAT tables */</p>
-</li>
-<li><p>ULONG SectorsPerFat<strong>;</strong> /* Sectors per FAT table */</p>
-</li>
-<li><p>ULONG RootDirSectorStart<strong>;</strong> /* Starting sector of the root directory (non-fat32) */</p>
-</li>
-<li><p>ULONG RootDirSectors<strong>;</strong> /* Number of sectors of the root directory (non-fat32) */</p>
-</li>
-<li><p>ULONG RootDirStartCluster<strong>;</strong> /* Starting cluster number of the root directory (fat32 only) */</p>
-</li>
-<li><p>ULONG DataSectorStart<strong>;</strong> /* Starting sector of the data area */</p>
-</li>
-<li><p>ULONG FatType<strong>;</strong> /* FAT12, FAT16, FAT32, FATX16 or FATX32 */</p>
-</li>
-<li><p>ULONG DeviceId<strong>;</strong></p>
-</li>
-<li><p><strong>}</strong> FAT_VOLUME_INFO<strong>;</strong></p>
-</li>
-<li><p>**<br>**</p>
-</li>
-</ol>
-<p>  读取第一个山区，判断是否有fat标志。如果没有直接返回，挂载失败。之后使用ArcGetFileInformation获得分区大小。ArcGetFileInformation里面调用了FileData.FuncTable.GetFileInformation。因为当前DeviceId是设备句柄，所以他实际调用的是DiskGetFileInformation(freeldr\freeldr\arch\i386\hardware.c)。这个函数很简单，通过FileInformation返回分区开始和结束的地址，这里就不列出了。     </p>
-<p>这里的代码用FileInformation<strong>.</strong>EndingAddress / SECTOR_SIZE计算出了该分区的扇区数SectorCount。这里应该BUG。因为EndingAddress是分区结束地址，真的扇区数应该是 (分区开始地址 - EndingAddress ) / SECTOR_SIZE。好在SectorCount只是判断fat分区的一个依据，而且一般C盘计算出的SectorCount误差不会很大，影响不大。</p>
-<p>最后执行FatOpenVolume真正执行分区的挂载、初始化。初始化结束后将生成的Volume放到fat.c维护的全局数组FatVolumes里，之后对fat分区进行操作（读写）时，通过设备的DeviceId就可以找到对应的FAT_VOLUME_INFO结构。</p>
-<p>最后函数返回FatFuncTable函数数组</p>
-<ol>
-<li><p><em>const</em> DEVVTBL FatFuncTable <strong>=</strong></p>
-</li>
-<li><p><strong>{</strong></p>
-</li>
-<li><p>FatClose, </p>
-</li>
-<li><p>FatGetFileInformation, </p>
-</li>
-<li><p>FatOpen, </p>
-</li>
-<li><p>FatRead, </p>
-</li>
-<li><p>FatSeek, </p>
-</li>
-<li><p>L”fastfat”, </p>
-</li>
-<li><p><strong>}**</strong>;**</p>
-</li>
-<li></li>
-</ol>
-<p>用户可以通过这些函数就读写改fat分区啦。</p>
-<p>那么FatOpenVolume都干了什么呢。</p>
-<p>这个函数简单来说就是根据分区内容填写了Volume结构，已经算是一个分区的具体实现细节了，和整体架构无关，不多说了。这个函数在freeldr\freeldr\fs\fat.c中。</p>
-<p><strong><strong>打开文件时做了什么</strong></strong></p>
-<p>上一篇文章中还有一个地方没说，就是打开设备并创建完文件的句柄后，ArcOpen调用了文件对应的FileData.FuncTable.Open。对于fat分区而言这个函数是FatOpen(freeldr\freeldr\fs\fat.c). 这个函数也是和分区结构有关的了，有一点比较重要就是函数最后调用了FsSetDeviceSpecific把一个和文件相关的内部结构与文件句柄相关联。以后使用FatRead对文件句柄进行读操作时直接就可以获得这个结构啦。</p>
-<ol>
-<li><p>LONG FatOpen<strong>(</strong>CHAR<strong><strong>* Path, OPENMODE OpenMode, ULONG*</strong></strong> FileId<strong>)</strong></p>
-</li>
-<li><p><strong>{</strong></p>
-</li>
-<li><p><strong>.**</strong>.<strong><strong>.</strong></strong>.<strong><strong>.</strong></strong>.**</p>
-</li>
-<li></li>
-<li><p>// 根据文件的FileId获得文件所在的设备句柄FileData.DeviceId, 从而获得FatMount时生成的Volume结构。</p>
-</li>
-<li><p>DeviceId <strong>=</strong> FsGetDeviceId<strong>(*****</strong>FileId<strong>)**</strong>;**</p>
-</li>
-<li><p>FatVolume <strong>=</strong> FatVolumes<strong>[</strong>DeviceId<strong>]**</strong>;**</p>
-</li>
-<li><p>// 从DeviceId设备中读取并查询fat表，判断path表示的文件是否存在</p>
-</li>
-<li><p><em>RtlZeroMemory</em><strong>(**</strong>&amp;<strong>TempFileInfo, <em>sizeof</em></strong>(<strong>TempFileInfo</strong>)<strong><strong>)</strong></strong>;**</p>
-</li>
-<li><p>ret <strong>=</strong> FatLookupFile<strong>(</strong>FatVolume, Path, DeviceId, <strong>&amp;</strong>TempFileInfo<strong>)**</strong>;**</p>
-</li>
-<li><p><em>if</em> <strong>(</strong>ret <strong>!**</strong>=** ESUCCESS<strong>)</strong></p>
-</li>
-<li><p><em>return</em> ENOENT<strong>;</strong></p>
-</li>
-<li><p>// 判断是否是目录</p>
-</li>
-<li><p>IsDirectory <strong>=</strong> <strong>(</strong>TempFileInfo<strong>.</strong>Attributes <strong>&amp;</strong> ATTR_DIRECTORY<strong>)</strong> <strong>!**</strong>=** 0<strong>;</strong></p>
-</li>
-<li><p><em>if</em> <strong>(</strong>IsDirectory <strong>&amp;**</strong>&amp;** OpenMode <strong>!**</strong>=** OpenDirectory<strong>)</strong></p>
-</li>
-<li><p><em>return</em> EISDIR<strong>;</strong></p>
-</li>
-<li><p><em>else</em> <em>if</em> <strong>(**</strong>!<strong>IsDirectory <strong>&amp;</strong></strong>&amp;** OpenMode <strong>!**</strong>=** OpenReadOnly<strong>)</strong></p>
-</li>
-<li><p><em>return</em> ENOTDIR<strong>;</strong></p>
-</li>
-<li><p>// 生成FAT_FILE_INFO结构，里面存放了文件的信息(开始的扇区等)</p>
-</li>
-<li><p>FileHandle <strong>=</strong> MmHeapAlloc<strong>(</strong><em>sizeof</em><strong>(</strong>FAT_FILE_INFO<strong>)**</strong>)<strong>**;</strong></p>
-</li>
-<li><p><em>if</em> <strong>(**</strong>!<strong>FileHandle</strong>)**</p>
-</li>
-<li><p><em>return</em> ENOMEM<strong>;</strong></p>
-</li>
-<li><p>RtlCopyMemory<strong>(</strong>FileHandle, <strong>&amp;</strong>TempFileInfo, <em>sizeof</em><strong>(</strong>FAT_FILE_INFO<strong>)**</strong>)<strong>**;</strong></p>
-</li>
-<li><p>FileHandle<strong>-**</strong>&gt;<strong>Volume **=</strong> FatVolume<strong>;</strong></p>
-</li>
-<li><p>// 把这个结构和文件对应的FileData.Specific关联。之后进行FatRead等操作时可以直接获得这个结构了</p>
-</li>
-<li><p>FsSetDeviceSpecific<strong>(*****</strong>FileId, FileHandle<strong>)**</strong>;**</p>
-</li>
-<li><p><em>return</em> ESUCCESS<strong>;</strong></p>
-</li>
-<li><p><strong>}</strong></p>
-</li>
-</ol>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2011-06-09T18:17:00.000Z" itemprop="datePublished">2011-06-10</time>
-        </span>
-
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-reactos-freeldre7a381e79b98e58f8ae69687e4bbb6e7aea1e79086" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2011/06/02/reactos-freeldre7a381e79b98e58f8ae69687e4bbb6e7aea1e79086/">ReactOS-Freeldr磁盘及文件管理</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Freeldr提供了对fat12、fat32、fatx、ntfs等文件系统的只读功能。这部分代码主要集中在boot\freeldr\freeldr\fs\fs.c文件中。<br>首先计算机加电后会把mbr读取到物理内存的0x7c00位置，mbr搜索活动分区并加载活动分区根目录下的Freeldr.sys文件。加载后跳入Freeldr入口start。Freeldr进行32为初始化后跳入主初始化函数BootMain(boot\freeldr\freeldr\Freeldr.c)中。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">VOID <span class="title">BootMain</span><span class="params">(LPSTR CmdLine)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">......</span><br><span class="line">MachInit(CmdLine);</span><br><span class="line">FsInit();</span><br><span class="line">......</span><br><span class="line">RunLoader();</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>BootMain会对硬件(MachInit)和文件系统(FsInit)进行检测和初始化。所有准备工作进行完毕后就会调用RunLoader进行系统的加载工作。<br>Fs初始化和DEVICE、FILEDATA结构<br>下面看一下文件系统的初始化 FsInit(boot\freeldr\freeldr\fs\fs.c)</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">VOID <span class="title">FsInit</span><span class="params">(VOID)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">ULONG i;</span><br><span class="line">RtlZeroMemory(FileData, <span class="keyword">sizeof</span>(FileData));</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; MAX_FDS; i++)</span><br><span class="line">FileData[i].DeviceId = (ULONG)<span class="number">-1</span>;</span><br><span class="line">InitializeListHead(&amp;DeviceListHead);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>FsInit初始化FileData数组。和一个和磁盘分区相关的链表DeviceListHead。<br>首先fs.c维护了一个MAX_FDS(60)大小的数组 static FILEDATA FileData[MAX_FDS];  </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">tagDEVVTBL</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">ARC_CLOSE Close;</span><br><span class="line">ARC_GET_FILE_INFORMATION GetFileInformation;</span><br><span class="line">ARC_OPEN Open;</span><br><span class="line">ARC_READ Read;</span><br><span class="line">ARC_SEEK Seek;</span><br><span class="line">LPCWSTR ServiceName;</span><br><span class="line">&#125; DEVVTBL;</span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">tagFILEDATA</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">ULONG DeviceId;            <span class="comment">// 文件所在磁盘的磁盘文件句柄, 同样也是FileData的索引</span></span><br><span class="line">ULONG ReferenceCount;       <span class="comment">// 引用计数</span></span><br><span class="line"><span class="keyword">const</span> DEVVTBL* FuncTable;    <span class="comment">// 对文件进行读写的指针</span></span><br><span class="line"><span class="keyword">const</span> DEVVTBL* FileFuncTable; <span class="comment">// 对文件进行读写的函数数组</span></span><br><span class="line">VOID* Specific;             <span class="comment">// 文件系统自定义指针</span></span><br><span class="line">&#125; FILEDATA;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>每一个成功打开的文件会返回一个文件句柄，这个句柄实际上就是FileData数组的索引。所以每个打开的文件都有一个对应的FileData。这个结构就类似windows中的FILE_OBJECT<br>FileData中DeviceId是文件所在磁盘的句柄。这个句柄同样也是FileData数组的索引，通过这个句柄可以找到”磁盘文件”，对”磁盘文件”的读写就是直接对相应的磁盘或磁盘分区的读写。类似Windows中直接对磁盘分区进行CreateFile返回的句柄。”磁盘文件”的DeviceId没有意义。<br>ReferenceCount是该文件的引用计数。<br>FuncTable这是一个函数数组指针，里面存放了对文件进行读写、SEEK等操作的函数指针。<br>FileFuncTable只对”磁盘文件”有意义。当Freeldr确定了磁盘文件对应的分区的分区格式后，会把与分区格式相关的函数指针数组放到这个字段里面。如Fat12分区”磁盘文件”的FileFuncTable字段存放的就是FatFuncTable指针。<br>Specific存放于文件有关的结构。磁盘文件就是DISKCONTEXT指针，fat12下的文件就是FAT_FILE_INFO指针 等等。<br>之后是DeviceListHead，这是DEVICE结构的链表头  </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">tagDEVICE</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">LIST_ENTRY ListEntry;        <span class="comment">// 链表节点</span></span><br><span class="line"><span class="keyword">const</span> DEVVTBL* FuncTable;    <span class="comment">// 操作该分区的函数表</span></span><br><span class="line">CHAR* Prefix;              <span class="comment">// 分区对应的ArcName</span></span><br><span class="line">ULONG DeviceId;            <span class="comment">// FILEDATA中该分区对应的句柄</span></span><br><span class="line">ULONG ReferenceCount;      <span class="comment">// 引用计数</span></span><br><span class="line">&#125; DEVICE;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>用户电脑中的每一个硬盘和硬盘中的每一分区都对应了一个DEVICE结构。<br>FuncTable里面存放了对该分区进行读写等操作的指针，对于硬盘而言这个数组就是DiskVtbl。<br>Prefix是该分区或硬盘的ArcName。(如multi(0)disk(0)rdisk(0)partition(0))。Freeldr中的文件路径都是Arc形式的路径。而且0号分区代表整个硬盘，真正的分区从1号开始。如multi(0)disk(0)rdisk(0)partition(0)便代表第0块硬盘本身。multi(0)disk(0)rdisk(0)partition(1)代表第0块硬盘的第0个分区。<br>通过DeviceId字段可以找到该DEVICE的文件句柄。这个字段和FILEDATA相互配合，使系统可以遍历DEVICE结构快速找到某个分区的文件句柄。<br>DEVICE(磁盘及分区)的检测<br>上面说到Freeldr操作的路径都是存储在DEVICE结构中的ArcPath。那么这些DEVICE是怎么来的呢？<br>首先我们看一下DEVICE的注册函数，FsRegisterDevice(boot\freeldr\freeldr\fs\fs.c)  </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">VOID <span class="title">FsRegisterDevice</span><span class="params">(CHAR* Prefix, <span class="keyword">const</span> DEVVTBL* FuncTable)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">DEVICE* pNewEntry;</span><br><span class="line">ULONG dwLength;</span><br><span class="line">dwLength = <span class="built_in">strlen</span>(Prefix) + <span class="number">1</span>;</span><br><span class="line">pNewEntry = MmHeapAlloc(<span class="keyword">sizeof</span>(DEVICE) + dwLength);</span><br><span class="line"><span class="keyword">if</span> (!pNewEntry)</span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">pNewEntry-&gt;FuncTable = FuncTable;</span><br><span class="line">pNewEntry-&gt;ReferenceCount = <span class="number">0</span>;</span><br><span class="line">pNewEntry-&gt;Prefix = (CHAR*)(pNewEntry + <span class="number">1</span>);</span><br><span class="line"><span class="built_in">memcpy</span>(pNewEntry-&gt;Prefix, Prefix, dwLength);</span><br><span class="line">InsertHeadList(&amp;DeviceListHead, &amp;pNewEntry-&gt;ListEntry);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>这么函数非常简单。Prefix就是Arc路径，FuncTable是操作这个分区（磁盘）对应的函数数组。FsRegisterDevice生成了一个DEVICE结构，把ArcName和FuncTable复制进去。之后连入了DeviceListHead链表。<br>那么又是谁调用的FsRegisterDevice呢？是DetectBiosDisks(boot\freeldr\freeldr\arch\i386\hardware.c)函数。虽然这一部分已经不属于FS的范畴，还是在这里简单讲一下便于理解。这里我略去了不必要的代码。<br>DetectBiosDisks的调用顺序是 RunLoader -&gt; MachHwDetect (PcHwDetect)-&gt; DetectISABios -&gt; DetectBiosDisks</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> VOID</span><br><span class="line">DetectBiosDisks(PCONFIGURATION_COMPONENT_DATA BusKey)</span><br><span class="line">&#123;</span><br><span class="line">BOOLEAN BootDriveReported = FALSE;</span><br><span class="line">ULONG i;</span><br><span class="line">ULONG DiskCount = GetDiskCount(BusKey);</span><br><span class="line">CHAR BootPath[<span class="number">512</span>];</span><br><span class="line">......</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; DiskCount; i++)</span><br><span class="line">&#123;</span><br><span class="line">ULONG Size;</span><br><span class="line">CHAR Identifier[<span class="number">20</span>];</span><br><span class="line">......</span><br><span class="line"><span class="keyword">if</span> (BootDrive == <span class="number">0x80</span> + i)</span><br><span class="line">BootDriveReported = TRUE;</span><br><span class="line"><span class="comment">/* Get disk values */</span></span><br><span class="line">GetHarddiskIdentifier(Identifier, <span class="number">0x80</span> + i);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>首先使用GetDiskCount从Freeldr注册表的System键中读取硬盘总数。System键的初始化在DetectSystem(freeldr\freeldr\arch\i386\hardware.c)中，一会儿再看。<br>于是进入一个for循环，为每个硬盘调用GetHarddiskIdentifier函数。在BIOS中硬盘号是从0x80开始的，所以GetHarddiskIdentifier的硬盘号加了0x80。<br>GetHarddiskIdentifier的作用是为制定硬盘生成一个唯一的ID，并通过Identifier参数返回。但这个函数名起得并不好，因为生成ID其实只是这个函数的功能之一。另外的一大功能是检测硬盘，并且为硬盘本身和硬盘分区调用FsRegisterDevice函数进行注册。通过这个注册后硬盘才能真正被文件系统识别。<br>freeldr\freeldr\arch\i386\hardware.c中</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> VOID</span><br><span class="line">GetHarddiskIdentifier(PCHAR Identifier,</span><br><span class="line">ULONG DriveNumber)</span><br><span class="line">&#123;</span><br><span class="line">PMASTER_BOOT_RECORD Mbr;</span><br><span class="line">ULONG *Buffer;</span><br><span class="line">ULONG i;</span><br><span class="line">ULONG Checksum;</span><br><span class="line">ULONG Signature;</span><br><span class="line">CHAR ArcName[<span class="number">256</span>];</span><br><span class="line">PARTITION_TABLE_ENTRY PartitionTableEntry;</span><br><span class="line"><span class="comment">/* Read the MBR */</span></span><br><span class="line"><span class="keyword">if</span> (!MachDiskReadLogicalSectors(DriveNumber, <span class="number">0U</span>LL, <span class="number">1</span>, (PVOID)DISKREADBUFFER))</span><br><span class="line">&#123;</span><br><span class="line">DPRINTM(DPRINT_HWDETECT, <span class="string">"Reading MBR failed\n"</span>);</span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line">Buffer = (ULONG*)DISKREADBUFFER;</span><br><span class="line">Mbr = (PMASTER_BOOT_RECORD)DISKREADBUFFER;</span><br><span class="line">Signature = Mbr-&gt;Signature;</span><br><span class="line">DPRINTM(DPRINT_HWDETECT, <span class="string">"Signature: %x\n"</span>, Signature);</span><br><span class="line"><span class="comment">/* Calculate the MBR checksum */</span></span><br><span class="line">Checksum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">128</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">Checksum += Buffer[i];</span><br><span class="line">&#125;</span><br><span class="line">Checksum = ~Checksum + <span class="number">1</span>;</span><br><span class="line">DPRINTM(DPRINT_HWDETECT, <span class="string">"Checksum: %x\n"</span>, Checksum);</span><br><span class="line"><span class="comment">/* Fill out the ARC disk block */</span></span><br><span class="line">reactos_arc_disk_info[reactos_disk_count].Signature = Signature;</span><br><span class="line">reactos_arc_disk_info[reactos_disk_count].CheckSum = Checksum;</span><br><span class="line"><span class="built_in">sprintf</span>(ArcName, <span class="string">"multi(0)disk(0)rdisk(%lu)"</span>, reactos_disk_count);</span><br><span class="line"><span class="built_in">strcpy</span>(reactos_arc_strings[reactos_disk_count], ArcName);</span><br><span class="line">reactos_arc_disk_info[reactos_disk_count].ArcName =</span><br><span class="line">reactos_arc_strings[reactos_disk_count];</span><br><span class="line">reactos_disk_count++;</span><br><span class="line"><span class="built_in">sprintf</span>(ArcName, <span class="string">"multi(0)disk(0)rdisk(%lu)partition(0)"</span>, DriveNumber - <span class="number">0x80</span>);</span><br><span class="line">FsRegisterDevice(ArcName, &amp;DiskVtbl);</span><br><span class="line"><span class="comment">/* Add partitions */</span></span><br><span class="line">i = <span class="number">1</span>;</span><br><span class="line">DiskReportError(FALSE);</span><br><span class="line"><span class="keyword">while</span> (DiskGetPartitionEntry(DriveNumber, i, &amp;PartitionTableEntry))</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">if</span> (PartitionTableEntry.SystemIndicator != PARTITION_ENTRY_UNUSED)</span><br><span class="line">&#123;</span><br><span class="line"><span class="built_in">sprintf</span>(ArcName, <span class="string">"multi(0)disk(0)rdisk(%lu)partition(%lu)"</span>, DriveNumber - <span class="number">0x80</span>, i);</span><br><span class="line">FsRegisterDevice(ArcName, &amp;DiskVtbl);</span><br><span class="line">&#125;</span><br><span class="line">i++;</span><br><span class="line">&#125;</span><br><span class="line">DiskReportError(TRUE);</span><br><span class="line"><span class="comment">/* Convert checksum and signature to identifier string */</span></span><br><span class="line">Identifier[<span class="number">0</span>] = Hex[(Checksum &gt;&gt; <span class="number">28</span>) &amp; <span class="number">0x0F</span>];</span><br><span class="line">Identifier[<span class="number">1</span>] = Hex[(Checksum &gt;&gt; <span class="number">24</span>) &amp; <span class="number">0x0F</span>];</span><br><span class="line">Identifier[<span class="number">2</span>] = Hex[(Checksum &gt;&gt; <span class="number">20</span>) &amp; <span class="number">0x0F</span>];</span><br><span class="line">Identifier[<span class="number">3</span>] = Hex[(Checksum &gt;&gt; <span class="number">16</span>) &amp; <span class="number">0x0F</span>];</span><br><span class="line">Identifier[<span class="number">4</span>] = Hex[(Checksum &gt;&gt; <span class="number">12</span>) &amp; <span class="number">0x0F</span>];</span><br><span class="line">Identifier[<span class="number">5</span>] = Hex[(Checksum &gt;&gt; <span class="number">8</span> ) &amp; <span class="number">0x0F</span>];</span><br><span class="line">Identifier[<span class="number">6</span>] = Hex[(Checksum &gt;&gt; <span class="number">4</span>) &amp; <span class="number">0x0F</span>];</span><br><span class="line">Identifier[<span class="number">7</span>] = Hex[Checksum &amp; <span class="number">0x0F</span>];</span><br><span class="line">Identifier[<span class="number">8</span>] = <span class="string">'-'</span>;</span><br><span class="line">Identifier[<span class="number">9</span>] = Hex[(Signature &gt;&gt; <span class="number">28</span>) &amp; <span class="number">0x0F</span>];</span><br><span class="line">Identifier[<span class="number">10</span>] = Hex[(Signature &gt;&gt; <span class="number">24</span>) &amp; <span class="number">0x0F</span>];</span><br><span class="line">Identifier[<span class="number">11</span>] = Hex[(Signature &gt;&gt; <span class="number">20</span>) &amp; <span class="number">0x0F</span>];</span><br><span class="line">Identifier[<span class="number">12</span>] = Hex[(Signature &gt;&gt; <span class="number">16</span>) &amp; <span class="number">0x0F</span>];</span><br><span class="line">Identifier[<span class="number">13</span>] = Hex[(Signature &gt;&gt; <span class="number">12</span>) &amp; <span class="number">0x0F</span>];</span><br><span class="line">Identifier[<span class="number">14</span>] = Hex[(Signature &gt;&gt; <span class="number">8</span> ) &amp; <span class="number">0x0F</span>];</span><br><span class="line">Identifier[<span class="number">15</span>] = Hex[(Signature &gt;&gt; <span class="number">4</span>) &amp; <span class="number">0x0F</span>];</span><br><span class="line">Identifier[<span class="number">16</span>] = Hex[Signature &amp; <span class="number">0x0F</span>];</span><br><span class="line">Identifier[<span class="number">17</span>] = <span class="string">'-'</span>;</span><br><span class="line">Identifier[<span class="number">18</span>] = <span class="string">'A'</span>;</span><br><span class="line">Identifier[<span class="number">19</span>] = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>函数首先使用MachDiskReadLogicalSectors读取指定硬盘的MBR。对于PC机而言MachDiskReadLogicalSectors使用int 13h中断实现对硬盘的读操作。里面包括了16、32位代码的互转，和本节内容无关，以后再做说明。<br>MBR结构为。详细信息可以参考(<a href="http://en.wikipedia.org/wiki/Master_boot_record" target="_blank" rel="noopener">http://en.wikipedia.org/wiki/Master_boot_record</a>)</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">MASTER_BOOT_RECORD</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">UCHAR        MasterBootRecordCodeAndData[<span class="number">0x1b8</span>];   <span class="comment">/* 0x000 */</span></span><br><span class="line">ULONG        Signature;          <span class="comment">/* 0x1B8 */</span></span><br><span class="line">USHORT        Reserved;          <span class="comment">/* 0x1BC */</span></span><br><span class="line">PARTITION_TABLE_ENTRY   PartitionTable[<span class="number">4</span>];        <span class="comment">/* 0x1BE */</span></span><br><span class="line">USHORT        MasterBootRecordMagic;        <span class="comment">/* 0x1FE */</span></span><br><span class="line">&#125; MASTER_BOOT_RECORD, *PMASTER_BOOT_RECORD;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>GetHarddiskIdentifier在获取了Signature、计算了Checksum后 。<br>sprintf(ArcName, “multi(0)disk(0)rdisk(%lu)partition(0)”, DriveNumber - 0x80);<br>FsRegisterDevice(ArcName, &amp;DiskVtbl);<br>生成对应硬盘的ArcName，使用FsRegisterDevice注册这块硬盘，这个函数我们已经看过。注意这里Partition为0，所以0号分区实际表示硬盘本身。<br>之后</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">i = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">while</span> (DiskGetPartitionEntry(DriveNumber, i, &amp;PartitionTableEntry))</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">if</span> (PartitionTableEntry.SystemIndicator != PARTITION_ENTRY_UNUSED)</span><br><span class="line">&#123;</span><br><span class="line"><span class="built_in">sprintf</span>(ArcName, <span class="string">"multi(0)disk(0)rdisk(%lu)partition(%lu)"</span>, DriveNumber - <span class="number">0x80</span>, i);</span><br><span class="line">FsRegisterDevice(ArcName, &amp;DiskVtbl);</span><br><span class="line">&#125;</span><br><span class="line">i++;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>DiskGetParititionEntry将会解析DriveNumber对应磁盘的分区表，填充第i个分区的信息到PartitionTableEntry结构。如果分区存在则使用FsRegisterDevice注册分区。<br>使用刚才计算的CheckSum和Signature组合一个ID返回给调用者。其实这个ID没有被使用过。。。<br>最后看一下调用FsRegisterDevice时的第二个参数DiskVtbl  </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> DEVVTBL DiskVtbl = &#123;</span><br><span class="line">DiskClose,</span><br><span class="line">DiskGetFileInformation,</span><br><span class="line">DiskOpen,</span><br><span class="line">DiskRead,</span><br><span class="line">DiskSeek,</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>这里面包含了对磁盘扇区读写的全部函数。我们之后再介绍。<br>至此硬盘的及硬盘分区的注册完成。<br>执行完DetectBiosDisks后，DeviceListHead里面就存放了当前计算机所有的磁盘和分区对应的DEVICE结构。<br>文件系统的识别和文件的打开<br>这时Fs模块已经知道的硬盘数量，分区信息。下面来看看一个文件的打开流程。<br>首先，Freeldr使用的是Arc路径，IDE硬盘以multi(0)disk(0)rdisk(n)开头，文件也是以Arc路径表示的。打开文件的函数在Freeldr\Freeldr\fs\fs.c中。这函数比较长，我们分段阅读。<br>Freeldr\Freeldr\fs\fs.c</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">LONG <span class="title">ArcOpen</span><span class="params">(CHAR* Path, OPENMODE OpenMode, ULONG* FileId)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">......</span><br><span class="line">*FileId = MAX_FDS;</span><br><span class="line"><span class="comment">/* Search last ')', which delimits device and path */</span></span><br><span class="line">FileName = <span class="built_in">strrchr</span>(Path, <span class="string">')'</span>);</span><br><span class="line"><span class="keyword">if</span> (!FileName)</span><br><span class="line"><span class="keyword">return</span> EINVAL;</span><br><span class="line">FileName++;</span><br><span class="line"><span class="comment">/* Count number of "()", which needs to be replaced by "(0)" */</span></span><br><span class="line">dwCount = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (p = Path; p != FileName; p++)</span><br><span class="line"><span class="keyword">if</span> (*p == <span class="string">'('</span> &amp;&amp; *(p + <span class="number">1</span>) == <span class="string">')'</span>)</span><br><span class="line">dwCount++;</span><br><span class="line"><span class="comment">/* Duplicate device name, and replace "()" by "(0)" (if required) */</span></span><br><span class="line">dwLength = FileName - Path + dwCount;</span><br><span class="line"><span class="keyword">if</span> (dwCount != <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">DeviceName = MmHeapAlloc(FileName - Path + dwCount);</span><br><span class="line"><span class="keyword">if</span> (!DeviceName)</span><br><span class="line"><span class="keyword">return</span> ENOMEM;</span><br><span class="line"><span class="keyword">for</span> (p = Path, q = DeviceName; p != FileName; p++)</span><br><span class="line">&#123;</span><br><span class="line">*q++ = *p;</span><br><span class="line"><span class="keyword">if</span> (*p == <span class="string">'('</span> &amp;&amp; *(p + <span class="number">1</span>) == <span class="string">')'</span>)</span><br><span class="line">*q++ = <span class="string">'0'</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">DeviceName = Path;</span><br><span class="line">......</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>这个函数有三个参数Path是文件名的Arc路径，如multi(0)disk(0)rdisk(0)partition(1)Freeldr.sys就表示C盘中的Freeldr.sys文件。<br>OpenMode是打开模式(OpenReadOnly、OpenReadWrite等)。<br>如果打开成功，文件句柄将通过FileId参数返回。<br>首先这一部分代码分理出Arc磁盘路径中的”()”替换成”(0)”并存入DeviceName中，如multi()disk()rdisk()partition(1)Freeldr.sys处理后，DeviceName将指向multi(0)disk(0)rdisk(0)partition(1)。注意这个DeviceName是不以NULL结尾的。。。这是个很蛋疼的设计。<br>FileName会指向Arc路径中的文件名部分，上面的例子将是Freeldr.sys。<br>文件打开分为两步，第一步是开个文件所在的设备、创建设备的句柄。第二部才是打开文件本身。<br>这里是第一步打开设备的代码。  </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">......</span><br><span class="line">pEntry = DeviceListHead.Flink;</span><br><span class="line"><span class="keyword">while</span> (pEntry != &amp;DeviceListHead)</span><br><span class="line">&#123;</span><br><span class="line">pDevice = CONTAINING_RECORD(pEntry, DEVICE, ListEntry);</span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">strncmp</span>(pDevice-&gt;Prefix, DeviceName, dwLength) == <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">/* OK, device found. It is already opened? */</span></span><br><span class="line"><span class="keyword">if</span> (pDevice-&gt;ReferenceCount == <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">/* Search some room for the device */</span></span><br><span class="line"><span class="keyword">for</span> (DeviceId = <span class="number">0</span>; DeviceId &lt; MAX_FDS; DeviceId++)</span><br><span class="line"><span class="keyword">if</span> (!FileData[DeviceId].FuncTable)</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line"><span class="keyword">if</span> (DeviceId == MAX_FDS)</span><br><span class="line"><span class="keyword">return</span> EMFILE;</span><br><span class="line"><span class="comment">/* Try to open the device */</span></span><br><span class="line">FileData[DeviceId].FuncTable = pDevice-&gt;FuncTable;</span><br><span class="line">ret = pDevice-&gt;FuncTable-&gt;Open(pDevice-&gt;Prefix, DeviceOpenMode, &amp;DeviceId);</span><br><span class="line"><span class="keyword">if</span> (ret != ESUCCESS)</span><br><span class="line">&#123;</span><br><span class="line">FileData[DeviceId].FuncTable = <span class="literal">NULL</span>;</span><br><span class="line"><span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (!*FileName)</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">/* Done, caller wanted to open the raw device */</span></span><br><span class="line">*FileId = DeviceId;</span><br><span class="line">pDevice-&gt;ReferenceCount++;</span><br><span class="line"><span class="keyword">return</span> ESUCCESS;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/* Try to detect the file system */</span></span><br><span class="line">FileData[DeviceId].FileFuncTable = FatMount(DeviceId);</span><br><span class="line"><span class="keyword">if</span> (!FileData[DeviceId].FileFuncTable)</span><br><span class="line">FileData[DeviceId].FileFuncTable = NtfsMount(DeviceId);</span><br><span class="line"><span class="keyword">if</span> (!FileData[DeviceId].FileFuncTable)</span><br><span class="line">FileData[DeviceId].FileFuncTable = Ext2Mount(DeviceId);</span><br><span class="line"><span class="keyword">if</span> (!FileData[DeviceId].FileFuncTable)</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">/* Error, unable to detect file system */</span></span><br><span class="line">pDevice-&gt;FuncTable-&gt;Close(DeviceId);</span><br><span class="line">FileData[DeviceId].FuncTable = <span class="literal">NULL</span>;</span><br><span class="line"><span class="keyword">return</span> ENODEV;</span><br><span class="line">&#125;</span><br><span class="line">pDevice-&gt;DeviceId = DeviceId;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">DeviceId = pDevice-&gt;DeviceId;</span><br><span class="line">&#125;</span><br><span class="line">pDevice-&gt;ReferenceCount++;</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br><span class="line">pEntry = pEntry-&gt;Flink;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (pEntry == &amp;DeviceListHead)</span><br><span class="line"><span class="keyword">return</span> ENODEV;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>一个循环，遍历DEVICE链表，找到DEVICE-&gt;Prefix (磁盘、分区的Arc路径，上一节说过)和刚刚分解出来的DeviceName相等的节点。如果没有则函数直接失败。<br>找到DEVICE节点后判断DEVICE-&gt;ReferenceCount是否为0。这个代表该DEVICE被打开的次数，如果ReferenceCount不为0，说明DEVICE已经被打开。那个直接从Device-&gt;DeviceId中获得设备的文件句柄。可以看出无论打开一个设备多少次，只会有ReferenceCount的变化，而句柄都是相同的。所以如果设备打开两次，SEEK时会相互影响。读写之前最好重新调用SEEK函数。<br>当DEVICE-&gt;ReferenceCount为0时是Freeldr需要调用进行打开和文件系统的识别。我们仔细读读。  </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Search some room for the device */</span></span><br><span class="line"><span class="keyword">for</span> (DeviceId = <span class="number">0</span>; DeviceId &lt; MAX_FDS; DeviceId++)</span><br><span class="line"><span class="keyword">if</span> (!FileData[DeviceId].FuncTable)</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line"><span class="keyword">if</span> (DeviceId == MAX_FDS)</span><br><span class="line"><span class="keyword">return</span> EMFILE;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>首先在FileData数组中找到空闲项，数组的索引即将成为设备句柄。  </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Try to open the device */</span></span><br><span class="line">FileData[DeviceId].FuncTable = pDevice-&gt;FuncTable;</span><br><span class="line">ret = pDevice-&gt;FuncTable-&gt;Open(pDevice-&gt;Prefix, DeviceOpenMode, &amp;DeviceId);</span><br><span class="line"><span class="keyword">if</span> (ret != ESUCCESS)</span><br><span class="line">&#123;</span><br><span class="line">FileData[DeviceId].FuncTable = <span class="literal">NULL</span>;</span><br><span class="line"><span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (!*FileName)</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">/* Done, caller wanted to open the raw device */</span></span><br><span class="line">*FileId = DeviceId;</span><br><span class="line">pDevice-&gt;ReferenceCount++;</span><br><span class="line"><span class="keyword">return</span> ESUCCESS;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>之后把DEVICE中存储的设别操作函数数组FuncTable赋值给对应FileData中的FuncTable。之后对该句柄的读写操作将直接传递给FileData.FuncTable中的函数。<br>调用FuncTable-&gt;Open打开设备。上面我们看过这个函数实际是freeldr\freeldr\arch\i386\hardware.c中的DiskOpen。<br>打开成功后，如果FileName（需要打开的文件名）为空，说明这次请求只打开设备，于是直接返回设备的句柄。<br>如果不为空，则下面开始识别分区格式，打开文件的操作。<br>在继续读ArcOpen函数前我们先看看DiskOpen在打开设备时都做了什么。  </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">ArcOpen -&gt; DiskOpen (freeldr\freeldr\arch\i386\hardware.c)</span><br><span class="line"><span class="function"><span class="keyword">static</span> LONG <span class="title">DiskOpen</span><span class="params">(CHAR* Path, OPENMODE OpenMode, ULONG* FileId)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">......</span><br><span class="line"><span class="keyword">if</span> (!DissectArcPath(Path, FileName, &amp;DriveNumber, &amp;DrivePartition))</span><br><span class="line"><span class="keyword">return</span> EINVAL;</span><br><span class="line"><span class="keyword">if</span> (DrivePartition == <span class="number">0xff</span>)</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">/* This is a CD-ROM device */</span></span><br><span class="line">SectorSize = <span class="number">2048</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">SectorSize = <span class="number">512</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (DrivePartition != <span class="number">0xff</span> &amp;&amp; DrivePartition != <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">if</span> (!DiskGetPartitionEntry(DriveNumber, DrivePartition, &amp;PartitionTableEntry))</span><br><span class="line"><span class="keyword">return</span> EINVAL;</span><br><span class="line">SectorOffset = PartitionTableEntry.SectorCountBeforePartition;</span><br><span class="line">SectorCount = PartitionTableEntry.PartitionSectorCount;</span><br><span class="line">&#125;</span><br><span class="line">Context = MmHeapAlloc(<span class="keyword">sizeof</span>(DISKCONTEXT));</span><br><span class="line"><span class="keyword">if</span> (!Context)</span><br><span class="line"><span class="keyword">return</span> ENOMEM;</span><br><span class="line">Context-&gt;DriveNumber = DriveNumber;</span><br><span class="line">Context-&gt;SectorSize = SectorSize;</span><br><span class="line">Context-&gt;SectorOffset = SectorOffset;</span><br><span class="line">Context-&gt;SectorCount = SectorCount;</span><br><span class="line">Context-&gt;SectorNumber = <span class="number">0</span>;</span><br><span class="line">FsSetDeviceSpecific(*FileId, Context);</span><br><span class="line"><span class="keyword">return</span> ESUCCESS;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>这个函数非常简单，使用DissectArcPath根据设备的Arc路径分解出文件名FileName、BIOS驱动器号DriveNumber、和分区号DrivePartition（第0个分区的编号是1，0代表整个硬盘）<br>之后确定扇区大小，分区开始的扇区号、分区扇区数等信息，存入DISKCONTEXT结构。使用FsSetDeviceSpecific和FildId相关联。<br>还记得FILEDATA的结构么？FsSetDeviceSpecific就是填充里面的Specific指针 ：）  </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">VOID <span class="title">FsSetDeviceSpecific</span><span class="params">(ULONG FileId, VOID* Specific)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">if</span> (FileId &gt;= MAX_FDS || !FileData[FileId].FuncTable)</span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">FileData[FileId].Specific = Specific;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>实际上DiskOpen的作用就是获得该设备（分区）的基本信息——BIOS驱动器号、扇区大小、开始扇区号、扇区数量和当前读写指针（SectorNumber）。生成DISKCONTENT结构使用FsSetDeviceSpecific和FileID绑定。<br>现在我们回到ArcOpen函数，希望你还记得 ：）  </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Try to detect the file system */</span></span><br><span class="line">FileData[DeviceId].FileFuncTable = FatMount(DeviceId);</span><br><span class="line"><span class="keyword">if</span> (!FileData[DeviceId].FileFuncTable)</span><br><span class="line">FileData[DeviceId].FileFuncTable = NtfsMount(DeviceId);</span><br><span class="line"><span class="keyword">if</span> (!FileData[DeviceId].FileFuncTable)</span><br><span class="line">FileData[DeviceId].FileFuncTable = Ext2Mount(DeviceId);</span><br><span class="line"><span class="keyword">if</span> (!FileData[DeviceId].FileFuncTable)</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">/* Error, unable to detect file system */</span></span><br><span class="line">pDevice-&gt;FuncTable-&gt;Close(DeviceId);</span><br><span class="line">FileData[DeviceId].FuncTable = <span class="literal">NULL</span>;</span><br><span class="line"><span class="keyword">return</span> ENODEV;</span><br><span class="line">&#125;</span><br><span class="line">pDevice-&gt;DeviceId = DeviceId;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>现在FileData[DeviceId]已经代表刚刚打开的设备了，开始挂载分区。啥叫挂载分区，就是让文件系统提供个接口，能让我们操作分区里面的文件。而这个接口就是个DEVVTBL指针，和直接操作硬盘的接口一样，只不过这次这个可以操作文件了。如果分区识别成功，XxxMount函数将会返回另外一个DEVVTBL指针数组，这个指针赋值给设备对象的FileFuncTable成员。使用这个指针数组就可以在文件级别操作了。比如打开freeldr.sys文件就可以调用FileData[DeviceId].FileFuncTable-&gt;open函数。FileFuncTable和FuncTable是不同的哦！ ：）<br>注意FileFuncTable其实是不直接使用的，这个指针的作用是为之后打开的文件对应的FileData.FileTable赋值。于是操作文件和操作磁盘都是用对应的FileData.FileTable，实现形式上的统一。而且这种架构还可以轻易的实现将一个文件虚拟成为一个分区，只要为文件对象调用XxxMount并且给FileFuncTable域赋值就可以了，非常易于扩展。Freeldr并没有实现这种功能，文件的FileData.FileFuncTable没有使用～<br>下面我们就来看看第二步，打开文件<br>首先为文件找一个空闲的FileData  </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; MAX_FDS; i++)</span><br><span class="line"><span class="keyword">if</span> (!FileData[i].FuncTable)</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line"><span class="keyword">if</span> (i == MAX_FDS)</span><br><span class="line"><span class="keyword">return</span> EMFILE;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>跳过文件名开始的 “&quot; 字符  </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (*FileName == <span class="string">'\\'</span>)</span><br><span class="line">FileName++;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>我们前面说的，为FileData.FuncTable赋值。FileData.DeviceId是文件所在分区的句柄。FuncTable内部函数将通过这个句柄调用读写分区内容，为用户提供文件的读写接口。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">FileData[i].FuncTable = FileData[DeviceId].FileFuncTable;</span><br><span class="line">FileData[i].DeviceId = DeviceId;</span><br><span class="line">*FileId = i;</span><br><span class="line">ret = FileData[i].FuncTable-&gt;Open(FileName, OpenMode, FileId);</span><br><span class="line"><span class="keyword">if</span> (ret != ESUCCESS)</span><br><span class="line">&#123;</span><br><span class="line">FileData[i].FuncTable = <span class="literal">NULL</span>;</span><br><span class="line">*FileId = MAX_FDS;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>至此打开文件的操作结束。这里略去了XxxMount和文件的Open函数。以后再说。 ：）  </p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2011-06-02T06:33:19.000Z" itemprop="datePublished">2011-06-02</time>
-        </span>
-
         
       
         <!--
@@ -899,7 +612,7 @@
 
     <h3>Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
     </div>
   </div>
 
@@ -910,7 +623,7 @@
     
       <div class="pagination text-align">
           <div class="btn-group">
-              <a class="extend prev" rel="prev" href="/archives/page/13/">&laquo;</a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><a class="page-number" href="/archives/page/3/">3</a><a class="page-number" href="/archives/page/4/">4</a><a class="page-number" href="/archives/page/5/">5</a><a class="page-number" href="/archives/page/6/">6</a><a class="page-number" href="/archives/page/7/">7</a><a class="page-number" href="/archives/page/8/">8</a><a class="page-number" href="/archives/page/9/">9</a><a class="page-number" href="/archives/page/10/">10</a><a class="page-number" href="/archives/page/11/">11</a><a class="page-number" href="/archives/page/12/">12</a><a class="page-number" href="/archives/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/archives/page/15/">15</a><a class="extend next" rel="next" href="/archives/page/15/">&raquo;</a>
+              <a class="extend prev" rel="prev" href="/archives/page/13/">&laquo;</a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><a class="page-number" href="/archives/page/3/">3</a><a class="page-number" href="/archives/page/4/">4</a><a class="page-number" href="/archives/page/5/">5</a><a class="page-number" href="/archives/page/6/">6</a><a class="page-number" href="/archives/page/7/">7</a><a class="page-number" href="/archives/page/8/">8</a><a class="page-number" href="/archives/page/9/">9</a><a class="page-number" href="/archives/page/10/">10</a><a class="page-number" href="/archives/page/11/">11</a><a class="page-number" href="/archives/page/12/">12</a><a class="page-number" href="/archives/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/archives/page/15/">15</a><a class="page-number" href="/archives/page/16/">16</a><a class="extend next" rel="next" href="/archives/page/15/">&raquo;</a>
           </div>
       </div>
     

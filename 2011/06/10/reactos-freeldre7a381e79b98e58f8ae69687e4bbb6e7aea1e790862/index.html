@@ -73,7 +73,7 @@
 <p><strong>挂载分区时做了什么</strong></p>
 <p>之前我们忽略了XxxMount函数。现在来读读比较简单的FatMount (freeldr\freeldr\fs\fat.c)。</p>
 <ol>
-<li><p><em>const</em> DEVVTBL<strong>*** FatMount</strong>(<strong>ULONG DeviceId</strong>)**</p>
+<li><p><em>const</em> DEVVTBL*<strong>** FatMount</strong>(<strong>ULONG DeviceId</strong>)**</p>
 </li>
 <li><p><strong>{</strong></p>
 </li>
@@ -81,39 +81,39 @@
 </li>
 <li><p>// 生成一个FAT_VOLUME_INFO结构</p>
 </li>
-<li><p>Volume <strong>=</strong> MmHeapAlloc<strong>(</strong><em>sizeof</em><strong>(</strong>FAT_VOLUME_INFO<strong>)**</strong>)<strong>**;</strong></p>
+<li><p>Volume <strong>=</strong> MmHeapAlloc**(<strong><em>sizeof</em></strong>(<strong>FAT_VOLUME_INFO</strong>)<strong><strong>)</strong></strong>;**</p>
 </li>
 <li><p><em>if</em> <strong>(**</strong>!<strong>Volume</strong>)**</p>
 </li>
 <li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
 </li>
-<li><p><em>RtlZeroMemory</em><strong>(</strong>Volume, <em>sizeof</em><strong>(</strong>FAT_VOLUME_INFO<strong>)**</strong>)<strong>**;</strong></p>
+<li><p><em>RtlZeroMemory</em><strong>(**Volume, <em>sizeof</em></strong>(<strong>FAT_VOLUME_INFO</strong>)<strong><strong>)</strong></strong>;**</p>
 </li>
 <li><p>// 读第一个扇区</p>
 </li>
-<li><p>Position<strong>.</strong>HighPart <strong>=</strong> 0<strong>;</strong></p>
+<li><p>Position**.<strong>HighPart **=</strong> 0**;**</p>
 </li>
-<li><p>Position<strong>.</strong>LowPart <strong>=</strong> 0<strong>;</strong></p>
+<li><p>Position**.<strong>LowPart **=</strong> 0**;**</p>
 </li>
-<li><p>ret <strong>=</strong> ArcSeek<strong>(</strong>DeviceId, <strong>&amp;</strong>Position, SeekAbsolute<strong>)**</strong>;**</p>
+<li><p>ret <strong>=</strong> ArcSeek**(<strong>DeviceId, **&amp;**Position, SeekAbsolute</strong>)<strong>**;</strong></p>
 </li>
-<li><p><em>if</em> <strong>(</strong>ret <strong>!**</strong>=** ESUCCESS<strong>)</strong></p>
+<li><p><em>if</em> <strong>(<strong>ret **!</strong></strong>=** ESUCCESS**)**</p>
 </li>
 <li><p><strong>{</strong></p>
 </li>
-<li><p>MmHeapFree<strong>(</strong>Volume<strong>)**</strong>;**</p>
+<li><p>MmHeapFree**(<strong>Volume</strong>)<strong>**;</strong></p>
 </li>
 <li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
 </li>
 <li><p><strong>}</strong></p>
 </li>
-<li><p>ret <strong>=</strong> ArcRead<strong>(</strong>DeviceId, Buffer, <em>sizeof</em><strong>(</strong>Buffer<strong>)</strong>, <strong>&amp;</strong>Count<strong>)**</strong>;**</p>
+<li><p>ret <strong>=</strong> ArcRead**(<strong>DeviceId, Buffer, <em>sizeof</em></strong>(<strong>Buffer</strong>)<strong>, **&amp;**Count</strong>)<strong>**;</strong></p>
 </li>
-<li><p><em>if</em> <strong>(</strong>ret <strong>!**</strong>=** ESUCCESS <strong>|**</strong>|** Count <strong>!**</strong>=** <em>sizeof</em><strong>(</strong>Buffer<strong>)**</strong>)**</p>
+<li><p><em>if</em> <strong>(<strong>ret **!</strong></strong>=** ESUCCESS <strong>|**</strong>|** Count <strong>!**</strong>=** <em>sizeof</em><strong>(**Buffer</strong>)<strong>**)</strong></p>
 </li>
 <li><p><strong>{</strong></p>
 </li>
-<li><p>MmHeapFree<strong>(</strong>Volume<strong>)**</strong>;**</p>
+<li><p>MmHeapFree**(<strong>Volume</strong>)<strong>**;</strong></p>
 </li>
 <li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
 </li>
@@ -121,17 +121,17 @@
 </li>
 <li><p>// 判断是否有fat分区标志</p>
 </li>
-<li><p><em>if</em> <strong>(**</strong>!<strong>RtlEqualMemory</strong>(<strong>BootSector</strong>-<strong>**&gt;</strong>FileSystemType, “FAT12 “, 8<strong>)</strong> <strong>&amp;**</strong>&amp;**</p>
+<li><p><em>if</em> <strong>(**</strong>!<strong>RtlEqualMemory</strong>(<strong>BootSector</strong>-<strong>**&gt;**FileSystemType, “FAT12 “, 8</strong>)** <strong>&amp;**</strong>&amp;**</p>
 </li>
-<li><p><strong>!</strong>RtlEqualMemory<strong>(</strong>BootSector<strong>-**</strong>&gt;<strong>FileSystemType, “FAT16 “, 8</strong>)** <strong>&amp;**</strong>&amp;**</p>
+<li><p><strong>!**RtlEqualMemory</strong>(<strong>BootSector</strong>-<strong>**&gt;**FileSystemType, “FAT16 “, 8</strong>)** <strong>&amp;**</strong>&amp;**</p>
 </li>
-<li><p><strong>!</strong>RtlEqualMemory<strong>(</strong>BootSector32<strong>-**</strong>&gt;<strong>FileSystemType, “FAT32 “, 8</strong>)** <strong>&amp;**</strong>&amp;**</p>
+<li><p><strong>!**RtlEqualMemory</strong>(<strong>BootSector32</strong>-<strong>**&gt;**FileSystemType, “FAT32 “, 8</strong>)** <strong>&amp;**</strong>&amp;**</p>
 </li>
-<li><p><strong>!</strong>RtlEqualMemory<strong>(</strong>BootSectorX<strong>-**</strong>&gt;<strong>FileSystemType, “FATX”, 4</strong>)<strong>**)</strong></p>
+<li><p><strong>!**RtlEqualMemory</strong>(<strong>BootSectorX</strong>-<strong>**&gt;**FileSystemType, “FATX”, 4</strong>)<strong>**)</strong></p>
 </li>
 <li><p><strong>{</strong></p>
 </li>
-<li><p>MmHeapFree<strong>(</strong>Volume<strong>)**</strong>;**</p>
+<li><p>MmHeapFree**(<strong>Volume</strong>)<strong>**;</strong></p>
 </li>
 <li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
 </li>
@@ -139,25 +139,25 @@
 </li>
 <li><p>// 获得分区大小等信息</p>
 </li>
-<li><p>ret <strong>=</strong> ArcGetFileInformation<strong>(</strong>DeviceId, <strong>&amp;</strong>FileInformation<strong>)**</strong>;**</p>
+<li><p>ret <strong>=</strong> ArcGetFileInformation**(<strong>DeviceId, **&amp;**FileInformation</strong>)<strong>**;</strong></p>
 </li>
-<li><p><em>if</em> <strong>(</strong>ret <strong>!**</strong>=** ESUCCESS<strong>)</strong></p>
+<li><p><em>if</em> <strong>(<strong>ret **!</strong></strong>=** ESUCCESS**)**</p>
 </li>
 <li><p><strong>{</strong></p>
 </li>
-<li><p>MmHeapFree<strong>(</strong>Volume<strong>)**</strong>;**</p>
+<li><p>MmHeapFree**(<strong>Volume</strong>)<strong>**;</strong></p>
 </li>
 <li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
 </li>
 <li><p><strong>}</strong></p>
 </li>
-<li><p>SectorCount<strong>.</strong>HighPart <strong>=</strong> FileInformation<strong>.</strong>EndingAddress<strong>.</strong>HighPart<strong>;</strong></p>
+<li><p>SectorCount**.<strong>HighPart **=</strong> FileInformation**.<strong>EndingAddress</strong>.<strong>HighPart</strong>;**</p>
 </li>
-<li><p>SectorCount<strong>.</strong>LowPart <strong>=</strong> FileInformation<strong>.</strong>EndingAddress<strong>.</strong>LowPart<strong>;</strong></p>
+<li><p>SectorCount**.<strong>LowPart **=</strong> FileInformation**.<strong>EndingAddress</strong>.<strong>LowPart</strong>;**</p>
 </li>
-<li><p>SectorCount<strong>.</strong>QuadPart <strong>/**</strong>=** SECTOR_SIZE<strong>;</strong></p>
+<li><p>SectorCount**.<strong>QuadPart <strong>/</strong></strong>=** SECTOR_SIZE**;**</p>
 </li>
-<li><p>Volume<strong>-**</strong>&gt;<strong>DeviceId **=</strong> DeviceId<strong>;</strong></p>
+<li><p>Volume**-<strong>**&gt;**DeviceId **=</strong> DeviceId**;**</p>
 </li>
 <li><p>// 打开分区</p>
 </li>
@@ -165,7 +165,7 @@
 </li>
 <li><p><strong>{</strong></p>
 </li>
-<li><p>MmHeapFree<strong>(</strong>Volume<strong>)**</strong>;**</p>
+<li><p>MmHeapFree**(<strong>Volume</strong>)<strong>**;</strong></p>
 </li>
 <li><p><em>return</em> <em>NULL</em><strong>;</strong></p>
 </li>
@@ -173,17 +173,18 @@
 </li>
 <li><p>// 存储FAT_VOLUME_INFO结构</p>
 </li>
-<li><p>FatVolumes<strong>[</strong>DeviceId<strong>]</strong> <strong>=</strong> Volume<strong>;</strong></p>
+<li><p>FatVolumes**[<strong>DeviceId</strong>]** <strong>=</strong> Volume**;**</p>
 </li>
 <li><p>// 返回fat文件读写的FuncTable</p>
 </li>
-<li><p><em>return</em> <strong>&amp;</strong>FatFuncTable<strong>;</strong></p>
+<li><p><em>return</em> <strong>&amp;**FatFuncTable</strong>;**</p>
 </li>
 <li><p><strong>}</strong></p>
 </li>
-<li><p>**<br>**</p>
+<li><p>**           </p>
 </li>
 </ol>
+<p>**</p>
 <p>函数中的DeviceId是设备的句柄。</p>
 <p>生成FAT_VOLUME_INFO结构。这个结构里面存储了FAT分区的基本信息。包括扇区大小，每个簇的扇区数等等。</p>
 <ol>
@@ -191,37 +192,38 @@
 </li>
 <li><p><strong>{</strong></p>
 </li>
-<li><p>ULONG BytesPerSector<strong>;</strong> /* Number of bytes per sector */</p>
+<li><p>ULONG BytesPerSector*<em>;** /</em> Number of bytes per sector */</p>
 </li>
-<li><p>ULONG SectorsPerCluster<strong>;</strong> /* Number of sectors per cluster */</p>
+<li><p>ULONG SectorsPerCluster*<em>;** /</em> Number of sectors per cluster */</p>
 </li>
-<li><p>ULONG FatSectorStart<strong>;</strong> /* Starting sector of 1st FAT table */</p>
+<li><p>ULONG FatSectorStart*<em>;** /</em> Starting sector of 1st FAT table */</p>
 </li>
-<li><p>ULONG ActiveFatSectorStart<strong>;</strong> /* Starting sector of active FAT table */</p>
+<li><p>ULONG ActiveFatSectorStart*<em>;** /</em> Starting sector of active FAT table */</p>
 </li>
-<li><p>ULONG NumberOfFats<strong>;</strong> /* Number of FAT tables */</p>
+<li><p>ULONG NumberOfFats*<em>;** /</em> Number of FAT tables */</p>
 </li>
-<li><p>ULONG SectorsPerFat<strong>;</strong> /* Sectors per FAT table */</p>
+<li><p>ULONG SectorsPerFat*<em>;** /</em> Sectors per FAT table */</p>
 </li>
-<li><p>ULONG RootDirSectorStart<strong>;</strong> /* Starting sector of the root directory (non-fat32) */</p>
+<li><p>ULONG RootDirSectorStart*<em>;** /</em> Starting sector of the root directory (non-fat32) */</p>
 </li>
-<li><p>ULONG RootDirSectors<strong>;</strong> /* Number of sectors of the root directory (non-fat32) */</p>
+<li><p>ULONG RootDirSectors*<em>;** /</em> Number of sectors of the root directory (non-fat32) */</p>
 </li>
-<li><p>ULONG RootDirStartCluster<strong>;</strong> /* Starting cluster number of the root directory (fat32 only) */</p>
+<li><p>ULONG RootDirStartCluster*<em>;** /</em> Starting cluster number of the root directory (fat32 only) */</p>
 </li>
-<li><p>ULONG DataSectorStart<strong>;</strong> /* Starting sector of the data area */</p>
+<li><p>ULONG DataSectorStart*<em>;** /</em> Starting sector of the data area */</p>
 </li>
-<li><p>ULONG FatType<strong>;</strong> /* FAT12, FAT16, FAT32, FATX16 or FATX32 */</p>
+<li><p>ULONG FatType*<em>;** /</em> FAT12, FAT16, FAT32, FATX16 or FATX32 */</p>
 </li>
-<li><p>ULONG DeviceId<strong>;</strong></p>
+<li><p>ULONG DeviceId**;**</p>
 </li>
-<li><p><strong>}</strong> FAT_VOLUME_INFO<strong>;</strong></p>
+<li><p><strong>}</strong> FAT_VOLUME_INFO**;**</p>
 </li>
-<li><p>**<br>**</p>
+<li><p>**             </p>
 </li>
 </ol>
+<p>**</p>
 <p>  读取第一个山区，判断是否有fat标志。如果没有直接返回，挂载失败。之后使用ArcGetFileInformation获得分区大小。ArcGetFileInformation里面调用了FileData.FuncTable.GetFileInformation。因为当前DeviceId是设备句柄，所以他实际调用的是DiskGetFileInformation(freeldr\freeldr\arch\i386\hardware.c)。这个函数很简单，通过FileInformation返回分区开始和结束的地址，这里就不列出了。     </p>
-<p>这里的代码用FileInformation<strong>.</strong>EndingAddress / SECTOR_SIZE计算出了该分区的扇区数SectorCount。这里应该BUG。因为EndingAddress是分区结束地址，真的扇区数应该是 (分区开始地址 - EndingAddress ) / SECTOR_SIZE。好在SectorCount只是判断fat分区的一个依据，而且一般C盘计算出的SectorCount误差不会很大，影响不大。</p>
+<p>这里的代码用FileInformation**.**EndingAddress / SECTOR_SIZE计算出了该分区的扇区数SectorCount。这里应该BUG。因为EndingAddress是分区结束地址，真的扇区数应该是 (分区开始地址 - EndingAddress ) / SECTOR_SIZE。好在SectorCount只是判断fat分区的一个依据，而且一般C盘计算出的SectorCount误差不会很大，影响不大。</p>
 <p>最后执行FatOpenVolume真正执行分区的挂载、初始化。初始化结束后将生成的Volume放到fat.c维护的全局数组FatVolumes里，之后对fat分区进行操作（读写）时，通过设备的DeviceId就可以找到对应的FAT_VOLUME_INFO结构。</p>
 <p>最后函数返回FatFuncTable函数数组</p>
 <ol>
@@ -251,7 +253,7 @@
 <p><strong><strong>打开文件时做了什么</strong></strong></p>
 <p>上一篇文章中还有一个地方没说，就是打开设备并创建完文件的句柄后，ArcOpen调用了文件对应的FileData.FuncTable.Open。对于fat分区而言这个函数是FatOpen(freeldr\freeldr\fs\fat.c). 这个函数也是和分区结构有关的了，有一点比较重要就是函数最后调用了FsSetDeviceSpecific把一个和文件相关的内部结构与文件句柄相关联。以后使用FatRead对文件句柄进行读操作时直接就可以获得这个结构啦。</p>
 <ol>
-<li><p>LONG FatOpen<strong>(</strong>CHAR<strong><strong>* Path, OPENMODE OpenMode, ULONG*</strong></strong> FileId<strong>)</strong></p>
+<li><p>LONG FatOpen*<em>(<strong>CHAR**</strong></em> Path, OPENMODE OpenMode, ULONG*<strong>** FileId</strong>)**</p>
 </li>
 <li><p><strong>{</strong></p>
 </li>
@@ -260,49 +262,49 @@
 <li></li>
 <li><p>// 根据文件的FileId获得文件所在的设备句柄FileData.DeviceId, 从而获得FatMount时生成的Volume结构。</p>
 </li>
-<li><p>DeviceId <strong>=</strong> FsGetDeviceId<strong>(*****</strong>FileId<strong>)**</strong>;**</p>
+<li><p>DeviceId <strong>=</strong> FsGetDeviceId*<em>(<strong>**</strong></em>FileId**)<strong>**;</strong></p>
 </li>
-<li><p>FatVolume <strong>=</strong> FatVolumes<strong>[</strong>DeviceId<strong>]**</strong>;**</p>
+<li><p>FatVolume <strong>=</strong> FatVolumes**[<strong>DeviceId</strong>]<strong>**;</strong></p>
 </li>
 <li><p>// 从DeviceId设备中读取并查询fat表，判断path表示的文件是否存在</p>
 </li>
 <li><p><em>RtlZeroMemory</em><strong>(**</strong>&amp;<strong>TempFileInfo, <em>sizeof</em></strong>(<strong>TempFileInfo</strong>)<strong><strong>)</strong></strong>;**</p>
 </li>
-<li><p>ret <strong>=</strong> FatLookupFile<strong>(</strong>FatVolume, Path, DeviceId, <strong>&amp;</strong>TempFileInfo<strong>)**</strong>;**</p>
+<li><p>ret <strong>=</strong> FatLookupFile**(<strong>FatVolume, Path, DeviceId, **&amp;**TempFileInfo</strong>)<strong>**;</strong></p>
 </li>
-<li><p><em>if</em> <strong>(</strong>ret <strong>!**</strong>=** ESUCCESS<strong>)</strong></p>
+<li><p><em>if</em> <strong>(<strong>ret **!</strong></strong>=** ESUCCESS**)**</p>
 </li>
-<li><p><em>return</em> ENOENT<strong>;</strong></p>
+<li><p><em>return</em> ENOENT**;**</p>
 </li>
 <li><p>// 判断是否是目录</p>
 </li>
-<li><p>IsDirectory <strong>=</strong> <strong>(</strong>TempFileInfo<strong>.</strong>Attributes <strong>&amp;</strong> ATTR_DIRECTORY<strong>)</strong> <strong>!**</strong>=** 0<strong>;</strong></p>
+<li><p>IsDirectory <strong>=</strong> <strong>(**TempFileInfo</strong>.<strong>Attributes **&amp;</strong> ATTR_DIRECTORY**)** <strong>!**</strong>=** 0**;**</p>
 </li>
-<li><p><em>if</em> <strong>(</strong>IsDirectory <strong>&amp;**</strong>&amp;** OpenMode <strong>!**</strong>=** OpenDirectory<strong>)</strong></p>
+<li><p><em>if</em> <strong>(<strong>IsDirectory **&amp;</strong></strong>&amp;** OpenMode <strong>!**</strong>=** OpenDirectory**)**</p>
 </li>
-<li><p><em>return</em> EISDIR<strong>;</strong></p>
+<li><p><em>return</em> EISDIR**;**</p>
 </li>
-<li><p><em>else</em> <em>if</em> <strong>(**</strong>!<strong>IsDirectory <strong>&amp;</strong></strong>&amp;** OpenMode <strong>!**</strong>=** OpenReadOnly<strong>)</strong></p>
+<li><p><em>else</em> <em>if</em> <strong>(**</strong>!<strong>IsDirectory <strong>&amp;</strong></strong>&amp;** OpenMode <strong>!**</strong>=** OpenReadOnly**)**</p>
 </li>
-<li><p><em>return</em> ENOTDIR<strong>;</strong></p>
+<li><p><em>return</em> ENOTDIR**;**</p>
 </li>
 <li><p>// 生成FAT_FILE_INFO结构，里面存放了文件的信息(开始的扇区等)</p>
 </li>
-<li><p>FileHandle <strong>=</strong> MmHeapAlloc<strong>(</strong><em>sizeof</em><strong>(</strong>FAT_FILE_INFO<strong>)**</strong>)<strong>**;</strong></p>
+<li><p>FileHandle <strong>=</strong> MmHeapAlloc**(<strong><em>sizeof</em></strong>(<strong>FAT_FILE_INFO</strong>)<strong><strong>)</strong></strong>;**</p>
 </li>
 <li><p><em>if</em> <strong>(**</strong>!<strong>FileHandle</strong>)**</p>
 </li>
-<li><p><em>return</em> ENOMEM<strong>;</strong></p>
+<li><p><em>return</em> ENOMEM**;**</p>
 </li>
-<li><p>RtlCopyMemory<strong>(</strong>FileHandle, <strong>&amp;</strong>TempFileInfo, <em>sizeof</em><strong>(</strong>FAT_FILE_INFO<strong>)**</strong>)<strong>**;</strong></p>
+<li><p>RtlCopyMemory**(<strong>FileHandle, **&amp;**TempFileInfo, <em>sizeof</em></strong>(<strong>FAT_FILE_INFO</strong>)<strong><strong>)</strong></strong>;**</p>
 </li>
-<li><p>FileHandle<strong>-**</strong>&gt;<strong>Volume **=</strong> FatVolume<strong>;</strong></p>
+<li><p>FileHandle**-<strong>**&gt;**Volume **=</strong> FatVolume**;**</p>
 </li>
 <li><p>// 把这个结构和文件对应的FileData.Specific关联。之后进行FatRead等操作时可以直接获得这个结构了</p>
 </li>
-<li><p>FsSetDeviceSpecific<strong>(*****</strong>FileId, FileHandle<strong>)**</strong>;**</p>
+<li><p>FsSetDeviceSpecific*<em>(<strong>**</strong></em>FileId, FileHandle**)<strong>**;</strong></p>
 </li>
-<li><p><em>return</em> ESUCCESS<strong>;</strong></p>
+<li><p><em>return</em> ESUCCESS**;**</p>
 </li>
 <li><p><strong>}</strong></p>
 </li>

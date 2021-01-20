@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <link rel="icon" href="/favicon.ico">
+  
+  <title>0CCh Blog</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
+  <!--在这里倒入jquery 方便处理部分页面的jquery-->
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head></html>
+<body class="home">
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="site-header navfixed-false">
+  <div class="container">
+      <h1><a href="/" title="0CCh Blog"><span class="octicon octicon-mark-github"></span> 0CCh Blog</a></h1>
+      <nav class="site-header-nav" role="navigation">
+        
+              
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+        
+              
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+        
+              
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+        
+      </nav>
+  </div>
+</header>
+
+	<section class="banner-false">
+    <div class="collection-head">
+        <div class="container">
+            <div class="collection-title">
+                <h1 class="collection-header" id="site-description">
+                    
+                </h1>
+                <div class="collection-info">
+                    
+                    
+                        <span class="meta-info">
+                            
+                                <span class="octicon octicon-location">
+                                   
+                                        China
+                                    
+                                </span>
+                                
+                            
+                        </span>
+                    
+                        <span class="meta-info">
+                            
+                                <span class="octicon octicon-mark-github">
+                                   
+                                </span>
+                                
+                                    <a href="http://github.com/0cch" target="_blank">0cch</a>
+                                
+                            
+                        </span>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+	   <section class="container">
+    <div class="columns">
+        <div class="column two-thirds">
+            
+                  <article id="post-yampl-seq-and-iterator-part3" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2020/06/15/yampl-seq-and-iterator-part3/">序列和迭代器(3)</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="list序列的更多元函数"><a href="#list序列的更多元函数" class="headerlink" title="list序列的更多元函数"></a><code>list</code>序列的更多元函数</h2><p>那么目前为止，我们完成了<code>list</code>序列7组基本元函数的调用和验证。不过我们不会就此满足，因为以上元函数能完成的工作有限，为了让序列能完成更多实用的功能，我们还需要进一步的对基础元函进行组合。有一个特别的好消息是，由于后续介绍的元函数都是由以上7组基本元函数组合而成，所以它们可以在任何正向迭代器的序列中使用。不仅如此，如果不是特别在意编译期的效率问题的话，将他们应用于双向迭代器或者随机访问迭代器的序列也是可以的。当然我并不推荐这么做，因为对于双向迭代器或者随机访问迭代器的序列，它们可以使用更灵活的方法操作和访问内部元素。</p>
+<h3 id="push-front元函数"><a href="#push-front元函数" class="headerlink" title="push_front元函数"></a><code>push_front</code>元函数</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">Tag</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">struct</span> <span class="title">push_front_impl</span> &#123;</span></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">R</span>, <span class="title">class</span> <span class="title">I</span>, <span class="title">class</span> <span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply_impl</span> &#123;</span></span><br><span class="line">    <span class="keyword">using</span> inner = <span class="keyword">typename</span> push_back&lt;R, <span class="keyword">typename</span> deref&lt;I&gt;::type&gt;::type;</span><br><span class="line">    <span class="keyword">using</span> type = <span class="keyword">typename</span> apply_impl&lt;inner, <span class="keyword">typename</span> next&lt;I&gt;::type, E&gt;::type;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">R</span>, <span class="title">class</span> <span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply_impl</span>&lt;R, E, E&gt; &#123;</span></span><br><span class="line">    <span class="keyword">using</span> type = R;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>, <span class="title">class</span> <span class="title">U</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply</span> &#123;</span></span><br><span class="line">    <span class="keyword">using</span> init = <span class="keyword">typename</span> push_back&lt;<span class="keyword">typename</span> clear&lt;T&gt;::type, U&gt;::type;</span><br><span class="line">    <span class="keyword">using</span> type = <span class="keyword">typename</span> apply_impl&lt;init, <span class="keyword">typename</span> begin&lt;T&gt;::type,</span><br><span class="line">                                     <span class="keyword">typename</span> end&lt;T&gt;::type&gt;::type;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>, <span class="title">class</span> <span class="title">U</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">struct</span> <span class="title">push_front</span></span></span><br><span class="line"><span class="class">    :</span> push_front_impl&lt;<span class="keyword">typename</span> sequence_tag&lt;T&gt;::type&gt;::<span class="keyword">template</span> apply&lt;T, U&gt; &#123;&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>从上面的代码可以看出<code>push_front</code>是一个极为典型的组合元函数，它使用<code>begin</code>、<code>end</code>、<code>deref</code>、<code>clear</code>和<code>push_back</code>两个元函数的组合，所以它可以用于任何正向迭代器的序列。不过达到这个目的的代价可以不小，因为这个操作从效率上来说是很低的。观察<code>push_front_impl</code>的实现可知，该元函数首先调用<code>clear</code>元函数获取一个空的序列，接着将目标元素<code>push_back</code>到新的空序列中，</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> init = <span class="keyword">typename</span> push_back&lt;<span class="keyword">typename</span> clear&lt;T&gt;::type, U&gt;::type;</span><br></pre></td></tr></table></figure>
+
+<p>并且使用<code>begin</code>、<code>end</code>和<code>deref</code>遍历了原始序列并且按照顺序逐个插入新序列。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> type = <span class="keyword">typename</span> apply_impl&lt;init, <span class="keyword">typename</span> begin&lt;T&gt;::type,</span><br><span class="line">                                     <span class="keyword">typename</span> end&lt;T&gt;::type&gt;::type;</span><br></pre></td></tr></table></figure>
+
+<h3 id="pop-back和pop-front元函数"><a href="#pop-back和pop-front元函数" class="headerlink" title="pop_back和pop_front元函数"></a><code>pop_back</code>和<code>pop_front</code>元函数</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">Tag</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">struct</span> <span class="title">pop_back_impl</span> &#123;</span></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">R</span>, <span class="title">class</span> <span class="title">I</span>, <span class="title">class</span> <span class="title">N</span>, <span class="title">class</span> <span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply_impl</span> &#123;</span></span><br><span class="line">    <span class="keyword">using</span> inner = <span class="keyword">typename</span> push_back&lt;R, <span class="keyword">typename</span> deref&lt;I&gt;::type&gt;::type;</span><br><span class="line">    <span class="keyword">using</span> type = <span class="keyword">typename</span> apply_impl&lt;inner, <span class="keyword">typename</span> next&lt;I&gt;::type,</span><br><span class="line">                                     <span class="keyword">typename</span> next&lt;N&gt;::type, E&gt;::type;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">R</span>, <span class="title">class</span> <span class="title">I</span>, <span class="title">class</span> <span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply_impl</span>&lt;R, I, E, E&gt; &#123;</span></span><br><span class="line">    <span class="keyword">using</span> type = R;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply</span> &#123;</span></span><br><span class="line">    <span class="keyword">using</span> init = <span class="keyword">typename</span> clear&lt;T&gt;::type;</span><br><span class="line">    <span class="keyword">using</span> type =</span><br><span class="line">        <span class="keyword">typename</span> apply_impl&lt;init, <span class="keyword">typename</span> begin&lt;T&gt;::type,</span><br><span class="line">                            <span class="keyword">typename</span> next&lt;<span class="keyword">typename</span> begin&lt;T&gt;::type&gt;::type,</span><br><span class="line">                            <span class="keyword">typename</span> end&lt;T&gt;::type&gt;::type;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">struct</span> <span class="title">pop_back</span></span></span><br><span class="line"><span class="class">    :</span> pop_back_impl&lt;<span class="keyword">typename</span> sequence_tag&lt;T&gt;::type&gt;::<span class="keyword">template</span> apply&lt;T&gt; &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">Tag</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">struct</span> <span class="title">pop_front_impl</span> &#123;</span></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">R</span>, <span class="title">class</span> <span class="title">I</span>, <span class="title">class</span> <span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply_impl</span> &#123;</span></span><br><span class="line">    <span class="keyword">using</span> inner = <span class="keyword">typename</span> push_back&lt;R, <span class="keyword">typename</span> deref&lt;I&gt;::type&gt;::type;</span><br><span class="line">    <span class="keyword">using</span> type = <span class="keyword">typename</span> apply_impl&lt;inner, <span class="keyword">typename</span> next&lt;I&gt;::type, E&gt;::type;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">R</span>, <span class="title">class</span> <span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply_impl</span>&lt;R, E, E&gt; &#123;</span></span><br><span class="line">    <span class="keyword">using</span> type = R;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply</span> &#123;</span></span><br><span class="line">    <span class="keyword">using</span> init = <span class="keyword">typename</span> clear&lt;T&gt;::type;</span><br><span class="line">    <span class="keyword">using</span> type =</span><br><span class="line">        <span class="keyword">typename</span> apply_impl&lt;init, <span class="keyword">typename</span> next&lt;<span class="keyword">typename</span> begin&lt;T&gt;::type&gt;::type,</span><br><span class="line">                            <span class="keyword">typename</span> end&lt;T&gt;::type&gt;::type;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">struct</span> <span class="title">pop_front</span></span></span><br><span class="line"><span class="class">    :</span> pop_front_impl&lt;<span class="keyword">typename</span> sequence_tag&lt;T&gt;::type&gt;::<span class="keyword">template</span> apply&lt;T&gt; &#123;&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>事实上，<code>pop_back</code>和<code>pop_front</code>元函数与<code>push_front</code>元函数的实现思路基本上是一样的。它们都使用<code>clear</code>元函数创建了一个空序列，然后再往空序列中填充各自的元素。唯一的区别就在于，<code>pop_back</code>元函数会检查下一个迭代器是否为结束迭代器。如果确定是结束迭代器，那么元函数就会忽略当前迭代器，直接返回当前新序列。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> type = <span class="keyword">typename</span> apply_impl&lt;inner, <span class="keyword">typename</span> next&lt;I&gt;::type,</span><br><span class="line">                                     <span class="keyword">typename</span> next&lt;N&gt;::type, E&gt;::type;</span><br></pre></td></tr></table></figure>
+
+<p>而<code>pop_front</code>则是从一开始遍历原始序列迭代器的时候就用<code>next</code>元函数忽略首个迭代器。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> type =</span><br><span class="line">        <span class="keyword">typename</span> apply_impl&lt;init, <span class="keyword">typename</span> next&lt;<span class="keyword">typename</span> begin&lt;T&gt;::type&gt;::type,</span><br><span class="line">                            <span class="keyword">typename</span> end&lt;T&gt;::type&gt;::type;</span><br></pre></td></tr></table></figure>
+
+<h3 id="insert元函数"><a href="#insert元函数" class="headerlink" title="insert元函数"></a><code>insert</code>元函数</h3><p>上面已经介绍了三个组合而成的元函数，它们的实现虽说比较简单，但是却阐明了这类元函数的基本思路，即创建新的序列，然后遍历原始序列将需要的元素逐个插入到新序列中。现在让我们看一个较为复杂的<code>insert</code>元函数。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">Tag</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">struct</span> <span class="title">insert_impl</span> &#123;</span></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">R</span>, <span class="title">class</span> <span class="title">U</span>, <span class="title">class</span> <span class="title">B</span>, <span class="title">class</span> <span class="title">I</span>, <span class="title">class</span> <span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply_impl</span> &#123;</span></span><br><span class="line">    <span class="keyword">using</span> inner = <span class="keyword">typename</span> push_back&lt;R, <span class="keyword">typename</span> deref&lt;I&gt;::type&gt;::type;</span><br><span class="line">    <span class="keyword">using</span> type =</span><br><span class="line">        <span class="keyword">typename</span> apply_impl&lt;inner, U, B, <span class="keyword">typename</span> next&lt;I&gt;::type, E&gt;::type;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">R</span>, <span class="title">class</span> <span class="title">U</span>, <span class="title">class</span> <span class="title">I</span>, <span class="title">class</span> <span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply_impl</span>&lt;R, U, I, I, E&gt; &#123;</span></span><br><span class="line">    <span class="keyword">using</span> inner = <span class="keyword">typename</span> push_back&lt;R, U&gt;::type;</span><br><span class="line">    <span class="keyword">using</span> inner2 = <span class="keyword">typename</span> push_back&lt;inner, <span class="keyword">typename</span> deref&lt;I&gt;::type&gt;::type;</span><br><span class="line">    <span class="keyword">using</span> type =</span><br><span class="line">        <span class="keyword">typename</span> apply_impl&lt;inner2, I, U, <span class="keyword">typename</span> next&lt;I&gt;::type, E&gt;::type;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">R</span>, <span class="title">class</span> <span class="title">U</span>, <span class="title">class</span> <span class="title">B</span>, <span class="title">class</span> <span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply_impl</span>&lt;R, U, B, E, E&gt; &#123;</span></span><br><span class="line">    <span class="keyword">using</span> type = R;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">R</span>, <span class="title">class</span> <span class="title">U</span>, <span class="title">class</span> <span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply_impl</span>&lt;R, U, E, E, E&gt; &#123;</span></span><br><span class="line">    <span class="keyword">using</span> type = <span class="keyword">typename</span> push_back&lt;R, U&gt;::type;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>, <span class="title">class</span> <span class="title">B</span>, <span class="title">class</span> <span class="title">U</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply</span> &#123;</span></span><br><span class="line">    <span class="keyword">using</span> init = <span class="keyword">typename</span> clear&lt;T&gt;::type;</span><br><span class="line">    <span class="keyword">using</span> type = <span class="keyword">typename</span> apply_impl&lt;init, U, B, <span class="keyword">typename</span> begin&lt;T&gt;::type,</span><br><span class="line">                                     <span class="keyword">typename</span> end&lt;T&gt;::type&gt;::type;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>, <span class="title">class</span> <span class="title">U</span>, <span class="title">class</span> <span class="title">B</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">struct</span> <span class="title">insert</span></span></span><br><span class="line"><span class="class">    :</span> insert_impl&lt;<span class="keyword">typename</span> sequence_tag&lt;T&gt;::type&gt;::<span class="keyword">template</span> apply&lt;T, B, U&gt; &#123;&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码总体思路没有变化，先通过<code>clear</code>创建了新序列，难点是如何遍历原始序列并且找到目标位置插入新元素。这里让我们把注意力放在4个版本的<code>apply_impl</code>上，首先来看通常版本的元函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">R</span>, <span class="title">class</span> <span class="title">U</span>, <span class="title">class</span> <span class="title">B</span>, <span class="title">class</span> <span class="title">I</span>, <span class="title">class</span> <span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply_impl</span> &#123;</span></span><br><span class="line">    <span class="keyword">using</span> inner = <span class="keyword">typename</span> push_back&lt;R, <span class="keyword">typename</span> deref&lt;I&gt;::type&gt;::type;</span><br><span class="line">    <span class="keyword">using</span> type =</span><br><span class="line">        <span class="keyword">typename</span> apply_impl&lt;inner, U, B, <span class="keyword">typename</span> next&lt;I&gt;::type, E&gt;::type;</span><br><span class="line">  &#125;;</span><br></pre></td></tr></table></figure>
+
+<p>该元函数非常简单，通过<code>push_back</code>将原序列的元素插入到新序列中，其中<code>I</code>是迭代器。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">R</span>, <span class="title">class</span> <span class="title">U</span>, <span class="title">class</span> <span class="title">I</span>, <span class="title">class</span> <span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply_impl</span>&lt;R, U, I, I, E&gt; &#123;</span></span><br><span class="line">    <span class="keyword">using</span> inner = <span class="keyword">typename</span> push_back&lt;R, U&gt;::type;</span><br><span class="line">    <span class="keyword">using</span> inner2 = <span class="keyword">typename</span> push_back&lt;inner, <span class="keyword">typename</span> deref&lt;I&gt;::type&gt;::type;</span><br><span class="line">    <span class="keyword">using</span> type =</span><br><span class="line">        <span class="keyword">typename</span> apply_impl&lt;inner2, I, U, <span class="keyword">typename</span> next&lt;I&gt;::type, E&gt;::type;</span><br><span class="line">  &#125;;</span><br></pre></td></tr></table></figure>
+
+<p>第二个的<code>apply_impl</code>是一个特化版本，它限定了当当前迭代器<code>I</code>与目标迭代器相同的时候，将新元素<code>U</code>插入到新序列中，然后再插入迭代器<code>I</code>的元素，这样就能完成插入目标元素<code>U</code>到指定迭代器之前的任务。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">R</span>, <span class="title">class</span> <span class="title">U</span>, <span class="title">class</span> <span class="title">B</span>, <span class="title">class</span> <span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply_impl</span>&lt;R, U, B, E, E&gt; &#123;</span></span><br><span class="line">    <span class="keyword">using</span> type = R;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">R</span>, <span class="title">class</span> <span class="title">U</span>, <span class="title">class</span> <span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">  <span class="title">struct</span> <span class="title">apply_impl</span>&lt;R, U, E, E, E&gt; &#123;</span></span><br><span class="line">    <span class="keyword">using</span> type = <span class="keyword">typename</span> push_back&lt;R, U&gt;::type;</span><br><span class="line">  &#125;;</span><br></pre></td></tr></table></figure>
+
+<p>最后两个特化版本的<code>apply_impl</code>限定了元函数的结束条件。一方面<code>apply_impl&lt;R, U, B, E, E&gt;</code>，当原序列遍历到结束迭代器时，如果插入目标位置不是结束迭代器，则插入操作直接结束，返回新序列。另一方面<code>apply_impl&lt;R, U, E, E, E&gt;</code>，当原序列遍历到结束迭代器时，如果插入目标位置正好是结束迭代器，那么就将目标元素<code>U</code>插入到新序列的末尾。</p>
+<p>以下是一个调用<code>insert</code>元函数的示例：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> insert_list = <span class="built_in">list</span>&lt;<span class="keyword">int</span>, <span class="keyword">bool</span>, <span class="keyword">char</span>&gt;;</span><br><span class="line"><span class="keyword">using</span> result_list = insert&lt;insert_list, short, begin&lt;insert_list&gt;::type&gt;::type;</span><br></pre></td></tr></table></figure>
+
+<p>示例代码中，<code>insert</code>元函数将<code>short</code>类型插入了<code>insert_list</code>序列的<code>begin</code>迭代器之前，于是<code>result_list</code>的结果应该是<code>list&lt;short, int, bool, char&gt;</code>。</p>
+<h3 id="其他组合元函数"><a href="#其他组合元函数" class="headerlink" title="其他组合元函数"></a>其他组合元函数</h3><p>除了我们上面介绍的<code>push_front</code>、<code>pop_back</code>、<code>pop_front</code>和<code>insert</code>元函数以外，我们还能根据自己的需要实现其他的元函数。比如，用于删除元素的<code>erase</code>元函数，用于排重的<code>unique</code>元函数，用于逆向排序的<code>reverse</code>元函数以及用于查找元素的<code>find</code>元函数等等。它们虽然有各自不同的功能，但是实现思路上确实万变不离其宗的。有兴趣的读者不妨自己尝试动手实现一两个。</p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2020-06-15T10:15:30.000Z" itemprop="datePublished">2020-06-15</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/CPP/' title=''>CPP</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+        </div>
+        <div class="column one-third">
+          <!--处理未安装 search 插件 默认 Google 搜索-->
+ 
+
+<h3>Search</h3>
+
+<div id="site_search">
+
+	<!-- Google -->
+	
+		<form action="http://www.google.com/search?" data-site="http://0cch.com">
+	    	<input type="text" id="search_box" name="q" placeholder="Search">
+	    	<button type="button" class="btn btn-default" id="site_search_do"><span class="octicon octicon-search"></span></button>
+	    </form>
+	
+
+	<!-- 本地搜索 -->
+	
+
+</div>
+
+<h3>Popular Repositories</h3>
+    <div class="popular-container"></div>
+    
+    <script type="text/template" id="popular-list-template">
+        <a href="{%=clone_url%}" class="card text-center" target="_blank">
+            <div class="thumbnail">
+                <div class="card-image geopattern" data-pattern-id="{%=name%}">
+                    <div class="card-image-cell">
+                        <h3 class="card-title">
+                            {%=name%}
+                        </h3>
+                    </div>
+                </div>
+                <div class="caption">
+                    <div class="card-description">
+                        <p class="card-text">
+                            {%=description%}
+                        </p>
+                    </div>
+                    <div class="card-text">
+                        <span class="meta-info tooltipped tooltipped-n" aria-label="{%=stargazers_count%} stars">
+                            <span class="octicon octicon-star"></span> {%=stargazers_count%}
+                        </span>
+                        <span class="meta-info tooltipped tooltipped-n" aria-label="{%=forks_count%} forks">
+                            <span class="octicon octicon-git-branch"></span> {%=forks_count%}
+                        </span>
+                        <span class="meta-info tooltipped tooltipped-n" aria-label="最后更新时间：{%=updated_at%}">
+                            <span class="octicon octicon-clock"></span>
+                            <time datetime="{%=updated_at%}">{%=updated_at%}</time>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </script>
+
+    <script src="/js/baiduTemplate.js"></script>
+    <script type="text/javascript">
+        var popular_repos = function(){
+
+            var baiduTpl = new Object();
+
+            var handleTpl = function(){
+                baiduTpl.popular_list = baidu.template("popular-list-template");
+            };
+
+            var handleGithub = function(){
+                var popularContainer = $(".popular-container");
+
+                var repos = "0cchext,luadbg".split(",");
+                for(var i in repos){
+                    var name = repos[i];
+                    $.get("https://api.github.com/repos/0cch/"+name,handle);
+                }
+
+                function handle(result){
+                    result.updated_at = result.updated_at.split("T")[0];
+                    if(result){
+                        var html = baiduTpl.popular_list(result);
+                        popularContainer.append(html);
+                        $(".geopattern").each(function(){           
+                            $(this).geopattern($(this).data('pattern-id'));
+                        });
+                    }
+                }
+            };
+
+            return {
+                init:function(){
+                    handleTpl();
+                    handleGithub();
+                }
+            }
+        }; 
+        $(popular_repos().init);
+    </script>
+
+
+    <h3>Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+    </div>
+  </div>
+
+
+        </div>
+    </div>
+
+    
+</section>
+
+<footer class="container">
+    <div class="site-footer" role="contentinfo">
+        
+        <ul class="site-footer-links right mobile-hidden">
+            <li>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+            </li>
+        </ul>
+
+        <ul class="site-footer-links mobile-hidden">
+            
+                  
+                  <li>
+                    <a href="/"  title="Home">Home</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/categories/"  title="Category">Category</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
+                  </li>
+            
+            <li>
+                <a href="/atom.xml">
+                    <span class="octicon octicon-rss" style="color:orange;"></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</footer>
+
+		<script src="/js/geopattern.js"></script>
+		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+		
+
+		<script src="/js/index.js"></script>
+
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end --> 
+
+	</body>
+</html>

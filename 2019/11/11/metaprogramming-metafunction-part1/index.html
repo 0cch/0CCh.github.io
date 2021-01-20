@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <link rel="icon" href="/favicon.ico">
+  
+  <title>0CCh Blog | 元函数和序列(1)</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/lib/fancybox/jquery.fancybox-1.3.4.css">
+  <!--在这里倒入jquery 方便处理部分页面的jquery-->
+  <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js" type="text/javascript"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head></html>
+
+<body>
+	<!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="site-header navfixed-false">
+  <div class="container">
+      <h1><a href="/" title="0CCh Blog"><span class="octicon octicon-mark-github"></span> 0CCh Blog</a></h1>
+      <nav class="site-header-nav" role="navigation">
+        
+              
+              <a href="/"  class=" site-header-nav-item hvr-underline-from-center" title="Home">Home</a>
+        
+              
+              <a href="/categories/"  class=" site-header-nav-item hvr-underline-from-center" title="Category">Category</a>
+        
+              
+              <a href="/open-source/"  class=" site-header-nav-item hvr-underline-from-center" title="Open-Source">Open-Source</a>
+        
+      </nav>
+  </div>
+</header>
+
+	
+<section class="collection-head geopattern" data-pattern-id="元函数和序列(1)" >
+    <div class="container">
+        <div class="collection-title">
+            <h1 class="collection-header">
+                元函数和序列(1)
+            </h1>
+            
+                <div class="collection-info">
+                    <span class="meta-info">
+                        <span class="octicon octicon-calendar"></span>
+                        <time datetime="2019-11-11T14:18:37.000Z" itemprop="datePublished">2019-11-11</time>
+                    </span>
+                    
+                        <span class="meta-info">
+                            <span class="octicon octicon-file-directory"></span>
+                            <a href='/categories/CPP/' title=''>CPP</a>
+                        </span>
+                    
+                </div>
+            
+        </div>
+    </div>
+</section>
+	<section class="container">
+    <div class="columns">
+        <div class="column  three-fourths " >
+            <article class="article-content markdown-body">
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>元函数简单来说就是一种可以在编译期调用的函数，它操作的对象一定是编译期可以确定的，比如类型和常量。元函数也是模板元编程中最基础的组成部分，甚至代码中的选择和循环等控制流都是由元函数来完成。而序列则进一步释放了元函数的威力，我们可以通过元函数为序列提供丰富的算法以解决各种实际问题。</p>
+<h2 id="元函数"><a href="#元函数" class="headerlink" title="元函数"></a>元函数</h2><p>一个普通的C++函数通常由函数名称、参数、返回类型以及函数主体这4个部分组成，比如：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">plus</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>作为对比，C++模板元编程的元函数同样也存在函数名称、参数以及函数主体3个部分，只不过它们的形式有一些不同罢了。还是以<code>plus</code>函数为例，将其改写为元函数后的代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">int</span> a, <span class="keyword">int</span> b&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">plus</span> &#123;</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">int</span> value = a + b;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>看到以上代码，有人可能会惊呼道：“这哪是什么函数，它明明就是一个类模板！”。是的没错！它确实是一个类模板，可同时也是一个元函数。让我们先接受这个定义，这样可以让我们很容易的找到它和普通函数版本的对应关系：首先<code>plus</code>作为类模板名也是元函数名，然后类模板形参<code>int a, int b</code>对应是元函数的形参，最后元函数的函数体就是类模板的定义。虽然在元函数中我们没有办法定义返回类型（实际上也没有必要定义，因为大多数时候元函数返回的就是类型本身），但是可以通过约定元函数的函数体中静态变量名称的方法定义数值的返回值，体现在<code>plus</code>中即为<code>static constexpr int value = a + b;</code>，通常情况下，元函数会约定<code>value</code>为数值类型的返回值名称。</p>
+<p>另外还有一种特殊的情况，当元函数没有形参时，对应的则是类或者实例化的类模板。比如：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kilometer</span> &#123;</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">int</span> value = <span class="number">1000</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> plus11 = plus&lt;<span class="number">3</span>, <span class="number">8</span>&gt;;</span><br></pre></td></tr></table></figure>
+
+<p>在C++模板元编程中，对于数值计算元函数的调用实际上就是访问起静态成员，根据约定会获取<code>value</code>的值：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> x1 = plus&lt;<span class="number">7</span>, <span class="number">11</span>&gt;::value;</span><br><span class="line"><span class="keyword">auto</span> x2 = kilometer::value;</span><br><span class="line"><span class="keyword">auto</span> x3 = plus11::value;</span><br></pre></td></tr></table></figure>
+
+<p>到此为止，我们看到的都是有关数值计算的元函数，但是我又强调过数值计算并非元函数的重点工作。其实这是有意为之，目的是为了方便元函数与普通函数的对比，接下来让我把数值转换为类型以帮助我们讨论类型计算元函数。</p>
+<p>这里我并不打算让类型计算元函数的例子显得过于跳跃，所以还是以<code>plus</code>为例将其修改为：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">int</span> n&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">int_</span> &#123;</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">int</span> value = n;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T1</span>, <span class="title">class</span> <span class="title">T2</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">struct</span> <span class="title">plus</span> &#123;</span></span><br><span class="line">    <span class="keyword">using</span> type = int_&lt;T1::value + T2::value&gt;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>在上面的代码中新增了一个类模板<code>int_</code>。<code>int_</code>的实现非常简单，只是将数值转换成了类型。不过请不要小看了它的作用，因为它为类型计算元函数提供了计算数值的桥梁。我们发现元函数<code>plus</code>的参数不再是数值类型而是类型本身，更有意思的是它也不再返回数值而是返回类型本身。请注意，对于类型计算的元函数，返回的是可公开访问的嵌套类型，我们通常约定该类型名为<code>type</code>。在这个例子中即是：<code>using type = int_&lt;T1::value + T2::value&gt;;</code>。当然，除了使用<code>using</code>来定义别名以外，使用<code>typedef</code>也是允许的。我选择使用<code>using</code>，一方面因为它是新标准推荐的做法，另一方面从语法上看它更像是一个赋值语句，作为元函数的一部分它更容易理解。</p>
+<p>同样的道理，调用类型计算元函数也需要用到<code>using</code>或者<code>typedef</code>，例如：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> new_type = <span class="keyword">typename</span> plus&lt;int_&lt;<span class="number">7</span>&gt;, int_&lt;<span class="number">11</span>&gt;&gt;::type;</span><br><span class="line"><span class="keyword">static_assert</span>(<span class="built_in">std</span>::is_same_v&lt;new_type, int_&lt;<span class="number">18</span>&gt;&gt;);</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码可以成功编译，这表明通过元函数<code>plus&lt;int_&lt;7&gt;, int_&lt;11&gt;&gt;::type</code>得出的新类型<code>new_type</code>和预期结果<code>int_&lt;18&gt;</code>是符合的。</p>
+<p>还有需要解释的一点是，虽然上文中介绍一些编写元函数的常规约定，但是有时候也可以灵活处理。比如，作为元函数的本体类模板，完全有能力返回多个嵌套类型或者常量数值：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T1</span>, <span class="title">class</span> <span class="title">T2</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">struct</span> <span class="title">plus</span> &#123;</span></span><br><span class="line">    <span class="keyword">using</span> type = int_&lt;T1::value + T2::value&gt;;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">int</span> value = type::value;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>这样修改的好处是能够直接访问元函数计算的数值结果，而不必通过<code>::type</code>间接的访问：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> x = plus&lt;int_&lt;<span class="number">7</span>&gt;, int_&lt;<span class="number">11</span>&gt;&gt;::value;</span><br></pre></td></tr></table></figure>
+
+<p>最后也是元函数最重要的一个特点：特化。特化是C++模板元编程能够成立的根基。我们知道通过特化可以针对类模板的特定参数来规定类模板的具体行为，而元函数正是利用这一点来实现选择和循环等控制流的。关于特化在元函数中具体的使用方法，我将在后面的内容中详细介绍。</p>
+
+            </article>
+            
+                <div class="share">
+                    <!--开启分享-->
+<div class="share-component" data-disabled="google,twitter,facebook" data-description=""></div>
+
+<script src="/js/share.min.js"></script>
+
+                </div>    
+            
+
+            
+            
+                
+<div class="comments">
+    <div id="disqus_thread"></div>
+    <script>
+
+        var host = window.location.host;
+        var disqus_shortname = host.includes('127.0.0.1') || host.includes('0.0.0.0') || host.includes('localhost') ? '0cchDev' : '0cch'
+
+        var disqus_title = '元函数和序列(1)';
+        var disqus_config = function () {
+            this.page.url = 'http://0cch.com/2019/11/11/metaprogramming-metafunction-part1/';
+        };
+        
+        (function() {
+            var d = document, s = d.createElement('script');
+
+            s.src = '//0cch.disqus.com/embed.js';
+
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>
+        请启用JavaScript来查看 <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+    </noscript>
+</div>
+             
+
+        </div>
+        <div class="column one-fourth">
+            
+                
+                
+
+
+<h3>Post Directory</h3>
+
+<div id="post-directory-module">
+	<section class="post-directory">
+		<p><strong class="toc-title">Article directory</strong></p>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#元函数"><span class="toc-text">元函数</span></a></li></ol>
+	</section>
+</div>
+            
+        </div>
+    </div>
+</section>
+
+<footer class="container">
+    <div class="site-footer" role="contentinfo">
+        
+        <ul class="site-footer-links right mobile-hidden">
+            <li>
+                <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+            </li>
+        </ul>
+
+        <ul class="site-footer-links mobile-hidden">
+            
+                  
+                  <li>
+                    <a href="/"  title="Home">Home</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/categories/"  title="Category">Category</a>
+                  </li>
+            
+                  
+                  <li>
+                    <a href="/open-source/"  title="Open-Source">Open-Source</a>
+                  </li>
+            
+            <li>
+                <a href="/atom.xml">
+                    <span class="octicon octicon-rss" style="color:orange;"></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</footer>
+
+		<script src="/js/geopattern.js"></script>
+		<script src="/lib/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+		
+			<script src="/js/toc.js"></script>
+		
+
+		<script src="/js/index.js"></script>
+
+		 <script src="/js/popular_repo.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end --> 
+
+	</body>
+</html>

@@ -74,6 +74,432 @@
     <div class="columns">
         <div class="column two-thirds">
             
+                  <article id="post-xperfhelper-xperfe79a84windowse591bde4bba4e8a18ce8849ae69cace7949fe68890e5b7a5e585b7" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2013/12/01/xperfhelper-xperfe79a84windowse591bde4bba4e8a18ce8849ae69cace7949fe68890e5b7a5e585b7/">XPerfHelper —— XPerf的Windows命令行脚本生成工具</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>使用过XPerf的应该都知道，写一个XPerf的命令行是多么的麻烦，如果不太熟悉，需要反复的查看帮助里的参数。所以一般情况下，大家会把命令写到一个cmd或者bat的脚本中，这样就可以双击来使用XPerf，只需要第一次费点心思写脚本罢了。但是我还是觉得，即使是只用写一次脚本，也还是挺麻烦的，于是写了这个小工具，生成cmd脚本文件。妈妈再也不用担心我的XPerf命令写错了。</p>
+<p><a href="/uploads/2013/12/20131201221223.png"><img src="/uploads/2013/12/20131201221223.png" alt="20131201221223"></a></p>
+<p>如上图所示，我们可以选择kernel flag和stackwalk，然后选择providers，点击OK，生成cmd文件即可。下面是一个生成的cmd的内容：</p>
+<p><a href="/uploads/2013/12/20131201222315.png"><img src="/uploads/2013/12/20131201222315.png" alt="20131201222315"></a></p>
+<p>下载<a href="/uploads/2013/12/XPerfHelper.zip">XPerfHelper</a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2013-12-01T06:25:52.000Z" itemprop="datePublished">2013-12-01</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-e4bdbfe794a8etwe5afb9e7a88be5ba8fe8bf9be8a18ce79b91e68ea7e5928ce58886e69e90" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2013/11/17/e4bdbfe794a8etwe5afb9e7a88be5ba8fe8bf9be8a18ce79b91e68ea7e5928ce58886e69e90/">使用ETW对程序进行监控和分析</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>ETW（Event Tracing for Windows）是Windows提供的对程序进行事件记录，跟踪，使用的机制。我们可以利用这个机制对程序进行调试和性能分析。从Windows Vista开始，ETW已经非常好的融合在Windows内核之中了，在Windows 7开始，这一个机制更加完善，几乎记录了Windows运行的每一个细节。我个人猜测，从Windows Vista开始到Windows 7直到现在的Windows 8，性能都在不断提高，ETW机制应该是功不可没的。</p>
+<p>ETW是Windows提供的机制，我们要使用他还需要工具，这些工具我们可以自己开发，因为Windows提供了调用接口。当然，更惬意的选择就是直接使用Windows提供的工具集WPT（Windows Performance Toolkit）。利用WPT和SDK，我们可以将ETW融入到我们自己的程序中，帮助我们调试程序和提升性能。</p>
+<p>以下是我们需要的工具：<br>SDK:  </p>
+<ol>
+<li>ECMangen.exe  </li>
+<li>mc.exe  </li>
+</ol>
+<p>Windows:<br>WEVTUtil.exe  </p>
+<p>WPT:  </p>
+<ol>
+<li>XPerf.exe  </li>
+<li>XPerfView.exe  </li>
+</ol>
+<p>首先我们需要用SDK中的工具ECMangen，生成一个manifest文件，这个文件用来描述记录的事件，如图。<br><a href="/uploads/2013/11/20131117114336.png"><img src="/uploads/2013/11/20131117114336.png" alt="20131117114336"></a><br>这里，我们首先创建一个Provider，接下来创建一个Event，参数可以随便填下，就像上图所示。作为演示，这里一个Event就够了（FirstEvent）。<br>然后保存为0CChProvider.man。</p>
+<p>接下来我们MC来生成一个头文件，一个资源文件和两个二进制文件。命令行如：<br>mc -um C:\etw\0CChProvider.man<br><a href="/uploads/2013/11/20131117114801.png"><img src="/uploads/2013/11/20131117114801.png" alt="20131117114801"></a></p>
+<p>然后我们可以创建一个工程，加入这个头文件和资源文件。并且在代码中插入写事件的代码，例如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdafx.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"../../0CChProvider.h"</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">    EventRegisterMy0CChProvider();</span><br><span class="line">    EventWriteFirstEvent(<span class="string">L"Hello ETW World!"</span>);</span><br><span class="line">    Sleep(<span class="number">1000</span>);</span><br><span class="line">    EventWriteFirstEvent(<span class="string">L"Bye ETW World!"</span>);</span><br><span class="line">    EventUnregisterMy0CChProvider();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<p>在这里，我们利用EventRegisterMy0CChProvider先注册自己的Provider，接下写事件才会发挥作用。记录事件后，我们需要反注册Provider。<br>好了，演示代码就这么一点，然后编译即可。</p>
+<p>接下来我们需要注册这个Provider给系统，需要使用到系统自带的工具WEVTUtil.exe。<br>wevtutil im C:\etw\0CChProvider.man</p>
+<p>注册成功后就可以利用XPerf开启ETW，然后运行程序，查看记录的事件了。</p>
+<ol>
+<li>xperf -start 0cch -on My0CChProvider:::’stack’</li>
+<li>xperf -on base</li>
+<li>Run 0CChProvider.exe</li>
+<li>xperf -stop 0cch -stop -d d:\0cch.etl</li>
+<li>xperf d:\0cch.etl</li>
+</ol>
+<p>XPerfView会生成分析数据如图：<br><a href="/uploads/2013/11/20131117115853.png"><img src="/uploads/2013/11/20131117115853.png" alt="20131117115853"></a></p>
+<p><a href="/uploads/2013/11/20131117120007.png"><img src="/uploads/2013/11/20131117120007-1024x622.png" alt="20131117120007"></a></p>
+<p>整体来说，想简单的使用ETW也就是这么简单，当然你也可以把他弄得很复杂，这里就不介绍了。话说<a href="http://sysdbg.com/" target="_blank" rel="noopener">sysdbg</a>早就让我写点XPerf的东西，但是因为各种懒没写，刚好最近终于有空了，就先写了这么个简单的介绍，就当作一个开篇吧，话说某人的Blog好久没更新了呀。。。</p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2013-11-16T20:20:11.000Z" itemprop="datePublished">2013-11-17</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/NTInternals/' title=''>NTInternals</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-windbg-scripte4b8ade88eb7e5be97e8b083e8af95e78eafe5a283e79a84e59fbae69cace4bfa1e681af" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2013/11/01/windbg-scripte4b8ade88eb7e5be97e8b083e8af95e78eafe5a283e79a84e59fbae69cace4bfa1e681af/">Windbg script中获得调试环境的基本信息</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>今天继续来玩Windbg script。在写复杂的脚本的时候，可能需要根据调试的环境，指定不同的脚本代码来运行。而Windbg貌似没有提供很好的方式，让脚本得知调试环境。还好，我们可以用一些其他的方式获得这些信息，例如：写一个扩展程序来设置这些信息到Aliase上，<a href="https://github.com/0cch/0cchext" target="_blank" rel="noopener">0cchext</a>就实现了这个功能。另外一个方式就是使用脚本自身来获得一些简单的信息，算是个windbg script中的小把戏吧。脚本如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">$$ Initialize script environment</span><br><span class="line">$$ Author: nighxie </span><br><span class="line">$$ Blog: <span class="number">0</span>cch.net</span><br><span class="line">$$ @#NtMajorVersion @#NtMinorVersion - System version number.</span><br><span class="line">$$ @#DebugMode - <span class="number">0</span>:kd <span class="number">1</span>:lkd <span class="number">2</span>:user</span><br><span class="line"></span><br><span class="line">ad /q $&#123;/v:$sharedata&#125; </span><br><span class="line"></span><br><span class="line">.<span class="keyword">catch</span> &#123;</span><br><span class="line">    .foreach /pS <span class="number">2</span> ($&#123;/v:$addr&#125; &#123;!kuser&#125;) &#123;</span><br><span class="line">        aS $&#123;/v:$sharedata&#125; $&#123;$addr&#125;;</span><br><span class="line">        .leave;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.block &#123;</span><br><span class="line">    r @$t0=$&#123;$sharedata&#125;;</span><br><span class="line">    aS /x $&#123;/v:@#NtMajorVersion&#125; @@C++(((nt!_KUSER_SHARED_DATA *)@$t0)-&gt;NtMajorVersion);</span><br><span class="line">    aS /x $&#123;/v:@#NtMinorVersion&#125; @@C++(((nt!_KUSER_SHARED_DATA *)@$t0)-&gt;NtMinorVersion);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ad /q $&#123;/v:$sharedata&#125; </span><br><span class="line"></span><br><span class="line">.<span class="keyword">catch</span> &#123;</span><br><span class="line">    r @$t0 = <span class="number">0</span>;</span><br><span class="line">    .foreach ($&#123;/v:$addr&#125; &#123;lm1m m nt&#125;) &#123;</span><br><span class="line">        r @$t0 = $&#123;$addr&#125;;</span><br><span class="line">        .leave;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.<span class="keyword">if</span> ($vvalid(@$t0, <span class="number">1</span>)) &#123;</span><br><span class="line">    aS $&#123;/v:@#DebugMode&#125; <span class="number">0</span>;</span><br><span class="line">     .foreach ($&#123;/v:$val&#125; &#123;.<span class="keyword">catch</span>&#123;? @eax&#125;&#125;) &#123;</span><br><span class="line">        .<span class="keyword">if</span> ($scmp(<span class="string">"$&#123;$val&#125;"</span>, <span class="string">"\'@eax\'"</span>)==<span class="number">0</span>) &#123;</span><br><span class="line">            aS $&#123;/v:@#DebugMode&#125; <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">.<span class="keyword">else</span> &#123;</span><br><span class="line">    aS $&#123;/v:@#DebugMode&#125; <span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2013-10-31T19:56:59.000Z" itemprop="datePublished">2013-11-01</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-windbg-scripte79a84notepade8afade6b395e9ab98e4baaee9858de7bdaee69687e4bbb6" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2013/10/15/windbg-scripte79a84notepade8afade6b395e9ab98e4baaee9858de7bdaee69687e4bbb6/">Windbg script的notepad++语法高亮配置文件</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>经常写复杂的windbg脚本的程序员肯定知道，windbg脚本的宏替换的执行方式，让人非常的不舒服。另外windbg的脚本也没有一个好用的语法高亮编辑器，所以让脚本写起来更加痛苦。前者看来是已成定局，很难解决了。不过后者还是有机会改善的，闲暇之余，写了一个notepad++上的windbg脚本的语法高亮配置文件。以<a href="http://0cch.net/wordpress/?p=363" target="_blank" rel="noopener">上一篇文章</a>中的windbg脚本为例，高亮效果如下图：</p>
+<p><a href="/uploads/2013/10/20131015164715.png"><img src="/uploads/2013/10/20131015164715.png" alt="20131015164715"></a></p>
+<p>导入方式也非常简单，点击[语言]菜单下的define your language，在弹出的对话框中点击导入按钮，导入配置文件即可。</p>
+<p><a href="/uploads/2013/10/20131015164704.png"><img src="/uploads/2013/10/20131015164704.png" alt="20131015164704"></a></p>
+<p>下载脚本<a href="/uploads/2013/10/wds.zip">wds</a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2013-10-15T01:06:30.000Z" itemprop="datePublished">2013-10-15</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-windbge58685e6a0b8e8b083e8af95e69fa5e79c8be7aa97e58fa3e58fa5e69f84e4bfa1e681afe79a84e8849ae69cac" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2013/10/07/windbge58685e6a0b8e8b083e8af95e69fa5e79c8be7aa97e58fa3e58fa5e69f84e4bfa1e681afe79a84e8849ae69cac/">Windbg内核调试查看窗口句柄信息的脚本</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>十一长假瞬间就结束了，整一周都在玩，也没有研究什么好玩的东西，这里就分享一个以前写的windbg脚本吧。通途是内核调试查看窗口句柄信息。用法很简单，例如 $$&gt;a&lt;hwnd.wds 000207B8。运行结果如下图：</p>
+<p><a href="/uploads/2013/10/20131007195716.png"><img src="/uploads/2013/10/20131007195716.png" alt="20131007195716"></a></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line">$$ Convert HWND to tagWnd</span><br><span class="line">$$ Author: nighxie </span><br><span class="line">$$ Blog: <span class="number">0</span>cch.net</span><br><span class="line"></span><br><span class="line">.<span class="keyword">if</span> ($&#123;/d:$arg1&#125;) &#123;</span><br><span class="line"></span><br><span class="line">    .<span class="keyword">if</span> ($&#123;/d:$arg2&#125;) &#123;</span><br><span class="line">            .<span class="keyword">if</span> ($&#123;$arg2&#125; == <span class="number">1</span>) &#123;</span><br><span class="line">                r $t0 = nt!PsActiveProcessHead</span><br><span class="line">                .<span class="keyword">for</span> (r $t1 = poi(@$t0);(@$t1 != <span class="number">0</span>) &amp; (@$t1 != @$t0);r $t1 = poi(@$t1)) &#123;</span><br><span class="line">                r? $t2 = #CONTAINING_RECORD(@$t1, nt!_EPROCESS, ActiveProcessLinks);</span><br><span class="line">                as /x $&#123;/v:$ProcAddr&#125; @$t2;</span><br><span class="line">                as /ma $&#123;/v:$ImageName&#125; @@c++(&amp;@$t2-&gt;ImageFileName[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">                .block &#123;</span><br><span class="line">                    $$ .echo $&#123;$ImageName&#125;</span><br><span class="line">                    .<span class="keyword">if</span> ($sicmp(<span class="string">"$&#123;$ImageName&#125;"</span>, <span class="string">"explorer.exe"</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">                        .echo Found the process at $&#123;$ProcAddr&#125;;</span><br><span class="line">                        .process /p /r $&#123;$ProcAddr&#125;;</span><br><span class="line">                        ad $&#123;/v:$ImageName&#125;;</span><br><span class="line">                        ad $&#123;/v:$ProcAddr&#125;;</span><br><span class="line">                        .<span class="keyword">break</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                ad $&#123;/v:$ImageName&#125;;</span><br><span class="line">                ad $&#123;/v:$ProcAddr&#125;;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    r @$t1 = $&#123;$arg1&#125;;</span><br><span class="line">    r @$t0 = win32k!gSharedInfo;</span><br><span class="line">    .<span class="keyword">if</span> ((@$t1&amp;<span class="number">0xffff</span>) &lt; @@C++(((win32k!tagSHAREDINFO *)@$t0)-&gt;psi-&gt;cHandleEntries)) &#123;</span><br><span class="line">        r @$t0 = @@C++(((win32k!tagSHAREDINFO *)@$t0)-&gt;aheList);</span><br><span class="line">        r @$t0 = @@C++(@$t0+(@$t1&amp;<span class="number">0xffff</span>)*<span class="keyword">sizeof</span>(win32k!_HANDLEENTRY));</span><br><span class="line">        r @$t0 = poi(@$t0);</span><br><span class="line">        .<span class="built_in">printf</span> <span class="string">"HWND: %p\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;head.h);</span><br><span class="line">        .<span class="built_in">printf</span> /D <span class="string">"tagWnd * @ %p\n"</span>, @$t0;</span><br><span class="line">        .<span class="keyword">if</span> (@@C++(((win32k!tagWnd *)@$t0)-&gt;strName.Buffer) != <span class="number">0</span>) &#123;</span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"Window Name: %mu\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;strName.Buffer);</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="built_in">printf</span> /D <span class="string">"tagCLS * @ pcls) win32k!tagCLS\"&gt;%p\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;pcls);</span><br><span class="line">        .<span class="keyword">if</span> (@@C++(((win32k!tagWnd *)@$t0)-&gt;pcls-&gt;lpszAnsiClassName) != <span class="number">0</span>) &#123;</span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"Window Class Name: %ma\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;pcls-&gt;lpszAnsiClassName);</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="keyword">if</span> (@@C++(((win32k!tagWnd *)@$t0)-&gt;spwndNext) != <span class="number">0</span>) &#123;</span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"Next Wnd:     %p\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;spwndNext-&gt;head.h);</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="keyword">if</span> (@@C++(((win32k!tagWnd *)@$t0)-&gt;spwndPrev) != <span class="number">0</span>) &#123;</span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"Previous Wnd: %p\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;spwndPrev-&gt;head.h);</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="keyword">if</span> (@@C++(((win32k!tagWnd *)@$t0)-&gt;spwndParent) != <span class="number">0</span>) &#123;</span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"Parent Wnd:   %p\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;spwndParent-&gt;head.h);</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="keyword">if</span> (@@C++(((win32k!tagWnd *)@$t0)-&gt;spwndChild) != <span class="number">0</span>) &#123;</span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"Child Wnd:    %p\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;spwndChild-&gt;head.h);</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="keyword">if</span> (@@C++(((win32k!tagWnd *)@$t0)-&gt;spwndOwner) != <span class="number">0</span>) &#123;</span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"Own Wnd:      %p\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;spwndOwner-&gt;head.h);</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="keyword">if</span> (@@C++(((win32k!tagWnd *)@$t0)-&gt;lpfnWndProc) != <span class="number">0</span>) &#123;</span><br><span class="line">            .<span class="built_in">printf</span> /D <span class="string">"pfnWndProc:   head.pti-&gt;pEThread)-&gt;Tcb.Process);u @@C++(((win32k!tagWnd *)@$t0)-&gt;lpfnWndProc)\"&gt;%p\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;lpfnWndProc);</span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="built_in">printf</span> <span class="string">"Visiable: %d\n"</span>, @@C++((((win32k!tagWnd *)@$t0)-&gt;style &amp; (<span class="number">1</span>&lt;&lt;<span class="number">28</span>)) != <span class="number">0</span>);</span><br><span class="line">        .<span class="built_in">printf</span> <span class="string">"Child:    %d\n"</span>, @@C++((((win32k!tagWnd *)@$t0)-&gt;style &amp; (<span class="number">1</span>&lt;&lt;<span class="number">30</span>)) != <span class="number">0</span>);</span><br><span class="line">        .<span class="built_in">printf</span> <span class="string">"Minimized:%d\n"</span>, @@C++((((win32k!tagWnd *)@$t0)-&gt;style &amp; (<span class="number">1</span>&lt;&lt;<span class="number">29</span>)) != <span class="number">0</span>);</span><br><span class="line">        .<span class="built_in">printf</span> <span class="string">"Disabled: %d\n"</span>, @@C++((((win32k!tagWnd *)@$t0)-&gt;style &amp; (<span class="number">1</span>&lt;&lt;<span class="number">27</span>)) != <span class="number">0</span>);</span><br><span class="line">        .<span class="built_in">printf</span> <span class="string">"Window Rect &#123; %d, %d, %d, %d&#125;\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;rcWindow.left), @@C++(((win32k!tagWnd *)@$t0)-&gt;rcWindow.top), @@C++(((win32k!tagWnd *)@$t0)-&gt;rcWindow.right), @@C++(((win32k!tagWnd *)@$t0)-&gt;rcWindow.bottom);</span><br><span class="line">        .<span class="built_in">printf</span> <span class="string">"Clent Rect  &#123; %d, %d, %d, %d&#125;\n"</span>, @@C++(((win32k!tagWnd *)@$t0)-&gt;rcClient.left), @@C++(((win32k!tagWnd *)@$t0)-&gt;rcClient.top), @@C++(((win32k!tagWnd *)@$t0)-&gt;rcClient.right), @@C++(((win32k!tagWnd *)@$t0)-&gt;rcClient.bottom);</span><br><span class="line">    </span><br><span class="line">    &#125;</span><br><span class="line">    .<span class="keyword">else</span> &#123;</span><br><span class="line">        .<span class="built_in">printf</span> <span class="string">"HWND is out of range.\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line">.<span class="keyword">else</span> &#123;</span><br><span class="line">    .echo <span class="string">"Usage $$&gt;a&lt;$&#123;$arg0&#125; HWND(HEX)"</span></span><br><span class="line">    .echo <span class="string">"e.g. $$&gt;a&lt;$&#123;$arg0&#125; 0x60962"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2013-10-07T06:00:26.000Z" itemprop="datePublished">2013-10-07</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-e8a7a3e69e90youkue8a786e9a291e59cb0e59d80e79a84pythone8849ae69cac" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2013/09/28/e8a7a3e69e90youkue8a786e9a291e59cb0e59d80e79a84pythone8849ae69cac/">解析youku视频地址的python脚本</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>几个月前写的东西，偶然翻出来发现还能用，就贴出来吧。非专业python程序员，代码比较乱 :-(</p>
+<p><a href="/uploads/2013/09/20130928134507.png"><img src="/uploads/2013/09/20130928134507.png" alt="20130928134507"></a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'''</span></span><br><span class="line"><span class="string">Created on 2013-3-6</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">@author: nightxie</span></span><br><span class="line"><span class="string">'''</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> urllib.request</span><br><span class="line"><span class="keyword">import</span> urllib.parse</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetKeyString</span><span class="params">(seed)</span>:</span></span><br><span class="line">    base_string = <span class="string">'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/\\:._-1234567890'</span>;</span><br><span class="line">    target_string = <span class="string">''</span>;</span><br><span class="line">    <span class="keyword">while</span> len(base_string) != <span class="number">0</span> :</span><br><span class="line">        seed = (seed * <span class="number">211</span> + <span class="number">30031</span>) % <span class="number">65536</span>;</span><br><span class="line">        index = (seed / <span class="number">65536</span> * len(base_string));</span><br><span class="line">        target_string += base_string[int(index)];</span><br><span class="line">        base_string = base_string[:int(index)] + base_string[int(index)+<span class="number">1</span>:];</span><br><span class="line">    <span class="keyword">return</span> target_string;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetFildId</span><span class="params">(daye_str, seed)</span>:</span></span><br><span class="line"></span><br><span class="line">    new_list = daye_str.split(<span class="string">'*'</span>);</span><br><span class="line">    target_string = <span class="string">''</span>;</span><br><span class="line">    base_string = GetKeyString(seed);</span><br><span class="line">    length = len(new_list);</span><br><span class="line">    i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> i &lt; length - <span class="number">1</span>:</span><br><span class="line">        index = int(new_list[i]);</span><br><span class="line">        target_string += base_string[index];</span><br><span class="line">        i += <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> target_string;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetFlvPath</span><span class="params">(videoids, flv_type)</span>:</span></span><br><span class="line">    url = <span class="string">'http://v.youku.com/player/getPlayList/VideoIDS/'</span> + videoids + <span class="string">'/timezone/+08/version/5/source/video'</span></span><br><span class="line">    req = urllib.request.Request(url);</span><br><span class="line">    req.add_header(<span class="string">'Referer'</span>, <span class="string">'http://static.youku.com/v1.0.0307/v/swf/player_yk.swf'</span>);</span><br><span class="line">    req.add_header(<span class="string">'User-Agent'</span>, <span class="string">'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.56 Safari/537.17'</span>);</span><br><span class="line">    play_list = urllib.request.urlopen(req).read().decode(<span class="string">"utf8"</span>);</span><br><span class="line">   </span><br><span class="line">    play_list_data = json.loads(play_list)[<span class="string">'data'</span>][<span class="number">0</span>];</span><br><span class="line">    seed = play_list_data[<span class="string">'seed'</span>];</span><br><span class="line">    streamfileids = play_list_data[<span class="string">'streamfileids'</span>];</span><br><span class="line">    regs = play_list_data[<span class="string">'segs'</span>];</span><br><span class="line">    </span><br><span class="line">    type_fileid = streamfileids[flv_type];</span><br><span class="line">    type_list = regs[flv_type];</span><br><span class="line">    url_type = flv_type;</span><br><span class="line">    <span class="keyword">if</span> url_type == <span class="string">'hd2'</span>:</span><br><span class="line">        url_type = <span class="string">'flv'</span></span><br><span class="line">    </span><br><span class="line">    type_list_count = len(type_list);</span><br><span class="line">    i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> i &lt; type_list_count :</span><br><span class="line">        fileid = GetFildId(type_fileid, seed);</span><br><span class="line">        fileid = fileid[:<span class="number">8</span>] + (<span class="string">"%0.2X"</span> % i) + fileid[<span class="number">10</span>:];</span><br><span class="line">        fileid += <span class="string">'?k='</span>;</span><br><span class="line">        fileid += type_list[i][<span class="string">'k'</span>];</span><br><span class="line">        flv_path = <span class="string">'http://f.youku.com/player/getFlvPath/sid/00_00/st/'</span>+url_type+<span class="string">'/fileid/'</span> + fileid;</span><br><span class="line">        print(flv_path);</span><br><span class="line">        i += <span class="number">1</span>;</span><br><span class="line">        </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetVideoIdsFromUrl</span><span class="params">(url)</span>:</span></span><br><span class="line">    url_object = urllib.parse.urlparse(url);</span><br><span class="line">    url_path = url_object.path;</span><br><span class="line">    <span class="keyword">return</span> url_path[<span class="number">11</span>:<span class="number">-5</span>]</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetFlvPathFromUrl</span><span class="params">(url, video_type)</span>:</span></span><br><span class="line">    video_ids = GetVideoIdsFromUrl(url);</span><br><span class="line">    GetFlvPath(video_ids, video_type);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    <span class="keyword">if</span> len(sys.argv) == <span class="number">3</span>:</span><br><span class="line">        GetFlvPathFromUrl(sys.argv[<span class="number">1</span>], sys.argv[<span class="number">2</span>]);</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        print(<span class="string">"youku.py  "</span>);</span><br><span class="line">   </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2013-09-27T21:48:02.000Z" itemprop="datePublished">2013-09-28</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-floppy-disk-controllere7bc96e7a88b" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2013/09/21/floppy-disk-controllere7bc96e7a88b/">Floppy Disk Controller编程</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p><a href="/uploads/2013/09/N82077AA.jpg"><img src="/uploads/2013/09/N82077AA.jpg" alt="N82077AA"></a></p>
+<p>看的没错，这篇文章将描述一些关于Floppy Disk Controller的编程知识。我们知道，在当今的计算机硬件体系中，软盘驱动器是一个已经完全被淘汰的设备，那么为什么还要有这样一篇文章？原因很简单，如果想构建自己的操作系统，必须有相应的存储介质，而软盘正是这样一个好的存储介质。他的容量虽然很小，但是却完全足够应付我们的内核程序，另一方面软盘驱动器的控制相对于之前我所介绍的硬盘的控制要简单的多，而且关于软盘驱动器控制的教程和文章在互联网上也非常的多（虽然绝大部分都是英文的）。基于以上几点，我认为还是有必要把自己学到的知识写下了分享。</p>
+<p>Floppy Disk Controller，中文称为：软盘控制器，简称：FDC，是一个用来控制软盘驱动器的芯片。在1980年代到1990年代，软盘控制器普遍使用于个人电脑以及与IBM PC兼容的机型上，如 8272A、82078、82077SL以及82077AA，其中82077AA是最先进的一款芯片（1991年开始生产）。除了软盘控制器，软驱本身也在几十年的历史中留下了许多机型，如图所示：<br><a href="/uploads/2013/09/floppy_types.png"><img src="/uploads/2013/09/floppy_types.png" alt="floppy_types"></a><br>实际上，我从刚刚接触软盘到最后软盘被淘汰，只使用过3.5英寸1.44MB的软盘，其他型号完全没有接触过。</p>
+<p>对于CPU还运行在实模式下的启动引导程序和内核程序，我们可以调用BIOS提供的函数来完成软盘的访问，其中中断号是13h（INT13h），功能号为2（AH=2）是读取操作，功能号为3（AH=3）时是写入操作。实模式下通过中断读写软盘的资料很多（包括中文资料），如果想了解更多的实模式下访问软盘的知识，可以上网google一下，我这里就不做详细的介绍了。</p>
+<p>虽然调用中断访问软盘简单，但是我们不能让自己的内核总是跑在实模式下啊。所以我们需要写一个能跑在保护模式下的软驱驱动，要完成这样的驱动，就必须对FDC进行编程了。不过在此之前，我们需要知道，到底PC上有没有软驱。要获得这个信息，我们需要读取CMOS，然后解析读取的信息即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mov dx, 70h</span><br><span class="line">mov al, 10h</span><br><span class="line">out dx, al</span><br><span class="line"></span><br><span class="line">mov dx, 71h</span><br><span class="line">in  al, dx</span><br><span class="line"></span><br><span class="line">mov f_b, al</span><br><span class="line">and f_b, 0fh</span><br><span class="line">shr al, 4</span><br><span class="line">mov f_a, al</span><br><span class="line"></span><br><span class="line">f_a db	0h</span><br><span class="line">f_b db	0h</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<p>要从CMOS中获得软盘信息，我们需要先给对应的端口设置正确的索引，然后再去数据端口读取数据。具体做法是设置0x70端口为0x10，然后读取0x71端口。读取到的信息都放在一个字节中，需要把字节分为两个部分，高四位是驱动器A的类型索引号，低四位是驱动器B的类型索引号。索引号与软盘类型的对应关系如下图所示：<br><a href="/uploads/2013/09/cmos_floppytype.png"><img src="/uploads/2013/09/cmos_floppytype.png" alt="cmos_floppytype"></a></p>
+<p>在确认了软驱存在的情况下，接下来就可以对FDC进行编程了。先来看看FDC的几个基本知识。</p>
+<p><strong>寻址方式</strong><br>软盘驱动器使用CHS寻址方式。软盘介质总是有两个头（面），但磁道数和每个磁道的扇区扇区数是不一定的。通常情况下，1.44mb的软盘，他有80个磁道和每个磁道有18个扇区。另外值得注意的是，磁道和磁头是从0开始计算，但是扇区是从1开始计数的。即，有效的磁道通常为0到79，磁头为0或1，而扇区号是1到18的。如果访问0号扇区，那么一定会引起访问错误的。</p>
+<p><strong>数据传输方式</strong><br>和硬盘的数据传输方式一样，软盘也支持PIO和DMA两种数据传输方式。<br>软盘使用的通常是ISA DMA方式（这和 PCI BusMastering DMA完全是两码事）。使用DMA传输的方法，简单来说就是这是DMA的通道2，如传输的字节数以及对应的物理地址。物理地址必须是以64k为边界的。当然，还需要设置IRQ6，当数据传输结束的时候，控制器将发送一个IRQ6的中断。用DMA传输数据，这个过程是不需要占用CPU时间的，对于多任务的系统是比较好的选择。缺点是ISA DMA这种古老的DMA比PIO还要慢。<br>PIO数据传输既可以使用轮询，也能使用中断。使用PIO模式传输数据的速度比DMA传输快10％，但这会消耗CPU周期，是一个巨大的成本问题。然而，如果我们的操作系统或应用程序是单任务的，那么没有别的程序需要CPU，这样你就也可以使用PIO模式。使用PIO的要点是，在设置好了各种命令后，需要等待中断或者轮询状态结果，最后还需要使用IO的方式，读取数据，也就是这部分需要消耗额外的CPU周期。<br>值得注意的是，bochs并不支持PIO模式，使用PIO模式的时候bochs会报错，提示没有完全实现PIO模式。所以我在实验代码中也没有写PIO的代码。毕竟我的实验环境是bochs。</p>
+<p><strong>ISA DMA</strong><br>ISA DMA全称Industry Standard Architecture Direct Memory Access，是一种古老的DMA方式，速度比PIO还要慢，但是编程相对于PCI BusMastering DMA要简单一点。这里我并不打算详细介绍ISA DMA，因为说明它需要的篇幅不亚于这篇。后面的代码中，在必要的地方我会加入一些解释。</p>
+<p><strong>3种模式</strong><br>这三种模式是：PC-AT模式，PS/2模式，Mode 30模式。现在最有可能看到硬件上仍然运行模式是30模式。</p>
+<p>FDC寄存器<br><a href="/uploads/2013/09/floppy_regs.png"><img src="/uploads/2013/09/floppy_regs.png" alt="floppy_regs"></a></p>
+<p>如上图所示，上面的寄存器我们不会都用到，一般情况下大概只会用到一半的样子，其他的我们可以暂时不去理会。另外我在这里不会列出每个寄存器的详细参数，因为这些参数很多而且复杂，不仅单调乏味，而且容易让初学者望而却步。我采取的做法是，先列出控制FDC的代码，然后在需要讲解的地方详细的说明。</p>
+<p><strong>实践</strong><br>下面就是一段控制FDC读取软盘数据的代码。需要说明的是这份代码为了保持简洁易学，它没有任何的错误检测，另外代码也假设了你已经初始化了PIC，并且设置好了IRQ6。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br></pre></td><td class="code"><pre><span class="line">; MASM的宏应该不陌生吧，就不做解释了。</span><br><span class="line">outb macro port:req, b:req</span><br><span class="line">    mov dx, port</span><br><span class="line">    mov al, b</span><br><span class="line">    out dx, al</span><br><span class="line">endm</span><br><span class="line"></span><br><span class="line">inb macro port:req</span><br><span class="line">    mov dx, port</span><br><span class="line">    in al, dx</span><br><span class="line">endm</span><br><span class="line"></span><br><span class="line">wait_status macro</span><br><span class="line">    inb 3f4h</span><br><span class="line">@@:</span><br><span class="line">    test al, 80h</span><br><span class="line">    jz @B</span><br><span class="line">endm</span><br><span class="line"></span><br><span class="line">; ISA DMA 初始化部分， 由于ISA DMA不是这篇文章的重点</span><br><span class="line">; 所以这里只说明大概的用途。</span><br><span class="line">outb 0dh, 0ffh      ; 重置DMA控制器</span><br><span class="line">outb 0ah, 6h        ; 选择设置2号DMA通道</span><br><span class="line">outb 0ch, 0ffh      ; 重置Flipflop寄存器</span><br><span class="line">outb 4h, 0h         ; 设置DMA的物理地址，需要设置两次</span><br><span class="line">outb 4h, 0f0h       ; 我这里设置的是0xf000</span><br><span class="line">outb 81h, 0h        ; 设置地址24bit的高8bit为0，也就是0x00f000</span><br><span class="line">outb 0ch, 0ffh      ; 重置Flipflop寄存器</span><br><span class="line">outb 5h, 0ffh       ; 设置物理内存大小，其大小为Length-1</span><br><span class="line">outb 5h, 0fh        ; 我这里的内存大小是0x1000，所以设置为0xfff</span><br><span class="line">outb 0ah, 2h        ; 选择清除2号DMA通道</span><br><span class="line"></span><br><span class="line">; FDC的初始化过程</span><br><span class="line">outb 3f2h, 0h       ; 1.重置数字输出寄存器</span><br><span class="line">outb 3f2h, 0ch</span><br><span class="line">call WaitIrq</span><br><span class="line"></span><br><span class="line">mov ecx, 4</span><br><span class="line">check_int:</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 8h       ; 发送8号命令，该命令清除控制器触发的中断</span><br><span class="line">wait_status         ; 并且返回结果，这里重复4次，是为了清除4个软驱的状态</span><br><span class="line">inb 3f5h</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">wait_status</span><br><span class="line">loop check_int</span><br><span class="line"></span><br><span class="line">outb 3f7h, 0h       ; 2.设置传输速度为500kb/s</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 3h       ; 3.设置FDC里面三个时钟以及DMA。</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0dfh</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 2h</span><br><span class="line"></span><br><span class="line">outb 3f2h, 1ch      ; 开启软驱电动机</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 7h       ; 发送校验命令</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h       ; 选择0号软驱</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 8h       ; 发送清楚中断命令，获得结果</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">outb 3f2h, 4h       ; 关闭电动机</span><br><span class="line"></span><br><span class="line">; 接下来是软盘的读取操作</span><br><span class="line">outb 3f2h, 1ch      ; 开启电动机</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0fh      ; 4.发送0f寻道命令</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 8h       ; 发送清楚中断命令，获得结果</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line"></span><br><span class="line">; 设置ISA DMA为读取</span><br><span class="line">outb 0ah, 6h</span><br><span class="line">outb 0bh, 46h</span><br><span class="line">outb 0ah, 2h</span><br><span class="line"></span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0e6h     ; 5.发送读取扇区命令</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h       ; 设置磁头和驱动器号</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h       ; 设置磁道</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h       ; 设置磁头</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 1h       ; 设置扇区号</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 2h       ; 设置扇区大小</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 8h       ; 设置读取扇区数量</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 1bh      ; 设置磁盘为3.5英寸</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0ffh     ; 设置读取长度，总是0xff</span><br><span class="line"></span><br><span class="line">call WaitIrq</span><br><span class="line"></span><br><span class="line">mov ecx, 7</span><br><span class="line">loop_ret:</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">loop loop_ret</span><br><span class="line"></span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 8h       ; 发送清楚中断命令，获得结果</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">outb 3f2h, 4h       ; 关闭电动机</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<p>1.重置数字输出寄存器<br>这是一个只写寄存器，可以用来控制FDC，例如控制软驱电动机，重置控制器，选择目标软驱，设置数据模式，以下是他的详细参数<br>Bits 0-1<br>00 - 软驱 0<br>01 - 软驱 1<br>10 - 软驱 2<br>11 - 软驱 3<br>Bit 2 重置<br>0 - 重置控制器<br>1 - 开启控制器<br>Bit 3 模式<br>0 - IRQ 模式<br>1 - DMA 模式<br>Bits 4 - 7 电动机控制器 (软驱 0 - 3)<br>0 - 停止电动机<br>1 - 开启电动机  </p>
+<p>我这里设置的是0Ch也就是说，选择了0号软驱，开启了控制器和DMA模式。</p>
+<p>2.设置传输速度为500kb/s<br>这个寄存器只有前两位有效，下面两位不同的组合表达了不同的速度，如下表：<br>00 500 Kbps<br>10 250 Kbps<br>01 300 Kbps<br>11 1 Mbps  </p>
+<p>3.设置FDC里面三个时钟以及DMA<br>三个时钟分别是步进速率时钟、磁头卸载时钟和磁头装入时钟。数据格式如下：<br>S S S S H H H H - S=步进速率时钟 H=磁头卸载时钟<br>H H H H H H H NDMA - H=磁头装入时钟 NDMA=0 (DMA模式) 或者 1 (非DMA模式)<br>实际上这个大家可以随意设置，我设置的是步进速率时钟=3ms, 磁头卸载时钟=240ms, 磁头装入时钟=16ms  </p>
+<p>4.发送寻道命令进行寻道<br>寻道命令的参数是两个自己，分别代表磁头、柱面和驱动器号，格式如下<br>x x x x x HD DR1 DR0 - HD=磁头 DR1/DR0 = 驱动器<br>C C C C C C C C - C=柱面  </p>
+<p>5.发送读取扇区命令<br>读取和写入命令一样，有8个参数和7个返回值！<br>第1个参数字节 = (磁头号 &lt;&lt; 2) | 驱动器号 (驱动器号必须是当前选择的驱动器)<br>第2个参数字节 = 柱面号<br>第3个参数字节 = 磁头号 (没错，重复了 = =)<br>第4个参数字节 = 开始的扇区号<br>第5个参数字节 = 2 (总是2，代表软盘扇区大小总是512字节)<br>第6个参数字节 = 操作扇区数<br>第7个参数字节 = 0x1b (软盘大小是3.5in)<br>第8个参数字节 = 0xff (总是0xff)<br>这里不关心返回值，如果有兴趣可以自己查找资料。  </p>
+<p>读取就是这样，如果要写入安排，只需要更改命令即可，这里就不再赘述了。最后按照国际惯例，提供一些深入学习的链接：<br><a href="http://wiki.osdev.org/Floppy" target="_blank" rel="noopener">http://wiki.osdev.org/Floppy</a><br><a href="http://en.wikipedia.org/wiki/Floppy" target="_blank" rel="noopener">http://en.wikipedia.org/wiki/Floppy</a><br><a href="http://www.isdaman.com/alsos/hardware/fdc/floppy.htm" target="_blank" rel="noopener">http://www.isdaman.com/alsos/hardware/fdc/floppy.htm</a><br><a href="http://www.osdever.net/documents/82077AA_FloppyControllerDatasheet.pdf?the_id=41" target="_blank" rel="noopener">http://www.osdever.net/documents/82077AA_FloppyControllerDatasheet.pdf</a>  </p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2013-09-21T00:39:56.000Z" itemprop="datePublished">2013-09-21</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/MiniKernel/' title=''>MiniKernel</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-e4bdbfe794a8windbg-logextse79b91e68ea7e7a88be5ba8fapie8b083e794a8" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2013/09/14/e4bdbfe794a8windbg-logextse79b91e68ea7e7a88be5ba8fapie8b083e794a8/">使用Windbg Logexts监控程序API调用</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在我们调试BUG和逆向程序的时候，往往需要监控一些API的调用。这个时候我们可以借助调试器和第三方工具完成这样的任务。例如调试器可以下断点查看栈状态得到相关信息，或者使用第三方工具如API Monitor可以方便的监控API的调用。不过，这篇文章中想说的是另一个工具，Windbg的扩展程序Logexts.dll。闲话少说，我们先看一看监控的效果如何吧。</p>
+<p><a href="/uploads/2013/09/20130914230701.png"><img src="/uploads/2013/09/20130914230701.png" alt="20130914230701"></a></p>
+<p>上图是Windbg输出的信息，再看看使用logviewer.exe查看的效果。</p>
+<p><a href="/uploads/2013/09/20130914234812.png"><img src="/uploads/2013/09/20130914234812.png" alt="20130914234812"></a></p>
+<p>怎么样，是不是相当的不错！那么下面我就来简单介绍一下，这个扩展的用法。</p>
+<p>!logexts.logi<br>将Logger注入目标程序，初始化监控，但是并不开启它。</p>
+<p>!logexts.loge<br>开启监控，如果之前没有调用logexts.logi，这个扩展命令会先初始化监控，然后启动。</p>
+<p>!logexts.logd<br>停止监控。这个命令会摘掉所有的Hook，从而让程序自由运行。不过COM的Hook并不会被摘除。</p>
+<p>!logexts.logo<br>显示或者修改输出选项，这里有三种输出方式：1.在调试器中显示，2.输出到一个文本文件，3.输出到lgv文件。其中lgv文件会包含更多的信息，我们可以使用LogViewer进行查看。</p>
+<p>!logexts.logc<br>显示或者控制监控的API分类。</p>
+<p>!logexts.logb<br>显示或者刷新输出缓存。由于如果在监控过程中发生异常，那么扩展可能无法将记录的日志写入文件中，这个时候我们就需要这个命令，手动的将缓存中的数据写入文件。</p>
+<p>!logexts.logm<br>显示和创建模块的包含/排除列表。这可以帮助我们指定记录那些特定模块中的API调用。</p>
+<p>上面图中我所使用的命令是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;!logexts.loge D:\  </span><br><span class="line">!logexts.logc d *  </span><br><span class="line">!logexts.logc e 15 16 19  </span><br><span class="line">!logexts.logo e *  </span><br><span class="line">!logexts.logm i notepad.exe</span><br></pre></td></tr></table></figure>
+
+<p>其输出结果是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">!logexts.loge D:\  </span><br><span class="line">Windows API Logging Extensions v3.01  </span><br><span class="line">Parsing the manifest files...  </span><br><span class="line">Location: C:\Program Files (x86)\Windows Kits\8.0\Debuggers\x64\winext\manifest\main.h  </span><br><span class="line">Parsing file &quot;main.h&quot; ...  </span><br><span class="line">Parsing file &quot;winerror.h&quot; ...  </span><br><span class="line">Parsing file &quot;kernel32.h&quot; ...  </span><br><span class="line">Parsing file &quot;debugging.h&quot; ...  </span><br><span class="line">Parsing file &quot;processes.h&quot; ...  </span><br><span class="line">Parsing file &quot;memory.h&quot; ...  </span><br><span class="line">Parsing file &quot;registry.h&quot; ...  </span><br><span class="line">Parsing file &quot;fileio.h&quot; ...  </span><br><span class="line">Parsing file &quot;strings.h&quot; ...  </span><br><span class="line">Parsing file &quot;user32.h&quot; ...  </span><br><span class="line">Parsing file &quot;clipboard.h&quot; ...  </span><br><span class="line">Parsing file &quot;hook.h&quot; ...  </span><br><span class="line">Parsing file &quot;gdi32.h&quot; ...  </span><br><span class="line">Parsing file &quot;winspool.h&quot; ...  </span><br><span class="line">Parsing file &quot;version.h&quot; ...  </span><br><span class="line">Parsing file &quot;winsock2.h&quot; ...  </span><br><span class="line">Parsing file &quot;advapi32.h&quot; ...  </span><br><span class="line">Parsing file &quot;uuids.h&quot; ...  </span><br><span class="line">Parsing file &quot;com.h&quot; ...  </span><br><span class="line">Parsing file &quot;shell.h&quot; ...  </span><br><span class="line">Parsing file &quot;ole32.h&quot; ...  </span><br><span class="line">Parsing file &quot;ddraw.h&quot; ...  </span><br><span class="line">Parsing file &quot;winmm.h&quot; ...  </span><br><span class="line">Parsing file &quot;avifile.h&quot; ...  </span><br><span class="line">Parsing file &quot;dplay.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3d.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3dtypes.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3dcaps.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3d8.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3d8types.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3d8caps.h&quot; ...  </span><br><span class="line">Parsing file &quot;dsound.h&quot; ...  </span><br><span class="line">Parsing completed.  </span><br><span class="line">Logexts injected. Output: &quot;D:\\LogExts\&quot;  </span><br><span class="line">Logging enabled.  </span><br><span class="line">0:000&gt; !logexts.logc d *  </span><br><span class="line">All categories disabled.  </span><br><span class="line">0:000&gt; !logexts.logc e 15 16 19  </span><br><span class="line">15 IOFunctions Enabled  </span><br><span class="line">16 MemoryManagementFunctions Enabled  </span><br><span class="line">19 ProcessesAndThreads Enabled  </span><br><span class="line">0:000&gt; !logexts.logo e *  </span><br><span class="line">Debugger Enabled  </span><br><span class="line">Text file Enabled  </span><br><span class="line">Verbose log Enabled  </span><br><span class="line">0:000&gt; !logexts.logm i notepad.exe  </span><br><span class="line">Included modules:  </span><br><span class="line">notepad.exe</span><br></pre></td></tr></table></figure>
+
+<p>简单说明一下这些命令：<br>!logexts.loge D:\<br>设置log的保持路径，并且开启监控  </p>
+<p>!logexts.logc d *<br>先关闭所有API分类的监控  </p>
+<p>!logexts.logc e 15 16 19<br>然后设置我们想监控分类，这里是IOFunctions，MemoryManagementFunctions和ProcessesAndThreads。至于如何查询分类对于的id，可以直接输入!logexts.logc进行查看。</p>
+<p>!logexts.logo e *<br>这里我开启了所有输出方式，注意：如果想要被监控的程序响应的更快，可以去掉Debugger的输出，因为显示花费的时间比较的多。</p>
+<p>!logexts.logm i notepad.exe<br>最后当然是设置inclusion list了。</p>
+<p>按下F5，让程序跑起来看看效果吧。先别着急惊叹，Logexts还有更惊艳的地方。那就是他的高度可配置性。如果你想监控他描述以外的API，那么你可以自己写这个API的“头文件”。这里用引号是因为，它并不是真正的头文件，只不过他的语法和C的头文件非常的相似。我们可以看一个例子：</p>
+<p>创建%windbg_dir%\winext\manifest\Context.h<br>并且写入这些内容</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">category ActivationContext:</span><br><span class="line"><span class="keyword">module</span> KERNEL32.DLL:</span><br><span class="line"></span><br><span class="line"><span class="function">FailOnFalse <span class="title">ActivateActCtx</span><span class="params">(HANDLE hActCtx, [out] PULONG_PTR lpCookie)</span></span>;</span><br><span class="line"><span class="function">FailOnFalse <span class="title">DeactivateActCtx</span><span class="params">(DWORD dwFlags, ULONG_PTR upCookie)</span></span>;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<p>在%windbg_dir%\winext\manifest\main.h文件的最后加入一行 #include “Context.h”</p>
+<p>保存后，重启调试程序，输入!logexts.logc，可以看了多出了ActivationContext这一项。现在就可以选择这一项分类来监控ActivateActCtx和DeactivateActCtx了。</p>
+<p>最后，大家应该发现了这样一个问题，开启这个API监控还是比较麻烦的，需要输入好几条命令。为了更方便的使用这个功能，我写了一个脚本来解决这个问题，这样就可以用一行命令来开启监控。使用方法是：<br>Usage $$&gt;a&lt;logger.wds output_dir categories include_modules<br>e.g. $$&gt;a&lt;logger.wds “d:&quot; “15 16 19” “notepad.exe”  </p>
+<p>下载<a href="/uploads/2013/09/logger.zip">logger</a></p>
+<p>关于Logexts的更多详细信息请参考msdn：<a href="http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85).aspx" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85).aspx</a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2013-09-14T09:13:22.000Z" itemprop="datePublished">2013-09-14</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-windows7e4b88be68ea7e588b6e58d95e4b8aae8bf9be7a88be99fb3e9878fe79a84e5b08fe68a80e5b7a7" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2013/09/10/windows7e4b88be68ea7e588b6e58d95e4b8aae8bf9be7a88be99fb3e9878fe79a84e5b08fe68a80e5b7a7/">Windows7下控制单个进程音量的小技巧</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p><a href="/uploads/2013/09/2013-09-10_200213.png"><img src="/uploads/2013/09/2013-09-10_200213.png" alt="2013-09-10_200213"></a></p>
+<p>如上图所示，Windows7下有一个很有趣的功能，就是可以给单独的进程调节音量。出于好奇，在网上翻了下资料，原来这个功能要归功于Windows7上新的音频接口——Core Audio APIs。这套API是用COM写，各种接口也比较多。但是如果我们的目的只是控制单个进程的音量，那还是很简单的。接下来的代码就是控制进程音量的函数了。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);</span><br><span class="line"><span class="keyword">const</span> IID IID_IMMDeviceEnumerator = __uuidof(IMMDeviceEnumerator);</span><br><span class="line"><span class="keyword">const</span> IID IID_IAudioSessionManager2 = __uuidof(IAudioSessionManager2);</span><br><span class="line"><span class="keyword">const</span> IID IID_IAudioSessionControl2 = __uuidof(IAudioSessionControl2);</span><br><span class="line"><span class="keyword">const</span> IID IID_ISimpleAudioVolume = __uuidof(ISimpleAudioVolume);</span><br><span class="line"></span><br><span class="line"><span class="function">BOOL <span class="title">SetProcessVolume</span><span class="params">(ULONG target_pid, <span class="keyword">float</span> level)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    CComPtr imm_dev_enumor;</span><br><span class="line"></span><br><span class="line">    HRESULT hr = imm_dev_enumor.CoCreateInstance(</span><br><span class="line">        CLSID_MMDeviceEnumerator, <span class="literal">NULL</span>,</span><br><span class="line">        CLSCTX_ALL);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (FAILED(hr)) &#123;</span><br><span class="line">        <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    CComPtr imm_dev;</span><br><span class="line">    hr = imm_dev_enumor-&gt;GetDefaultAudioEndpoint(eRender, eMultimedia, &amp;imm;_dev.p);</span><br><span class="line">    <span class="keyword">if</span> (FAILED(hr)) &#123;</span><br><span class="line">        <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    CComPtr session_mgr2;</span><br><span class="line">    hr = imm_dev-&gt;Activate(IID_IAudioSessionManager2, CLSCTX_ALL, <span class="literal">NULL</span>, (<span class="keyword">void</span> **)&amp;session;_mgr2.p);</span><br><span class="line">    <span class="keyword">if</span> (FAILED(hr)) &#123;</span><br><span class="line">        <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    CComPtr session_enumor;</span><br><span class="line">    hr = session_mgr2-&gt;GetSessionEnumerator(&amp;session;_enumor.p);</span><br><span class="line">    <span class="keyword">if</span> (FAILED(hr)) &#123;</span><br><span class="line">        <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> count;</span><br><span class="line">    <span class="keyword">if</span> (FAILED(hr)) &#123;</span><br><span class="line">        <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    hr = session_enumor-&gt;GetCount(&amp;count;);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">        CComPtr session_ctrl;</span><br><span class="line">        hr = session_enumor-&gt;GetSession(i, &amp;session;_ctrl.p);</span><br><span class="line">        <span class="keyword">if</span> (FAILED(hr)) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        CComPtr session_ctrl2;</span><br><span class="line">        hr = session_ctrl-&gt;QueryInterface(IID_IAudioSessionControl2, (<span class="keyword">void</span> **)&amp;session;_ctrl2.p);</span><br><span class="line">        <span class="keyword">if</span> (FAILED(hr)) &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        ULONG pid;</span><br><span class="line">        hr = session_ctrl2-&gt;GetProcessId(&amp;pid;);</span><br><span class="line">        <span class="keyword">if</span> (FAILED(hr)) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (pid != target_pid) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        CComPtr simple_vol;</span><br><span class="line">        hr = session_ctrl2-&gt;QueryInterface(IID_ISimpleAudioVolume, (<span class="keyword">void</span> **)&amp;simple;_vol.p);</span><br><span class="line">        <span class="keyword">if</span> (FAILED(hr)) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        simple_vol-&gt;SetMasterVolume(level, <span class="literal">NULL</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2013-09-10T04:05:47.000Z" itemprop="datePublished">2013-09-10</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
                   <article id="post-e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-2" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
@@ -101,7 +527,14 @@
 <p>对于初学者理论知识不用了解的过细，最好还是在代码中边写边学习，还是一边堆代码，一边解释吧。<br>（关于下面代码的补充说明：由于使用DMA必须处理中断以获得DMA处理结束的信号，而配置中断又涉及到许多理论知识和额外代码（8259A &amp;IDT），所以下面的代码就不涉及配置中断了，我这里就假设CPU已经进入保护模式，但没有开启分页并且IDE的中断已经配置完毕了。以下代码依旧为了保持最简洁，忽略了状态和结果的检查，在试验中够用即可）</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">mov dx, 0C000h ; 设置开始停止位为0，停止DMA</span><br><span class="line">mov al, 0h</span><br><span class="line">out dx, al</span><br><span class="line"></span><br><span class="line">mov dx, 0C002h ; 清除中断位和错误位，这里清除方式比较特别，设置1后清除</span><br><span class="line">mov al, 6h</span><br><span class="line">out dx, al</span><br><span class="line"></span><br><span class="line">; 配置描述符表，表地址为10000h，且只有一个描述符</span><br><span class="line">; 描述符描述的物理基址是20000h，大小为512字节，且设置了第7位，</span><br><span class="line">; 说明自己就是最后一个描述符</span><br><span class="line">mov dword ptr [10000h], 20000h</span><br><span class="line">mov dowrd ptr [10004h], 200h | 80000000h</span><br><span class="line">mov dx, 0C004h</span><br><span class="line">mov eax, 10000h</span><br><span class="line">out dx, eax</span><br><span class="line"></span><br><span class="line">mov dx, 3f6h   ; 这里不再设置nIEN，DMA需要中断</span><br><span class="line">mov al, 0h</span><br><span class="line">out dx, al</span><br><span class="line"></span><br><span class="line">mov dx, 1f1h   ; 下面代码基本上和PIO一致，</span><br><span class="line">mov al, 0      ; 详细注释请看上一篇文章</span><br><span class="line">out dx, al</span><br><span class="line"></span><br><span class="line">mov dx, 1f2h</span><br><span class="line">mov al, 1</span><br><span class="line">out dx, al</span><br><span class="line"></span><br><span class="line">mov dx, 1f3h</span><br><span class="line">mov al, 11h</span><br><span class="line">out dx, al</span><br><span class="line"></span><br><span class="line">mov dx, 1f4h</span><br><span class="line">mov al, 22h</span><br><span class="line">out dx, al</span><br><span class="line"></span><br><span class="line">mov dx, 1f5h</span><br><span class="line">mov al, 33h</span><br><span class="line">out dx, al</span><br><span class="line"></span><br><span class="line">mov dx, 1f6h</span><br><span class="line">mov al, 44h</span><br><span class="line">out dx, al</span><br><span class="line"></span><br><span class="line">mov dx, 1f7h   ; 设置读取扇区的命令C8h，不同于20h，这个是DMA读取扇区的命令</span><br><span class="line">mov al, C8h</span><br><span class="line">out dx, al</span><br><span class="line"></span><br><span class="line">mov dx, 0C000h ; 设置开始停止位为1，开始DMA，并且指定为读取硬盘操作</span><br><span class="line">mov al, 9h     ; （对硬盘而言是写出，所以设置bit3）</span><br><span class="line">out dx, al</span><br><span class="line"></span><br><span class="line">call wait_int  ; 等待中断</span><br><span class="line"></span><br><span class="line">mov dx, 0C000h ; 中断返回，设置开始停止位为0，停止DMA</span><br><span class="line">mov al, 0h     ; 如果一切都顺利，那么20000h开始的512个字节</span><br><span class="line">out dx, al     ; 就应该是读出的硬盘数据了</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
 
-<p>上面的代码主要分为以下这几步：<br>1) 在系统内存中配置PRD Table。每个PRD是8个字节，其中包含着一个起始内存地址和一个内存大小传送，而且PRD必须是4字节对齐的。<br>2) 给PRD Table指针寄存器传入配置好的PRD Table的地址，设置读写控制位，清除中断和错误位。<br>3) 设置读写命令，包括读写的驱动器，逻辑地址等（这里基本上和PIO类似）。<br>4) 设置总线主控IDE命令寄存器的开始/停止位为1，控制器开始执行DMA操作。<br>5) 控制器DMA操作结束，IDE设备发起中断，收到中断后，设置开始/停止位为0（我们省略了读取状态寄存器来查看操作是否成功的步骤。）  </p>
+<p>上面的代码主要分为以下这几步：  </p>
+<ol>
+<li>在系统内存中配置PRD Table。每个PRD是8个字节，其中包含着一个起始内存地址和一个内存大小传送，而且PRD必须是4字节对齐的。  </li>
+<li>给PRD Table指针寄存器传入配置好的PRD Table的地址，设置读写控制位，清除中断和错误位。  </li>
+<li>设置读写命令，包括读写的驱动器，逻辑地址等（这里基本上和PIO类似）。  </li>
+<li>设置总线主控IDE命令寄存器的开始/停止位为1，控制器开始执行DMA操作。  </li>
+<li>控制器DMA操作结束，IDE设备发起中断，收到中断后，设置开始/停止位为0（我们省略了读取状态寄存器来查看操作是否成功的步骤。）  </li>
+</ol>
 <p>如果只是从IDE方面来看，代码没有复杂多少，可惜的是他还需要配合其他计算机硬件，所以实际要用上的代码要比PIO多上了不少。最后还是给大家推荐一些深入理解DMA的资料吧。<br>ISA DMA：<a href="http://wiki.osdev.org/ISA_DMA" target="_blank" rel="noopener">http://wiki.osdev.org/ISA_DMA</a><br>PCI DMA：<a href="http://wiki.osdev.org/ATA/ATAPI_using_DMA" target="_blank" rel="noopener">http://wiki.osdev.org/ATA/ATAPI_using_DMA</a>  </p>
 
         
@@ -116,505 +549,6 @@
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
             <a href='/categories/MiniKernel/' title=''>MiniKernel</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-1" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2013/08/26/e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-1/">使用PCI IDE Controller读写硬盘 – 1</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p><a href="/uploads/2013/08/PIO_hd04.jpg"><img src="/uploads/2013/08/PIO_hd04.jpg" alt="PIO_hd04"></a></p>
-<p>上一篇文章中提到了一些IDE基础的知识，并且知道了如何判断IDE的类型。接下来介绍IDE最基本的IO方法——PIO。</p>
-<p>PIO是Programmed input/output的缩写，下面是一段wiki上对PIO的介绍：<br>“可编程输入输出（英语：PIO）是CPU与外围设备（如网卡、硬盘等）传输数据的一种方法。当 CPU 上执行的软件程序使用 I/O 地址空间来与输入/输出设备（I/O 设备）进行数据传输时，系统即进行了 PIO. 这和直接内存存取（DMA）恰好相反。</p>
-<p>在 PC 上最常见的使用 PIO 的例子是 ATA 接口，但 ATA 接口也可以在 DMA 模式下工作。 PC 上的许多比较古老的设备也使用 PIO, 如串行端口、并行端口（在不使用 ECP 模式时）、PS/2 接口、MIDI 接口、内部时钟以及一些古老的网卡。”</p>
-<p>实际上，在DMA出现之前，PIO是硬盘唯一的数据传输的方式。就算是现在，ATA的部分命令还必须使用PIO的方式获得数据，例如DEVICE IDENTIFY。PIO传输数据的思想简单直接，例如从硬盘都数据，只需要在硬盘准备好了之后，不断的读取特定端口就能将数据读出来了。例如 in eax, dx（dx里是数据端口号），这样每次就传输4个字节，也就是说如果需要传输512（一个扇区）的数据，需要128次IO。这样一方面数据传输的效率难以提高，另一方面还占用了CPU时间。所以被DMA淘汰也是有道理的。然而，他也有自身的优势，那就是编程起来简单方便。不像DMA那样，需要配置中断和其他一些事情。简单的对IDE下命令就可以达到数据传输的目的了。所以这也是我们入门的很好的切入口。</p>
-<p>最后，在开始堆代码之前，我们必须了解硬盘的两种寻址模式：CHS(cylinders-heads-sectors，磁柱-磁头-扇区)寻址模式和LBA(Logical Block Address, 逻辑区块地址)寻址模式。<br>CHS寻址模式，区块必须以硬盘上某个磁柱、磁头、扇区的硬件位置所合成的地址来指定。<br>LBA寻址模式从0开始编号来定位区块，第一区块LBA=0，第二区块LBA=1，依此类推。  </p>
-<p>前者的描述更偏向物理，理解起来需要转换，而后者更偏向思维逻辑，理解起来直接了当。既然LBA模式简单容易理解，所以下面的文章和代码所采用的寻址模式就默认是LBA28。所谓LBA28其实是LBA模式中的子模式，它可以寻址到128GB，与之对应的是LBA48，它的寻址范围可以达到128PB，这个对我们来说没啥意义，所以还是选用LBA28。另外CHS模式还需要解释硬盘机械方面的知识，前提太多不利于学习，就暂时搁下吧。</p>
-<p>好了，介绍理论的知识不是这篇文章的目的，就让我们一边堆代码，一边讲解这些理论知识吧。下面就是一段读取硬盘数据的asm代码。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">    mov dx, 3f6h    ; 1.设置nIEN</span><br><span class="line">    mov al, 2h</span><br><span class="line">    out dx, al</span><br><span class="line">    </span><br><span class="line">    mov dx, 1f1h    ; 2.设置FEATURES为0</span><br><span class="line">    mov al, 0</span><br><span class="line">    out dx, al</span><br><span class="line">        </span><br><span class="line">    mov dx, 1f2h    ; 3.设置读取的扇区数量，这里指定为1</span><br><span class="line">    mov al, 1</span><br><span class="line">    out dx, al</span><br><span class="line">        </span><br><span class="line">    mov dx, 1f3h    ; 4.设置读取地址的低八位</span><br><span class="line">    mov al, 11h</span><br><span class="line">    out dx, al</span><br><span class="line">        </span><br><span class="line">    mov dx, 1f4h    ; 5.设置读取地址的中八位</span><br><span class="line">    mov al, 22h</span><br><span class="line">    out dx, al</span><br><span class="line">        </span><br><span class="line">    mov dx, 1f5h    ; 6.设置读取地址的高八位</span><br><span class="line">    mov al, 33h</span><br><span class="line">    out dx, al</span><br><span class="line">    </span><br><span class="line">    mov dx, 1f6h    ; 7.设置LBA模式，目标驱动器，和地址的最高4位</span><br><span class="line">    mov al, 44h     ;   其中第6位（40h）是设置LBA模式，第4位设置主从驱动器，0为主驱动器</span><br><span class="line">    out dx, al      ;   后四位就是LBA最高位了，这里是4h，也就是说读取的地址是04332211h</span><br><span class="line">        </span><br><span class="line">    mov dx, 1f7h    ; 8.设置读取扇区的命令20h</span><br><span class="line">    mov al, 20h</span><br><span class="line">    out dx, al</span><br><span class="line">pri_stat:</span><br><span class="line">    in al, dx       ; 9.轮询状态寄存器，第3位（8）如果是设置状态，表明可以进行数据传输了。</span><br><span class="line">    test al, 8</span><br><span class="line">    jz pri_stat</span><br><span class="line">         </span><br><span class="line">    mov ecx, 512/4  ; IO 128次！</span><br><span class="line">    mov edi, offset buffer  ; 设置buffer地址到edi</span><br><span class="line">    mov dx, 1f0h</span><br><span class="line">    rep insw        ; 10.循环128次从数据寄存器读取1个扇区的数据</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>上面的代码主要分为以下这几步：<br>1.我们现在不需要IRQs，所以我们这里要禁用它，以免发生不必要的问题。这里，我们设置CBR（Control Block Register）的第1位，也叫nIEN位，只要它处于设置的状态，那么IRQs就不会触发。<br>2.设置FEATURES寄存器<br>3.设置扇区数寄存器<br>4.设置LBA低8位<br>5.设置LBA中8位<br>6.设置LBA中高8位<br>7.设置LBA最高4位，以及驱动器，指明使用LBA模式<br>8.设置读扇区命令<br>9.轮询等待完成状态<br>10.循环128次读取1个扇区的数据（128*4=512 bytes）  </p>
-<p>再看看写扇区有哪些不同呢？没错，只有最后几条指令有细微的差别。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">    mov dx, 1f7h</span><br><span class="line">    mov al, 30h     ; 这里命令改为30h，写扇区</span><br><span class="line">    out dx, al</span><br><span class="line">pri_stat:</span><br><span class="line">    in al,dx</span><br><span class="line">    test al,8</span><br><span class="line">    jz pri_stat</span><br><span class="line">    </span><br><span class="line">    mov ecx, 512/4</span><br><span class="line">    mov esi, offset buffer ; 设置buffer地址到esi</span><br><span class="line">    mov dx, 1f0h</span><br><span class="line">    rep outsd       ; 这里指令改为outsd</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>看起来还是很简单的吧！不过这也是当然的，因为我们没有做任何的排错和检验处理。不过这样的代码才是初学者最喜欢看到的吧，同样对于做操作系统实验也没多大问题。</p>
-<p>最后，如果对CHS以及LBA和CHS的转换关系感兴趣，推荐翻阅wiki：<br><a href="http://en.wikipedia.org/wiki/Cylinder-head-sector" target="_blank" rel="noopener">http://en.wikipedia.org/wiki/Cylinder-head-sector</a><br><a href="http://en.wikipedia.org/wiki/Logical_block_addressing#CHS_conversion" target="_blank" rel="noopener">http://en.wikipedia.org/wiki/Logical_block_addressing#CHS_conversion</a>  </p>
-<p>在下一篇的文章中，会介绍一些用PCI DMA的方式读写硬盘的知识。</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2013-08-26T07:00:42.000Z" itemprop="datePublished">2013-08-26</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/MiniKernel/' title=''>MiniKernel</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-0" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2013/08/17/e4bdbfe794a8pci-ide-controllere8afbbe58699e7a1ace79b98-0/">使用PCI IDE Controller读写硬盘 - 0</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>依稀记得我一年半以前曾经写过一篇关于PIO读硬盘数据的文章，当时就提到了读写硬盘操作很复杂，完全可以拿来做一个系列来写。当时也是真有写出一个系列的冲动，不过不巧的是，由于那段时间换工作，新的工作和底层的关系不太大，也就没时间继续读相关文档来把这个系列写下来。我现在还很清楚的记得当时有关使用IDE接口读写硬盘的中文资料特别的少，虽然英文资料倒是挺全面，但是对于英语不好的我来说，看起来还是挺吃力的。一年半后，我又好奇的搜索的这方面的中文资料，结果依旧令人失望。于是，我就决定我把知道的IDE方面的知识写出来，一方面算是自己的一个学习笔记，另一方面也算是一种分享。我将这个系列定位为学习笔记，就是说，文章的很多地方都是自己的理解，不能保证所提到的知识都是正确的。所以如果这篇文章有幸被你看见，并且发现了问题，请使用email联系我。</p>
-<h1 id="IDE介绍"><a href="#IDE介绍" class="headerlink" title="IDE介绍"></a>IDE介绍</h1><p><a href="/uploads/2013/08/hdd-sata-pata-ide-aussie-pc-fix.png"><img src="/uploads/2013/08/hdd-sata-pata-ide-aussie-pc-fix.png" alt="hdd-sata-pata-ide-aussie-pc-fix"></a></p>
-<p>IDE是Integrated Drive Electronics的简称，wiki上翻译的中文是“集成驱动电子设备”。我们可以认为它是一种接口，可以管理控制IDE的驱动器，比如硬盘，光驱等等。事实上，现在所谓的ATA/ATAPI接口的第一个版本的名称就叫做IDE，所以现在人们通常认为IDE就是PATA。如果现在去买主板，我们会发现集成PATA/IDE的主板已经消失了，现在主流主板都是使用的SATA，这是一套新的接口。那么，我们干嘛要学习一个已经淘汰的技术呢？其实不然，虽然硬件的接口被淘汰了，但是IDE的驱动器的控制模式还是存在的。现在的BIOS设置中，通常有一种叫做“legacy mode”或者“IDE”的选项，开启这个选项，系统就能如同操作IDE/PATA一样操作SATA了。而对于我这有写迷你内核的人来说，学习IDE是非常好的，因为虚拟机bochs模拟的硬盘设备就是IDE/PATA的，另一方面，把迷你内核拿到真机上做实验的时候，开启“legacy mode”或者“IDE”也能够很顺利的进行实验。</p>
-<p><a href="/uploads/2013/08/bios-sata-native-mode-ide-raid-ahci-ca184a.jpg"><img src="/uploads/2013/08/bios-sata-native-mode-ide-raid-ahci-ca184a.jpg" alt="bios-sata-native-mode-ide-raid-ahci-ca184a"></a></p>
-<h1 id="IDE通道以及通道寄存器地址"><a href="#IDE通道以及通道寄存器地址" class="headerlink" title="IDE通道以及通道寄存器地址"></a>IDE通道以及通道寄存器地址</h1><p>IDE有2个通道，可以管理4个驱动器，分别是：<br>通道1：<br>第一主驱动器<br>第一从驱动器<br>通道2：<br>第二主驱动器<br>第二从驱动器  </p>
-<p>每个通道都有两套用于控制其主从驱动器的寄存器，他们分别是 Control Block Registers 和 Command Block Registers。这些寄存器首先是有一个基础地址，然后通过按顺序可以获得整套寄存器地址，而寄存器的基础地址可以通过PCI Configuration Space来获得，更多情况下，我们不妨直接使用下面这张表来配置寄存器的基础地址。</p>
-<p><a href="/uploads/2013/08/2013-08-18_142953.png"><img src="/uploads/2013/08/2013-08-18_142953.png" alt="2013-08-18_142953"></a></p>
-<p>事实上，这个基础地址是根据PCI IDE Controller模式不同而确定的。Compatibility模式下，寄存器的基础地址是固定的，但是在Native-PCI模式下，这个就需要读取具体的配置信息了。不过，大部分情况下，用上述地址不会有什么问题，所以这里就略过读取PCI Configuration Space的步骤了。</p>
-<p>现在既然知道了寄存器的Base Address，那么下一步就是获得每个寄存器的地址了，其实这也非常简单。</p>
-<p>Command Block Registers<br>1F0 （170）（读取和写入）：数据寄存器<br>1F1 （171）（读）：错误寄存器<br>1F1 （171）（写入）：特性寄存器<br>1F2 （172）（读取和写入）：扇区数寄存器<br>1F3 （173）（读取和写入）：低LBA寄存器<br>1F4 （174）（读取和写入）：中LBA寄存器<br>1F5 （175）（读取和写入）：高LBA寄存器<br>1F6 （176）（读取和写入）：驱动器/磁头寄存器<br>1F7 （177）（读）：状态寄存器<br>1F7 （177）（写入）：命令寄存器  </p>
-<p>Control Block Registers<br>3F6 （376）（读取）：备用状态寄存器<br>3F6 （376）（写入）：设备控制寄存器  </p>
-<p>另外还有一组寄存器叫做Bus Master IDE Register，我们使用DMA进行数据传输的时候会用到这类寄存器。现在就不去了解了，以免东西太多，造成不必要的混乱。</p>
-<p>判断驱动器类型</p>
-<p>前面说了很多的理论上的东西，现在我们看看怎么运用它们判断驱动器类型，比如是PATA还是SATA。当然，在做判断它们的类型之前，我们需要检测驱动器是否存在。判断方法很简单，先选择驱动器，对扇区数寄存器（1F2）和低LBA寄存器（1F3）写两个非0的数字，然后进行读取。如果读出的内容和写入的相同，那么我们可以认为驱动存在。就拿第一主驱动器举个例子：<br>mov dx, 1f6h ; 驱动器寄存器<br>xor al, al ; 选择驱动器，如果al第4位是0，那么选择0号设备，否则选择1号设备<br>out dx, al  </p>
-<p>mov dx, 1f2h<br>mov al, 55h ; 随意写一个数<br>out dx, al  </p>
-<p>mov dx, 1f3h<br>mov al, aah<br>out dx, al  </p>
-<p>mov dx, 1f2h<br>in al, dx ; 读取后比较<br>cmp al, 55h<br>jnz not_exist  </p>
-<p>mov dx, 1f3h<br>in al, dx<br>cmp al, aah<br>jnz not_exist  </p>
-<p>我用bochs测试的结果是，如果驱动器不存在，读出的数字总是0。接下来就可以获得驱动器的类型了，步骤是：1.选择驱动器（前面的操作以及做完这步了）2.软件复位驱动器。3.读取高LBA寄存器和中LBA寄存器。  </p>
-<p>mov dx, 3f6h ; 选择设备控制寄存器<br>mov al, 4h ; 设置第二位，表示软件复位<br>out dx, al  </p>
-<p>mov dx, 3f6h ; 选择设备控制寄存器<br>mov al, 0h<br>out dx, al  </p>
-<p>mov dx, 1f4h<br>in al, dx<br>mov id1, al  </p>
-<p>mov dx, 1f5h<br>in al, dx<br>mov id2, al  </p>
-<p>当ID1和ID2为不同的数值的时候，表示的设备不同，如下表所示<br><a href="/uploads/2013/08/20130818152800.png"><img src="/uploads/2013/08/20130818152800.png" alt="20130818152800"></a><br>我在bochs实验的得到的结果是PATA，虽然模拟的设备比较老，但是这正是我想要的。  </p>
-<p>这样，我们读写硬盘的第一步，环境检测已经完成了。这个系列的下一篇文章，我们就来了解下通过PIO的方式读写硬盘。  </p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2013-08-17T07:51:35.000Z" itemprop="datePublished">2013-08-17</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/MiniKernel/' title=''>MiniKernel</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-e4bdbfe794a8e58fafe7bc96e7a88be997b4e99a94e5ae9ae697b6e599a8programmable-interval-timere7bc96e58699e7b3bbe7bb9fe697b6e9929f" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2013/08/04/e4bdbfe794a8e58fafe7bc96e7a88be997b4e99a94e5ae9ae697b6e599a8programmable-interval-timere7bc96e58699e7b3bbe7bb9fe697b6e9929f/">使用可编程间隔定时器(Programmable Interval Timer)编写系统时钟</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>很久没有写关于MiniKernel的文章了，这周末看着有点时间，就写一点关于定时器的东西吧。</p>
-<p><a href="/uploads/2013/08/8253.jpg"><img src="/uploads/2013/08/8253.jpg" alt="8253"></a></p>
-<h2 id="简单介绍"><a href="#简单介绍" class="headerlink" title="简单介绍"></a>简单介绍</h2><p>可编程间隔定时器（PIT）芯片（也就是我们常说的8253/8254芯片），他包含了1个振荡器，1个预分频器和3个独立的分频器。每个分频器有一个输出，它是可以让定时器控制外部电路（例如，IRQ0）</p>
-<p>其中PIT的振荡器的频率是1.193182 MHz。具体为什么是这么个奇怪的数字，是有一点历史的，但这些不是这篇文章的重点，有兴趣的可以Google一下。</p>
-<p>分频器也比较容易理解，就是把高频分割为低频，一般来说就是使用一个计数器，当每次脉冲的时候，计数器的数值减少，当计数器数值为0的时候，在输出上产生一个脉冲，并且计数器复位，重新开始计数。</p>
-<p>PIT定时器的准确度依赖于所使用的振荡器，一般来说，一天的浮动为+/- 1.73秒。不过这种浮动，对我们影响并不大，所以也不必过于在意。</p>
-<p>PIT的输出通道一共有三个：通道0，直接连接到IRQ0，并且触发时钟中断（这个通道是我们写MiniKernel最重要的一个。）。通道1，貌似以前是定时刷新内存的，但是现在没什么用了。通道2是连接到PC扬声器的，目前我也没有研究过它的作用。</p>
-<p>这里再重点介绍一下通道0：PIT通道0的输出是连接到PIC芯片上的（8259A，以后有空也可以写一篇简单的介绍），因此，它能生成一个IRQ0的中断。通常情况下，在开机时，BIOS会将通道0的计数器的值设置为65535或0（其中如果是0，硬件会自动转化为65536），这样，它的输出频率就是18.2065Hz。另外，之所以说通道0最重要，主要原因就是它是三个通道中，唯一一个能连接到IRQ的，对于编写系统时钟至关重要。</p>
-<h2 id="编程相关"><a href="#编程相关" class="headerlink" title="编程相关"></a>编程相关</h2><p>PIT是使用以下IO端口进行控制：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">I/O 端口     用途</span><br><span class="line">0x40         通道0的数据端口</span><br><span class="line">0x41         通道1的数据端口</span><br><span class="line">0x42         通道2的数据端口</span><br><span class="line">0x43         控制字寄存器</span><br></pre></td></tr></table></figure>
-
-<p>控制字寄存器的具体内容如下：</p>
-<p><a href="/uploads/2013/08/8253cw.png"><img src="/uploads/2013/08/8253cw.png" alt="8253cw"></a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Bits</span><br><span class="line">6 7选择通道：</span><br><span class="line">0 0 =通道0</span><br><span class="line">0 1 =通道1</span><br><span class="line">1 0 =通道2</span><br><span class="line">1 1 =回读命令（只有8254支持）</span><br><span class="line">4 5访问模式：</span><br><span class="line">0 0 =锁存计数值命令</span><br><span class="line">0 1 =访问模式：读写最低有效字节</span><br><span class="line">1 0 =访问模式：读写最高有效字节</span><br><span class="line">1 1 =访问模式：先读写最低有效字节，然后读写高位字节</span><br><span class="line">1-3工作模式：</span><br><span class="line">0 0 0 =模式0（计数结束中断）</span><br><span class="line">0 0 1 =模式1（硬件再触发单稳）</span><br><span class="line">0 1 0 =模式2（速率发生器）</span><br><span class="line">0 1 1 =模式3（方波发生器）</span><br><span class="line">1 0 0 =模式4（软件触发闸门）</span><br><span class="line">1 0 1 =模式5（硬件触发闸门）</span><br><span class="line">1 1 0 =模式2（速率发生器，与010B相同）</span><br><span class="line">1 1 1 =模式3（方波发生器，与011B相同）</span><br><span class="line">0 BCD /二进制模式：0 = 16位二进制数，1 =四位BCD&lt;/blockquote&gt;</span><br></pre></td></tr></table></figure>
-
-
-<p>这里，我们要写系统时钟，那么就应该这样选择：</p>
-<ol>
-<li>选择通道，必须是通道0，那么bit 6 7 就分别为 0 0。  </li>
-<li>由于我们的计数器是16位的，那么访问模式bit 4 5就应该选择1 1。  </li>
-<li>数据模式，毫无疑问选择二进制模式。  </li>
-<li>最后就是工作模式了，应该选择什么呢？这里我也不想把这些模式都讲的很清楚，因为那样就涉及到引脚和电平等等硬件知识。现在我们只需要知道0，1，4，5这些模式都可以触发中断，但是却不会自动复位。只有模式2和3会自动复位。所以模式2 3都是我们可以用来作为系统时钟的模式。那么1-3 bits可以为0 1 0或者0 1 1。</li>
-</ol>
-<h2 id="例子："><a href="#例子：" class="headerlink" title="例子："></a>例子：</h2><p>现在假设，系统的时钟中断例程已经设置好了，并且设置好了PIC的IRQ0到这个例程。下面要做的事情就是，设置时钟中断的频率了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mov dx, 1193180 / 100 ; 没10ms触发一次中断</span><br><span class="line">mov al, 110110b ; 设置控制字寄存器，上面已经介绍过每个位的含意</span><br><span class="line">out 0x43, al</span><br><span class="line">mov ax, dx</span><br><span class="line">out 0x40, al   ;先设置低位的值</span><br><span class="line">xchg ah, al</span><br><span class="line">out 0x40, al   ;再设置高位的值</span><br></pre></td></tr></table></figure>
-
-
-<p>总的来说8253 和 8254 是很有用的芯片。他们可以用在很多不同的设备，并用于很多不同的目的。不过就目前的PC来说，系统对他们的依赖已经不像以前那样严重了。随着科技的进步，APIC Timer已经可以取代他们。另外2005年，Intel和MS已经联合开发了新的高精度的定时器芯片High Precision Event Timer（HPET）。</p>
-<p>虽然成熟的系统可能已经不用8253 和 8254了，但是对于我们自己的迷你内核来说，使用它们就完全足够了</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2013-08-04T00:12:15.000Z" itemprop="datePublished">2013-08-04</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/MiniKernel/' title=''>MiniKernel</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-e585b3e4ba8ejsoncppe79a84e4b8ade69687e7bc96e7a081e997aee9a298" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2013/07/19/e585b3e4ba8ejsoncppe79a84e4b8ade69687e7bc96e7a081e997aee9a298/">关于JsonCpp的中文编码问题</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近工作中用到了jsoncpp来解析json文件。但是遇到了一个这样的问题，如果json代码中有中文，并且用“\u594E\u6258\u65AF”这样的方式表示，那么jsoncpp解析的时候，就会把他转换成UTF-8。到这一步还是OK的，然后我就试图把这段中文写回文件，问题就来了，jsoncpp不会把中文转换为“\u594E\u6258\u65AF”这样的形式在存储，而是直接存储为UTF-8格式的文件。如图所示：</p>
-<p><a href="/uploads/2013/07/20130719231900.png"><img src="/uploads/2013/07/20130719231900.png" alt="20130719231900"></a></p>
-<p>而我恰好是需要这种经过编码的形式的字符串，而非直接给我中文。在网上搜了搜，貌似也没有很好的解决方案，只好自己修改jsoncpp的代码以满足这个需求了。<br>简单读了下jsoncpp的read和write的代码。jsoncpp在read的时候会调用codePointToUTF8这个函数把\uXXXX这个形式的代码转换成UTF-8，但是write的时候就没有这样的转换了，虽然不是很了解作者这么写的思路，但是修改的思路倒是有了。我的做法是把所有需要两个和两个以上字节表示一个字符的UTF-8字符串全部转换成\uXXXX这个形式。那么就需要写一个转换函数。<a href="http://en.wikipedia.org/wiki/UTF-8" target="_blank" rel="noopener">http://en.wikipedia.org/wiki/UTF-8</a> 上很清楚的描述了这些转换关系，所以完全可以自己动手写一个这样的函数。以下是我自己的实现：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">UTF8TocodePoint</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *c, <span class="keyword">unsigned</span> <span class="keyword">int</span> *result)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (((*c) &amp; <span class="number">0x80</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;(*c);</span><br><span class="line">count = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xe0</span>) == <span class="number">0xc0</span>) &#123;</span><br><span class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0x1f</span>) &lt;&lt; <span class="number">6</span>) | ((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>));</span><br><span class="line">count = <span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xf0</span>) == <span class="number">0xe0</span>) &#123;</span><br><span class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0xf</span>) &lt;&lt; <span class="number">12</span>) | (((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">6</span>) | (((*(c + <span class="number">2</span>)) &amp; <span class="number">0x3f</span>)));</span><br><span class="line">count = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xf8</span>) == <span class="number">0xf0</span>) &#123;</span><br><span class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0x7</span>) &lt;&lt; <span class="number">18</span>) | (((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">12</span>) | (((*(c + <span class="number">2</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">6</span>) | (((*(c + <span class="number">3</span>)) &amp; <span class="number">0x3f</span>)));</span><br><span class="line">count = <span class="number">4</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xfc</span>) == <span class="number">0xf8</span>) &#123;</span><br><span class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0x3</span>) &lt;&lt; <span class="number">24</span>) | (((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">18</span>) | (((*(c + <span class="number">2</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">12</span>) | (((*(c + <span class="number">3</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">6</span>) | (((*(c + <span class="number">4</span>)) &amp; <span class="number">0x3f</span>)));</span><br><span class="line">count = <span class="number">5</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (((*c) &amp; <span class="number">0xfe</span>) == <span class="number">0xfc</span>) &#123;</span><br><span class="line">*result = <span class="keyword">static_cast</span>&lt;<span class="keyword">unsigned</span> <span class="keyword">int</span>&gt;((((*c) &amp; <span class="number">0x1</span>) &lt;&lt; <span class="number">30</span>) | (((*(c + <span class="number">1</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">24</span>) | (((*(c + <span class="number">2</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">18</span>) | (((*(c + <span class="number">3</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">12</span>) | (((*(c + <span class="number">4</span>)) &amp; <span class="number">0x3f</span>) &lt;&lt; <span class="number">6</span>) | (((*(c + <span class="number">5</span>)) &amp; <span class="number">0x3f</span>)));</span><br><span class="line">count = <span class="number">6</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> count;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>然后把这个函数的调用加入到valueToQuotedString中，将原始的代码：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">if</span> ( isControlCharacter( *c ) )</span><br><span class="line">&#123;</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">ostringstream</span> oss;</span><br><span class="line">oss &lt;&lt; <span class="string">"\\u"</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; <span class="built_in">std</span>::uppercase &lt;&lt; <span class="built_in">std</span>::setfill(<span class="string">'0'</span>) &lt;&lt; <span class="built_in">std</span>::setw(<span class="number">4</span>) &lt;&lt; <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(*c);</span><br><span class="line">result += oss.str();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">result += *c;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>修改为：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">if</span> ( isControlCharacter( *c ) )</span><br><span class="line">&#123;</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">ostringstream</span> oss;</span><br><span class="line">oss &lt;&lt; <span class="string">"\\u"</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; <span class="built_in">std</span>::uppercase &lt;&lt; <span class="built_in">std</span>::setfill(<span class="string">'0'</span>) &lt;&lt; <span class="built_in">std</span>::setw(<span class="number">4</span>) &lt;&lt; <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(*c);</span><br><span class="line">result += oss.str();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> ((*c) &amp; <span class="number">0x80</span>) &#123;</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> num = <span class="number">0</span>;</span><br><span class="line">c += UTF8TocodePoint(c, &amp;num) - <span class="number">1</span>;</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">ostringstream</span> oss;</span><br><span class="line">oss &lt;&lt; <span class="string">"\\u"</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; <span class="built_in">std</span>::uppercase &lt;&lt; <span class="built_in">std</span>::setfill(<span class="string">'0'</span>) &lt;&lt; <span class="built_in">std</span>::setw(<span class="number">4</span>) &lt;&lt; <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(num);</span><br><span class="line">result += oss.str();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">result += *c;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>这样还没算结束，因为这个函数开头的地方还有一个判断，我们也需要修改一下，将原始代码：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">strpbrk</span>(value, <span class="string">"\"\\\b\f\n\r\t"</span>) == <span class="literal">NULL</span> &amp;&amp; !containsControlCharacter( value ))</span><br><span class="line"><span class="keyword">return</span> <span class="built_in">std</span>::<span class="built_in">string</span>(<span class="string">"\""</span>) + value + <span class="string">"\""</span>;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>修改为：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">strpbrk</span>(value, <span class="string">"\"\\\b\f\n\r\t"</span>) == <span class="literal">NULL</span> &amp;&amp; !containsControlCharacter( value ) &amp;&amp; !containsMultiByte( value ))</span><br><span class="line"><span class="keyword">return</span> <span class="built_in">std</span>::<span class="built_in">string</span>(<span class="string">"\""</span>) + value + <span class="string">"\""</span>;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>containsMultiByte的实现是这样的：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">containsMultiByte</span><span class="params">( <span class="keyword">const</span> <span class="keyword">char</span>* str )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">while</span> ( *str )</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">if</span> ( ( *(str++) ) &amp; <span class="number">0x80</span> )</span><br><span class="line"><span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>好了，万事俱备，现在试一试效果，结果如图：</p>
-<p><a href="/uploads/2013/07/20130719232025.png"><img src="/uploads/2013/07/20130719232025.png" alt="20130719232025"></a></p>
-<p>现在这个jsoncpp看起来已经满足了我的需求，但是不确定的是，不知道这样修改会不会引起其他问题。现在也只能说暂时不去管他，有问题再一步一步的修改吧。</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2013-07-19T08:58:51.000Z" itemprop="datePublished">2013-07-19</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-e8b083e8af95e68c82e6adbbe79a84explorer" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2013/07/05/e8b083e8af95e68c82e6adbbe79a84explorer/">调试挂死的Explorer</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>一个同事前几天告诉我说，他的explorer.exe总是挂死，不知道是什么情况导致的。于是我让他下次挂死的时候抓个dump我。抓Dump的工具很多，例如用Win7的TaskMgr，sysinternals的Procexp，或者Windbg本身。不过考虑到explorer挂死了，操作桌面起来不方便，所以最好选择能够自动检测挂死并且抓住dump的工具。这里比较推荐的是sysinternals的Procdump以及我开发的<a href="http://0cch.net/wordpress/?p=208" target="_blank" rel="noopener">proc_dump_study</a>（带UI）。</p>
-<p><a href="/uploads/2013/07/20130706003632.png"><img src="/uploads/2013/07/20130706003632.png" alt="20130706003632"></a></p>
-<p>第二天，同事把explorer.exe挂死的Dump传给了我，200多MB。用Windbg打开Dump文件，第一反应就是看看有多少线程再说吧。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; ~</span><br><span class="line">. 0 Id: b14.b18 Suspend: 0 Teb: 7ffde000 Unfrozen</span><br><span class="line">1 Id: b14.b1c Suspend: 0 Teb: 7ffdd000 Unfrozen</span><br><span class="line">...</span><br><span class="line">54 Id: b14.1a94 Suspend: 0 Teb: 7ff75000 Unfrozen</span><br><span class="line">55 Id: b14.18c8 Suspend: 0 Teb: 7ff74000 Unfrozen</span><br></pre></td></tr></table></figure>
-
-<p>56个线程，肯定不能依次看栈回溯。按照尝试判断，explorer界面挂死，肯定是刷新界面的线程挂死了。所以栈回溯里肯定有explorer的身影。于是找找哪个线程有explorer模块。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; !findstack explorer!</span><br><span class="line">Thread 000, 2 frame(s) match</span><br><span class="line">* 04 001bf924 0087aa50 explorer!wWinMain+0x54a</span><br><span class="line">* 05 001bf9b8 75771154 explorer!_initterm_e+0x1b1</span><br><span class="line"></span><br><span class="line">Thread 003, 2 frame(s) match</span><br><span class="line">* 11 0324f714 008757a6 explorer!CTray::_MessageLoop+0x265</span><br><span class="line">* 12 0324f724 75b346bc explorer!CTray::MainThreadProc+0x8a</span><br><span class="line"></span><br><span class="line">Thread 008, 1 frame(s) match</span><br><span class="line">* 03 04a1fc0c 75b346bc explorer!CSoundWnd::s_ThreadProc+0x3a</span><br></pre></td></tr></table></figure>
-
-<p>从上面的结果看来，3号线程最可疑，于是看看完整的堆栈情况。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">0:003&gt; kv</span><br><span class="line"># ChildEBP RetAddr Args to Child</span><br><span class="line">00 0324f508 76eb5aec 75236924 00000002 0324f55c ntdll!KiFastSystemCallRet (FPO: [0,0,0])</span><br><span class="line">01 0324f50c 75236924 00000002 0324f55c 00000001 ntdll!NtWaitForMultipleObjects+0xc (FPO: [5,0,0])</span><br><span class="line">02 0324f5a8 7576f10a 0324f55c 0324f5d0 00000000 KERNELBASE!WaitForMultipleObjectsEx+0x100 (FPO: [Non-Fpo])</span><br><span class="line">03 0324f5f0 75fa90be 00000002 7ffdf000 00000000 kernel32!WaitForMultipleObjectsExImplementation+0xe0 (FPO: [Non-Fpo])</span><br><span class="line">04 0324f644 73d51717 000002fc 0324f678 ffffffff user32!RealMsgWaitForMultipleObjectsEx+0x13c (FPO: [Non-Fpo])</span><br><span class="line">05 0324f664 73d517b8 000024ff ffffffff 00000000 duser!CoreSC::Wait+0x59 (FPO: [Non-Fpo])</span><br><span class="line">06 0324f68c 73d51757 000024ff 00000000 0324f6b8 duser!CoreSC::WaitMessage+0x54 (FPO: [Non-Fpo])</span><br><span class="line">07 0324f69c 75fa949f 000024ff 00000000 0324f68c duser!MphWaitMessageEx+0x2b (FPO: [Non-Fpo])</span><br><span class="line">08 0324f6b8 76eb60ce 0324f6d0 00000008 0324f7e8 user32!__ClientWaitMessageExMPH+0x1e (FPO: [Non-Fpo])</span><br><span class="line">09 0324f6d4 75fa93f3 00851dee 00000000 80000000 ntdll!KiUserCallbackDispatcher+0x2e (FPO: [0,0,0])</span><br><span class="line">0a 0324f6d8 00851dee 00000000 80000000 00901180 user32!NtUserWaitMessage+0xc (FPO: [0,0,0])</span><br><span class="line">0b 0324f714 008757a6 00000000 75b318f2 0324f7ac explorer!CTray::_MessageLoop+0x265 (FPO: [Non-Fpo])</span><br><span class="line">0c 0324f724 75b346bc 00901180 00000000 00000000 explorer!CTray::MainThreadProc+0x8a (FPO: [Non-Fpo])</span><br><span class="line">0d 0324f7ac 75771154 001bf810 0324f7f8 76ecb299 shlwapi!WrapperThreadProc+0x1b5 (FPO: [Non-Fpo])</span><br><span class="line">0e 0324f7b8 76ecb299 001bf810 75d00467 00000000 kernel32!BaseThreadInitThunk+0xe (FPO: [Non-Fpo])</span><br><span class="line">0f 0324f7f8 76ecb26c 75b345e9 001bf810 00000000 ntdll!__RtlUserThreadStart+0x70 (FPO: [Non-Fpo])</span><br><span class="line">10 0324f810 00000000 75b345e9 001bf810 00000000 ntdll!_RtlUserThreadStart+0x1b (FPO: [Non-Fpo])</span><br></pre></td></tr></table></figure>
-
-<p>可以看出线程正在调用WaitForMultipleObjectsEx等待两个内核对象。那么看看这两个内核对象是什么吧。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0:003&gt; dp 0324f55c L2</span><br><span class="line">0324f55c 00000318 000002fc</span><br><span class="line">0:003&gt; !handle 00000318</span><br><span class="line">Handle 00000318</span><br><span class="line">Type Event</span><br><span class="line">0:003&gt; !handle 000002fc</span><br><span class="line">Handle 000002fc</span><br><span class="line">Type Event</span><br></pre></td></tr></table></figure>
-
-<p>很不幸，两个内核对象都是Event，这样就没有什么可参考的价值了，因为我们没办法知道谁应该去设置两个event。那么好吧，从其他方面下手，看能不能发现问题。看看关键区的情况。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">0:003&gt; !cs -l</span><br><span class="line">-----------------------------------------</span><br><span class="line">DebugInfo = 0x76f47540</span><br><span class="line">Critical section = 0x76f47340 (ntdll!LdrpLoaderLock+0x0)</span><br><span class="line">LOCKED</span><br><span class="line">LockCount = 0x6</span><br><span class="line">WaiterWoken = No</span><br><span class="line">OwningThread = 0x000013e0</span><br><span class="line">RecursionCount = 0x1</span><br><span class="line">LockSemaphore = 0x220</span><br><span class="line">SpinCount = 0x00000000</span><br><span class="line">-----------------------------------------</span><br><span class="line">DebugInfo = 0x002ac6e0</span><br><span class="line">Critical section = 0x765ea0f0 (shell32!CMountPoint::_csDL+0x0)</span><br><span class="line">LOCKED</span><br><span class="line">LockCount = 0x0</span><br><span class="line">WaiterWoken = No</span><br><span class="line">OwningThread = 0x000013e0</span><br><span class="line">RecursionCount = 0x1</span><br><span class="line">LockSemaphore = 0xA50</span><br><span class="line">SpinCount = 0x00000000</span><br></pre></td></tr></table></figure>
-
-<p>看到一个很可疑的情况了，两个cs都被一个线程占用，更可疑的是这个线程居然还占用了LdrpLoaderLock。这就很有可能是引起死锁的原因了。来看看这个线程的完整堆栈。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">0:053&gt; ~~[13e0]s</span><br><span class="line">eax=06d02f00 ebx=00000000 ecx=03920000 edx=06ce0000 esi=000015ac edi=00000000</span><br><span class="line">eip=76eb6194 esp=0b1ad1cc ebp=0b1ad238 iopl=0 nv up ei pl zr na pe nc</span><br><span class="line">cs=001b ss=0023 ds=0023 es=0023 fs=003b gs=0000 efl=00000246</span><br><span class="line">ntdll!KiFastSystemCallRet:</span><br><span class="line">76eb6194 c3 ret</span><br><span class="line">0:053&gt; k</span><br><span class="line"># ChildEBP RetAddr</span><br><span class="line">00 0b1ad1c8 76eb5b0c ntdll!KiFastSystemCallRet</span><br><span class="line">01 0b1ad1cc 7523179c ntdll!ZwWaitForSingleObject+0xc</span><br><span class="line">02 0b1ad238 7576efe3 KERNELBASE!WaitForSingleObjectEx+0x98</span><br><span class="line">03 0b1ad250 7576ef92 kernel32!WaitForSingleObjectExImplementation+0x75</span><br><span class="line">04 0b1ad264 7622399a kernel32!WaitForSingleObject+0x12</span><br><span class="line">05 0b1ad294 7622299c shell32!CMountPoint::_InitLocalDrives+0xcd</span><br><span class="line">...</span><br><span class="line">14 0b1ad81c 762aa690 shell32!SHGetFolderLocation+0x121</span><br><span class="line">15 0b1ad838 0a5c0bf5 shell32!SHGetSpecialFolderLocation+0x17</span><br><span class="line">WARNING: Stack unwind information not available. Following frames may be wrong.</span><br><span class="line">16 0b1ae0bc 0a5bfceb HaoZipExt!DllUnregisterServer+0x1cd04</span><br><span class="line">17 0b1ae240 0a5e0200 HaoZipExt!DllUnregisterServer+0x1bdfa</span><br><span class="line">18 0b1ae284 0a5e02b9 HaoZipExt!DllUnregisterServer+0x3c30f</span><br><span class="line">19 0b1ae2ac 76ecfbdf HaoZipExt!DllUnregisterServer+0x3c3c8</span><br><span class="line">1a 0b1ae3a0 76ed008b ntdll!LdrpRunInitializeRoutines+0x26f</span><br><span class="line">1b 0b1ae50c 76ecf499 ntdll!LdrpLoadDll+0x4d1</span><br><span class="line">1c 0b1ae540 7523b96d ntdll!LdrLoadDll+0x92</span><br><span class="line">1d 0b1ae57c 7534a333 KERNELBASE!LoadLibraryExW+0x1d3</span><br><span class="line">1e 0b1ae598 7534a2b8 ole32!LoadLibraryWithLogging+0x16</span><br><span class="line">...</span><br><span class="line">39 0b1afbac 76241ee6 shell32!CShellExecute::_DoExecute+0x5a</span><br><span class="line">3a 0b1afbc0 75b346bc shell32!CShellExecute::s_ExecuteThreadProc+0x30</span><br><span class="line">3b 0b1afc48 75771154 shlwapi!WrapperThreadProc+0x1b5</span><br><span class="line">3c 0b1afc54 76ecb299 kernel32!BaseThreadInitThunk+0xe</span><br><span class="line">3d 0b1afc94 76ecb26c ntdll!__RtlUserThreadStart+0x70</span><br><span class="line">3e 0b1afcac 00000000 ntdll!_RtlUserThreadStart+0x1b</span><br></pre></td></tr></table></figure>
-
-<p>首先一眼就看到了一个非系统模块HaoZipExt。再扫一眼，发现他在LdrpLoaderLock的时候又去等待了某个内核对象。那么再来看看这个内核对象是什么吧。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">0:053&gt; kv L5</span><br><span class="line"># ChildEBP RetAddr Args to Child</span><br><span class="line">00 0b1ad1c8 76eb5b0c 7523179c 000015ac 00000000 ntdll!KiFastSystemCallRet (FPO: [0,0,0])</span><br><span class="line">01 0b1ad1cc 7523179c 000015ac 00000000 00000000 ntdll!ZwWaitForSingleObject+0xc (FPO: [3,0,0])</span><br><span class="line">02 0b1ad238 7576efe3 000015ac ffffffff 00000000 KERNELBASE!WaitForSingleObjectEx+0x98 (FPO: [Non-Fpo])</span><br><span class="line">03 0b1ad250 7576ef92 000015ac ffffffff 00000000 kernel32!WaitForSingleObjectExImplementation+0x75 (FPO: [Non-Fpo])</span><br><span class="line">04 0b1ad264 7622399a 000015ac ffffffff 00000000 kernel32!WaitForSingleObject+0x12 (FPO: [Non-Fpo])</span><br><span class="line">0:053&gt; !handle 000015ac f</span><br><span class="line">Handle 000015ac</span><br><span class="line">Type Thread</span><br><span class="line">Attributes 0</span><br><span class="line">GrantedAccess 0x1fffff:</span><br><span class="line">Delete,ReadControl,WriteDac,WriteOwner,Synch</span><br><span class="line">Terminate,Suspend,Alert,GetContext,SetContext,SetInfo,QueryInfo,SetToken,Impersonate,DirectImpersonate</span><br><span class="line">HandleCount 4</span><br><span class="line">PointerCount 7</span><br><span class="line">Name &lt;none&gt;</span><br><span class="line">Object specific information</span><br><span class="line">Thread Id b14.1a94</span><br><span class="line">Priority 10</span><br><span class="line">Base Priority 0</span><br></pre></td></tr></table></figure>
-
-<p>原来他在等待1a94这个线程结束啊，那么这个1a94线程又在干嘛呢？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">0:054&gt; ~~[1a94]s</span><br><span class="line">eax=0bbdfbb4 ebx=00000000 ecx=00000000 edx=00000000 esi=76f47340 edi=00000000</span><br><span class="line">eip=76eb6194 esp=0bbdfa24 ebp=0bbdfa88 iopl=0 nv up ei pl nz ac pe cy</span><br><span class="line">cs=001b ss=0023 ds=0023 es=0023 fs=003b gs=0000 efl=00000217</span><br><span class="line">ntdll!KiFastSystemCallRet:</span><br><span class="line">76eb6194 c3 ret</span><br><span class="line">0:054&gt; kv</span><br><span class="line"># ChildEBP RetAddr Args to Child</span><br><span class="line">00 0bbdfa20 76eb5b0c 76e9f98e 00000220 00000000 ntdll!KiFastSystemCallRet (FPO: [0,0,0])</span><br><span class="line">01 0bbdfa24 76e9f98e 00000220 00000000 00000000 ntdll!ZwWaitForSingleObject+0xc (FPO: [3,0,0])</span><br><span class="line">02 0bbdfa88 76e9f872 00000000 00000000 00000000 ntdll!RtlpWaitOnCriticalSection+0x13e (FPO: [Non-Fpo])</span><br><span class="line">03 0bbdfab0 76ecb31d 76f47340 7d4908db 7ff75000 ntdll!RtlEnterCriticalSection+0x150 (FPO: [Non-Fpo])</span><br><span class="line">04 0bbdfb44 76ecb13c 0bbdfbb4 7d49080f 00000000 ntdll!LdrpInitializeThread+0xc6 (FPO: [Non-Fpo])</span><br><span class="line">05 0bbdfb90 76ecb169 0bbdfbb4 76e70000 00000000 ntdll!_LdrpInitialize+0x1ad (FPO: [Non-Fpo])</span><br><span class="line">06 0bbdfba0 00000000 0bbdfbb4 76e70000 00000000 ntdll!LdrInitializeThunk+0x10 (FPO: [Non-Fpo])</span><br></pre></td></tr></table></figure>
-
-<p>原来这个线程在等待LdrpLoaderLock这个锁啊，真相大白了。这里理一下思路，线程13e0，创建后，调用Loadlibrary，装载HaoZipExt。这个时候HaoZipExt获得LdrpLoaderLock，但是HaoZipExt犯了编写DLL的大忌。在DLLMain里面做了一些不能预期的事情。HaoZipExt调用了SHGetSpecialFolderLocation，这个函数在内部会创建一个线程，运行一个叫做FirstHardwareEnumThreadProc 的子过程。这个线程起来之后，就会通知所用的DllMain，告诉他们DLL_THREAD_ATTACH的消息。但是告诉他们这个消息之前，首先要获得LdrpLoaderLock这个锁。但是LdrpLoaderLock这个锁正在被创建他的线程使用，而且还在等自己结束，就这样死锁了。这也是MSDN特别强调告诉我们，不要在DllMain里有过多自己不能预期的操作的原因。</p>
-<p>那么看看这个罪魁祸首是什么模块吧。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">0:054&gt; lmvm HaoZipExt</span><br><span class="line">Browse full module list</span><br><span class="line">start end module name</span><br><span class="line">0a5a0000 0a605000 HaoZipExt (export symbols) HaoZipExt.dll</span><br><span class="line">Loaded symbol image file: HaoZipExt.dll</span><br><span class="line">Image path: C:\Program Files\HaoZip\HaoZipExt.dll</span><br><span class="line">Image name: HaoZipExt.dll</span><br><span class="line">Browse all global symbols functions data</span><br><span class="line">Timestamp: Wed Jul 25 17:16:06 2012 (500FB956)</span><br><span class="line">CheckSum: 0006C14B</span><br><span class="line">ImageSize: 00065000</span><br><span class="line">File version: 3.0.1.9002</span><br><span class="line">Product version: 3.0.1.9002</span><br><span class="line">File flags: 0 (Mask 3F)</span><br><span class="line">File OS: 40004 NT Win32</span><br><span class="line">File type: 2.0 Dll</span><br><span class="line">File date: 00000000.00000000</span><br><span class="line">Translations: 0804.04b0</span><br><span class="line">CompanyName: 瑞创网络</span><br><span class="line">ProductName: 2345好压（HaoZip）</span><br><span class="line">InternalName: HaoZipExt</span><br><span class="line">OriginalFilename: HaoZipExt.dll</span><br><span class="line">ProductVersion: 3.0</span><br><span class="line">FileVersion: 3.0.1.9002</span><br><span class="line">FileDescription: 2345好压-Windows扩展模块</span><br><span class="line">LegalCopyright: 版权所有(c) 2012 瑞创网络</span><br><span class="line">Comments: www.haozip.com</span><br></pre></td></tr></table></figure>
-
-<p>知道问题后，我感觉这应该就是explorer挂死的原因，虽然没有100%的证据，但是至少也是一个造成死锁的程序，早卸载为妙，于是我告诉了同事，卸载了这个叫做好压的软件。之后几天，explorer运行正常，再也没有出现过挂死现象了。</p>
-<p>最后总结HaoZipExt犯的错误<br>1.在DllMain里面的做了线程创建的操作。<br>2.跟挂死无关，只是吐槽一下他在DllMain里面调用了SHGetSpecialFolderLocation这个函数。因为这个函数已经不被支持，而且有可能在将来被废弃。以下是MSDN的原话：[SHGetSpecialFolderLocation is not supported and may be altered or unavailable in the future. Instead, useSHGetFolderLocation.]</p>
-<p>感叹一下，写一个健壮的程序真的不是件容易的事啊。</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2013-07-05T09:40:28.000Z" itemprop="datePublished">2013-07-05</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Debugging/' title=''>Debugging</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-e585b3e4ba8ewow64e79a84e4b880e782b9e8aeb0e5bd95" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2013/06/30/e585b3e4ba8ewow64e79a84e4b880e782b9e8aeb0e5bd95/">关于WOW64的一点记录</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>1.关于TEB的地址：32位的TEB地址在64位TEB地址加上0x2000的偏移处。验证如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; r @$teb</span><br><span class="line">$teb=000000007efdb000</span><br><span class="line"></span><br><span class="line">0:000:x86&gt; dg @fs</span><br><span class="line">P Si Gr Pr Lo</span><br><span class="line">Sel Base Limit Type l ze an es ng Flags</span><br><span class="line">---- ----------------- ----------------- ---------- - -- -- -- -- --------</span><br><span class="line">0053 7efdd000 00000fff Data RW Ac 3 Bg By P Nl 000004f3</span><br><span class="line"></span><br><span class="line">0:000:x86&gt; ? 7efdd000 - 7efdb000</span><br><span class="line">Evaluate expression: 8192 = 00002000</span><br></pre></td></tr></table></figure>
-
-<p>2.从32位切换到到64位的时候，系统会保存32位的寄存器状态。这些状态保存在Teb-&gt;TlsShots[1]中。继续用Windbg验证：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; dt _teb @$teb -a5 TlsSlots</span><br><span class="line">ntdll!_TEB</span><br><span class="line">+0x1480 TlsSlots :</span><br><span class="line">[00] (null)</span><br><span class="line">[01] 0x00000000`001cfd20 Void</span><br><span class="line">[02] (null)</span><br><span class="line">[03] 0x00000000`001ca930 Void</span><br><span class="line">[04] (null)</span><br><span class="line"></span><br><span class="line">0:000&gt; !wow64exts.r</span><br><span class="line"></span><br><span class="line">No wow64 context address specified, dumping wow64 context from cpu area...</span><br><span class="line">Teb64 Address: 0x7efdb000, CpuArea Address: 0x1cfd20</span><br><span class="line"></span><br><span class="line">Context Address: 0x1cfd24</span><br><span class="line"></span><br><span class="line">eax=00000000 ebx=00000000 ecx=00000000 edx=00000000 esi=77200094 edi=00000000</span><br><span class="line">eip=772000a6 esp=000ee0ac ebp=000ee150 iopl=0 nv up ei pl zr na po nc</span><br><span class="line">cs=0023 ss=002b ds=002b es=002b fs=0053 gs=002b efl=00000246</span><br></pre></td></tr></table></figure>
-
-<p>3.从64位切换到到32位的时候,会保存64位的RSP，保持的地址是Teb-&gt;TlsShots[0]。切换回64位的时候，这个地址被清0。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; dt ntdll!_TEB @r12 -a5 TlsSlots</span><br><span class="line">+0x1480 TlsSlots :</span><br><span class="line">[00] 0x00000000`001ce530 Void</span><br><span class="line">[01] 0x00000000`001cfd20 Void</span><br><span class="line">[02] (null)</span><br><span class="line">[03] (null)</span><br><span class="line">[04] (null)</span><br></pre></td></tr></table></figure>
-
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2013-06-30T09:44:59.000Z" itemprop="datePublished">2013-06-30</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/NTInternals/' title=''>NTInternals</a><a href='/categories/NTInternals/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-etwlogview-e5ae9ee697b6e69fa5e79c8betwe79a84e5b7a5e585b7" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2013/06/12/etwlogview-e5ae9ee697b6e69fa5e79c8betwe79a84e5b7a5e585b7/">EtwLogView —— 实时查看ETW的工具</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近玩XPerf玩的比较多，也经常和cradiator(<a href="http://sysdbg.com" target="_blank" rel="noopener">blog</a>)讨论xperf和etw的话题。上周吃饭的时候就讨论到，貌似没找到一款实时记录查看etw的工具。当时我的观点是，只是看etw的原始记录很难分析出什么东西，必须配合很细工具，例如xperfview。这样才能有效的发挥出etw的威力，所以实时工具用处不大。而cradiator认为，除了这些常规的用法外，如果能实时记录查看etw的信息，那么把etw当作平时的log输出方式也是不错的选择。这样的好处就是，不需要额外的加入log机制，使用etw就足够强大，其次如果遇上了问题，这些etw的记录又可以作为event，帮助xperfview的分析。然后这家伙就怂恿我写一个:-)</p>
-<p>经过上面的一番介绍，应该就能知道EtwLogView的用处何在了。他是一个“实时”记录查看etw的工具。之所以用上了引号。是因为这个实时是有不确定性的。例如，如果一个provider输出了大量的事件信息。那么这个工具就会遇上麻烦，因为更新记录，和刷新界面的速度很可能跟不上provider的输出速度。这样，这个实时就大打折扣。不过就像cradiator所说的，只用来监控自己的事件，倒没什么问题。</p>
-<p>现在EtwLogView是1.0版本，勉强算是可以先用着吧。</p>
-<p>首先需要在Windows7系统和管理员权限运行工具，然后就可以创建Session，创建的时候需要选择Session的Provider。可以在List选择，也可以自己输入（必须为GUID格式）。如果想监视多个Provider，那么每个GUID之间需要用分号隔开。</p>
-<p><a href="/uploads/2013/06/20130613010933.png"><img src="/uploads/2013/06/20130613010933.png" alt="20130613010933"></a></p>
-<p><a href="/uploads/2013/06/20130613011032.png"><img src="/uploads/2013/06/20130613011032.png" alt="20130613011032"></a></p>
-<p>另外，如果想更灵活的设置Session，可以使用xperf创建Session。然后打开EtwLogView，选择打开Session。在文本框中输入Session名，如果有多个Session需要监视，那么可以用分号隔开Session名。</p>
-<p><a href="/uploads/2013/06/20130613011054.png"><img src="/uploads/2013/06/20130613011054.png" alt="20130613011054"></a></p>
-<p>ETW输出的信息很多，我主要列出了12列，并且可以根据自己的需要选择显示的列。</p>
-<p><a href="/uploads/2013/06/20130613011110.png"><img src="/uploads/2013/06/20130613011110.png" alt="20130613011110"></a></p>
-<p>目前的功能就这么多，如果真的有的上再来看看能加上哪些功能吧。</p>
-<p>下载<a href="/uploads/2013/06/EtwLogView.zip">EtwLogView</a></p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2013-06-12T09:55:03.000Z" itemprop="datePublished">2013-06-12</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Debugging/' title=''>Debugging</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-e587a0e4b8aae69c89e8b6a3e79a84e69caae69687e6a1a3e58c96windbge79a84e689a9e5b195e591bde4bba4" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2013/06/07/e587a0e4b8aae69c89e8b6a3e79a84e69caae69687e6a1a3e58c96windbge79a84e689a9e5b195e591bde4bba4/">几个有趣的未文档化Windbg的扩展命令</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这里使用的是Windbg最新版本，版本号是6.2.9200，可以在Windows8的SDK中获得。</p>
-<p>1.eflags 用更加友好的方式显示被设置的标志寄存器</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; r efl</span><br><span class="line">efl=00000246</span><br><span class="line"></span><br><span class="line">0:000&gt; !eflags</span><br><span class="line">BIT_1_RESERVED</span><br><span class="line">PARITY_FLAG</span><br><span class="line">ZERO_FLAG</span><br><span class="line">INTERRUPTS_ENABLED</span><br><span class="line"></span><br><span class="line">0:000&gt; r zf</span><br><span class="line">zf=1</span><br><span class="line">0:000&gt; r if</span><br><span class="line">if=1</span><br></pre></td></tr></table></figure>
-
-<p>2.frame 用module!function的方式设置栈帧</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; kn L3</span><br><span class="line"># ChildEBP RetAddr</span><br><span class="line">00 0018df2c 7586d7db kernel32!CreateFileW</span><br><span class="line">01 0018e024 7586d9d1 apphelp!IdentifyCandidates+0x176</span><br><span class="line">02 0018e054 7586d87b apphelp!ApphelpQueryExe+0xb8</span><br><span class="line"></span><br><span class="line">0:000&gt; .frame</span><br><span class="line">00 0018df2c 7586d7db kernel32!CreateFileW</span><br><span class="line"></span><br><span class="line">0:000&gt; !frame apphelp!ApphelpQueryExe</span><br><span class="line">Frame Set to 0x00000002</span><br><span class="line"></span><br><span class="line">0:000&gt; .frame</span><br><span class="line">02 0018e054 7586d87b apphelp!ApphelpQueryExe+0xb8</span><br></pre></td></tr></table></figure>
-
-<p>3.hashblob 计算指定内存的hash，hash方式包括md5和sha1</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; !hashblob</span><br><span class="line">Not enough parameters 0</span><br><span class="line">!hashblob &lt;hash&gt; &lt;Start&gt; &lt;End&gt;</span><br><span class="line">&lt;hash&gt;: 1 for MD5</span><br><span class="line">&lt;hash&gt;: 2 for SHA1</span><br><span class="line"></span><br><span class="line">0:000&gt; !hashblob 1 001f0000 001f0100</span><br><span class="line">DCC4E0B6659F6887DEC24A9FF2D57DC8</span><br></pre></td></tr></table></figure>
-
-<p>4.imports 列出指定模块的导入函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; !imports notepad</span><br><span class="line"></span><br><span class="line">notepad notepad Imports from file: ADVAPI32.dll</span><br><span class="line">RegSetValueExW</span><br><span class="line">RegQueryValueExW</span><br><span class="line">...</span><br><span class="line">notepad Imports from file: KERNEL32.dll</span><br><span class="line">FindNLSString</span><br><span class="line">GlobalAlloc</span><br><span class="line">GlobalUnlock</span><br><span class="line">GlobalLock</span><br><span class="line">GetTimeFormatW</span><br><span class="line">GetDateFormatW</span><br><span class="line">GetLocalTime</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<p>5.inframe 找出指定地址所在的栈帧范围</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ChildEBP RetAddr</span><br><span class="line">0018df2c 7586d7db kernel32!CreateFileW</span><br><span class="line">0018e024 7586d9d1 apphelp!IdentifyCandidates+0x176</span><br><span class="line"></span><br><span class="line">0:000&gt; !inframe 0018df8c</span><br><span class="line">0018df8c 0 00001714 0018df34 &lt; 0018df8c &lt; 0018e02c</span><br><span class="line">Frame: 1</span><br></pre></td></tr></table></figure>
-
-<p>6.inmodule 找出指定地址所在的模块</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; !inmodule 7586d9d1</span><br><span class="line">0x7586d9d1: apphelp!ApphelpQueryExe</span><br></pre></td></tr></table></figure>
-
-<p>7.url 用默认浏览器打开指定网页</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; !url</span><br><span class="line">Please provide a valid URL (http://... or https://... )</span><br><span class="line">USAGE: !url &lt;url&gt;</span><br><span class="line"></span><br><span class="line">0:000&gt; !url http://0cch.net</span><br></pre></td></tr></table></figure>
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2013-06-06T19:58:20.000Z" itemprop="datePublished">2013-06-07</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-e585b3e4ba8edlle58aa0e8bdbde5928ce8bf90e8a18ce680a7e883bde4bc98e58c96e680bbe7bb93" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2013/05/19/e585b3e4ba8edlle58aa0e8bdbde5928ce8bf90e8a18ce680a7e883bde4bc98e58c96e680bbe7bb93/">关于DLL加载和运行的性能优化总结</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>本文从三个方面总结了加快DLL加载和运行速度的方法，他们分别是：  </p>
-<ol>
-<li>使用Rebase和Bind。  </li>
-<li>按序号的方式导入函数。  </li>
-<li>使用预读取技术（chromium加载dll时使用了此项）。  </li>
-</ol>
-<p>首先，讨论一下使用Rebase和Bind，提高DLL加载和运行性能的方法。我们知道，在编译链接DLL的时候，连接器会给DLL一个加载基址，而这个加载基址对于DLL模块中的使用了硬编码地址的代码和数据是至关重要的。因为这些硬编码的地址都是连接器通过DLL加载基址计算出来的。</p>
-<p>这样，当我们的DLL被加载到进程空间当中的时候，如果足够幸运的话，DLL正好被加载到连接器所指定的地址，那么那些硬编码的地址就是完全正确的，加载过程不需要其他额外的工作就能让DLL正确运行了。</p>
-<p>但是，真实的情况并不是这么理想，因为我们的进程可能不得不加载许许多多DLL，这样就会导致，某些DLL预定的基址可能已经被其他DLL使用。因此，前者就不得不加载到其他地址。由此带来的影响也是显而易见的，硬编码的地址就会出错。为了不让这种错误发生，加载器也就不得不多做一些工作，就是重新矫正这些硬编码。这样，如果DLL里包含的硬编码地址越多，加载的速度就会越慢，从而导致DLL加载性能下降。</p>
-<p>另一方面，由于DLL加载基址是不可预见的，所以DLL加载的时候，加载器会根据导入表搜索所有的导入函数，计算并且确定导入函数的正确地址。这个过程也会对DLL加载性能有一定影响。</p>
-<p>微软已经考虑到了这个问题的优化方法，在SDK中为我们提供了Rebase和Bind工具。其中Rebase工具，可以合理安排进程中DLL的加载地址，并且修改到PE中，从而避免DLL加载时Rebase操作。这样，一旦我们确认了DLL的加载基址是不会发生改变，那么我们就可以使用Bind工具将导入表进行绑定，这样的好处就是加载器不需要在加载的时候去计算确定导入函数地址，因为这些地址以及被预设了。</p>
-<p>需要注意的一点，即使你做了这么多的事情，也不能完全避免加载基址的冲突，例如使用ASLR的DLL，其加载的地址是会发生变化的。所以就不能保证Rebase和Bind的有效性。具体能优化多少性能，在不同的案例中可能结果不同，需要具体实验才能知道。</p>
-<p>第二种优化DLL运行性能的方案就是使用序号而非名称的方式导入函数。这一点也就非常容易解释了，如果通过函数名确定导入函数地址，那么加载器就不得不对字符串进行比较，从而确定正确的函数地址，虽然DLL的导出表是按顺序字母排列的，并且查找方式也是二分查找，但是如果函数很多，这依然是个耗时的工作。例如，我机器上的MFC100.dll有14000多个导出函数，如果进程需要按照名称确定自己需要的函数是哪一个，那么工作量还是不小的吧。所以MFC100.dll很明智的使用了导出序号的方法，这样加载器计算导入函数的时候，就能够使用序号来确定函数地址了，也就是简单使用数组搜索，从而得到目标函数地址。</p>
-<p>这种方法的优化效果同样也要根据具体情况而定，如果导入函数少，目标DLL导出的函数也非常少，那么这种优化应该是没有什么意义的。相反，如果需要导入函数很多，而且目标DLL也导出了很多函数，那么在想提高程序加载性能的时候，不妨试一试这个方案。</p>
-<p>最后一个方法是Pre-Read技术，使用在chromium中的。这种方法的原理是将DLL预先存入系统缓存，从而减少Page Fault来达到提高性能的目的。这种优化主要针对的是进程冷启动加载DLL的情况。进程第一次启动的时候，加载所需的DLL，DLL会被MAP到内存空间，虽然如果查询这片MAP的内存，会发现确实是COMMIT状态。但是，实际上系统并没要保证这些内存在Working Set中。一般情况下，系统只会把你想要用到的内存加载到Working Set中，以节约物理内存。这样，当我们每次用到这个并没有对应的Working Set的虚拟内存的时候，就发生了Page Fault，系统这个时候才会把这些内存加载到Working Set。而Page Fault对性能的影响很是比较大的。所以Pre-Read技术就有了用武之地。</p>
-<p>Chromium对Pre-Read实现的非常好，代码的具体位置是<a href="http://src.chromium.org/viewvc/chrome/trunk/src/chrome/app/image_pre_reader_win.cc" target="_blank" rel="noopener">http://src.chromium.org/viewvc/chrome/trunk/src/chrome/app/image_pre_reader_win.cc</a> 。代码中，分别针对XP和XP以上的系统使用了不同的方法让系统缓存目标DLL。在XP以上的系统中，代码简单的通过ReadFile将文件读取到内存中，然后释放内存，关闭文件句柄，就可以达到缓存目标DLL的目的。而在XP系统下，做法有些不同，它使用LoadLibraryEx函数，将文件Load到内存空间，然后尝试对每个Page进行读取操作，已达到让数据载入Working Set的目的。</p>
-<p>以上是我所知道的三种加载DLL的优化方法，也可能还有更多更好的方法，有兴趣的可以一起讨论下。不过无论什么性能优化方法，都必须建立在实际项目的基础上，并且有科学的依据和论证，切不可只从理论上下结论来优化程序，纸上谈兵，这样很可能适得其反，让性能变得更糟。（例如这个例子里所提到的，看上去不错的优化可能还不如什么都不做：<a href="http://blogs.msdn.com/b/oldnewthing/archive/2004/12/17/317157.aspx" target="_blank" rel="noopener">http://blogs.msdn.com/b/oldnewthing/archive/2004/12/17/317157.aspx</a>）。至于说，如何得到程序运行数据用于总结出有效的优化方案，这里强烈推荐一款神器XPerf。实际上，也是因为使用了XPerf，才让我对性能优化产生了浓厚的兴趣！</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2013-05-19T05:52:29.000Z" itemprop="datePublished">2013-05-19</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/NTInternals/' title=''>NTInternals</a>
           </span>
         
       
@@ -728,7 +662,7 @@
 
     <h3>Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
     </div>
   </div>
 
@@ -739,7 +673,7 @@
     
       <div class="pagination text-align">
           <div class="btn-group">
-              <a class="extend prev" rel="prev" href="/archives/page/10/">&laquo;</a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><a class="page-number" href="/archives/page/3/">3</a><a class="page-number" href="/archives/page/4/">4</a><a class="page-number" href="/archives/page/5/">5</a><a class="page-number" href="/archives/page/6/">6</a><a class="page-number" href="/archives/page/7/">7</a><a class="page-number" href="/archives/page/8/">8</a><a class="page-number" href="/archives/page/9/">9</a><a class="page-number" href="/archives/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/archives/page/12/">12</a><a class="page-number" href="/archives/page/13/">13</a><a class="page-number" href="/archives/page/14/">14</a><a class="page-number" href="/archives/page/15/">15</a><a class="extend next" rel="next" href="/archives/page/12/">&raquo;</a>
+              <a class="extend prev" rel="prev" href="/archives/page/10/">&laquo;</a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><a class="page-number" href="/archives/page/3/">3</a><a class="page-number" href="/archives/page/4/">4</a><a class="page-number" href="/archives/page/5/">5</a><a class="page-number" href="/archives/page/6/">6</a><a class="page-number" href="/archives/page/7/">7</a><a class="page-number" href="/archives/page/8/">8</a><a class="page-number" href="/archives/page/9/">9</a><a class="page-number" href="/archives/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/archives/page/12/">12</a><a class="page-number" href="/archives/page/13/">13</a><a class="page-number" href="/archives/page/14/">14</a><a class="page-number" href="/archives/page/15/">15</a><a class="page-number" href="/archives/page/16/">16</a><a class="extend next" rel="next" href="/archives/page/12/">&raquo;</a>
           </div>
       </div>
     

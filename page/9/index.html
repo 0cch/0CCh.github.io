@@ -74,6 +74,368 @@
     <div class="columns">
         <div class="column two-thirds">
             
+                  <article id="post-e4b8bbe7babfe7a88be98080e587bae5898de8afb7e58588e98080e587bae5ad90e7babfe7a88b" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2014/11/10/e4b8bbe7babfe7a88be98080e587bae5898de8afb7e58588e98080e587bae5ad90e7babfe7a88b/">主线程退出前请先退出子线程</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>我们知道理论上如果一个进程的主线程退出，整个进程就会销毁，子线程自然也是要退出的。但是这并不意味着，程序退出的时候我们就能不问不管自己创建的子线程，因为不管他还真有可能出问题。下面是一个典型的主线程退出过程中，而子线程未退出，造成死锁整个进程的分析图，死锁在c runtime里，死锁原因看图便知，也不用太多解释了。</p>
+<p><a href="/uploads/2014/11/20141106094954.png"><img src="/uploads/2014/11/20141106094954.png" alt="20141106094954"></a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2014-11-09T19:13:31.000Z" itemprop="datePublished">2014-11-10</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-clipmonitor-e7ae80e58d95e79a84e589aae58887e69dbfe79b91e68ea7e5b7a5e585b7" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2014/11/02/clipmonitor-e7ae80e58d95e79a84e589aae58887e69dbfe79b91e68ea7e5b7a5e585b7/">ClipMonitor 简单的剪切板监控工具</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>周末花了点时间写了个剪切板监控工具，他会记录剪切板里面的数据，并且支持用HEX和TEXT对数据进行分析。<br>涉及到的技术很简单，网上已经有一堆了，没什么可说的，我这里主要是加入了HEX的模块，方便对未知的剪切板数据进行分析而已。</p>
+<p><a href="/uploads/2014/11/20141102204618.png"><img src="/uploads/2014/11/20141102204618.png" alt="20141102204618"></a></p>
+<p><a href="/uploads/2014/11/20141102204638.png"><img src="/uploads/2014/11/20141102204638.png" alt="20141102204638"></a></p>
+<p><a href="/uploads/2014/11/20141102204651.png"><img src="/uploads/2014/11/20141102204651.png" alt="20141102204651"></a></p>
+<p>下载：<a href="/uploads/2014/11/ClipMonitor.zip">ClipMonitor</a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2014-11-02T04:55:57.000Z" itemprop="datePublished">2014-11-02</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-e588a9e794a8windbge8849ae69cace79b91e68ea7dlle58aa0e8bdbde78ab6e68081" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2014/10/27/e588a9e794a8windbge8849ae69cace79b91e68ea7dlle58aa0e8bdbde78ab6e68081/">利用Windbg脚本监控DLL加载状态</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>开发过大型程序的人都遇到过这样的问题，一个版本Release后，发现有的功能怎么也不对。但是每个模块在开发人员单独的环境下又是正常运行。那么遇到这样的问题，其中一个能想到的就是DLL模块没有加载正确。一般情况下，这种时候我们可以使用depends这样的工具查看模块的依赖情况，以判断出哪个模块是出问题的那个。但是如果如果真的遇上大型的程序，DLL模块很多，而且动态静态加载不一，这样光靠depends这样的工具是不能满足需求的。所以我这里写了个Windbg脚本来监控DLL加载状态，因为是动态调试，所以很轻松的就能找到加载问题，无论DLL是静态加载还是动态加载。</p>
+<p>以下脚本是Windows 7 32Bit，对于64bit，稍微修改下就行。不过如果是Windows 8，DLL的加载细节已经发生变化，所以这个脚本就不适用了。希望能抛砖引玉一下，期待更多系统的脚本分享出来。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">bp ntdll!LdrpFindOrMapDll <span class="string">"</span></span><br><span class="line"><span class="string">.push /r /q</span></span><br><span class="line"><span class="string">r @$t0 = poi(@esp+4)</span></span><br><span class="line"><span class="string">r @$t1 = poi(@esp+8)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">g @$ra</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">.printf \"name         = %msu\\n\", @$t0</span></span><br><span class="line"><span class="string">.printf \"path         = %msu\\n\", @$t1</span></span><br><span class="line"><span class="string">.printf \"Load status  = %08X\", @eax</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">.if((@eax&amp;0xffffffff) != 0) &#123;.printf /D \" WARNNING\\n\"&#125; .else &#123;.printf \"\\n\"&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">.pop /r /q</span></span><br><span class="line"><span class="string">g</span></span><br><span class="line"><span class="string">"</span></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<p>最后看看脚本的效果吧，如果加载失败了，那么返回的状态值就不是0。<br><a href="/uploads/2014/10/20141027164220.png"><img src="/uploads/2014/10/20141027164220.png" alt="20141027164220"></a><br><a href="/uploads/2014/10/20141027164424.png"><img src="/uploads/2014/10/20141027164424.png" alt="20141027164424"></a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2014-10-27T07:29:27.000Z" itemprop="datePublished">2014-10-27</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-e794a8windows-evente79b91e68ea7e5898de58fb0e7aa97e58fa3e58f98e58c96" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2014/10/19/e794a8windows-evente79b91e68ea7e5898de58fb0e7aa97e58fa3e58f98e58c96/">用Windows Event监控前台窗口变化</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>网络上有这样一种小工具，号称可以提高计算机响应速度。简单看了下其中的一款工具，实现原理很简单，就是监控前台窗口的变化，设置进程线程的优先级。设置进程线程的优先级无非就是SetPriorityClass和SetThreadPriority这两个函数，主要问题就是要获得前台窗口的情况。<br>Windows提供了一种叫做Windows Event Hook的机制，来让我们获得多种不同的事件，其中一种就是前台窗口变化事件。所以要完成这个功能很简单，只需要注册一个针对EVENT_SYSTEM_FOREGROUND的HOOK就行了。注册和反注册Hook的函数分别是SetWinEventHook和UnhookWinEvent。<br>比如注册EVENT_SYSTEM_FOREGROUND事件的Hook，我们只需要这样：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HWINEVENTHOOK hWinEventHook = SetWinEventHook(</span><br><span class="line">        EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND,</span><br><span class="line">        <span class="literal">NULL</span>, WinEventProc, <span class="number">0</span>, <span class="number">0</span>,</span><br><span class="line">        WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS);</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+<p>前两个参数设置我们感兴趣的事件范围，由于我们最后一个参数设置的WINEVENT_OUTOFCONTEXT，表示Hook函数并不在产生Event的进程内部，所以hmodWinEventProc设置为NULL。WinEventProc则是我们的Hook函数idProcess和idThread为0，表示我们关心所有桌面上的进程线程，最后的flags还有一个WINEVENT_SKIPOWNPROCESS表示我们对自己的进程不感兴趣。<br>要反注册Hook只需要</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UnhookWinEvent(hWinEventHook);</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+<p>WinEventProc的很简单</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> CALLBACK <span class="title">WinEventProc</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	HWINEVENTHOOK hWinEventHook,</span></span></span><br><span class="line"><span class="function"><span class="params">	DWORD event,</span></span></span><br><span class="line"><span class="function"><span class="params">	HWND hwnd,</span></span></span><br><span class="line"><span class="function"><span class="params">	LONG idObject,</span></span></span><br><span class="line"><span class="function"><span class="params">	LONG idChild,</span></span></span><br><span class="line"><span class="function"><span class="params">	DWORD dwEventThread,</span></span></span><br><span class="line"><span class="function"><span class="params">	DWORD dwmsEventTime</span></span></span><br><span class="line"><span class="function"><span class="params">	)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (hwnd &amp;&amp;</span><br><span class="line">        idObject == OBJID_WINDOW &amp;&amp;</span><br><span class="line">        idChild == CHILDID_SELF &amp;&amp;</span><br><span class="line">        event == EVENT_SYSTEM_FOREGROUND) &#123;</span><br><span class="line">            ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+<p>其中只需要知道hwnd就是当前的前台窗口就行了。然后通过hwnd和函数GetWindowThreadProcessId，获得进程线程id，自然就能获得其句柄，最后调用调整进程线程优先级的函数即可。</p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2014-10-18T20:02:20.000Z" itemprop="datePublished">2014-10-19</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-e69bb4e696b0windbge689a9e5b1950cchext" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2014/09/20/e69bb4e696b0windbge689a9e5b1950cchext/">更新Windbg扩展0cchext</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>更新了pe_export和pe_import两个命令，功能如图</p>
+<p><a href="/uploads/2014/09/20140919095914.png"><img src="/uploads/2014/09/20140919095914.png" alt="20140919095914"></a></p>
+<p><a href="/uploads/2014/09/20140919100003.png"><img src="/uploads/2014/09/20140919100003.png" alt="20140919100003"></a></p>
+<p><a href="/uploads/2014/09/20140919100101.png"><img src="/uploads/2014/09/20140919100101.png" alt="20140919100101"></a></p>
+<p>Commands for 0cchext.dll:<br>  !autocmd         - Execute the debugger commands.(The config file is<br>                     autocmd.ini)<br>  !dpx             - Display the contents of memory in the given range.<br>  !dtx             - Displays information about structures. (The config file is<br>                     struct.ini)<br>  !favcmd          - Display the favorite debugger commands.(The config file is<br>                     favcmd.ini)<br>  !grep            - Search plain-text data sets for lines matching a regular<br>                     expression.<br>  !help            - Displays information on available extension commands<br>  !hwnd            - Show window information by handle.<br>  !init_script_env - Initialize script environment.<br>  !pe_export       - Dump PE export functions<br>  !pe_import       - Dump PE import modules and functions<br>  !setvprot        - Set the protection on a region of committed pages in the<br>                     virtual address space of the debuggee process.<br>  !url             - Open a URL in a default browser.<br>  !version         - Displays the version information for 0cchext.dll<br>!help  will give more information for a particular command  </p>
+<p>下载：<a href="/uploads/2014/09/0cchext.zip">0cchext</a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2014-09-20T02:02:14.000Z" itemprop="datePublished">2014-09-20</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-dump-stle79a84vectorefbc8clistefbc8cmape79a84e4b889e4b8aawindbge8849ae69cac" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2014/08/16/dump-stle79a84vectorefbc8clistefbc8cmape79a84e4b889e4b8aawindbge8849ae69cac/">Dump stl的vector，list，map的三个windbg脚本</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>用Windbg查看stl的容器实在是已经让人悲伤的事情，为了方便，所以写了这么3个脚本<br>vector:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">r? $t0 = $&#123;$arg1&#125;</span><br><span class="line"></span><br><span class="line">.<span class="keyword">if</span> ($&#123;/d:$VectorType&#125;) &#123;</span><br><span class="line">    r? $t0 = @@C++(*(($&#123;$VectorType&#125; *)@$t0))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.<span class="keyword">if</span> ($&#123;/d:$arg2&#125;) &#123; </span><br><span class="line">    .<span class="keyword">if</span> ($sicmp(<span class="string">"$&#123;$arg2&#125;"</span>, <span class="string">"-c"</span>) == <span class="number">0</span>) &#123; </span><br><span class="line">        r $t2 = <span class="number">0</span> </span><br><span class="line">        aS $&#123;/v:command&#125; <span class="string">"$&#123;$arg3&#125;"</span> </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br><span class="line">.<span class="keyword">else</span> &#123; </span><br><span class="line">    r $t2 = <span class="number">1</span> </span><br><span class="line">    aS $&#123;/v:command&#125; <span class="string">" "</span> </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">r? $t1 = @@C++(@$t0._Mylast)</span><br><span class="line">r? $t0 = @@C++(@$t0._Myfirst)</span><br><span class="line"></span><br><span class="line">.<span class="built_in">printf</span> <span class="string">"size = %d\n"</span>, @@C++((@$t1 - @$t0))  </span><br><span class="line"></span><br><span class="line">.<span class="keyword">while</span> (@$t0 != @$t1) &#123;</span><br><span class="line">    .<span class="keyword">if</span> ($t2 == <span class="number">1</span>) &#123;</span><br><span class="line">        ?? @@c++(@$t0-&gt;_Bx)</span><br><span class="line">    &#125;</span><br><span class="line">    .<span class="keyword">else</span> &#123;</span><br><span class="line">        r? $t9 = @$t0-&gt;_Bx</span><br><span class="line">        command</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    r? $t0=@$t0+<span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ad command </span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<p>list:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">r? $t0 = $&#123;$arg1&#125;</span><br><span class="line"></span><br><span class="line">.<span class="keyword">if</span> ($&#123;/d:$ListType&#125;) &#123;</span><br><span class="line">    r? $t0 = @@C++(*(($&#123;$ListType&#125; *)@$t0))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.<span class="keyword">if</span> ($&#123;/d:$arg2&#125;) &#123; </span><br><span class="line">    .<span class="keyword">if</span> ($sicmp(<span class="string">"$&#123;$arg2&#125;"</span>, <span class="string">"-c"</span>) == <span class="number">0</span>) &#123; </span><br><span class="line">        r $t2 = <span class="number">0</span> </span><br><span class="line">        aS $&#123;/v:command&#125; <span class="string">"$&#123;$arg3&#125;"</span> </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br><span class="line">.<span class="keyword">else</span> &#123; </span><br><span class="line">    r $t2 = <span class="number">1</span> </span><br><span class="line">    aS $&#123;/v:command&#125; <span class="string">" "</span> </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.<span class="built_in">printf</span> <span class="string">"size = %d\n"</span>, @@C++(@$t0._Mysize)</span><br><span class="line"></span><br><span class="line">r? $t1 = @@C++(@$t0._Myhead)</span><br><span class="line">r? $t0 = @@C++(@$t0._Myhead)</span><br><span class="line">r? $t0 = @@C++(@$t0-&gt;_Next)</span><br><span class="line"></span><br><span class="line">.<span class="keyword">while</span> (@$t0 != @$t1) &#123;</span><br><span class="line">    .<span class="keyword">if</span> ($t2 == <span class="number">1</span>) &#123;</span><br><span class="line">        ?? @@c++(@$t0-&gt;_Myval._Bx)</span><br><span class="line">    &#125;</span><br><span class="line">    .<span class="keyword">else</span> &#123;</span><br><span class="line">        r? $t9 = @$t0-&gt;_Myval._Bx</span><br><span class="line">        command</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    r? $t0 = @@C++(@$t0-&gt;_Next)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ad command </span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<p>map:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">.<span class="keyword">if</span> ($sicmp(<span class="string">"$&#123;$arg1&#125;"</span>, <span class="string">"-n"</span>) == <span class="number">0</span>) &#123; </span><br><span class="line"></span><br><span class="line">    .<span class="keyword">if</span> (@@C++(@$t0-&gt;_Left) != @@C++(@$t1)) &#123; </span><br><span class="line">        .push /r /q </span><br><span class="line">        r? $t0 = @$t0-&gt;_Left </span><br><span class="line">        $$&gt;a&lt; $&#123;$arg0&#125; -n </span><br><span class="line">        .pop /r /q </span><br><span class="line">    &#125; </span><br><span class="line">    </span><br><span class="line">    .<span class="keyword">if</span> (@@C++(@$t0-&gt;_Isnil) == <span class="number">0</span>) &#123; </span><br><span class="line">        .<span class="keyword">if</span> (@$t2 == <span class="number">1</span>) &#123; </span><br><span class="line">            .<span class="built_in">printf</span> /D <span class="string">"%p\n"</span>, @$t0, @$t0 </span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"key = "</span> </span><br><span class="line">            ?? @$t0-&gt;_Myval.first </span><br><span class="line">            .<span class="built_in">printf</span> <span class="string">"value = "</span> </span><br><span class="line">            ?? @$t0-&gt;_Myval.second </span><br><span class="line">        &#125;</span><br><span class="line">        .<span class="keyword">else</span> &#123; </span><br><span class="line">            r? $t9 = @$t0-&gt;_Myval </span><br><span class="line">            command </span><br><span class="line">        &#125; </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    .<span class="keyword">if</span> (@@C++(@$t0-&gt;_Right) != @@C++(@$t1)) &#123; </span><br><span class="line">        .push /r /q </span><br><span class="line">        r? $t0 = @$t0-&gt;_Right </span><br><span class="line">        $$&gt;a&lt; $&#123;$arg0&#125; -n </span><br><span class="line">        .pop /r /q </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line">.<span class="keyword">else</span> &#123; </span><br><span class="line"></span><br><span class="line">    r? $t0 = $&#123;$arg1&#125;</span><br><span class="line"></span><br><span class="line">    .<span class="keyword">if</span> ($&#123;/d:$MapType&#125;) &#123;</span><br><span class="line">        r? $t0 = @@C++(*(($&#123;$MapType&#125; *)@$t0))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    .<span class="keyword">if</span> ($&#123;/d:$arg2&#125;) &#123; </span><br><span class="line">        .<span class="keyword">if</span> ($sicmp(<span class="string">"$&#123;$arg2&#125;"</span>, <span class="string">"-c"</span>) == <span class="number">0</span>) &#123; </span><br><span class="line">            r $t2 = <span class="number">0</span> </span><br><span class="line">            aS $&#123;/v:command&#125; <span class="string">"$&#123;$arg3&#125;"</span> </span><br><span class="line">        &#125; </span><br><span class="line">    &#125;</span><br><span class="line">    .<span class="keyword">else</span> &#123; </span><br><span class="line">        r $t2 = <span class="number">1</span> </span><br><span class="line">        aS $&#123;/v:command&#125; <span class="string">" "</span> </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    .<span class="built_in">printf</span> <span class="string">"size = %d\n"</span>, @@C++(@$t0._Mysize)  </span><br><span class="line">     </span><br><span class="line">    r? $t0 = @$t0._Myhead-&gt;_Parent </span><br><span class="line">    r? $t1 = @$t0-&gt;_Parent</span><br><span class="line">    </span><br><span class="line">    $$&gt;a&lt; $&#123;$arg0&#125; -n</span><br><span class="line"></span><br><span class="line">    ad command </span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2014-08-15T18:34:15.000Z" itemprop="datePublished">2014-08-16</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-e4bdbfe794a8atltracee68993e980a0e8bdbbe9878fe7baa7debug-log" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2014/07/18/e4bdbfe794a8atltracee68993e980a0e8bdbbe9878fe7baa7debug-log/">使用ATLTRACE打造轻量级Debug Log</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>众所周知，Debug Log是非常好的调试手段。所以我经常也尝试各种各样的第三方Log库。Log库分很多类型，例如可以给服务器使用的功能完备Log，也有轻量级的Log库，只是为Debug所设计。作为客户端开发，我还是比较喜欢后者这种Log库。不过使用第三方库有一个这样的麻烦事，走到哪你都得下一个，然后添加到自己的代码里。对于Log这样的功能，几乎所有程序都是需要的，使用的极其频繁。所以我就想找到一种方法，它可以使用SDK现有功能，来完成一个轻量级Log的功能。对我来说，不需要这个Log有多么高效，完备，唯一需要的就是方便，拿来就可以用。</p>
+<p>结合这些目的，我第一个想到的就是ATL的ATLTRACE。但是，ATLTRACE输出的日志都是显示在Debug Output窗口。如果想将信息输出到文件或者控制台上，这就够呛了。那么，接下来就要想办法改变ATLTRACE的输出设备了。由于ATL是有代码的，所以很容易的可以看到代码运行的脉络。看完这份代码的第一个收获就是知道了ATLTRACE运行效率不会很高，不过这个对我来说并不重要。另外一个就是，找到了改变输出设备的方法。</p>
+<p>在没有定义_ATL_NO_DEBUG_CRT的情况下，ATLTRACE最终的输出是通过_CrtDbgReport实现的，而如果定义了这个宏，那么输出是直接调用OutputDebugString。但一般程序都不会使用_ATL_NO_DEBUG_CRT这个宏，所以大部分情况下ATLTRACE都是调用的_CrtDbgReport。那么办法就来了_CrtDbgReport输出的数据，是可以通过_CrtSetReportMode和_CrtSetReportFile来改变输出设备的。例如我们想输出到控制台，我们只需要这样：<br>_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);<br>_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);  </p>
+<p>如果要输出到文件也只需要这样：<br>HANDLE log_file;<br>log_file = CreateFile(“c:\log.txt”, GENERIC_WRITE,<br>    FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,<br>    FILE_ATTRIBUTE_NORMAL, NULL);<br>_CrtSetReportFile(_CRT_WARN, log_file);<br>CloseHandle(log_file);<br>或者<br>freopen( “c:\log2.txt”, “w”, stdout);<br>_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);<br>_CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDOUT);  </p>
+<p>好了，这样就能解决输出设备的问题。既然已经说到这里，继续介绍下ATLTRACE很少人知道的其他优点吧。<br>1.可以通过ATL/MFT TRACE Tool 随时设定Log的输出Filter，并且可以保持配置（工具用法很简单，具体直接用用就知道了）。<br>2.通过AtlDebugAPI的接口，可以给自己的代码中添加读取配置文件的函数。这样每次修改配置文件就能改变ATLTRACE的行为。<br>3.通过AtlDebugAPI的接口，可以直接制定输出内容，不用配置文件也可以。<br>这三条涉及到的接口有：<br>AtlTraceOpenProcess<br>AtlTraceModifyProcess<br>AtlTraceCloseProcess<br>AtlTraceLoadSettings  </p>
+<p>为了更方便使用，我这写了几个宏代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atlbase.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atltrace.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atldebugapi.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;atlpath.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> TRACEHELPA(fmt, ...)	\</span></span><br><span class="line"><span class="keyword">do</span>								\</span><br><span class="line">&#123;								\</span><br><span class="line">    SYSTEMTIME tm;				\</span><br><span class="line">    GetLocalTime(&amp;tm;);			\</span><br><span class="line">    ATLTRACE(<span class="string">"%s: [%02d-%02d-%02d %02d:%02d:%02d:%03d] "</span>fmt, __FUNCTION__,							\</span><br><span class="line">    tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond, tm.wMilliseconds, __VA_ARGS__);	\</span><br><span class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> TRACEHELPW(fmt, ...)	\</span></span><br><span class="line"><span class="keyword">do</span>								\</span><br><span class="line">&#123;								\</span><br><span class="line">    SYSTEMTIME tm;				\</span><br><span class="line">    GetLocalTime(&amp;tm;);			\</span><br><span class="line">    ATLTRACE(<span class="string">L"%S: [%02d-%02d-%02d %02d:%02d:%02d:%03d] "</span>fmt, __FUNCTION__,							\</span><br><span class="line">    tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond, tm.wMilliseconds, __VA_ARGS__);	\</span><br><span class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> TRACEHELPEXA(category, level, fmt, ...)	\</span></span><br><span class="line"><span class="keyword">do</span>								\</span><br><span class="line">&#123;								\</span><br><span class="line">    SYSTEMTIME tm;				\</span><br><span class="line">    GetLocalTime(&amp;tm;);			\</span><br><span class="line">    ATLTRACE(category, level, <span class="string">"%s: [%02d-%02d-%02d %02d:%02d:%02d:%03d] "</span>fmt, __FUNCTION__,			\</span><br><span class="line">    tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond, tm.wMilliseconds, __VA_ARGS__);	\</span><br><span class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> TRACEHELPEXW(category, level, fmt, ...)	\</span></span><br><span class="line"><span class="keyword">do</span>								\</span><br><span class="line">&#123;								\</span><br><span class="line">    SYSTEMTIME tm;				\</span><br><span class="line">    GetLocalTime(&amp;tm;);			\</span><br><span class="line">    ATLTRACE(category, level, <span class="string">L"%S: [%02d-%02d-%02d %02d:%02d:%02d:%03d] "</span>fmt, __FUNCTION__,		\</span><br><span class="line">    tm.wYear, tm.wMonth, tm.wDay, tm.wHour, tm.wMinute, tm.wSecond, tm.wMilliseconds, __VA_ARGS__);	\</span><br><span class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SetAtlTraceOpt(level, enable, category, filename_lineno, report_type, report_file)	\</span></span><br><span class="line"><span class="keyword">do</span>																							\</span><br><span class="line">&#123;																							\</span><br><span class="line">    DWORD_PTR trace_process = AtlTraceOpenProcess(GetCurrentProcessId());					\</span><br><span class="line">    AtlTraceModifyProcess(trace_process, level, enable, category, filename_lineno);			\</span><br><span class="line">    AtlTraceCloseProcess(trace_process);													\</span><br><span class="line">    _CrtSetReportMode(level, report_type);													\</span><br><span class="line">    <span class="keyword">if</span> (report_type == _CRTDBG_MODE_FILE) &#123;													\</span><br><span class="line">        _CrtSetReportFile(level, report_file);												\</span><br><span class="line">    &#125;																						\</span><br><span class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LoadAtlDebugCfgExA(path)															\</span></span><br><span class="line"><span class="keyword">do</span>																							\</span><br><span class="line">&#123;																							\</span><br><span class="line">    DWORD_PTR trace_process = AtlTraceOpenProcess(GetCurrentProcessId());					\</span><br><span class="line">    AtlTraceLoadSettingsA(path, trace_process);												\</span><br><span class="line">    AtlTraceCloseProcess(trace_process);													\</span><br><span class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LoadAtlDebugCfgExW(path)															\</span></span><br><span class="line"><span class="keyword">do</span>																							\</span><br><span class="line">&#123;																							\</span><br><span class="line">    DWORD_PTR trace_process = AtlTraceOpenProcess(GetCurrentProcessId());					\</span><br><span class="line">    AtlTraceLoadSettingsU(path, trace_process);												\</span><br><span class="line">    AtlTraceCloseProcess(trace_process);													\</span><br><span class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LoadAtlDebugCfgA()																	\</span></span><br><span class="line"><span class="keyword">do</span>																							\</span><br><span class="line">&#123;																							\</span><br><span class="line">    CHAR debug_cfg_path[MAX_PATH] = &#123;<span class="number">0</span>&#125;;													\</span><br><span class="line">    GetModuleFileNameA(<span class="literal">NULL</span>, debug_cfg_path, MAX_PATH);										\</span><br><span class="line">    <span class="function">CPathA <span class="title">debug_cfg_path_obj</span><span class="params">(debug_cfg_path)</span></span>;												\</span><br><span class="line">    debug_cfg_path_obj.RemoveExtension();													\</span><br><span class="line">    debug_cfg_path_obj.AddExtension(<span class="string">".trc"</span>);												\</span><br><span class="line">    LoadAtlDebugCfgExA(debug_cfg_path_obj.m_strPath.GetString());							\</span><br><span class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LoadAtlDebugCfgW()																	\</span></span><br><span class="line"><span class="keyword">do</span>																							\</span><br><span class="line">&#123;																							\</span><br><span class="line">    WCHAR debug_cfg_path[MAX_PATH] = &#123;<span class="number">0</span>&#125;;													\</span><br><span class="line">    GetModuleFileNameW(<span class="literal">NULL</span>, debug_cfg_path, MAX_PATH);										\</span><br><span class="line">    <span class="function">CPathW <span class="title">debug_cfg_path_obj</span><span class="params">(debug_cfg_path)</span></span>;												\</span><br><span class="line">    debug_cfg_path_obj.RemoveExtension();													\</span><br><span class="line">    debug_cfg_path_obj.AddExtension(<span class="string">L".trc"</span>);												\</span><br><span class="line">    LoadAtlDebugCfgExW(debug_cfg_path_obj.m_strPath.GetString());							\</span><br><span class="line">&#125; <span class="keyword">while</span> (<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    SetAtlTraceOpt(_CRT_WARN, <span class="literal">true</span>, <span class="literal">true</span>, <span class="literal">true</span>, _CRTDBG_MODE_FILE, _CRTDBG_FILE_STDOUT);</span><br><span class="line">    LoadAtlDebugCfgW();</span><br><span class="line">    <span class="function">CTraceCategory <span class="title">MY_CATEGORY</span><span class="params">(_T(<span class="string">"MyCategoryName"</span>))</span></span>;</span><br><span class="line">    TRACEHELPEXA(MY_CATEGORY, <span class="number">0</span>, <span class="string">"test test test\n"</span>);</span><br><span class="line">    TRACEHELPEXW(MY_CATEGORY, <span class="number">0</span>, <span class="string">L"test test test\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2014-07-17T19:17:48.000Z" itemprop="datePublished">2014-07-18</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Debugging/' title=''>Debugging</a><a href='/categories/Debugging/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-dumpe58fb3e994aee88f9ce58d95e79a84e5b08fe5b7a5e585b7-rightmenudump" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2014/06/29/dumpe58fb3e994aee88f9ce58d95e79a84e5b08fe5b7a5e585b7-rightmenudump/">Dump右键菜单的小工具——RightMenuDump</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近没空更新blog，只能把以前写的小工具拿出来充数，表明这个blog还是活着的。这个挺无聊的小工具，主要是看看电脑里右键菜单的情况。</p>
+<p>直接运行后当前目录下出现rm.log，内容大概是：</p>
+<p><a href="/uploads/2014/06/20140629222145.png"><img src="/uploads/2014/06/20140629222145.png" alt="20140629222145"></a></p>
+<p>下载：<a href="/uploads/2014/06/RightMenuDump.zip">RightMenuDump</a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2014-06-29T06:34:04.000Z" itemprop="datePublished">2014-06-29</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-e69bb4e696b0windbge689a9e5b1950cchext-dll" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2014/06/23/e69bb4e696b0windbge689a9e5b1950cchext-dll/">更新:Windbg扩展0cchext.dll</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>Commands for 0cchext.dll:<br>  !autocmd         - Execute the debugger commands.(The config file is<br>                     autocmd.ini)<br>  !dpx             - Display the contents of memory in the given range.<br>  !dtx             - Displays information about structures. (The config file is<br>                     struct.ini)<br>  !favcmd          - Display the favorite debugger commands.(The config file is<br>                     favcmd.ini)<br>  !grep            - Search plain-text data sets for lines matching a regular<br>                     expression.<br>  !help            - Displays information on available extension commands<br>  !hwnd            - Show window information by handle.<br>  !init_script_env - Initialize script environment.<br>  !setvprot        - Set the protection on a region of committed pages in the<br>                     virtual address space of the debuggee process.<br>  !url             - Open a URL in a default browser.<br>  !version         - Displays the version information for 0cchext.dll<br>!help  will give more information for a particular command  </p>
+<p>下载：<a href="/uploads/2014/06/0cchext.zip">0cchext</a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2014-06-22T19:00:18.000Z" itemprop="datePublished">2014-06-23</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Debugging/' title=''>Debugging</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
                   <article id="post-e7b3bbe7bb9fe8bf9be7a88be5889be5bbbae7aea1e79086e59198e8bf9be7a88be79a84e696b9e6b395" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
@@ -105,421 +467,6 @@
             <span class="octicon octicon-file-directory"></span>
             <a href='/categories/Tips/' title=''>Tips</a>
           </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-e4b880e4b8aae69fa5e689bee68c87e5ae9ae6a088e59b9ee6baafe7aca6e58fb7e5b9b6e689a7e8a18ce591bde4bba4e79a84windbge8849ae69cac" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2014/04/20/e4b880e4b8aae69fa5e689bee68c87e5ae9ae6a088e59b9ee6baafe7aca6e58fb7e5b9b6e689a7e8a18ce591bde4bba4e79a84windbge8849ae69cac/">一个查找指定栈回溯符号并执行命令的Windbg脚本</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这是自己没事在家调试程序的一个小需求。</p>
-<p>有时候比如IE这样的程序，线程实在是非常的多，我想操作某个特殊线程就比较麻烦，需要先找到线程然后再实行命令，为了偷懒就写了这个脚本。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$$ If a frame of a thread has the target symbol, we execute the command.</span><br><span class="line">$$ Author: nighxie </span><br><span class="line">$$ Blog: <span class="number">0</span>cch.net</span><br><span class="line"></span><br><span class="line">.<span class="keyword">if</span> ($&#123;/d:$arg1&#125; &amp; $&#123;/d:$arg2&#125; &amp; $&#123;/d:$arg3&#125;) &#123;</span><br><span class="line">    .<span class="keyword">for</span> (r @$t0 = <span class="number">0</span>; @$t0 &lt; <span class="number">0</span>n$&#123;$arg1&#125;; r @$t0 = @$t0 + <span class="number">1</span>) &#123;</span><br><span class="line">        r @$t1 = <span class="number">0</span>;</span><br><span class="line">        ~[@$t0]s;</span><br><span class="line">        !for_each_frame .<span class="keyword">if</span>($spat(<span class="string">"$&#123;@#SymbolName&#125;"</span>, <span class="string">"$&#123;$arg2&#125;"</span>)) &#123;r @$t1 = <span class="number">1</span>&#125;</span><br><span class="line">        .<span class="keyword">if</span> (@$t1 == <span class="number">1</span>) &#123;</span><br><span class="line">            $&#123;$arg3&#125;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">.<span class="keyword">else</span> &#123;</span><br><span class="line">    .echo <span class="string">"Usage $$&gt;a&lt;$&#123;$arg0&#125; thread_count pattern cmd"</span>;</span><br><span class="line">    .echo <span class="string">"e.g. $$&gt;a&lt;$&#123;$arg0&#125; 5 ntdll* ~n"</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>就如同上面的例子指定线程数量，要匹配的符号，最后就是要执行的命令。<br>$$&gt;a&lt;${$arg0} 5 ntdll* <del>n就表示在前5个线程里寻找栈回溯有关ntdll的线程，然后执行</del>n命令挂起线程。</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2014-04-20T08:26:16.000Z" itemprop="datePublished">2014-04-20</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Debugging/' title=''>Debugging</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-windows-8-1e4b8ade88eb7e5be97e7b3bbe7bb9fe78988e69cace4bfa1e681afe79a84e696b9e6b395" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2014/04/13/windows-8-1e4b8ade88eb7e5be97e7b3bbe7bb9fe78988e69cace4bfa1e681afe79a84e696b9e6b395/">Windows 8.1中获得系统版本信息的方法</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在Windows 8.1之前的系统版本上，我们一直可以使用 <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms724451(v=vs.85).aspx" target="_blank" rel="noopener">GetVersionEx</a> 这个函数来获取当前系统的MajorVersion和MinorVersion。但是当Windows系统来到8.1时代，这个API似乎就不好用了。如果在Windows 8.1上调用这个函数，我们更有可能获得的版本号是Windows 8的版本6.2，而不是我们想要的6.3。在MSDN上提供了这样一段说明：</p>
-<blockquote>With the release of Windows 8.1, the behavior of the **GetVersionEx** API has changed in the value it will return for the operating system version. The value returned by the **GetVersionEx** function now depends on how the application is manifested.
-
-<p>Applications not manifested for Windows 8.1 will return the Windows 8 OS version value (6.2). Once an application is manifested for a given operating system version, <strong>GetVersionEx</strong> will always return the version that the application is manifested for in future releases.</p></blockquote><p></p>
-<p>好了，既然微软都这么说了，也没办法，还好微软也给我们提供了另一套函数，叫做<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/dn424972(v=vs.85).aspx" target="_blank" rel="noopener">Version Helper functions</a> ，看起来是一套很不错的API，能帮助我们方便的判断系统版本。但是，仔细一看，这套函数需要头文件VersionHelpers.h，而这个文件是 Windows 8.1 software development kit 的一部分。对于使用低版本的VS还得装新版SDK，岂不麻烦。那么我们希望能找到一套更好的解决方法。</p>
-<p>我第一个能想到了，当然就是万能的WMI，使用Win32_OperatingSystem class中的Version可以获得一个形如6.3.9600的字符串，我们就能通过解析这个获得系统的版本了。但是说实话，不到万不得已我不太喜欢用WMI这套API，总感觉为了一个小功能，牵扯了一堆东西。</p>
-<p>那么第二套方案，是我觉得比较满意的，那就是调用<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms725493(v=vs.85).aspx" target="_blank" rel="noopener">VerSetConditionMask</a>和<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms725492(v=vs.85).aspx" target="_blank" rel="noopener">VerifyVersionInfo</a>来完成对系统版本的判断。具体做法如下：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">IsWindows8Point1</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    OSVERSIONINFOEX version_info = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    version_info.dwOSVersionInfoSize = <span class="keyword">sizeof</span>(OSVERSIONINFOEX);</span><br><span class="line">    version_info.dwMajorVersion = <span class="number">6</span>;</span><br><span class="line">    version_info.dwMinorVersion = <span class="number">3</span>;</span><br><span class="line">    ULONGLONG mask = VerSetConditionMask(<span class="number">0</span>, VER_MAJORVERSION, VER_EQUAL);</span><br><span class="line">    mask = VerSetConditionMask(mask, VER_MINORVERSION, VER_EQUAL);</span><br><span class="line">    <span class="keyword">return</span> VerifyVersionInfo(&amp;version;_info, VER_MAJORVERSION | VER_MINORVERSION, mask);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>那么，我们就可以用这个函数来判断系统是否是Windows 8.1，如果不是，我们就可以用老办法，GetVersionEx来获得系统的版本号作判断了。当然了，大家看到这估计也能看出，我们自己也能用这两个函数实现一套所谓的Version Helper functions。举个例子：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL WINAPI <span class="title">IsWindowsVersionOrGreater</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	WORD wMajorVersion,</span></span></span><br><span class="line"><span class="function"><span class="params">	WORD wMinorVersion,</span></span></span><br><span class="line"><span class="function"><span class="params">	WORD wServicePackMajor</span></span></span><br><span class="line"><span class="function"><span class="params">	)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    OSVERSIONINFOEX version_info = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">    version_info.dwOSVersionInfoSize = <span class="keyword">sizeof</span>(OSVERSIONINFOEX);</span><br><span class="line">    version_info.dwMajorVersion = wMajorVersion;</span><br><span class="line">    version_info.dwMinorVersion = wMinorVersion;</span><br><span class="line">    version_info.wServicePackMajor = wServicePackMajor;</span><br><span class="line"></span><br><span class="line">    ULONGLONG mask = VerSetConditionMask(<span class="number">0</span>, VER_MAJORVERSION, VER_GREATER_EQUAL);</span><br><span class="line">    mask = VerSetConditionMask(mask, VER_MINORVERSION, VER_GREATER_EQUAL);</span><br><span class="line">    mask = VerSetConditionMask(mask, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> VerifyVersionInfo(&amp;version;_info, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, mask);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>怎么样，是不是达到了以假乱真的效果了。那么最后，咱再看看这么写出来的API的效果如何：</p>
-<p><a href="/uploads/2014/04/20140413233019.png"><img src="/uploads/2014/04/20140413233019.png" alt="20140413233019"></a></p>
-<p>===============想睡觉的分割线====================</p>
-<p>更新另外一个方法，在网上看到的，感觉也还行。只不过需要引入其他DLL，可以作为备选方案。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">ULONG <span class="title">MyGetVersion</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;	</span><br><span class="line">    LPBYTE raw_data;</span><br><span class="line">    ULONG retval = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (NetWkstaGetInfo(<span class="literal">NULL</span>, <span class="number">100</span>, &amp;raw;_data) == NERR_Success) &#123;</span><br><span class="line">        WKSTA_INFO_100 * ws_info = <span class="keyword">reinterpret_cast</span>(raw_data);</span><br><span class="line">        retval = (ws_info-&gt;wki100_ver_major &lt;&lt; <span class="number">16</span>) | ws_info-&gt;wki100_ver_minor;</span><br><span class="line">        NetApiBufferFree(raw_data);</span><br><span class="line">        <span class="keyword">return</span> retval;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> retval;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2014-04-13T07:34:49.000Z" itemprop="datePublished">2014-04-13</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-global-loggere68993e5bc80e5bc80e69cbae590afe58aa8etwe697a5e5bf97" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2014/04/05/global-loggere68993e5bc80e5bc80e69cbae590afe58aa8etwe697a5e5bf97/">Global Logger打开开机启动ETW日志</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在我看来XP确实应该寿终正寝了，因为确实在很多机制方面不如新的系统，比如ETW。而微软的XPERF也没有能在XP上直接安装的。当然，老版本的XPERF还能在XP上运行，只是监控能力有限，到了新版本的XPERF，在XP上就运行不了了。但是，XP却在中国还活的好好的，所以优化其性能必不可少。于是，在没有XPERF支持的情况下，要做到开启ETW日志，我们就需要微软提供的Global Logger机制，打开开机启动的Trace Session。</p>
-<p>微软对打开Global Logger的方法做了详细的说明：<a href="http://msdn.microsoft.com/en-us/library/windows/hardware/ff546686(v=vs.85).aspx" target="_blank" rel="noopener">http://msdn.microsoft.com/en-us/library/windows/hardware/ff546686(v=vs.85).aspx </a>，我这里没必要再赘述了，只有一个地方需要注意，要说明一下<strong>EnableKernelFlags</strong>这个变量，他是一个REG_BINARY类型，他的值是EVENT_TRACE_PROPERTIES的EnableFlags。但是EnableFlags是一个DWORD，而<strong>EnableKernelFlags</strong>是一个32字节的数组。如果你设置的时候，只是设置了一个DWORD，那么你会发现ETW 日志不会开启。</p>
-<p>话说到这，<strong>EnableKernelFlags</strong>中前4字节的DWORD是EVENT_TRACE_PROPERTIES的组合，那么后面还有28字节是干什么的呢？实际上ETW能记录的标志还有很多，只是没有在EVENT_TRACE_PROPERTIES中说明，他们都被分到8个分组里面去了，这也是为什么有32个字节的Flags。具体怎么分组，还有哪些标志位，可以参考WRK的代码。</p>
-<p>我这里写了个小工具可以用来设置Global Flags，不过如果你能找到XP上可以用的XPERF当然是最好的选择了！</p>
-<p><a href="/uploads/2014/04/20140405104746.png"><img src="/uploads/2014/04/20140405104746.png" alt="20140405104746"></a></p>
-<p>下载:<a href="/uploads/2014/04/GlobalLog.zip">GlobalLog</a></p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2014-04-04T18:49:44.000Z" itemprop="datePublished">2014-04-05</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-e4b88de698bee7a4bae5afb9e8af9de6a186e6a0bce5bc8fe58c96e7a381e79b98e79a84e696b9e6b395" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2014/03/16/e4b88de698bee7a4bae5afb9e8af9de6a186e6a0bce5bc8fe58c96e7a381e79b98e79a84e696b9e6b395/">不显示对话框格式化磁盘的方法</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>我们都知道格式化磁盘会弹出如下图所示的这样的一个对话框。</p>
-<p><a href="/uploads/2014/03/20140316210304.png"><img src="/uploads/2014/03/20140316210304-177x300.png" alt="20140316210304"></a></p>
-<p>编写格式化磁盘的程序的时候，我们需要用到SHFormatDrive这个API，同样的，他也会弹出一个对话框。出现对话框当然是为了安全考虑，防止磁盘被用户不知情的情况下格式化，导致数据丢失。但是，某些情况下，确实希望静默的去格式化，而不去打扰用户，例如格式化Ramdisk。那么就需要找点一个办法要求不弹出对话框的格式化磁盘。既然Windows并没有提供这样的API，那我们只能深入分析下调用过程，找出可以使用的API。</p>
-<p>怎么找的就不想说了，无非用ProcMon看一下堆栈就清楚明白了。在fmifs.dll中有一些导出的API可以帮助完成这一的任务，比如FormatEx，FormatEx2。</p>
-<p>这里简单的描述下FormatEx的用法：<br>函数原型是</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">VOID WINAPI <span class="title">FormatEx</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	LPCWSTR DriveRoot,</span></span></span><br><span class="line"><span class="function"><span class="params">	MEDIA_TYPE MediaType,</span></span></span><br><span class="line"><span class="function"><span class="params">	LPCWSTR FileSystemTypeName,</span></span></span><br><span class="line"><span class="function"><span class="params">	LPCWSTR Label,</span></span></span><br><span class="line"><span class="function"><span class="params">	BOOL QuickFormat,</span></span></span><br><span class="line"><span class="function"><span class="params">	ULONG ClusterSize,</span></span></span><br><span class="line"><span class="function"><span class="params">	FILE_SYSTEM_CALLBACK Callback</span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>参数<br>DriveRoot —— 盘符，如”K:&quot;<br>MediaType —— 磁盘类型，如FixedMedia<br>FileSystemTypeName —— 要格式化的文件系统，如”NTFS”<br>Label —— 标签，随便写吧<br>QuickFormat —— 快速格式化<br>ClusterSize —— 簇大小<br>Callback —— 状态回调函数  </p>
-<p>回调函数原型</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">BOOLEAN</span> <span class="params">(__stdcall *FILE_SYSTEM_CALLBACK)</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	ULONG                        Command,</span></span></span><br><span class="line"><span class="function"><span class="params">	ULONG                        Action,</span></span></span><br><span class="line"><span class="function"><span class="params">	PVOID                        pData</span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>Command 表示Action和pData的意义，比如Command = 0表示pData是进度，Command = 11表示完成。还有其他的状态，例如错误等等，这些google一下就知道了。这个函数返回TRUE表示函数继续运行，FALSE表示停止格式化。</p>
-<p>比如，下面是格式化K盘：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">FormatEx(<span class="string">L"K:\", FixedMedia, L"</span>NTFS<span class="string">", L"</span><span class="number">0</span>CCh<span class="string">", TRUE, 4096, FormatExCallback);</span></span><br><span class="line"><span class="string"> </span></span><br></pre></td></tr></table></figure>
-
-
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2014-03-16T05:40:51.000Z" itemprop="datePublished">2014-03-16</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-e4b880e4b8aae69c89e6848fe6809de79a84warning-c4930" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2014/03/01/e4b880e4b8aae69c89e6848fe6809de79a84warning-c4930/">一个有意思的warning —— C4930</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>C4930是微软的C++编译器提示的一个警告，在维基百科中，把造成这种警告的语句描述成最让人为难的解析的语句。那么这里我们看看到底是有多么为难，这个可以帮助我们进一步了解C++和编译器。</p>
-<p>那么首先，我最开始发现这个问题是在类似这样的代码中碰到的。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="function">ifstream <span class="title">s</span><span class="params">(<span class="string">"d:\\xxx.txt"</span>)</span></span>;</span><br><span class="line"><span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">str</span><span class="params">(<span class="built_in">std</span>::istream_iterator&lt;<span class="keyword">char</span>&gt;(s), <span class="built_in">std</span>::istream_iterator&lt;<span class="keyword">char</span>&gt;())</span></span>;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>如果编译这个，编译器会毫不留情地扔给你一个C4930警告，提示编译器不知道怎么做，所以跳过编译。如果你没看懂这警告，后果就是这句话根本不会编译进去，即使编译通过了，运行也会和设想的不同。</p>
-<p>先说个简单的C4930的例子吧。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">MyClass <span class="title">sample</span><span class="params">()</span></span>;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>这句代码非常简单，也很容易明白。如果这么写，那么编译器就混乱，因为这句话可以是描述：<br>1.一个变量的定义，调用默认构造。<br>2.一个函数的声明。<br>所以编译器就傻了，他把这个认为是函数声明，所以不会做任何事情。<br>同样的事情发生在  </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">str</span><span class="params">(<span class="built_in">std</span>::istream_iterator&lt;<span class="keyword">char</span>&gt;(s), <span class="built_in">std</span>::istream_iterator&lt;<span class="keyword">char</span>&gt;())</span></span>;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>这里，我们实际上就是给string的构造函数传入iterator来构造这个string。但是编译器可不是这么觉得，他认为这句话应该这样解析：一个返回string的函数，函数名为str，函数参数有两个并且类型相同，都是istream_iterator<char>，不同的是一个有参数名s，一个省略了参数名！</char></p>
-<p>编译器这么解析，也真没错，我们就只能通过修改代码来明确目的了。通常的做法是给第一个iterator外加上括<br>号：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">str</span><span class="params">((<span class="built_in">std</span>::istream_iterator&lt;<span class="keyword">char</span>&gt;(s)), <span class="built_in">std</span>::istream_iterator&lt;<span class="keyword">char</span>&gt;())</span></span>;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>不过，我写这两行代码也就是为了偷懒读取一个文件的字符串，所以我可以干脆改成一行：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">str</span><span class="params">(<span class="built_in">std</span>::istream_iterator&lt;<span class="keyword">char</span>&gt;(<span class="built_in">std</span>::ifstream(<span class="string">"d:\\xxx.txt"</span>)), <span class="built_in">std</span>::istream_iterator&lt;<span class="keyword">char</span>&gt;())</span></span>;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-<p>这样就能顺利编译运行了。</p>
-<p>最近在看新版的《The C++ Standard Library A Tutorial and Reference》里面也看到了这个东西，很有意思所<br>以拿出来说下。而且新版的书中，已经包含了C++11的解释，很有意思。</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2014-03-01T07:06:06.000Z" itemprop="datePublished">2014-03-01</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-guid-tool-e4b880e4b8aae8bdace68da2guide6a0bce5bc8fe79a84e5b08fe5b7a5e585b7" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2014/02/23/guid-tool-e4b880e4b8aae8bdace68da2guide6a0bce5bc8fe79a84e5b08fe5b7a5e585b7/">GUID TOOL —— 一个转换GUID格式的小工具</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>周末闲来无事，逆向点有趣的功能的时候遇到这样一个问题。有些16进制的数貌似就是GUID，但是需要转换为注册表形式，才方便在注册表里面搜索。所以就写了个小工具转换16进制，C语言格式以及注册表格式的GUID。</p>
-<p>usage: guid.exe &lt;&lt;-r|-c|-h&gt; guid_string&gt; | &lt;-g&gt;<br>-r Format registry guid string.<br>-c Format C code guid string.<br>-x Format HEX guid string.<br>-g Create new guid.  </p>
-<p><a href="/uploads/2014/02/20140223220404.png"><img src="/uploads/2014/02/20140223220404-1024x549.png" alt="20140223220404"></a></p>
-<p><a href="/uploads/2014/02/20140223220314.png"><img src="/uploads/2014/02/20140223220314-1024x570.png" alt="20140223220314"></a></p>
-<p>下载：<a href="/uploads/2014/02/guid.zip">guid</a></p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2014-02-23T06:09:44.000Z" itemprop="datePublished">2014-02-23</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-ssd-trime58a9fe883bde79a84e4b880e4ba9be8aeb0e5bd95" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2014/02/11/ssd-trime58a9fe883bde79a84e4b880e4ba9be8aeb0e5bd95/">SSD TRIM功能的一些记录</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>如今SSD越来越普及了，本来就想了解下关于SSD的一些情况，正好工作中有机会接触这一块的东西，很幸运。这里先记录一些已知知识，方便以后自己查阅。</p>
-<p>说到SSD，第一个想到的就是读写速度快。那个就要归功于其存储原理，关于SSD存储原理的文章很多，我这里简单通俗的描述一下：  </p>
-<ol>
-<li>SSD存储不同于机械硬盘，他没有机械硬盘所谓的扇区、柱面，磁头。查询逻辑地址上的数据没有机械上的寻址（没有马达）。SSD的存储介质是闪存。  </li>
-<li>SSD存储数据被覆盖的时候不会马上覆盖原有数据，而是继续往之前没有写的闪存上写。因为闪存擦除次数非常有限，同一个地方小范围反复擦除会导致整个SSD的寿命缩短。  </li>
-<li>SSD内部是有自己的GC（垃圾回收器），这个GC擦除不需要的数据以及调整需要的数据的位置，能帮助SSD进行擦除平衡。  </li>
-</ol>
-<p>而这里重点要说到的TRIM功能就是辅助GC更好工作的一环。从Windows 7开始，文件系统上已经集成了自动TRIM功能。但是早些时候的系统，例如Windows XP，就没有这样的功能了。所以手动TRIM工具就出现了。比如Intel的固态硬盘工具集，其中就包含了手动TRIM功能。也许，有人回想，SSD的高端用户团体怎么会还在使用XP呢？不幸的是还真有这样一群坚守XP的SSD用户。下面就记录一些关于执行TRIM要做的事情。</p>
-<p>先决条件：  </p>
-<ol>
-<li>要执行TRIM，首先要确保自己的硬盘模式是AHCI的。  </li>
-<li>然后，系统需要时XP SP2 RC2以上（我想就算是XP的用户，现在也应该都是SP3了吧）。  </li>
-</ol>
-<p>上面的第一条非常重要，因为目前世面上的大部分盗版盘和所有正版安装盘，都是没有带AHCI驱动的。也就是说，如果你的BIOS上把硬盘模式调整为AHCI，那你回没有任何意外看到一个蓝屏。少部分盗版系统盘会说明自己是支持AHCI的，否则，就需要在IDE/ATA模式下，安装系统，然后去网上找到你的BIOS所指定AHCI驱动，安装后在把BIOS调整回AHCI。</p>
-<p>最后，来看看执行TRIM的一种思路：  </p>
-<ol>
-<li>判断系统版本，硬盘的控制器，SSD是否支持TRIM。  </li>
-<li>创建多个1G的文件，直到占满所有磁盘空间。  </li>
-<li>获得这些文件的基于卷的簇。  </li>
-<li>将簇转换成基于卷的逻辑地址。  </li>
-<li>将基于卷的逻辑地址转换成基于硬盘的逻辑地址。  </li>
-<li>按照ATA文档，发送TRIM指令。  </li>
-<li>删除所有创建的1G文件。  </li>
-</ol>
-<p>上面有几个和ATA相关的简单介绍下。首先是SSD是否支持TRIM的问题，需要发送DEVICE IDENTIFY指令，获得硬盘数据，其中WORD 169表示是否支持TRIM，如果是1就是支持了。其次，发生TRIM指令，实际上发送的是DATA SET MANAGEMENT指令，其中Features register设置为1，即为TRIM指令了。至于如何在没有驱动的情况下发生这些指令（这也是我要求系统版本要是XP SP2 RC2以上的原因），可以利用DeviceIOControl函数发送IOCTL_ATA_PASS_THROUGH来完成。</p>
-<p>这些记录已经很详细了，那几百行的代码就没必要贴出来了。</p>
-<p>另外TRIM还有一个思路，实现起来可以麻烦一些，简单说说吧：  </p>
-<ol>
-<li>首先获得NTFS的Bitmap，获得空闲的簇。  </li>
-<li>转换空闲的簇到基于硬盘的逻辑地址。  </li>
-<li>发送TRIM指令  </li>
-</ol>
-<p>之所以说这个比较麻烦，是因为他需要保证在进行TRIM的时候，NTFS不发生写操作。方法就是LOCK VOLUME，但不幸的是，系统盘是没法LOCK的，所以这就不得不写一个Native Application，放在开机的时候运行，也就是Check Disk运行的时机。这个思路的优点是：TRIM全面，精确，速度快。</p>
-<p>差不多就是这些了，希望这个记录对自己和他人都有所帮助。</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2014-02-11T07:39:35.000Z" itemprop="datePublished">2014-02-11</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-e4b880e782b9e69c89e585b3ntdlle4b8ade68f90e4be9be79a84bitmape7b3bbe58897e587bde695b0" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2014/01/18/e4b880e782b9e69c89e585b3ntdlle4b8ade68f90e4be9be79a84bitmape7b3bbe58897e587bde695b0/">一点有关Ntdll中提供的bitmap系列函数</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>我们都知道STL中提供了一个bitset类，但是在我真正操作有关文件系统的时候，发现这个类提供的功能并不能满足我的需求。幸运的是Ntdll中提供了一套操作bitmap的API。于是我抽了点时间把这几个API总结了一下，写成了一个类。这个类只是简单的对Ntdll的bitmap相关API做很浅的封装，没啥好说的。要说的是这套bitmap的API用起来确实很方便。<br>这些API包括：<br>RtlInitializeBitMap<br>RtlFindClearBits<br>RtlFindClearBitsAndSet<br>RtlFindClearRuns<br>RtlFindLastBackwardRunClear<br>RtlFindLongestRunClear<br>RtlFindNextForwardRunClear<br>RtlFindSetBits<br>RtlFindSetBitsAndClear<br>RtlSetAllBits<br>RtlSetBits<br>RtlClearAllBits<br>RtlClearBits<br>RtlNumberOfClearBits<br>RtlNumberOfSetBits<br>RtlAreBitsClear<br>RtlAreBitsSet<br>以上这些，在MSDN上都能查到API的详细文档介绍。唯一不方便的就是使用的时候需要GetProcAddress一下。所以我为了自己以后使用方便才写了一个类。</p>
-<p>在项目（<a href="https://github.com/0cch/bitmap" target="_blank" rel="noopener">https://github.com/0cch/bitmap</a>）中，bitmap_class是封装类，整个工程是一个使用这套API，获得文件系统的bitmap，并且查找空闲簇的一个例子。</p>
-<p><a href="/uploads/2014/01/2014-01-18_101801.png"><img src="/uploads/2014/01/2014-01-18_101801.png" alt="2014-01-18_101801"></a></p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2014-01-17T18:19:28.000Z" itemprop="datePublished">2014-01-18</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-e680bbe7bb93e5928ce5b195e69c9befbc9ae8b4a8e9878fe6af94e8be83e5a4a7e782b9efbc8ce5b0b1e4b88de5aeb9e69893e8a2abe9a38ee590b9e58aa8" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2013/12/31/e680bbe7bb93e5928ce5b195e69c9befbc9ae8b4a8e9878fe6af94e8be83e5a4a7e782b9efbc8ce5b0b1e4b88de5aeb9e69893e8a2abe9a38ee590b9e58aa8/">总结和展望：质量比较大点，就不容易被风吹动</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>又到了一年一度的总结和展望。时间过得真快，2012年定计划的那会好想就发生在昨天。还能清晰的记得当时的计划，当然也是因为计划定的足够的简单。当然还是把个人的计划放在后面，先来总结下2013年的工作。这年的工作真是富有戏剧性，工作中做了一些网页前端的工作，这确实让我措手不及，不过既然组里有这样的需求，也只能硬着头皮上了，还好是这也并不算忙，不影响个人计划的进展。另一方面，公司拿我们部门和其他公司合并了，<br>换句话说，我们部门被裁了，只不过以一种漂亮的方式。就如同所有的接纳新员工的老大一样，新公司的leader会给你谈未来画大饼。只不过，对不起，我真的不看好这种抱团取暖的合并，所以，我选择离开。由于平时有一定的积累，所以找份靠谱的工作也并不是特别难的事情。能预感到新的工作会比较忙，不过我想，应该还是能hold住的。</p>
-<p>当然，要说最放不下的，要数公司的健身房。掐指一算，已经坚持锻炼了16个月了！依稀记得12年是拼命跑25分钟能跑到4km多点，而13年已经能跑过5km了。一年的时间，让我在25分钟里能超越过去的自己两圈，“想想还有点小激动呢！”。另外肱二头肌和肱三头肌已经比较明显了，上臂粗了好多，穿短袖看起来MAN了好多，不过腹肌虽然能看出来，但还是不算特别明显。这里不得不提醒一下sysdbg的博主，“我督促你健身了16个月，你是不是应该请我吃金钱豹啊？！别客气，跪谢就免了，嗯！”。噢！说到这货，我还想到了一个事情，就是练字。现在字终于写的有点人样了，虽然写急了还是很丑，但是应该比以前好点了吧……大概……是这样。</p>
-<p>我记得，13年的个人计划只有一个就是山寨sysinternals的工具。这次算是完成的比较好吧，工具集中大部分小工具都山寨了，只有个别界面特别复杂，功能特别强大的工具没有山寨。实在是没有动力写界面。另外，又一次把minikernel重写了一次，也围绕这个发布了不少的blog，但是这个minikernel还是缺少挺多的东西，比如很核心的多进程和多线程。一方面是突然遇到公司方面的事情打断了进度，另一个方面也是自己懒。</p>
-<p>至于2014年的个人计划，还真不好说，还不知道新工作是个什么情况，但是我个人还是比较想写一个脚本语言以及完善这个minikernel的。另外继续健身，练字也是必须的。最近因为灌篮高手高清重置版播出了，也导致我又想没事抽出点时间打打球了。另外在13年，花了很多时间看dota2的视频，这个也是被sysdbg的博主吐槽了好久，最近也已经开始戒dota了，时间真是越来越不够用。<br>希望15年写总结的时候，能看到一个质量更大的自己吧，希望写的这些计划能完成75%以上。</p>
-<p>最后，还是祝福家人，朋友，自己在新的一年里幸福安康，合家欢乐！！！</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2013-12-31T08:07:45.000Z" itemprop="datePublished">2013-12-31</time>
-        </span>
-
         
       
         <!--
@@ -632,7 +579,7 @@
 
     <h3>Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
     </div>
   </div>
 
@@ -643,7 +590,7 @@
     
       <div class="pagination text-align">
           <div class="btn-group">
-              <a class="extend prev" rel="prev" href="/page/8/">&laquo;</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/10/">&raquo;</a>
+              <a class="extend prev" rel="prev" href="/page/8/">&laquo;</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><a class="page-number" href="/page/15/">15</a><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/10/">&raquo;</a>
           </div>
       </div>
     

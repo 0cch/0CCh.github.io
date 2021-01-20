@@ -69,11 +69,11 @@
 <li>Hook LoadLibraryExW，判断是否是自己的模块。  </li>
 <li>Hook __ClientLoadLibrary，替换为空函数。  </li>
 </ol>
-<p>第一个方法其实也谈不上方法，也就是说控制台程序就不用担心这些了。第二个方法需要是否是判断自己的模块，这个方法也挺麻烦的，因为你得放过一些不是自己的模块，比如微软的模块。所以这里重点说第三个方法，我们去Hook <strong>ClientLoadLibrary，这样我们就只是避免了全局钩子的注入了。这里我们不用去Inline Hook该函数，Inline Hook比较麻烦。我们的做法是修改user32!apfnDispatch这个数组，直接替换对应于</strong>ClientLoadLibrary所在位置的值。这样摆在我们面前的稍微麻烦一点的事情有两个，一个是确定数组开始的地址，第二就是确定__ClientLoadLibrary在数组中的index。<br>那么分别来解决这两个问题：</p>
+<p>第一个方法其实也谈不上方法，也就是说控制台程序就不用担心这些了。第二个方法需要是否是判断自己的模块，这个方法也挺麻烦的，因为你得放过一些不是自己的模块，比如微软的模块。所以这里重点说第三个方法，我们去Hook __ClientLoadLibrary，这样我们就只是避免了全局钩子的注入了。这里我们不用去Inline Hook该函数，Inline Hook比较麻烦。我们的做法是修改user32!apfnDispatch这个数组，直接替换对应于__ClientLoadLibrary所在位置的值。这样摆在我们面前的稍微麻烦一点的事情有两个，一个是确定数组开始的地址，第二就是确定__ClientLoadLibrary在数组中的index。<br>那么分别来解决这两个问题：</p>
 <ol>
-<li><p>组数的位置<br>其实就是PEB的KernelCallbackTable，虽然PEB没有文档化，但是也没见过他变过什么。所以我们可以写死KernelCallbackTable的偏移。说稍微有点麻烦就是指的，这个偏移在32bit和64bit的系统上是不同的而已，32位系统的偏移是0x2c，64位系统是0x58。另外一个就是获得PEB的方法了，32位程序你既可以写点汇编从fs中获取，也能调用<strong>readfsdword获得，64位程序会麻烦点，你需要先获得TEB，然后从TEB里得到PEB，至于获得TEB的方法，你可以直接调用</strong>readgsqword获得，也可以调用ntdll的NtCurrentTeb获得。</p>
+<li><p>组数的位置<br>其实就是PEB的KernelCallbackTable，虽然PEB没有文档化，但是也没见过他变过什么。所以我们可以写死KernelCallbackTable的偏移。说稍微有点麻烦就是指的，这个偏移在32bit和64bit的系统上是不同的而已，32位系统的偏移是0x2c，64位系统是0x58。另外一个就是获得PEB的方法了，32位程序你既可以写点汇编从fs中获取，也能调用__readfsdword获得，64位程序会麻烦点，你需要先获得TEB，然后从TEB里得到PEB，至于获得TEB的方法，你可以直接调用__readgsqword获得，也可以调用ntdll的NtCurrentTeb获得。</p>
 </li>
-<li><p><strong>ClientLoadLibrary在数组中的index<br>这个就稍微繁琐点，我们需要把我们关心的系统用windbg带上符号都看一眼才能知道是多少了。<br>我这里提供几个常用系统中</strong>ClientLoadLibrary在数组中的index：<br>XP=0x42，Win7=0x41，Win8.1=0x47</p>
+<li><p>__ClientLoadLibrary在数组中的index<br>这个就稍微繁琐点，我们需要把我们关心的系统用windbg带上符号都看一眼才能知道是多少了。<br>我这里提供几个常用系统中__ClientLoadLibrary在数组中的index：<br>XP=0x42，Win7=0x41，Win8.1=0x47</p>
 </li>
 </ol>
 <p>好了，知道了这些，后面的就不用说太详细了，无非就是这三步：  </p>

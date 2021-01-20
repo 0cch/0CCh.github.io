@@ -74,6 +74,421 @@
     <div class="columns">
         <div class="column two-thirds">
             
+                  <article id="post-dont-use-getfullpathname" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2018/10/27/dont-use-getfullpathname/">不要使用GetFullPathName获得相对路径的全路径</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>上周末在网上闲逛，看到一篇介绍Path*相关API的文章，发现文章中推荐了GetFullPathName这个API，因为他能方便的获得相对路径对于当前工作目录的全路径。然而，我对于这个推荐API是坚决反对的。如果所有工程代码都是一个人开发，这种情况下调用这个API，我认为尚可理解，但是如果对于多人维护的大型工程，就不要使用它了。原因很简单，这个API是根据当前工作目录去确定绝对路径的，然而你无法确定当前工作目录是否是你认为的工作目录。即使在调用GetFullPathName之前，检查了这个路径，我认为也是不可信的。因为在检查过后，也有可能在其他线程中改变当前工作目录，要知道这个变量是全局唯一的。  </p>
+<p>所以，以下代码是不可取的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">WCHAR lpBuffer[MAX_PATH];</span><br><span class="line">LPWSTR lpFname = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">SetCurrentDirectoryW(<span class="string">L"C:\\some\\thing\\dir"</span>);</span><br><span class="line">GetFullPathNameW(<span class="string">L"..\\other\\dir"</span>, MAX_PATH, lpBuffer, &amp;lpFname);</span><br></pre></td></tr></table></figure>
+
+<p>其实微软为我们提供挺好的API来代替他，比如PathCanonicalize以及PathCombine（实际上有更安全的API，比如 PathCchCanonicalize和PathCchCombine，只不过需要高版本的系统）。</p>
+<p>所以，以下代码是正确的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">WCHAR lpBuffer[MAX_PATH];</span><br><span class="line">WCHAR lpSrc[MAX_PATH] = <span class="string">L"C:\\some\\thing\\dir"</span>;</span><br><span class="line">wcscat_s(lpSrc, <span class="string">L"..\\other\\dir"</span>);</span><br><span class="line">PathCanonicalizeW(lpBuffer, lpSrc);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">WCHAR lpBuffer[MAX_PATH];</span><br><span class="line">PathCombineW(lpBuffer, <span class="string">L"C:\\some\\thing\\dir"</span>, <span class="string">L"..\\other\\dir"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>最后在介绍一个实用的函数：PathCompactPath，这个函数把路径缩写为指定的像素长度：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">WCHAR buffer[MAX_PATH] = <span class="string">L"C:\\some\\thing\\very\\long\\long\\long\\long\\long\\path"</span>;</span><br><span class="line">PathCompactPathW(<span class="literal">NULL</span>, buffer, <span class="number">200</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// buffer="C:\some\thing\very...\path"</span></span><br></pre></td></tr></table></figure>
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2018-10-27T14:01:13.000Z" itemprop="datePublished">2018-10-27</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-tokenlinkedtoken-tip2" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2018/09/24/tokenlinkedtoken-tip2/">关于TokenLinkedToken的一点记录2</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h3 id="内核原理"><a href="#内核原理" class="headerlink" title="内核原理"></a>内核原理</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br></pre></td><td class="code"><pre><span class="line">0: kd&gt; !process 0 1 explorer.exe</span><br><span class="line">PROCESS ffffc306d0c34580</span><br><span class="line">    SessionId: 11  Cid: 44e0    Peb: 006fc000  ParentCid: 5758</span><br><span class="line">    DirBase: 2b1d00002  ObjectTable: ffff8b8e568c7040  HandleCount: 29648.</span><br><span class="line">    Image: explorer.exe</span><br><span class="line">    VadRoot ffffc306ddf5fca0 Vads 1625 Clone 0 Private 403154. Modified 771103. Locked 50.</span><br><span class="line">    DeviceMap ffff8b8e3147ed30</span><br><span class="line">    Token                             ffff8b8e4937f940</span><br><span class="line">    ElapsedTime                       06:29:46.426</span><br><span class="line">    UserTime                          00:00:48.921</span><br><span class="line">    KernelTime                        00:00:53.250</span><br><span class="line">    QuotaPoolUsage[PagedPool]         2123416</span><br><span class="line">    QuotaPoolUsage[NonPagedPool]      225280</span><br><span class="line">    Working Set Sizes (now,min,max)  (56547, 50, 345) (226188KB, 200KB, 1380KB)</span><br><span class="line">    PeakWorkingSetSize                462611</span><br><span class="line">    VirtualSize                       2103798 Mb</span><br><span class="line">    PeakVirtualSize                   2104556 Mb</span><br><span class="line">    PageFaultCount                    2358568</span><br><span class="line">    MemoryPriority                    BACKGROUND</span><br><span class="line">    BasePriority                      8</span><br><span class="line">    CommitCharge                      426963</span><br><span class="line"></span><br><span class="line">0: kd&gt; !token ffff8b8e4937f940</span><br><span class="line">_TOKEN 0xffff8b8e4937f940</span><br><span class="line">TS Session ID: 0xb</span><br><span class="line">User: S-1-5-21-3854333306-943506906-3328512208-1001</span><br><span class="line">User Groups: </span><br><span class="line"> 00 S-1-5-21-3854333306-943506906-3328512208-513</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 01 S-1-1-0</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 02 S-1-5-114</span><br><span class="line">    Attributes - DenyOnly </span><br><span class="line"> 03 S-1-5-21-3854333306-943506906-3328512208-1002</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 04 S-1-5-32-544</span><br><span class="line">    Attributes - DenyOnly </span><br><span class="line"> 05 S-1-5-32-559</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 06 S-1-5-32-545</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 07 S-1-5-4</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 08 S-1-2-1</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 09 S-1-5-11</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 10 S-1-5-15</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 11 S-1-5-113</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 12 S-1-5-5-0-4234506195</span><br><span class="line">    Attributes - Mandatory Default Enabled LogonId </span><br><span class="line"> 13 S-1-2-0</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 14 S-1-5-64-10</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 15 S-1-16-8192</span><br><span class="line">    Attributes - GroupIntegrity GroupIntegrityEnabled </span><br><span class="line">Primary Group: S-1-5-21-3854333306-943506906-3328512208-513</span><br><span class="line">Privs: </span><br><span class="line"> 19 0x000000013 SeShutdownPrivilege               Attributes - Enabled </span><br><span class="line"> 23 0x000000017 SeChangeNotifyPrivilege           Attributes - Enabled Default </span><br><span class="line"> 25 0x000000019 SeUndockPrivilege                 Attributes - </span><br><span class="line"> 33 0x000000021 SeIncreaseWorkingSetPrivilege     Attributes - </span><br><span class="line"> 34 0x000000022 SeTimeZonePrivilege               Attributes - </span><br><span class="line">Authentication ID:         (0,fc65706c)</span><br><span class="line">Impersonation Level:       Anonymous</span><br><span class="line">TokenType:                 Primary</span><br><span class="line">Source: User32             TokenFlags: 0x2a00 ( Token in use )</span><br><span class="line">Token ID: fc664685         ParentToken ID: fc65706f</span><br><span class="line">Modified ID:               (0, fe4096af)</span><br><span class="line">RestrictedSidCount: 0      RestrictedSids: 0x0000000000000000</span><br><span class="line">OriginatingLogonSession: 3e7</span><br><span class="line">PackageSid: (null)</span><br><span class="line">CapabilityCount: 0      Capabilities: 0x0000000000000000</span><br><span class="line">LowboxNumberEntry: 0x0000000000000000</span><br><span class="line">Security Attributes:</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0: kd&gt; dt _TOKEN 0xffff8b8e4937f940</span><br><span class="line">nt!_TOKEN</span><br><span class="line">   +0x000 TokenSource      : _TOKEN_SOURCE</span><br><span class="line">   +0x010 TokenId          : _LUID</span><br><span class="line">   +0x018 AuthenticationId : _LUID</span><br><span class="line">   +0x020 ParentTokenId    : _LUID</span><br><span class="line">   +0x028 ExpirationTime   : _LARGE_INTEGER 0x7fffffff`ffffffff</span><br><span class="line">   +0x030 TokenLock        : 0xffffc306`c7b5dd40 _ERESOURCE</span><br><span class="line">   +0x038 ModifiedId       : _LUID</span><br><span class="line">   +0x040 Privileges       : _SEP_TOKEN_PRIVILEGES</span><br><span class="line">   +0x058 AuditPolicy      : _SEP_AUDIT_POLICY</span><br><span class="line">   +0x078 SessionId        : 0xb</span><br><span class="line">   +0x07c UserAndGroupCount : 0x11</span><br><span class="line">   +0x080 RestrictedSidCount : 0</span><br><span class="line">   +0x084 VariableLength   : 0x228</span><br><span class="line">   +0x088 DynamicCharged   : 0x1000</span><br><span class="line">   +0x08c DynamicAvailable : 0</span><br><span class="line">   +0x090 DefaultOwnerIndex : 0</span><br><span class="line">   +0x098 UserAndGroups    : 0xffff8b8e`4937fdd0 _SID_AND_ATTRIBUTES</span><br><span class="line">   +0x0a0 RestrictedSids   : (null) </span><br><span class="line">   +0x0a8 PrimaryGroup     : 0xffff8b8e`2b2a3b10 Void</span><br><span class="line">   +0x0b0 DynamicPart      : 0xffff8b8e`2b2a3b10  -&gt; 0x501</span><br><span class="line">   +0x0b8 DefaultDacl      : 0xffff8b8e`2b2a3b2c _ACL</span><br><span class="line">   +0x0c0 TokenType        : 1 ( TokenPrimary )</span><br><span class="line">   +0x0c4 ImpersonationLevel : 0 ( SecurityAnonymous )</span><br><span class="line">   +0x0c8 TokenFlags       : 0x2a00</span><br><span class="line">   +0x0cc TokenInUse       : 0x1 &apos;&apos;</span><br><span class="line">   +0x0d0 IntegrityLevelIndex : 0x10</span><br><span class="line">   +0x0d4 MandatoryPolicy  : 3</span><br><span class="line">   +0x0d8 LogonSession     : 0xffff8b8e`143fc870 _SEP_LOGON_SESSION_REFERENCES</span><br><span class="line">   +0x0e0 OriginatingLogonSession : _LUID</span><br><span class="line">   +0x0e8 SidHash          : _SID_AND_ATTRIBUTES_HASH</span><br><span class="line">   +0x1f8 RestrictedSidHash : _SID_AND_ATTRIBUTES_HASH</span><br><span class="line">   +0x308 pSecurityAttributes : 0xffff8b8e`0c3b7f30 _AUTHZBASEP_SECURITY_ATTRIBUTES_INFORMATION</span><br><span class="line">   +0x310 Package          : (null) </span><br><span class="line">   +0x318 Capabilities     : (null) </span><br><span class="line">   +0x320 CapabilityCount  : 0</span><br><span class="line">   +0x328 CapabilitiesHash : _SID_AND_ATTRIBUTES_HASH</span><br><span class="line">   +0x438 LowboxNumberEntry : (null) </span><br><span class="line">   +0x440 LowboxHandlesEntry : (null) </span><br><span class="line">   +0x448 pClaimAttributes : (null) </span><br><span class="line">   +0x450 TrustLevelSid    : (null) </span><br><span class="line">   +0x458 TrustLinkedToken : (null) </span><br><span class="line">   +0x460 IntegrityLevelSidValue : (null) </span><br><span class="line">   +0x468 TokenSidValues   : (null) </span><br><span class="line">   +0x470 IndexEntry       : 0xffff8b8e`349cd270 _SEP_LUID_TO_INDEX_MAP_ENTRY</span><br><span class="line">   +0x478 DiagnosticInfo   : (null) </span><br><span class="line">   +0x480 BnoIsolationHandlesEntry : (null) </span><br><span class="line">   +0x488 SessionObject    : 0xffffc306`cd464140 Void</span><br><span class="line">   +0x490 VariablePart     : 0xffff8b8e`4937fee0</span><br><span class="line"></span><br><span class="line">0: kd&gt; dt 0xffff8b8e`143fc870 _SEP_LOGON_SESSION_REFERENCES</span><br><span class="line">nt!_SEP_LOGON_SESSION_REFERENCES</span><br><span class="line">   +0x000 Next             : (null) </span><br><span class="line">   +0x008 LogonId          : _LUID</span><br><span class="line">   +0x010 BuddyLogonId     : _LUID</span><br><span class="line">   +0x018 ReferenceCount   : 0n1799</span><br><span class="line">   +0x020 Flags            : 0xd</span><br><span class="line">   +0x028 pDeviceMap       : 0xffff8b8e`3147ed30 _DEVICE_MAP</span><br><span class="line">   +0x030 Token            : 0xffff8b8e`20c65060 Void</span><br><span class="line">   +0x038 AccountName      : _UNICODE_STRING &quot;win&quot;</span><br><span class="line">   +0x048 AuthorityName    : _UNICODE_STRING &quot;DESKTOP-GJGV2E2&quot;</span><br><span class="line">   +0x058 CachedHandlesTable : _SEP_CACHED_HANDLES_TABLE</span><br><span class="line">   +0x068 SharedDataLock   : _EX_PUSH_LOCK</span><br><span class="line">   +0x070 SharedClaimAttributes : (null) </span><br><span class="line">   +0x078 SharedSidValues  : (null) </span><br><span class="line">   +0x080 RevocationBlock  : _OB_HANDLE_REVOCATION_BLOCK</span><br><span class="line">   +0x0a0 ServerSilo       : (null) </span><br><span class="line">   +0x0a8 SiblingAuthId    : _LUID</span><br><span class="line">   +0x0b0 TokenList        : _LIST_ENTRY [ 0x00000000`00000000 - 0x00000000`00000000 ]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0: kd&gt; dt 0xffff8b8e`143fc870 _SEP_LOGON_SESSION_REFERENCES BuddyLogonId.</span><br><span class="line">nt!_SEP_LOGON_SESSION_REFERENCES</span><br><span class="line">   +0x010 BuddyLogonId  : </span><br><span class="line">      +0x000 LowPart       : 0xfc657047</span><br><span class="line">      +0x004 HighPart      : 0n0</span><br><span class="line"></span><br><span class="line">0: kd&gt; ? 0xfc657047&amp;0xf</span><br><span class="line">Evaluate expression: 7 = 00000000`00000007</span><br><span class="line"></span><br><span class="line">0: kd&gt; dq nt!SepLogonSessions L1</span><br><span class="line">fffff802`45a744a0  ffff8b8e`0b0020d0</span><br><span class="line">0: kd&gt; dq ffff8b8e`0b0020d0+8*7 L1</span><br><span class="line">ffff8b8e`0b002108  ffff8b8e`367ef010</span><br><span class="line"></span><br><span class="line">0: kd&gt; dt ffff8b8e`367ef010 _SEP_LOGON_SESSION_REFERENCES</span><br><span class="line">nt!_SEP_LOGON_SESSION_REFERENCES</span><br><span class="line">   +0x000 Next             : 0xffff8b8e`593ba230 _SEP_LOGON_SESSION_REFERENCES</span><br><span class="line">   +0x008 LogonId          : _LUID</span><br><span class="line">   +0x010 BuddyLogonId     : _LUID</span><br><span class="line">   +0x018 ReferenceCount   : 0n56</span><br><span class="line">   +0x020 Flags            : 0xa</span><br><span class="line">   +0x028 pDeviceMap       : 0xffff8b8e`0e5e0890 _DEVICE_MAP</span><br><span class="line">   +0x030 Token            : 0xffff8b8e`15b56940 Void</span><br><span class="line">   +0x038 AccountName      : _UNICODE_STRING &quot;win&quot;</span><br><span class="line">   +0x048 AuthorityName    : _UNICODE_STRING &quot;DESKTOP-GJGV2E2&quot;</span><br><span class="line">   +0x058 CachedHandlesTable : _SEP_CACHED_HANDLES_TABLE</span><br><span class="line">   +0x068 SharedDataLock   : _EX_PUSH_LOCK</span><br><span class="line">   +0x070 SharedClaimAttributes : (null) </span><br><span class="line">   +0x078 SharedSidValues  : (null) </span><br><span class="line">   +0x080 RevocationBlock  : _OB_HANDLE_REVOCATION_BLOCK</span><br><span class="line">   +0x0a0 ServerSilo       : (null) </span><br><span class="line">   +0x0a8 SiblingAuthId    : _LUID</span><br><span class="line">   +0x0b0 TokenList        : _LIST_ENTRY [ 0x00000000`00000000 - 0x00000000`00000000 ]</span><br><span class="line">   </span><br><span class="line">0: kd&gt; !token 0xffff8b8e`15b56940</span><br><span class="line">_TOKEN 0xffff8b8e15b56940</span><br><span class="line">TS Session ID: 0xb</span><br><span class="line">User: S-1-5-21-3854333306-943506906-3328512208-1001</span><br><span class="line">User Groups: </span><br><span class="line"> 00 S-1-5-21-3854333306-943506906-3328512208-513</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 01 S-1-1-0</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 02 S-1-5-114</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 03 S-1-5-21-3854333306-943506906-3328512208-1002</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 04 S-1-5-32-544</span><br><span class="line">    Attributes - Mandatory Default Enabled Owner </span><br><span class="line"> 05 S-1-5-32-559</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 06 S-1-5-32-545</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 07 S-1-5-4</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 08 S-1-2-1</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 09 S-1-5-11</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 10 S-1-5-15</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 11 S-1-5-113</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 12 S-1-5-5-0-4234506195</span><br><span class="line">    Attributes - Mandatory Default Enabled LogonId </span><br><span class="line"> 13 S-1-2-0</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 14 S-1-5-64-10</span><br><span class="line">    Attributes - Mandatory Default Enabled </span><br><span class="line"> 15 S-1-16-12288</span><br><span class="line">    Attributes - GroupIntegrity GroupIntegrityEnabled </span><br><span class="line">Primary Group: S-1-5-21-3854333306-943506906-3328512208-513</span><br><span class="line">Privs: </span><br><span class="line"> 05 0x000000005 SeIncreaseQuotaPrivilege          Attributes - </span><br><span class="line"> 08 0x000000008 SeSecurityPrivilege               Attributes - </span><br><span class="line"> 09 0x000000009 SeTakeOwnershipPrivilege          Attributes - </span><br><span class="line"> 10 0x00000000a SeLoadDriverPrivilege             Attributes - </span><br><span class="line"> 11 0x00000000b SeSystemProfilePrivilege          Attributes - </span><br><span class="line"> 12 0x00000000c SeSystemtimePrivilege             Attributes - </span><br><span class="line"> 13 0x00000000d SeProfileSingleProcessPrivilege   Attributes - </span><br><span class="line"> 14 0x00000000e SeIncreaseBasePriorityPrivilege   Attributes - </span><br><span class="line"> 15 0x00000000f SeCreatePagefilePrivilege         Attributes - </span><br><span class="line"> 17 0x000000011 SeBackupPrivilege                 Attributes - </span><br><span class="line"> 18 0x000000012 SeRestorePrivilege                Attributes - </span><br><span class="line"> 19 0x000000013 SeShutdownPrivilege               Attributes - </span><br><span class="line"> 20 0x000000014 SeDebugPrivilege                  Attributes - </span><br><span class="line"> 22 0x000000016 SeSystemEnvironmentPrivilege      Attributes - </span><br><span class="line"> 23 0x000000017 SeChangeNotifyPrivilege           Attributes - Enabled Default </span><br><span class="line"> 24 0x000000018 SeRemoteShutdownPrivilege         Attributes - </span><br><span class="line"> 25 0x000000019 SeUndockPrivilege                 Attributes - </span><br><span class="line"> 28 0x00000001c SeManageVolumePrivilege           Attributes - </span><br><span class="line"> 29 0x00000001d SeImpersonatePrivilege            Attributes - Enabled Default </span><br><span class="line"> 30 0x00000001e SeCreateGlobalPrivilege           Attributes - Enabled Default </span><br><span class="line"> 33 0x000000021 SeIncreaseWorkingSetPrivilege     Attributes - </span><br><span class="line"> 34 0x000000022 SeTimeZonePrivilege               Attributes - </span><br><span class="line"> 35 0x000000023 SeCreateSymbolicLinkPrivilege     Attributes - </span><br><span class="line"> 36 0x000000024 SeDelegateSessionUserImpersonatePrivilege  Attributes - </span><br><span class="line">Authentication ID:         (0,fc657047)</span><br><span class="line">Impersonation Level:       Anonymous</span><br><span class="line">TokenType:                 Primary</span><br><span class="line">Source: User32             TokenFlags: 0x2020 ( Token NOT in use ) </span><br><span class="line">Token ID: fc657079         ParentToken ID: 0</span><br><span class="line">Modified ID:               (0, fc65706b)</span><br><span class="line">RestrictedSidCount: 0      RestrictedSids: 0x0000000000000000</span><br><span class="line">OriginatingLogonSession: 3e7</span><br><span class="line">PackageSid: (null)</span><br><span class="line">CapabilityCount: 0      Capabilities: 0x0000000000000000</span><br><span class="line">LowboxNumberEntry: 0x0000000000000000</span><br><span class="line">Security Attributes:</span><br></pre></td></tr></table></figure>
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2018-09-24T12:20:32.000Z" itemprop="datePublished">2018-09-24</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-tokenlinkedtoken-tip" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2018/08/24/tokenlinkedtoken-tip/">关于TokenLinkedToken的一点记录</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>我们用GetTokenInformation可以获得一个TokenLinkedToken，简单的说就是要获得与我们进程token关联的token。  </p>
+<p>接下来就有趣了，如果当你的进程是一个提权的管理员权限的进程，那么你获得的token会是一个标准用户进程的token，也就是一个提权之前进程。那么这有什么用呢？比如我们的子程序需要运行其他开发者开发的插件，而我们不想给予他们过高的权限，那么这个就有用了。当然，如果你更谨慎一些，你希望给予他更低的权限，那就得实用CreateRestrictedToken来创建一个新的token了。  </p>
+<p>聪明的程序员看到这里肯定就会想，既然管理员权限下的进程获得的TokenLinkedToken是一个标准用户权限的token，那么标准用户权限环境下的进程能不能获得一个管理员权限的TokenLinkedToken呢？没错，答案是可以。更聪明的程序员肯定会惊讶，那这个不是安全漏洞么？答案是并不是，因为虽然可以获得一个管理员权限的token，但是这个token只是一个IDENTIFY level token，这是一个token的_SECURITY_IMPERSONATION_LEVEL，不同的模仿等级，对应于不同的功能。比如SecurityIdentification，这个等级就只能用来查询token的信息。比方说有外部一个进程访问我们的进程，我们可以让他提供token验证其身份。但是外部进程为了防止我们用他的token干坏事，所以只给我们一个IDENTIFY level token，这样一来，我们就只能验证身份而无法做其他事情了。  </p>
+<p>我们真的没办法通过TokenLinkedToken获得可以使用的管理员身份的token了么？也不是，我们确实有办法获得能够使用的管理员身份的token。但是有个前提，我们的进程必须有SeTcbPrivilege权限。那这不也是个安全漏洞么？不是，因为SeTcbPrivilege是SYSTEM用户的权限，简单的说，这个用户的权限比管理员还要高。那这玩意不是也没什么用么？也有用，当你想在系统服务中启动一个管理员身份的进程的时候，可以先获得标准用户权限的token，然后获得其TokenLinkedToken，最后CreateProcessAsUser来创建进程。  </p>
+<p><a href="/uploads/2018/08/TokenLinkedToken.png"><img src="/uploads/2018/08/TokenLinkedToken.png" alt="TokenLinkedToken"></a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2018-08-24T12:14:23.000Z" itemprop="datePublished">2018-08-24</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-tensorflow-mnist" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2018/07/07/tensorflow-mnist/">tensorflow入门 —— mnist</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>自从有tensorflow这样的平台工具横空出世，机器学习的代码编写逐渐变的平民化了。我们不需要太多的数学理论知识就能够完成一些机器学习的项目。比如在使用tensorflow的时候，我们只需要定义好损失函数，tensorflow会自动的帮我们完成反向传播改善参数。我们所需要做的就是合理利用tensorflow创建模型。</p>
+<p>当然，我并不是在鼓动初学者跳过数学原理部分，而是认为，如果没有数学基础，入门就死磕原理容易产生挫败感导致放弃。这样就不如先接触简单的项目，在有了一定的体会后，再回头去看看数学原理的东西，这样会更容易接受。比如，当能用tensorflow完成对mnist的训练之后，再去理解反向传播这四个公式，应该会更有感觉。</p>
+<span>$$\begin{align}
+\delta^L &amp;= \nabla_a C \odot \sigma&apos;(z^L) \tag{1} \\
+\delta^l &amp;= ((w^{l+1})^T \delta^{l+1}) \odot \sigma&apos;(z^l) \tag{2}\\
+\frac{\partial C}{\partial b^l_j} &amp;= \delta^l_j \tag{3}\\
+\frac{\partial C}{\partial w^l_{jk}} &amp;= a^{l-1}_k \delta^l_j \tag{4}
+\end{align}$$</span><!-- Has MathJax -->
+
+<p>接下来相信看看这份代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> tensorflow.examples.tutorials.mnist <span class="keyword">import</span> input_data</span><br><span class="line"></span><br><span class="line"><span class="comment"># step1</span></span><br><span class="line">mnist = input_data.read_data_sets(<span class="string">"."</span>, one_hot=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># step2</span></span><br><span class="line">INPUT_PARAMETERS = <span class="number">784</span></span><br><span class="line">L1_PARAMETERS = <span class="number">300</span></span><br><span class="line">W1 = tf.Variable(tf.truncated_normal([INPUT_PARAMETERS, L1_PARAMETERS], stddev=<span class="number">0.1</span>))</span><br><span class="line">b1 = tf.Variable(tf.truncated_normal([L1_PARAMETERS], stddev=<span class="number">0.1</span>))</span><br><span class="line">W2 = tf.Variable(tf.truncated_normal([L1_PARAMETERS, <span class="number">10</span>], stddev=<span class="number">0.1</span>))</span><br><span class="line">b2 = tf.Variable(tf.truncated_normal([<span class="number">10</span>], stddev=<span class="number">0.1</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># step3</span></span><br><span class="line">x = tf.placeholder(tf.float32, [<span class="literal">None</span>, INPUT_PARAMETERS])</span><br><span class="line">y_ = tf.placeholder(tf.float32, [<span class="literal">None</span>, <span class="number">10</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># step4</span></span><br><span class="line">hidden1 = tf.nn.sigmoid(tf.matmul(x, W1) + b1)</span><br><span class="line">y =  tf.matmul(hidden1, W2) + b2</span><br><span class="line"></span><br><span class="line"><span class="comment"># step5</span></span><br><span class="line">loss = (tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(</span><br><span class="line">    logits=y, labels=y_)))</span><br><span class="line">train_step = tf.train.GradientDescentOptimizer(<span class="number">0.3</span>).minimize(loss)</span><br><span class="line"></span><br><span class="line"><span class="comment"># step6</span></span><br><span class="line">correct_prediction = tf.equal(tf.argmax(y, <span class="number">1</span>), tf.argmax(y_, <span class="number">1</span>))</span><br><span class="line">accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))</span><br><span class="line"></span><br><span class="line"><span class="comment"># step7</span></span><br><span class="line">loss_array = []</span><br><span class="line">accuracy_array = []</span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    tf.global_variables_initializer().run()</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10000</span>):</span><br><span class="line">        batch_xs, batch_ys = mnist.train.next_batch(<span class="number">100</span>)</span><br><span class="line">        _, step_loss = sess.run([train_step, loss], feed_dict=&#123;x: batch_xs, y_: batch_ys&#125;)</span><br><span class="line">        <span class="keyword">if</span> i % <span class="number">500</span> == <span class="number">0</span>:</span><br><span class="line">            step_accuracy = accuracy.eval(&#123;x: mnist.test.images, y_: mnist.test.labels&#125;)</span><br><span class="line">            loss_array.append(step_loss)</span><br><span class="line">            accuracy_array.append(step_accuracy)</span><br><span class="line">            print(step_loss, step_accuracy)</span><br><span class="line"></span><br><span class="line">loss_array.append(step_loss)</span><br><span class="line">accuracy_array.append(step_accuracy)</span><br><span class="line">print(step_loss, step_accuracy)</span><br><span class="line"></span><br><span class="line">plt.plot([i*<span class="number">500</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(len(loss_array))], loss_array, <span class="string">'b-'</span>,</span><br><span class="line">          [i*<span class="number">500</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(len(accuracy_array))], accuracy_array, <span class="string">'r-'</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>step1：</strong>read_data_sets是tf提供读取mnist数据的函数，运行时会有函数过时的警告提示，但是不用管它，因为用起来完全没有问题。one_hot参数在这里很重要，他将实际的标签值转化为一个向量，例如，将标签值3，转化成表示0-9是否置位的向量：\( \left(\begin{array}{cccccccccc}0;0;0;1;0;0;0;0;0;0;\end{array}\right)^T \)</p>
+</blockquote>
+<blockquote>
+<p><strong>step2：</strong>创建权重和偏置，创建方法有很多，我用的是期望为0，标准差为0.1的随机分布。</p>
+</blockquote>
+<blockquote>
+<p><strong>step3：</strong>创建输入层和标签的placeholder，大概的意思是占住空间，以方便后续数据喂给模型。</p>
+</blockquote>
+<blockquote>
+<p><strong>step4：</strong>实际上是向前传播 \( z = w^{T}x,+,b\)，\( a = sigmoid(z)\)，其中sigmoid是\( \frac{1}{1+\exp(-z)}\)。这里可能有一个疑问，第二个隐藏层到输出层，没有使用sigmoid函数。原因继续往下看就知道了。</p>
+</blockquote>
+<blockquote>
+<p><strong>step5：</strong>计算损失函数，调用了tf的sigmoid_cross_entropy_with_logits，这个函数把交叉熵和sigmoid的计算放在了一起，所以上面不需要去计算sigmoid了。这样做的好处很明显，就是方便我们修改从最后一个隐藏层到输出层的激活函数，比如将sigmoid_cross_entropy_with_logits替换为softmax_cross_entropy_with_logits，那么我们最后一个激活函数就变成了softmax。最后设置学习率并且把我们的损失函数传给梯度下降类的最小化函数中，tf就会自动的帮我们优化参数，从而最小化损失值了。</p>
+</blockquote>
+<blockquote>
+<p><strong>step6：</strong>使用测试数据去计算模型的识别准确率</p>
+</blockquote>
+<blockquote>
+<p><strong>step7：</strong>最后一步，我们将数据分为小份，随着迭代，逐步喂给模型。然后记录损失和准确率的变化，并做图。</p>
+</blockquote>
+<p>这里我们为了简单，没有使用softmax，dropout和正则化等优化方法，所以识别率只达到了90%，不过作为一个入门来说已经够了。</p>
+<p><a href="/uploads/2018/07/2018-07-07-tensorflow-mnist.png"><img src="/uploads/2018/07/2018-07-07-tensorflow-mnist.png" alt="2018-07-07-tensorflow-mnist"></a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2018-07-07T07:07:41.000Z" itemprop="datePublished">2018-07-07</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/machinelearning/' title=''>machinelearning</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-machine-learning-ex1" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2018/06/22/machine-learning-ex1/">机器学习练习题1</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>掐指一算，已经有三个月没有更新blog了。因为最近一直在学习机器学习的内容，所以没空也没有新鲜的技术值得写下来分享。还好经过一段时间的积累（学习线性代数和概率论），机器学习这块内容也算是入门了。这是机器学习的第一个习题，线性回归。用最直白的话来说，就是用函数去拟合数据分布，从而达到预测新数据的效果。需要的知识是矩阵的计算，最小二乘法以及求偏微分。</p>
+<p>关键的公式只有两个：</p>
+<span>$$\begin{align}
+Cost(\theta) = \frac{1}{2m}\,\sum^{m}_{i=1}\,(h_\theta(x^{i})-y^{i})^2 \tag{1}\\
+\theta_{j} = \theta_{j}-\alpha\frac{1}{m}\,\sum^{m}_{i=1}(h_\theta(x^{i})-y^{i})\frac{\partial{h_\theta(x^{i})}}{\partial{\theta_{j}}}\tag{2}
+\end{align}$$</span><!-- Has MathJax -->
+
+<p>那么最后需要确定的只剩下一个，我们希望用什么样的曲线去拟合样本，这个就需要经验和尝试了。这里的练习只需要用直线来拟合就足够了: \( h_\theta(x) = \theta^{T}x = \theta_{0}+\theta_{1}x_{1} \) .</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">data = np.loadtxt(<span class="string">'ex1data1.txt'</span>, delimiter=<span class="string">','</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 分离样本数据输入X和输出Y</span></span><br><span class="line">X = np.concatenate((np.ones((len(data),<span class="number">1</span>)), data[:,<span class="number">0</span>].reshape((len(data),<span class="number">1</span>))), axis=<span class="number">1</span>)</span><br><span class="line">theta = np.random.randn(<span class="number">2</span>,<span class="number">1</span>)</span><br><span class="line">Y = data[:,<span class="number">1</span>].reshape((len(data),<span class="number">1</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 为了加速计算，把除法优化位乘法</span></span><br><span class="line">alpha = <span class="number">0.01</span></span><br><span class="line">div_m = <span class="number">1</span> / len(data);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> loop_count <span class="keyword">in</span> range(<span class="number">1000</span>):</span><br><span class="line">    Y1 = X.dot(theta)</span><br><span class="line">    <span class="comment"># 根据公式计算损失</span></span><br><span class="line">    cost = ((Y-Y1)**<span class="number">2</span>).sum() * <span class="number">0.5</span> * div_m;</span><br><span class="line">    print(cost)</span><br><span class="line">    <span class="comment"># 更新参数</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">2</span>):</span><br><span class="line">        theta[i, <span class="number">0</span>] = theta[i, <span class="number">0</span>] - alpha * div_m * (np.diagflat(X[:, i]) * (Y1 - Y)).sum()    </span><br><span class="line"></span><br><span class="line"><span class="comment"># 最后把拟合直线画出来</span></span><br><span class="line">Xl = np.linspace(<span class="number">0</span>, <span class="number">30</span>, <span class="number">100</span>)</span><br><span class="line">Yl = Xl * theta[<span class="number">1</span>, <span class="number">0</span>] + theta[<span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">plt.plot(data[:,<span class="number">0</span>],data[:,<span class="number">1</span>],<span class="string">'x'</span>, Xl, Yl, <span class="string">'r'</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><a href="/uploads/2018/06/2018-06-23-machine-learning-ex1.jpg"><img src="/uploads/2018/06/2018-06-23-machine-learning-ex1.jpg" alt="2018-06-23-machine-learning-ex1"></a></p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2018-06-22T08:13:28.000Z" itemprop="datePublished">2018-06-22</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/machinelearning/' title=''>machinelearning</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-breadth-first-traversal-to-del-file" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2018/03/29/breadth-first-traversal-to-del-file/">广度遍历删除文件</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近遇到一个要删除文件夹的问题，文件夹内有大量文件和子文件夹，而且结构非常复杂，删除特别慢。于是思考了一下如何能加速文件删除的问题。我看到大部分的实现方法都是深度遍历，即遇到新的文件夹就进入文件夹遍历文件，直到结束后返回上一层继续遍历。实际上这种方法存在一个问题，在我们的硬盘上，文件夹和文件一般是B-Tree分布的，所以同一层文件夹的文件的数据都比较相近，而不同的层的文件夹的文件可能差距比较远，于是深度遍历让硬盘磁头从一个文件夹跨越到另外一个文件夹，磁头花的时间更长了，更何况子文件夹遍历结束，还得从子文件夹在移动回父文件夹。而是用广度遍历就不同，他把当前目录遍历完成后才去遍历另外一个，这样磁头移动的总距离肯定更少，遍历速度当然更快。以下代码我的一个实现：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> WIN32_LEAN_AND_MEAN</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stack&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AutoFindHandle</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    AutoFindHandle(HANDLE find_handle) : find_handle_(find_handle) &#123;&#125;</span><br><span class="line">    ~AutoFindHandle() &#123;</span><br><span class="line">        FindClose(find_handle_);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    HANDLE find_handle_;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">BOOL <span class="title">CollectFileAndDir</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">wstring</span> &amp;dir, <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">wstring</span>&gt; &amp;file_path, <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">wstring</span>&gt; &amp;dir_path)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    HANDLE find_handle;</span><br><span class="line">    WIN32_FIND_DATAW data;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">wstring</span> temp_path;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">wstring</span> current_dir = dir;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">stack</span>&lt;<span class="built_in">std</span>::<span class="built_in">wstring</span>&gt; temp_dir;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (current_dir[current_dir.length() - <span class="number">1</span>] != <span class="string">L'\\'</span>) &#123;</span><br><span class="line">        current_dir += <span class="string">L"\\"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">wstring</span> path = current_dir + <span class="string">L"*"</span>;</span><br><span class="line"></span><br><span class="line">    find_handle = FindFirstFileW(path.c_str(), &amp;data);</span><br><span class="line">    <span class="keyword">if</span> (find_handle == INVALID_HANDLE_VALUE) &#123;</span><br><span class="line">        <span class="keyword">return</span> TRUE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">AutoFindHandle <span class="title">auto_find_handle</span><span class="params">(find_handle)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (wcscmp(data.cFileName, <span class="string">L".."</span>) != <span class="number">0</span> &amp;&amp; </span><br><span class="line">        wcscmp(data.cFileName, <span class="string">L"."</span>) != <span class="number">0</span>) &#123;</span><br><span class="line"></span><br><span class="line">            temp_path = current_dir;</span><br><span class="line">            temp_path += data.cFileName;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> ((data.dwFileAttributes &amp; (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_SYSTEM)) != <span class="number">0</span>) &#123;</span><br><span class="line">                SetFileAttributesW(temp_path.c_str(), FILE_ATTRIBUTE_NORMAL);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> ((data.dwFileAttributes &amp; FILE_ATTRIBUTE_DIRECTORY) != <span class="number">0</span>) &#123;</span><br><span class="line"></span><br><span class="line">                temp_dir.push(temp_path);</span><br><span class="line">                </span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">                file_path.push_back(temp_path);</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (FindNextFileW(find_handle, &amp;data)) &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (wcscmp(data.cFileName, <span class="string">L".."</span>) != <span class="number">0</span> &amp;&amp; </span><br><span class="line">            wcscmp(data.cFileName, <span class="string">L"."</span>) != <span class="number">0</span>) &#123;</span><br><span class="line"></span><br><span class="line">                temp_path = current_dir;</span><br><span class="line">                temp_path += data.cFileName;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> ((data.dwFileAttributes &amp; (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_SYSTEM)) != <span class="number">0</span>) &#123;</span><br><span class="line">                    SetFileAttributesW(temp_path.c_str(), FILE_ATTRIBUTE_NORMAL);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> ((data.dwFileAttributes &amp; FILE_ATTRIBUTE_DIRECTORY) != <span class="number">0</span>) &#123;</span><br><span class="line"></span><br><span class="line">                    temp_dir.push(temp_path);</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">                    file_path.push_back(temp_path);</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (!temp_dir.empty()) &#123;</span><br><span class="line"></span><br><span class="line">        CollectFileAndDir(temp_dir.top(), file_path, dir_path);</span><br><span class="line">        </span><br><span class="line">        temp_dir.pop();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    dir_path.push_back(dir);</span><br><span class="line">    <span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function">BOOL <span class="title">DeleteFolder</span><span class="params">(LPCWSTR path)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">wstring</span>&gt; file_path;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">wstring</span>&gt; dir_path;</span><br><span class="line">    <span class="keyword">if</span> (!CollectFileAndDir(path, file_path, dir_path)) &#123;</span><br><span class="line">        <span class="keyword">return</span> FALSE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">wstring</span>&gt;::iterator it = file_path.begin(); it != file_path.end(); ++it) &#123;</span><br><span class="line">        DeleteFileW(it-&gt;c_str());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">wstring</span>&gt;::iterator it = dir_path.begin(); it != dir_path.end(); ++it) &#123;</span><br><span class="line">        RemoveDirectoryW(it-&gt;c_str());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2018-03-29T06:17:34.000Z" itemprop="datePublished">2018-03-29</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-2018-plan" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2018/02/25/2018-plan/">鸡年总结，狗年计划</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>虽然没到十五，但是这个年基本上也是过完了。是收心总结鸡年，展望狗年的时候了。</p>
+<p>生活方面，鸡年过的不算顺心，尤其是上半年，麻烦事情接二连三，具体也事情也就不想多写了，不愉快的事情就应该被忘记。工作上，虽然没有明显的进步，但也算是得到了不错的回报，内心有愧的拿了一个优秀员工。重点来了，要说说技术方面的事情。去年下半年快到年底的时候，我做了一个决定，学习深度学习相关知识，作为今后转型的砝码。这里不得不说，做这个决定其实已经很晚了，因为已经有很多人早就踏入了这个领域。我总是想，如果能早两年开窍就好了，但是凡是哪有如果呢。更何况就在去年初我还在跟以前同事争论，坚定的认为个人PC行业还是非常宽阔的，但实际上那个想法也只是说自己的一厢情愿而已。下半年某企业找到我说想让我去他们的个人PC业务部门，给的等级还不错，薪资水平也很快给我翻倍了，但是我拒绝了，那个时候我就知道自己内心里已经不看好个人PC，尤其是Windows上面的发展了。于是乎，打算学习更接近未来趋势的一些东西。</p>
+<p>当今最火的两个领域，区块链和深度学习，我很快的就选择学习深度学习的相关知识了。原因很简单，深度学习现在已经在很大程度上推进了社会发展。而区块链技术，除了在各种加密币方面非常火之外，貌似还没看到什么用途能促进社会进步，至少没有深度学习那么明显吧。下半年的两三个月里开始慢慢接触了深度学习，当然也包括一些其他的机器学习领域的知识。于是深深的感慨，数学在这些领域的重要性，当然又一次后悔没有学好数学，也不得不吐槽我们的高等数学教育是多么的死板无趣。</p>
+<p>今年计划，生活上的事情其实没有什么计划可言，就希望过的更加顺心吧。工作方面，希望能主导一些真正有意义的项目，希望能推进公司往深度学习方面来发展。另外技术方面专注于数学和深度学习。具体的计划就不列了，因为貌似每次列出来也不一定能全部完成 =v=</p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2018-02-25T13:00:28.000Z" itemprop="datePublished">2018-02-25</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-reverse-ssh" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2018/01/20/reverse-ssh/">ssh的反向连接</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>家里有个树莓派，基本上用来当了一个微型服务器，24小时跑着。主要用途是在我不在家的时候控制家里网络，充分利用带宽。一直以来，我都是用树莓派把IP更新到DDNS（家里是外网IP），并且在路由器上做端口映射。这样就能在其他地方访问树莓派了。但是不知为何，这段时间无法从外网ping通家里（后来发现是光猫问题，换了个猫就好了），从外围直接联通家里的树莓派这条路被封了，所以就折腾了SSH的反向连接功能。用这个方法也可以克服家里是内网IP的情况，当然前提是我们在外网有一台服务器或者vps。原理上和其他的反向连接是一样的，这里就不讨论原理了，直接介绍方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># ssh -fCNR remote_port:localhost:local_port user@remote_addr</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-f 后台执行ssh指令</span><br><span class="line">-C 允许压缩数据</span><br><span class="line">-N 不执行远程指令</span><br><span class="line">-R 将远程主机(服务器)的某个端口转发到本地端指定机器的指定端口</span><br></pre></td></tr></table></figure>
+
+<p>这条命令的意思是：请将remote_addr机器里对remote_port的连接转发到本地机器的本地端口。举个例子，假设我有一台内网机器A，其ssh端口为6622，另外有一台VPS，地址是VPS_ADDR.com，SSH端口是8822。这个时候我想通过VPS的9922端口去访问树莓派的SSH。那么我需要用命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># ssh -fCNR 9922:localhost:6622 user@VPS_ADDR.com</span><br></pre></td></tr></table></figure>
+
+<p>当完成了这个命令后，我们就可以在VPS上登陆树莓派了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># ssh -p 9922 pi@localhost</span><br></pre></td></tr></table></figure>
+
+<p>解决了这个问题后，我们需要解决另外一个问题。我们每次输入反向连接的命令的时候总需要输入VPS密码，这个非常不利于我们把命令设置为开机启动。为了解决这个问题，首先想到的是sshpass。这个工具可以帮助我们自动输入密码，命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># sshpass -p your_VPS_password ssh -fCNR 9922:localhost:6622 user@VPS_ADDR.com</span><br></pre></td></tr></table></figure>
+
+<p>把命令放到树莓派的开机启动命令后，重启树莓派，成功从VPS连入了树莓派。不过第二天，我又发现了另外一个问题，SSH的反向连接在无人访问的时候会超时，超时后会断开链接。这样明显不符合我想连就连的需求。于是就得上autossh这个工具了，这个工具会守护ssh，让ssh的反向连接保持联通。但是autossh不支持自动输入密码，网上很多解决办法是用证书的方式省去了输入密码的过程，不过我这里提供另外一个方法，使用expect工具。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># expect -c &quot;</span><br><span class="line">spawn autossh -M 11122 -CNR 9922:localhost:6622 user@VPS_ADDR.com -o StrictHostKeyChecking=no</span><br><span class="line">expect \&quot;Password:\&quot;</span><br><span class="line">send \&quot;your_password\r\&quot;</span><br><span class="line">expect eof</span><br><span class="line">&quot;</span><br></pre></td></tr></table></figure>
+
+<p>这个工具可以自动和ssh进行交互，当VPS提示Password:的时候，我们send密码过去就行了，注意使用StrictHostKeyChecking=no来避免Host key的验证提示。把这个命令放在开机启动的时候执行，完美解决了外网访问家里树莓派的问题。</p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2018-01-20T08:53:39.000Z" itemprop="datePublished">2018-01-20</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/Tips/' title=''>Tips</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
+                  <article id="post-image-to-mnist1" class="repo-list">
+    <div class="repo-list-item" >
+      <h3 class="repo-list-name" itemprop="name">
+        
+  
+      <a class="article-title" href="/2017/12/09/image-to-mnist1/">将图片转化成mnist格式</a>
+  
+
+      </h3>
+      <div class="repo-list-description">
+        
+          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>利用mnist数据对数字符号进行识别基本上算是深度学习的Hello World了。在我学习这个“hello world”的过程中，多多少少有点不爽，原因是无论是训练数据还是测试数据，都是mnist准备好的，即使最后训练的数字识别率很高，我也没有什么参与感。其实，我特别想测试自己手写数字的识别率。<br>为了完成上述想法，我第一个想到的是将普通图片数据转换成mnist数据。mnist的数据格式非常简单，如下图所示：</p>
+<p><a href="/uploads/2017/12/2017-12-10-t10k-images.idx3-ubyte.png"><img src="/uploads/2017/12/2017-12-10-t10k-images.idx3-ubyte.png" alt="2017-12-10-t10k-images.idx3-ubyte"></a></p>
+<p><a href="/uploads/2017/12/2017-12-10-t10k-labels.idx1-ubyte.png"><img src="/uploads/2017/12/2017-12-10-t10k-labels.idx1-ubyte.png" alt="2017-12-10-t10k-labels.idx1-ubyte"></a></p>
+<p>两幅图分别表示了图形数据和标签数据。他们都有一个4字节长度的magic number，用来识别数据的具体格式。如果是标签数据，那么格式相对简单，后续是一个标签数量，接着的是标签数据（0-9的值）。如果是图像数据，那么magic number后，出了4个字节的数据数量以外，还有分别占4字节的行列数据，最后的就是图像数据。结构非常简单，但是值得注意的事情有两点：</p>
+<blockquote>
+<ol>
+<li>数据使用big endian组织的。</li>
+<li>图像数据中，255表示前景，也就是黑色，0表示背景，也就是白色，这和我们平时看到的RGB是不同的。</li>
+</ol>
+</blockquote>
+<p>知道了数据格式，接下来的事情就是用程序将图像转换到mnist了。说实在的，如果对于操作二进制的数据，C比python还是方便不少的。但是C读取图像更加麻烦。所以这里推荐还是使用python对数据做转化。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 首先导入图像处理库</span></span><br><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">from</span> array <span class="keyword">import</span> *</span><br><span class="line"><span class="comment"># 接下来打开图片，并且将像转化为8bit黑白像素</span></span><br><span class="line">im = Image.open(path_to_image)</span><br><span class="line">im = im.convert(<span class="string">'L'</span>)</span><br><span class="line"><span class="comment"># 转换图像到mnist的大小28*28</span></span><br><span class="line">im = im.resize((<span class="number">28</span>,<span class="number">28</span>))</span><br><span class="line"><span class="comment"># 获取图像长宽</span></span><br><span class="line">width, height = im.size()</span><br><span class="line"><span class="comment"># 将图像数据转化位mnist</span></span><br><span class="line"><span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">0</span>,width):</span><br><span class="line">    <span class="keyword">for</span> y <span class="keyword">in</span> range(<span class="number">0</span>,height):</span><br><span class="line">        data_image.append(<span class="number">255</span> - pixel[y,x])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将数据写到mnist文件中</span></span><br><span class="line">header = array(<span class="string">'B'</span>)</span><br><span class="line"><span class="comment"># 写入magic number</span></span><br><span class="line">header.extend([<span class="number">0</span>,<span class="number">0</span>,<span class="number">8</span>,<span class="number">3</span>])</span><br><span class="line"><span class="comment"># 写入数据数量，以一个图片为例</span></span><br><span class="line">header.extend([<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>])</span><br><span class="line"><span class="comment"># 写入行列像素数</span></span><br><span class="line">header.extend([<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">28</span>])</span><br><span class="line">header.extend([<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">28</span>])</span><br><span class="line"><span class="comment"># 写入数据</span></span><br><span class="line">header.extend(data_image)</span><br><span class="line"><span class="comment"># 最后写文件</span></span><br><span class="line">output_file = open(<span class="string">r'data.mnist'</span>, <span class="string">'wb'</span>)</span><br><span class="line">header.tofile(output_file)</span><br><span class="line">output_file.close()</span><br></pre></td></tr></table></figure>
+
+<p>以上是对图像数据的转换，标签数据的转换代码和以上代码基本一样，所以这里不再赘述。<br>有了这个方法，我们可以通过画图软件画上一堆自己手写的数字，通过python批量转化成mnist格式的数据，再让tensorflow进行测试，算出模型对我们自己手写数字的识别正确率。</p>
+<p>好了，以上就是我说的第一种让模型识别自己的手写数字的方法。不过，这个方法不能实时的识别我手写的数字，让人总觉得缺点什么。于是就有了第二种方法，这种方法将借助浏览器，js以及web server等工具将手写的数字实时的传给后台的模型进行识别，然后把结果回复给用户。不过这个方法就要等待下一篇文章来描述了。</p>
+
+        
+      </div>
+      <p class="repo-list-meta">
+        <span class="meta-info">
+          <span class="octicon octicon-calendar"></span>
+           <time datetime="2017-12-09T12:51:42.000Z" itemprop="datePublished">2017-12-09</time>
+        </span>
+
+        
+          <span class="meta-info">
+            <span class="octicon octicon-file-directory"></span>
+            <a href='/categories/DeepLearner/' title=''>DeepLearner</a>
+          </span>
+        
+      
+        <!--
+          
+        -->
+
+      </p>
+    </div>
+  </article>
+            
                   <article id="post-tensorflow-install" class="repo-list">
     <div class="repo-list-item" >
       <h3 class="repo-list-name" itemprop="name">
@@ -113,385 +528,6 @@
           <span class="meta-info">
             <span class="octicon octicon-file-directory"></span>
             <a href='/categories/DeepLearner/' title=''>DeepLearner</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-yield-in-cpp" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2017/10/23/yield-in-cpp/">C++20增加的生成器特性</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>不得不说，C++的语法真是越来越高级了，编译器为程序做的事情也是越来越多了。<br>比方说下面的这个程序，有两个点可以说说：</p>
-<ol>
-<li><p>生成器 —— 编译器为了实现生成器，不得不把这一个函数拆成两个部分，分为初始化部分和程序运行部分。初始化部分主要用来初始保存生成器运行状态的内存空间。每当co_yield返回后，这片内存空间需要保持当前变量的值，以方便程序再次进入生成器后继续运行。</p>
-</li>
-<li><p>异步 —— 在新的标准里，我们实现异步的编码成本更低了。编译器同样为我们做了大量工作，这个例子中，主线程执行到subfuc函数的co_await后，会启动两个线程，一个执行异步函数awaitfuc，另外一个等待这个函数结束执行后面的代码，而主线程本身则是跳出函数执行printf函数。没错，我们简简单单的一句话就让编译器生成了这么多代码。</p>
-</li>
-</ol>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;experimental/generator&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;future&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>::experimental;</span><br><span class="line"></span><br><span class="line">generator&lt;<span class="keyword">int</span>&gt; foo()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> p = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">int</span> q = <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="number">10</span>; j++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">            co_yield i + p;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> pp = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">std</span>::future&lt;<span class="keyword">int</span>&gt; awaitfuc()</span><br><span class="line">&#123;</span><br><span class="line">    Sleep(<span class="number">5000</span>);</span><br><span class="line">    co_return <span class="number">100</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">std</span>::future&lt;<span class="keyword">int</span>&gt; subfuc()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">auto</span> p = co_await <span class="built_in">std</span>::async(awaitfuc);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"return 100\n"</span>, p.get());</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i : foo()) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d "</span>, i);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    co_return <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    subfuc();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"hello\n"</span>);</span><br><span class="line">    Sleep(<span class="number">100000</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2017-10-23T07:00:50.000Z" itemprop="datePublished">2017-10-23</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-How-does-the-debugger-match-the-symbol-file" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2017/09/18/How-does-the-debugger-match-the-symbol-file/">调试器是怎么匹配程序的符号文件的</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>微软的天才软件工程师们设计的PE（Portable Executable）文件数据结构有极强的扩展性和兼容性。我们关心的符号文件信息存储在PE结构中，一个叫做Debug Directory的节里。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">0:000&gt; !dh -f ntdll</span><br><span class="line"></span><br><span class="line">File Type: DLL</span><br><span class="line">FILE HEADER VALUES</span><br><span class="line">    8664 machine (X64)</span><br><span class="line">       7 number of sections</span><br><span class="line">590296CE time date stamp Thu Apr 27 18:11:42 2017</span><br><span class="line"></span><br><span class="line">       0 file pointer to symbol table</span><br><span class="line">       0 number of symbols</span><br><span class="line">      F0 size of optional header</span><br><span class="line">    2022 characteristics</span><br><span class="line">            Executable</span><br><span class="line">            App can handle &gt;2gb addresses</span><br><span class="line">            DLL</span><br><span class="line"></span><br><span class="line">OPTIONAL HEADER VALUES</span><br><span class="line">     20B magic #</span><br><span class="line">    9.00 linker version</span><br><span class="line">   FB800 size of code</span><br><span class="line">   A9600 size of initialized data</span><br><span class="line">       0 size of uninitialized data</span><br><span class="line">       0 address of entry point</span><br><span class="line">    1000 base of code</span><br><span class="line">         ----- new -----</span><br><span class="line">00000000774e0000 image base</span><br><span class="line">    1000 section alignment</span><br><span class="line">     200 file alignment</span><br><span class="line">       3 subsystem (Windows CUI)</span><br><span class="line">    6.01 operating system version</span><br><span class="line">    6.01 image version</span><br><span class="line">    6.01 subsystem version</span><br><span class="line">  1AA000 size of image</span><br><span class="line">     400 size of headers</span><br><span class="line">  1B5DB0 checksum</span><br><span class="line">0000000000040000 size of stack reserve</span><br><span class="line">0000000000001000 size of stack commit</span><br><span class="line">0000000000100000 size of heap reserve</span><br><span class="line">0000000000001000 size of heap commit</span><br><span class="line">     140  DLL characteristics</span><br><span class="line">            Dynamic base</span><br><span class="line">            NX compatible</span><br><span class="line">  101200 [    F1A3] address [size] of Export Directory</span><br><span class="line">       0 [       0] address [size] of Import Directory</span><br><span class="line">  14E000 [   5A028] address [size] of Resource Directory</span><br><span class="line">  13B000 [   127EC] address [size] of Exception Directory</span><br><span class="line">  1A2E00 [    4300] address [size] of Security Directory</span><br><span class="line">  1A9000 [     4E8] address [size] of Base Relocation Directory</span><br><span class="line">   FC58C [      38] address [size] of Debug Directory</span><br><span class="line">       0 [       0] address [size] of Description Directory</span><br><span class="line">       0 [       0] address [size] of Special Directory</span><br><span class="line">       0 [       0] address [size] of Thread Storage Directory</span><br><span class="line">       0 [       0] address [size] of Load Configuration Directory</span><br><span class="line">       0 [       0] address [size] of Bound Import Directory</span><br><span class="line">       0 [       0] address [size] of Import Address Table Directory</span><br><span class="line">       0 [       0] address [size] of Delay Import Directory</span><br><span class="line">       0 [       0] address [size] of COR20 Header Directory</span><br><span class="line">       0 [       0] address [size] of Reserved Directory</span><br><span class="line">       </span><br></pre></td></tr></table></figure>
-
-<p>使用!dh命令可以显示PE文件的关键信息，这里可以看到Debug Directory的偏移地址是FC58C，大小是38个字节，其对应结构体是_IMAGE_DEBUG_DIRECTORY。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_DEBUG_DIRECTORY</span> &#123;</span></span><br><span class="line">    DWORD   Characteristics;</span><br><span class="line">    DWORD   TimeDateStamp;</span><br><span class="line">    WORD    MajorVersion;</span><br><span class="line">    WORD    MinorVersion;</span><br><span class="line">    DWORD   Type;</span><br><span class="line">    DWORD   SizeOfData;</span><br><span class="line">    DWORD   AddressOfRawData;</span><br><span class="line">    DWORD   PointerToRawData;</span><br><span class="line">&#125; IMAGE_DEBUG_DIRECTORY, *PIMAGE_DEBUG_DIRECTORY;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_UNKNOWN          0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_COFF             1</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_CODEVIEW         2</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_FPO              3</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_MISC             4</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_EXCEPTION        5</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_FIXUP            6</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_OMAP_TO_SRC      7</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_OMAP_FROM_SRC    8</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_BORLAND          9</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_RESERVED10       10</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DEBUG_TYPE_CLSID            11</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">0:000&gt; dt ntdll+FC58C ole32!_IMAGE_DEBUG_DIRECTORY</span><br><span class="line">   +0x000 Characteristics  : 0</span><br><span class="line">   +0x004 TimeDateStamp    : 0x590288a9</span><br><span class="line">   +0x008 MajorVersion     : 0</span><br><span class="line">   +0x00a MinorVersion     : 0</span><br><span class="line">   +0x00c Type             : 2</span><br><span class="line">   +0x010 SizeOfData       : 0x22</span><br><span class="line">   +0x014 AddressOfRawData : 0xfc5c8</span><br><span class="line">   +0x018 PointerToRawData : 0xfb9c8</span><br><span class="line">   </span><br></pre></td></tr></table></figure>
-
-<p>需要注意的是这三个数据成员，Type，SizeOfData以及AddressOfRawData。其中Type是Debug数据类型，SizeOfData是数据大小，AddressOfRawData是数据对应的内存地址。通过dt命令，可以查看结构体和数据的对应关系。从上面的输出可知Debug数据类型是CODEVIEW，数据大小是0x22个字节，数据的内存偏移是0xfc5c8。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">0:000&gt; db ntdll+0xfc5c8</span><br><span class="line">00000000`775dc5c8  52 53 44 53 49 7b 4d 74-81 7b 0c 47 a2 d8 a8 d2  RSDSI&#123;Mt.&#123;.G....</span><br><span class="line">00000000`775dc5d8  62 fc 8a 29 02 00 00 00-6e 74 64 6c 6c 2e 70 64  b..)....ntdll.pd</span><br><span class="line">00000000`775dc5e8  62 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00  b...............</span><br><span class="line">00000000`775dc5f8  00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00  ................</span><br><span class="line">00000000`775dc608  00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00  ................</span><br><span class="line">00000000`775dc618  00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00  ................</span><br><span class="line">00000000`775dc628  00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00  ................</span><br><span class="line">00000000`775dc638  00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00  ................</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>使用db命令查看这部分数据，我们可以发现ntdll.pdb的字符串。实际上，通过type已经知道了Debug数据类型是CODEVIEW，这样就可以确定数据的结构体是：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">CV_INFO_PDB</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  DWORD  CvSignature;</span><br><span class="line">  GUID Signature;</span><br><span class="line">  DWORD Age;</span><br><span class="line">  BYTE PdbFileName[];</span><br><span class="line">&#125; ;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">0:000&gt; dt _guid ntdll+0xfc5c8+4</span><br><span class="line">ntdll!_GUID</span><br><span class="line"> &#123;744d7b49-7b81-470c-a2d8-a8d262fc8a29&#125;</span><br><span class="line">   +0x000 Data1            : 0x744d7b49</span><br><span class="line">   +0x004 Data2            : 0x7b81</span><br><span class="line">   +0x006 Data3            : 0x470c</span><br><span class="line">   +0x008 Data4            : [8]  &quot;???&quot;</span><br><span class="line">可以看到CvSignature = “RSDS”， Signature = &#123;744d7b49-7b81-470c-a2d8-a8d262fc8a29&#125;，Age = 2，PdbFileName=“ntdll.pdb”。</span><br><span class="line"></span><br><span class="line">0:000&gt; !lmi ntdll</span><br><span class="line">Loaded Module Info: [ntdll] </span><br><span class="line">         Module: ntdll</span><br><span class="line">   Base Address: 00000000774e0000</span><br><span class="line">     Image Name: ntdll.dll</span><br><span class="line">   Machine Type: 34404 (X64)</span><br><span class="line">     Time Stamp: 590296ce Thu Apr 27 18:11:42 2017</span><br><span class="line">           Size: 1aa000</span><br><span class="line">       CheckSum: 1b5db0</span><br><span class="line">Characteristics: 2022  perf</span><br><span class="line">Debug Data Dirs: Type  Size     VA  Pointer</span><br><span class="line">             CODEVIEW    22, fc5c8,   fb9c8 RSDS - GUID: &#123;744D7B49-7B81-470C-A2D8-A8D262FC8A29&#125;</span><br><span class="line">               Age: 2, Pdb: ntdll.pdb</span><br><span class="line">                CLSID     4, fc5c4,   fb9c4 [Data not mapped]</span><br><span class="line">     Image Type: FILE     - Image read successfully from debugger.</span><br><span class="line">                 C:\Windows\SYSTEM32\ntdll.dll</span><br><span class="line">    Symbol Type: PDB      - Symbols loaded successfully from image path.</span><br><span class="line">                 d:\symbols\ntdll.pdb\744D7B497B81470CA2D8A8D262FC8A292\ntdll.pdb</span><br><span class="line">    Load Report: public symbols , not source indexed </span><br><span class="line">                 d:\symbols\ntdll.pdb\744D7B497B81470CA2D8A8D262FC8A292\ntdll.pdb</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>再来看看Windbg匹配ntdll.pdb的真实路径，d:\symbols\ntdll.pdb\744D7B497B81470CA2D8A8D262FC8A292\ntdll.pdb。对比一下就可以发现其中的奥秘。原来Windbg识别执行程序的PDB路径是依赖guid，age和PdbFileName。具体来说就是 {符号设置路径}{PdbFileName}{guid}{age}{PdbFileName}。<br>如果想写程序获取这些信息并不需要像上面那样解析PE文件结构，实际上微软给我们提供了这方面的支持，在dbghelp.dll里导出了一个叫做SymSrvGetFileIndexInfo的函数，这个函数获得的SYMSRV_INDEX_INFO结构中，就包含以上我们需要的数据。</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2017-09-18T06:31:32.000Z" itemprop="datePublished">2017-09-18</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Debugging/' title=''>Debugging</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-test-math-plugin" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2017/08/17/test-math-plugin/">测试math-plugin</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><h2 id="Inline"><a href="#Inline" class="headerlink" title="Inline"></a>Inline</h2><p>Simple inline \(a = b + c\).</p>
-<p>This equation \(\cos 2\theta = \cos^2 \theta - \sin^2 \theta =  2 \cos^2 \theta - 1 \) is inline.</p>
-<h2 id="Block"><a href="#Block" class="headerlink" title="Block"></a>Block</h2><p>$$\frac{\partial u}{\partial t}<br>= h^2 \left( \frac{\partial^2 u}{\partial x^2} +<br>\frac{\partial^2 u}{\partial y^2} +<br>\frac{\partial^2 u}{\partial z^2}\right)$$</p>
-<span>$$\begin{aligned}
-\dot{x} &amp; = \sigma(y-x) \\
-\dot{y} &amp; = \rho x - y - xz \\
-\dot{z} &amp; = -\beta z + xy
-\end{aligned}$$</span><!-- Has MathJax -->
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2017-08-17T02:28:17.000Z" itemprop="datePublished">2017-08-17</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-            <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Test/">Test</a></li></ul>
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-tip-about-com" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近遇到朋友的一个程序崩溃，原因是接口没有释放的时候调用了CoUninitialize，接着才释放接口。这个应该是个很明显的问题，但是朋友告诉我以前代码就是这个样子的，没有崩溃过，最近修改了部分代码但并不是这一块的。为了看看究竟什么回事，我把没有崩溃的程序抓了dump，看了COM的初始化引用计数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; dt _teb @$teb ReservedForOle</span><br><span class="line">ntdll!_TEB</span><br><span class="line">   +0x1758 ReservedForOle : 0x00000000`00271b00 Void</span><br><span class="line"></span><br><span class="line">0:000&gt; dt ole32!SOleTlsData 0x00000000`00271b00 cComInits pNativeApt</span><br><span class="line">   +0x028 cComInits  : 5</span><br><span class="line">   +0x080 pNativeApt : 0x00000000`00272680 CComApartment</span><br><span class="line">   </span><br><span class="line">0:000&gt; dt 0x00000000`00272680 CComApartment _AptKind</span><br><span class="line">ole32!CComApartment</span><br><span class="line">   +0x010 _AptKind : 4 ( APTKIND_APARTMENTTHREADED )</span><br></pre></td></tr></table></figure>
-
-<p>没有崩溃的时候，引用计数确实不为0，也能看出是个STA。后来朋友发现，之所以之前没有崩溃，是因为之前线程加载的某个dll中，有初始化COM的调用，所以引用计数不为0。后来移开了这个dll，问题就出现了。</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2017-07-09T03:28:15.000Z" itemprop="datePublished">2017-07-09</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-gotcha-sdk-monitor-update" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2017/07/02/gotcha-sdk-monitor-update/">gotcha sdk 文件监控功能更新</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在15年的一篇blog中，我介绍了gotcha sdk。<a href="/2015/11/24/gotcha-sdk/" title="gotcha sdk 全盘文件名搜索开发库">gotcha sdk 全盘文件名搜索开发库</a></p>
-<p>当时gotcha sdk没有提供文件监控功能，也就是说当搜索文件发生变化的时候，这个变化不会体现到搜索结果列表中。其实这个功能一直在todo list中，只不过忙的时候没时间写这部分代码，闲的时候又忘了。前几天终于有时间把这部分代码补上，升级了sdk。</p>
-<p>gotcha sdk 代码SVN:<br><a href="http://code.taobao.org/svn/gotcha_sdk/" target="_blank" rel="noopener">http://code.taobao.org/svn/gotcha_sdk/</a></p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2017-07-02T07:56:54.000Z" itemprop="datePublished">2017-07-02</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/NTInternals/' title=''>NTInternals</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-switch-to-session-0" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2017/06/25/switch-to-session-0/">切换到session 0</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>这是一个小技巧，可以帮助我们从session 1切换到session 0，并且获得system权限。有了system权限，可以做一些admin做不了的事情，具体哪些事情大伙可以自己挖掘。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">切换到session 0：    rundll32 winsta.dll WinStationSwitchToServicesSession</span><br><span class="line">切换会原session：    rundll32 winsta.dll WinStationRevertFromServicesSession</span><br></pre></td></tr></table></figure>
-
-<p>但是如果直接切换到session 0，会发现一个问题，我们没有桌面程序，所以什么事情也做不了。解决方法也很简单，创建一个explorer就可以了。但是普通方法创建explorer，怎么会不能创建到session 0，于是这里可想而知，我们需要一个服务来创建explorer。专门写一个服务程序未免太麻烦，这里可以使用cmd来快速创建explorer。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sc create desktop0 binpath= &quot;cmd /c start explorer.exe&quot; type= own type= interact</span><br><span class="line">net start desktop0</span><br></pre></td></tr></table></figure>
-
-<p>虽然cmd不是服务，但是也会被运行起来，只不过不能与服务管理器交互，所以在超时的时候会被结束。不过那个时候已经没关系了，因为explorer已经创建起来了。接下来就可以切换了session 0，用system权限管理电脑了。</p>
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2017-06-25T13:48:24.000Z" itemprop="datePublished">2017-06-25</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-0cchext-dttoc-command" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近给<a href="https://github.com/0cch/0cchext/releases/tag/1.0.16.3.55" target="_blank" rel="noopener">0cchext</a>添加了一个实用的逆向命令，dttoc，这个命令可以把dt命令输出的结构体转化为C的结构，方便我们做逆向还原工作。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line">0:000&gt; !0cchext.dttoc nt!_peb</span><br><span class="line">struct _PEB &#123;</span><br><span class="line">    BYTE InheritedAddressSpace;</span><br><span class="line">    BYTE ReadImageFileExecOptions;</span><br><span class="line">    BYTE BeingDebugged;</span><br><span class="line">    union &#123;</span><br><span class="line">        BYTE BitField;</span><br><span class="line">        struct &#123;</span><br><span class="line">            BYTE ImageUsesLargePages:1;</span><br><span class="line">            BYTE IsProtectedProcess:1;</span><br><span class="line">            BYTE IsImageDynamicallyRelocated:1;</span><br><span class="line">            BYTE SkipPatchingUser32Forwarders:1;</span><br><span class="line">            BYTE IsPackagedProcess:1;</span><br><span class="line">            BYTE IsAppContainer:1;</span><br><span class="line">            BYTE IsProtectedProcessLight:1;</span><br><span class="line">            BYTE IsLongPathAwareProcess:1;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;;</span><br><span class="line">    VOID* Mutant;</span><br><span class="line">    VOID* ImageBaseAddress;</span><br><span class="line">    _PEB_LDR_DATA* Ldr;</span><br><span class="line">    _RTL_USER_PROCESS_PARAMETERS* ProcessParameters;</span><br><span class="line">    VOID* SubSystemData;</span><br><span class="line">    VOID* ProcessHeap;</span><br><span class="line">    _RTL_CRITICAL_SECTION* FastPebLock;</span><br><span class="line">    _SLIST_HEADER* AtlThunkSListPtr;</span><br><span class="line">    VOID* IFEOKey;</span><br><span class="line">    union &#123;</span><br><span class="line">        DWORD CrossProcessFlags;</span><br><span class="line">        struct &#123;</span><br><span class="line">            DWORD ProcessInJob:1;</span><br><span class="line">            DWORD ProcessInitializing:1;</span><br><span class="line">            DWORD ProcessUsingVEH:1;</span><br><span class="line">            DWORD ProcessUsingVCH:1;</span><br><span class="line">            DWORD ProcessUsingFTH:1;</span><br><span class="line">            DWORD ReservedBits0:27;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;;</span><br><span class="line">    union &#123;</span><br><span class="line">        VOID* KernelCallbackTable;</span><br><span class="line">        VOID* UserSharedInfoPtr;</span><br><span class="line">    &#125;;</span><br><span class="line">    DWORD SystemReserved[1];</span><br><span class="line">    _SLIST_HEADER* AtlThunkSListPtr32;</span><br><span class="line">    VOID* ApiSetMap;</span><br><span class="line">    DWORD TlsExpansionCounter;</span><br><span class="line">    VOID* TlsBitmap;</span><br><span class="line">    DWORD TlsBitmapBits[2];</span><br><span class="line">    VOID* ReadOnlySharedMemoryBase;</span><br><span class="line">    VOID* SparePvoid0;</span><br><span class="line">    VOID** ReadOnlyStaticServerData;</span><br><span class="line">    VOID* AnsiCodePageData;</span><br><span class="line">    VOID* OemCodePageData;</span><br><span class="line">    VOID* UnicodeCaseTableData;</span><br><span class="line">    DWORD NumberOfProcessors;</span><br><span class="line">    DWORD NtGlobalFlag;</span><br><span class="line">    _LARGE_INTEGER CriticalSectionTimeout;</span><br><span class="line">    DWORD HeapSegmentReserve;</span><br><span class="line">    DWORD HeapSegmentCommit;</span><br><span class="line">    DWORD HeapDeCommitTotalFreeThreshold;</span><br><span class="line">    DWORD HeapDeCommitFreeBlockThreshold;</span><br><span class="line">    DWORD NumberOfHeaps;</span><br><span class="line">    DWORD MaximumNumberOfHeaps;</span><br><span class="line">    VOID** ProcessHeaps;</span><br><span class="line">    VOID* GdiSharedHandleTable;</span><br><span class="line">    VOID* ProcessStarterHelper;</span><br><span class="line">    DWORD GdiDCAttributeList;</span><br><span class="line">    _RTL_CRITICAL_SECTION* LoaderLock;</span><br><span class="line">    DWORD OSMajorVersion;</span><br><span class="line">    DWORD OSMinorVersion;</span><br><span class="line">    WORD OSBuildNumber;</span><br><span class="line">    WORD OSCSDVersion;</span><br><span class="line">    DWORD OSPlatformId;</span><br><span class="line">    DWORD ImageSubsystem;</span><br><span class="line">    DWORD ImageSubsystemMajorVersion;</span><br><span class="line">    DWORD ImageSubsystemMinorVersion;</span><br><span class="line">    DWORD ActiveProcessAffinityMask;</span><br><span class="line">    DWORD GdiHandleBuffer[34];</span><br><span class="line">    void* PostProcessInitRoutine;</span><br><span class="line">    VOID* TlsExpansionBitmap;</span><br><span class="line">    DWORD TlsExpansionBitmapBits[32];</span><br><span class="line">    DWORD SessionId;</span><br><span class="line">    _ULARGE_INTEGER AppCompatFlags;</span><br><span class="line">    _ULARGE_INTEGER AppCompatFlagsUser;</span><br><span class="line">    VOID* pShimData;</span><br><span class="line">    VOID* AppCompatInfo;</span><br><span class="line">    _UNICODE_STRING CSDVersion;</span><br><span class="line">    _ACTIVATION_CONTEXT_DATA* ActivationContextData;</span><br><span class="line">    _ASSEMBLY_STORAGE_MAP* ProcessAssemblyStorageMap;</span><br><span class="line">    _ACTIVATION_CONTEXT_DATA* SystemDefaultActivationContextData;</span><br><span class="line">    _ASSEMBLY_STORAGE_MAP* SystemAssemblyStorageMap;</span><br><span class="line">    DWORD MinimumStackCommit;</span><br><span class="line">    _FLS_CALLBACK_INFO* FlsCallback;</span><br><span class="line">    _LIST_ENTRY FlsListHead;</span><br><span class="line">    VOID* FlsBitmap;</span><br><span class="line">    DWORD FlsBitmapBits[4];</span><br><span class="line">    DWORD FlsHighIndex;</span><br><span class="line">    VOID* WerRegistrationData;</span><br><span class="line">    VOID* WerShipAssertPtr;</span><br><span class="line">    VOID* pUnused;</span><br><span class="line">    VOID* pImageHeaderHash;</span><br><span class="line">    union &#123;</span><br><span class="line">        DWORD TracingFlags;</span><br><span class="line">        struct &#123;</span><br><span class="line">            QWORD HeapTracingEnabled:1;</span><br><span class="line">            QWORD CritSecTracingEnabled:1;</span><br><span class="line">            QWORD LibLoaderTracingEnabled:1;</span><br><span class="line">            QWORD SpareTracingBits:29;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;;</span><br><span class="line">    QWORD CsrServerReadOnlySharedMemoryBase;</span><br><span class="line">    DWORD TppWorkerpListLock;</span><br><span class="line">    _LIST_ENTRY TppWorkerpList;</span><br><span class="line">    VOID* WaitOnAddressHashTable[128];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2017-05-02T03:33:24.000Z" itemprop="datePublished">2017-05-02</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Debugging/' title=''>Debugging</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-delphi-exception" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2017/04/04/delphi-exception/">Delphi异常0EEDFADE</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>0EEDFADE是Delphi内部异常代码，该异常通常有7个参数，我们用的上的是第二个参数，这个参数指向的是Exception的对象，通过这个对象，我们就可以查出异常的一些信息。</p>
-<p>以Delphi XE2为例,Class name的偏移为（不同的版本偏移有所不同）：  </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x86_vmtClassName = -56(0x38);</span><br><span class="line">x64_vmtClassName = -112(0x70);</span><br></pre></td></tr></table></figure>
-
-<p>我们可以用如下命令获取相关信息：  </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x86: da poi(poi(exception_object)-38)+1;du /c 100 poi(exception_object+4)  </span><br><span class="line">x64: da poi(poi(exception_object)-70)+1;du /c 100 poi(exception_object+8)</span><br></pre></td></tr></table></figure>
-
-<p>以上命令就能获取异常的类名，而exception_object+sizeof(pointer)则是Exception Message的所在偏移，这是一个unicode string。实际效果如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0:002&gt; da poi(poi(003a2800)-38)+1;du /c 100 poi(003a2800 +4)</span><br><span class="line">00b9ec47  &quot;TTransportExceptionUnknown&quot;</span><br><span class="line">00375b8c  &quot;ServerTransport.Accept() may not return NULL&quot;</span><br></pre></td></tr></table></figure>
-
-<p>当然，我们也可以设置event filter去截获异常：  </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x86: sxe -c &quot;da poi(poi(poi(@ebp+1c))-38)+1;du /c 100 poi(poi(@ebp+1c)+4)&quot; 0EEDFADE</span><br><span class="line">x64: sxe -c &quot;da poi(poi(poi(@rbp+48))-70)+1;du /c 100 poi(poi(@rbp+48)+8)&quot; 0EEDFADE</span><br></pre></td></tr></table></figure>
-
-
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2017-04-04T02:03:16.000Z" itemprop="datePublished">2017-04-04</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Debugging/' title=''>Debugging</a>
-          </span>
-        
-      
-        <!--
-          
-        -->
-
-      </p>
-    </div>
-  </article>
-            
-                  <article id="post-set-dpi" class="repo-list">
-    <div class="repo-list-item" >
-      <h3 class="repo-list-name" itemprop="name">
-        
-  
-      <a class="article-title" href="/2017/03/08/set-dpi/">Windows 10设置系统DPI</a>
-  
-
-      </h3>
-      <div class="repo-list-description">
-        
-          <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>现在的显示器分辨率越来越高2K，4K甚至5K，而很多程序并不支持这一的高分辨率，所以这些程序在桌面上会显示的很小，好在Windows 8以后的系统中，我们可以设置DPI来放大程序的窗口，如下图所示：  </p>
-<p><a href="/uploads/2017/03/20170309145111.png"><img src="/uploads/2017/03/20170309145111.png" alt="20170309145111"></a></p>
-<p>但是，微软并没有把设置DPI的接口文档化。所以我把这个功能逆了一下，还原的代码如下：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">	BOOL ApplyDpiSetting(int val);</span></span><br><span class="line"><span class="comment">	val 为DPI要设置的数字，例如0是100%，1是125%，以此类推，注意250%以后是300%。</span></span><br><span class="line"><span class="comment">	另外上面的对应关系只是通常情况下的，还有可能有其他对应关系，例如0是300%，-1是250%等等。</span></span><br><span class="line"><span class="comment">	具体怎么对应可以通过GetDpiForMonitor函数来获取</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">SET_DPI</span> &#123;</span></span><br><span class="line">    DISPLAYCONFIG_DEVICE_INFO_HEADER header;</span><br><span class="line">    ULONG val;</span><br><span class="line">&#125; SET_DPI;</span><br><span class="line"></span><br><span class="line"><span class="function">BOOL <span class="title">ApplyDpiSetting</span><span class="params">(ULONG val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    UINT32 num_of_paths = <span class="number">0</span>;</span><br><span class="line">    UINT32 num_of_modes = <span class="number">0</span>;</span><br><span class="line">    DISPLAYCONFIG_PATH_INFO* display_paths = <span class="literal">NULL</span>; </span><br><span class="line">    DISPLAYCONFIG_MODE_INFO* display_modes = <span class="literal">NULL</span>;</span><br><span class="line">    BOOL retval = FALSE;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">do</span> </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, </span><br><span class="line">            &amp;num_of_paths, </span><br><span class="line">            &amp;num_of_modes) != ERROR_SUCCESS) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        display_paths = (DISPLAYCONFIG_PATH_INFO*)<span class="built_in">calloc</span>((<span class="keyword">int</span>)num_of_paths, <span class="keyword">sizeof</span>(DISPLAYCONFIG_PATH_INFO));</span><br><span class="line">        display_modes = (DISPLAYCONFIG_MODE_INFO*)<span class="built_in">calloc</span>((<span class="keyword">int</span>)num_of_modes, <span class="keyword">sizeof</span>(DISPLAYCONFIG_MODE_INFO));</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, </span><br><span class="line">            &amp;num_of_paths, </span><br><span class="line">            display_paths, </span><br><span class="line">            &amp;num_of_modes, </span><br><span class="line">            display_modes, </span><br><span class="line">            <span class="literal">NULL</span>) != ERROR_SUCCESS) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        SET_DPI dpi;</span><br><span class="line">        dpi.header.type = (DISPLAYCONFIG_DEVICE_INFO_TYPE)<span class="number">0xFFFFFFFC</span>;</span><br><span class="line">        dpi.header.size = <span class="keyword">sizeof</span>(dpi);</span><br><span class="line">        dpi.header.adapterId = display_paths[<span class="number">0</span>].sourceInfo.adapterId;</span><br><span class="line">        dpi.header.id = display_paths[<span class="number">0</span>].sourceInfo.id;</span><br><span class="line">        dpi.val = val;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (DisplayConfigSetDeviceInfo((DISPLAYCONFIG_DEVICE_INFO_HEADER*)&amp;dpi) == ERROR_SUCCESS) &#123;</span><br><span class="line">            retval = TRUE;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">while</span> (<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (display_paths) &#123;</span><br><span class="line">        <span class="built_in">free</span>(display_paths);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (display_modes) &#123;</span><br><span class="line">        <span class="built_in">free</span>(display_modes);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> retval;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-        
-      </div>
-      <p class="repo-list-meta">
-        <span class="meta-info">
-          <span class="octicon octicon-calendar"></span>
-           <time datetime="2017-03-08T06:47:37.000Z" itemprop="datePublished">2017-03-08</time>
-        </span>
-
-        
-          <span class="meta-info">
-            <span class="octicon octicon-file-directory"></span>
-            <a href='/categories/Tips/' title=''>Tips</a>
           </span>
         
       
@@ -605,7 +641,7 @@
 
     <h3>Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">June 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">March 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">February 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">July 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">February 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">September 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04/">April 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/03/">March 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/12/">December 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/10/">October 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/11/">November 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/08/">August 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/02/">February 2012</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/10/">October 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/09/">September 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/08/">August 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/06/">June 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/05/">May 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/04/">April 2011</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/02/">February 2011</a></li></ul>
     </div>
   </div>
 
@@ -616,7 +652,7 @@
     
       <div class="pagination text-align">
           <div class="btn-group">
-              <a class="extend prev" rel="prev" href="/page/2/">&laquo;</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/4/">&raquo;</a>
+              <a class="extend prev" rel="prev" href="/page/2/">&laquo;</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><a class="page-number" href="/page/15/">15</a><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/4/">&raquo;</a>
           </div>
       </div>
     
