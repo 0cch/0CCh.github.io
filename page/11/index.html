@@ -80,6 +80,151 @@
         <div class="col-sm-8 blog-main">
           
   
+    <article id="post-ssd-trime58a9fe883bde79a84e4b880e4ba9be8aeb0e5bd95" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/02/11/ssd-trime58a9fe883bde79a84e4b880e4ba9be8aeb0e5bd95/">SSD TRIM功能的一些记录</a>
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2014/02/11/ssd-trime58a9fe883bde79a84e4b880e4ba9be8aeb0e5bd95/" class="article-date"><time datetime="2014-02-11T07:39:35.000Z" itemprop="datePublished">2014-02-11</time></a>
+</div>
+
+    <div class="article-author">admin</div>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>如今SSD越来越普及了，本来就想了解下关于SSD的一些情况，正好工作中有机会接触这一块的东西，很幸运。这里先记录一些已知知识，方便以后自己查阅。</p>
+<p>说到SSD，第一个想到的就是读写速度快。那个就要归功于其存储原理，关于SSD存储原理的文章很多，我这里简单通俗的描述一下：  </p>
+<ol>
+<li>SSD存储不同于机械硬盘，他没有机械硬盘所谓的扇区、柱面，磁头。查询逻辑地址上的数据没有机械上的寻址（没有马达）。SSD的存储介质是闪存。  </li>
+<li>SSD存储数据被覆盖的时候不会马上覆盖原有数据，而是继续往之前没有写的闪存上写。因为闪存擦除次数非常有限，同一个地方小范围反复擦除会导致整个SSD的寿命缩短。  </li>
+<li>SSD内部是有自己的GC（垃圾回收器），这个GC擦除不需要的数据以及调整需要的数据的位置，能帮助SSD进行擦除平衡。  </li>
+</ol>
+<p>而这里重点要说到的TRIM功能就是辅助GC更好工作的一环。从Windows 7开始，文件系统上已经集成了自动TRIM功能。但是早些时候的系统，例如Windows XP，就没有这样的功能了。所以手动TRIM工具就出现了。比如Intel的固态硬盘工具集，其中就包含了手动TRIM功能。也许，有人回想，SSD的高端用户团体怎么会还在使用XP呢？不幸的是还真有这样一群坚守XP的SSD用户。下面就记录一些关于执行TRIM要做的事情。</p>
+<p>先决条件：  </p>
+<ol>
+<li>要执行TRIM，首先要确保自己的硬盘模式是AHCI的。  </li>
+<li>然后，系统需要时XP SP2 RC2以上（我想就算是XP的用户，现在也应该都是SP3了吧）。  </li>
+</ol>
+<p>上面的第一条非常重要，因为目前世面上的大部分盗版盘和所有正版安装盘，都是没有带AHCI驱动的。也就是说，如果你的BIOS上把硬盘模式调整为AHCI，那你回没有任何意外看到一个蓝屏。少部分盗版系统盘会说明自己是支持AHCI的，否则，就需要在IDE/ATA模式下，安装系统，然后去网上找到你的BIOS所指定AHCI驱动，安装后在把BIOS调整回AHCI。</p>
+<p>最后，来看看执行TRIM的一种思路：  </p>
+<ol>
+<li>判断系统版本，硬盘的控制器，SSD是否支持TRIM。  </li>
+<li>创建多个1G的文件，直到占满所有磁盘空间。  </li>
+<li>获得这些文件的基于卷的簇。  </li>
+<li>将簇转换成基于卷的逻辑地址。  </li>
+<li>将基于卷的逻辑地址转换成基于硬盘的逻辑地址。  </li>
+<li>按照ATA文档，发送TRIM指令。  </li>
+<li>删除所有创建的1G文件。  </li>
+</ol>
+<p>上面有几个和ATA相关的简单介绍下。首先是SSD是否支持TRIM的问题，需要发送DEVICE IDENTIFY指令，获得硬盘数据，其中WORD 169表示是否支持TRIM，如果是1就是支持了。其次，发生TRIM指令，实际上发送的是DATA SET MANAGEMENT指令，其中Features register设置为1，即为TRIM指令了。至于如何在没有驱动的情况下发生这些指令（这也是我要求系统版本要是XP SP2 RC2以上的原因），可以利用DeviceIOControl函数发送IOCTL_ATA_PASS_THROUGH来完成。</p>
+<p>这些记录已经很详细了，那几百行的代码就没必要贴出来了。</p>
+<p>另外TRIM还有一个思路，实现起来可以麻烦一些，简单说说吧：  </p>
+<ol>
+<li>首先获得NTFS的Bitmap，获得空闲的簇。  </li>
+<li>转换空闲的簇到基于硬盘的逻辑地址。  </li>
+<li>发送TRIM指令  </li>
+</ol>
+<p>之所以说这个比较麻烦，是因为他需要保证在进行TRIM的时候，NTFS不发生写操作。方法就是LOCK VOLUME，但不幸的是，系统盘是没法LOCK的，所以这就不得不写一个Native Application，放在开机的时候运行，也就是Check Disk运行的时机。这个思路的优点是：TRIM全面，精确，速度快。</p>
+<p>差不多就是这些了，希望这个记录对自己和他人都有所帮助。</p>
+
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2014/02/11/ssd-trime58a9fe883bde79a84e4b880e4ba9be8aeb0e5bd95/" data-id="ckk4wflyz0043h4up3l732a70" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-e4b880e782b9e69c89e585b3ntdlle4b8ade68f90e4be9be79a84bitmape7b3bbe58897e587bde695b0" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/01/18/e4b880e782b9e69c89e585b3ntdlle4b8ade68f90e4be9be79a84bitmape7b3bbe58897e587bde695b0/">一点有关Ntdll中提供的bitmap系列函数</a>
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2014/01/18/e4b880e782b9e69c89e585b3ntdlle4b8ade68f90e4be9be79a84bitmape7b3bbe58897e587bde695b0/" class="article-date"><time datetime="2014-01-17T18:19:28.000Z" itemprop="datePublished">2014-01-18</time></a>
+</div>
+
+    <div class="article-author">admin</div>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>我们都知道STL中提供了一个bitset类，但是在我真正操作有关文件系统的时候，发现这个类提供的功能并不能满足我的需求。幸运的是Ntdll中提供了一套操作bitmap的API。于是我抽了点时间把这几个API总结了一下，写成了一个类。这个类只是简单的对Ntdll的bitmap相关API做很浅的封装，没啥好说的。要说的是这套bitmap的API用起来确实很方便。<br>这些API包括：<br>RtlInitializeBitMap<br>RtlFindClearBits<br>RtlFindClearBitsAndSet<br>RtlFindClearRuns<br>RtlFindLastBackwardRunClear<br>RtlFindLongestRunClear<br>RtlFindNextForwardRunClear<br>RtlFindSetBits<br>RtlFindSetBitsAndClear<br>RtlSetAllBits<br>RtlSetBits<br>RtlClearAllBits<br>RtlClearBits<br>RtlNumberOfClearBits<br>RtlNumberOfSetBits<br>RtlAreBitsClear<br>RtlAreBitsSet<br>以上这些，在MSDN上都能查到API的详细文档介绍。唯一不方便的就是使用的时候需要GetProcAddress一下。所以我为了自己以后使用方便才写了一个类。</p>
+<p>在项目（<a target="_blank" rel="noopener" href="https://github.com/0cch/bitmap">https://github.com/0cch/bitmap</a>）中，bitmap_class是封装类，整个工程是一个使用这套API，获得文件系统的bitmap，并且查找空闲簇的一个例子。</p>
+<p><a href="/uploads/2014/01/2014-01-18_101801.png"><img src="/uploads/2014/01/2014-01-18_101801.png" alt="2014-01-18_101801"></a></p>
+
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2014/01/18/e4b880e782b9e69c89e585b3ntdlle4b8ade68f90e4be9be79a84bitmape7b3bbe58897e587bde695b0/" data-id="ckk4wflyy0041h4up80gvem7l" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-e680bbe7bb93e5928ce5b195e69c9befbc9ae8b4a8e9878fe6af94e8be83e5a4a7e782b9efbc8ce5b0b1e4b88de5aeb9e69893e8a2abe9a38ee590b9e58aa8" class="article article-type-post" itemscope itemprop="blogPost">
 
   <header class="article-header">
@@ -566,171 +711,6 @@
 
 
   
-    <article id="post-floppy-disk-controllere7bc96e7a88b" class="article article-type-post" itemscope itemprop="blogPost">
-
-  <header class="article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2013/09/21/floppy-disk-controllere7bc96e7a88b/">Floppy Disk Controller编程</a>
-    </h1>
-  
-
-
-  </header>
-
-  <div class="article-meta">
-    <div class="article-datetime">
-  <a href="/2013/09/21/floppy-disk-controllere7bc96e7a88b/" class="article-date"><time datetime="2013-09-21T00:39:56.000Z" itemprop="datePublished">2013-09-21</time></a>
-</div>
-
-    <div class="article-author">admin</div>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/MiniKernel/">MiniKernel</a>
-  </div>
-
-
-  </div>
-  <div class="article-inner">
-
-    <div class="article-entry" itemprop="articleBody">
-      
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p><a href="/uploads/2013/09/N82077AA.jpg"><img src="/uploads/2013/09/N82077AA.jpg" alt="N82077AA"></a></p>
-<p>看的没错，这篇文章将描述一些关于Floppy Disk Controller的编程知识。我们知道，在当今的计算机硬件体系中，软盘驱动器是一个已经完全被淘汰的设备，那么为什么还要有这样一篇文章？原因很简单，如果想构建自己的操作系统，必须有相应的存储介质，而软盘正是这样一个好的存储介质。他的容量虽然很小，但是却完全足够应付我们的内核程序，另一方面软盘驱动器的控制相对于之前我所介绍的硬盘的控制要简单的多，而且关于软盘驱动器控制的教程和文章在互联网上也非常的多（虽然绝大部分都是英文的）。基于以上几点，我认为还是有必要把自己学到的知识写下了分享。</p>
-<p>Floppy Disk Controller，中文称为：软盘控制器，简称：FDC，是一个用来控制软盘驱动器的芯片。在1980年代到1990年代，软盘控制器普遍使用于个人电脑以及与IBM PC兼容的机型上，如 8272A、82078、82077SL以及82077AA，其中82077AA是最先进的一款芯片（1991年开始生产）。除了软盘控制器，软驱本身也在几十年的历史中留下了许多机型，如图所示：<br><a href="/uploads/2013/09/floppy_types.png"><img src="/uploads/2013/09/floppy_types.png" alt="floppy_types"></a><br>实际上，我从刚刚接触软盘到最后软盘被淘汰，只使用过3.5英寸1.44MB的软盘，其他型号完全没有接触过。</p>
-<p>对于CPU还运行在实模式下的启动引导程序和内核程序，我们可以调用BIOS提供的函数来完成软盘的访问，其中中断号是13h（INT13h），功能号为2（AH=2）是读取操作，功能号为3（AH=3）时是写入操作。实模式下通过中断读写软盘的资料很多（包括中文资料），如果想了解更多的实模式下访问软盘的知识，可以上网google一下，我这里就不做详细的介绍了。</p>
-<p>虽然调用中断访问软盘简单，但是我们不能让自己的内核总是跑在实模式下啊。所以我们需要写一个能跑在保护模式下的软驱驱动，要完成这样的驱动，就必须对FDC进行编程了。不过在此之前，我们需要知道，到底PC上有没有软驱。要获得这个信息，我们需要读取CMOS，然后解析读取的信息即可。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mov dx, 70h</span><br><span class="line">mov al, 10h</span><br><span class="line">out dx, al</span><br><span class="line"></span><br><span class="line">mov dx, 71h</span><br><span class="line">in  al, dx</span><br><span class="line"></span><br><span class="line">mov f_b, al</span><br><span class="line">and f_b, 0fh</span><br><span class="line">shr al, 4</span><br><span class="line">mov f_a, al</span><br><span class="line"></span><br><span class="line">f_a db	0h</span><br><span class="line">f_b db	0h</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>要从CMOS中获得软盘信息，我们需要先给对应的端口设置正确的索引，然后再去数据端口读取数据。具体做法是设置0x70端口为0x10，然后读取0x71端口。读取到的信息都放在一个字节中，需要把字节分为两个部分，高四位是驱动器A的类型索引号，低四位是驱动器B的类型索引号。索引号与软盘类型的对应关系如下图所示：<br><a href="/uploads/2013/09/cmos_floppytype.png"><img src="/uploads/2013/09/cmos_floppytype.png" alt="cmos_floppytype"></a></p>
-<p>在确认了软驱存在的情况下，接下来就可以对FDC进行编程了。先来看看FDC的几个基本知识。</p>
-<p><strong>寻址方式</strong><br>软盘驱动器使用CHS寻址方式。软盘介质总是有两个头（面），但磁道数和每个磁道的扇区扇区数是不一定的。通常情况下，1.44mb的软盘，他有80个磁道和每个磁道有18个扇区。另外值得注意的是，磁道和磁头是从0开始计算，但是扇区是从1开始计数的。即，有效的磁道通常为0到79，磁头为0或1，而扇区号是1到18的。如果访问0号扇区，那么一定会引起访问错误的。</p>
-<p><strong>数据传输方式</strong><br>和硬盘的数据传输方式一样，软盘也支持PIO和DMA两种数据传输方式。<br>软盘使用的通常是ISA DMA方式（这和 PCI BusMastering DMA完全是两码事）。使用DMA传输的方法，简单来说就是这是DMA的通道2，如传输的字节数以及对应的物理地址。物理地址必须是以64k为边界的。当然，还需要设置IRQ6，当数据传输结束的时候，控制器将发送一个IRQ6的中断。用DMA传输数据，这个过程是不需要占用CPU时间的，对于多任务的系统是比较好的选择。缺点是ISA DMA这种古老的DMA比PIO还要慢。<br>PIO数据传输既可以使用轮询，也能使用中断。使用PIO模式传输数据的速度比DMA传输快10％，但这会消耗CPU周期，是一个巨大的成本问题。然而，如果我们的操作系统或应用程序是单任务的，那么没有别的程序需要CPU，这样你就也可以使用PIO模式。使用PIO的要点是，在设置好了各种命令后，需要等待中断或者轮询状态结果，最后还需要使用IO的方式，读取数据，也就是这部分需要消耗额外的CPU周期。<br>值得注意的是，bochs并不支持PIO模式，使用PIO模式的时候bochs会报错，提示没有完全实现PIO模式。所以我在实验代码中也没有写PIO的代码。毕竟我的实验环境是bochs。</p>
-<p><strong>ISA DMA</strong><br>ISA DMA全称Industry Standard Architecture Direct Memory Access，是一种古老的DMA方式，速度比PIO还要慢，但是编程相对于PCI BusMastering DMA要简单一点。这里我并不打算详细介绍ISA DMA，因为说明它需要的篇幅不亚于这篇。后面的代码中，在必要的地方我会加入一些解释。</p>
-<p><strong>3种模式</strong><br>这三种模式是：PC-AT模式，PS/2模式，Mode 30模式。现在最有可能看到硬件上仍然运行模式是30模式。</p>
-<p>FDC寄存器<br><a href="/uploads/2013/09/floppy_regs.png"><img src="/uploads/2013/09/floppy_regs.png" alt="floppy_regs"></a></p>
-<p>如上图所示，上面的寄存器我们不会都用到，一般情况下大概只会用到一半的样子，其他的我们可以暂时不去理会。另外我在这里不会列出每个寄存器的详细参数，因为这些参数很多而且复杂，不仅单调乏味，而且容易让初学者望而却步。我采取的做法是，先列出控制FDC的代码，然后在需要讲解的地方详细的说明。</p>
-<p><strong>实践</strong><br>下面就是一段控制FDC读取软盘数据的代码。需要说明的是这份代码为了保持简洁易学，它没有任何的错误检测，另外代码也假设了你已经初始化了PIC，并且设置好了IRQ6。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">; MASM的宏应该不陌生吧，就不做解释了。</span><br><span class="line">outb macro port:req, b:req</span><br><span class="line">    mov dx, port</span><br><span class="line">    mov al, b</span><br><span class="line">    out dx, al</span><br><span class="line">endm</span><br><span class="line"></span><br><span class="line">inb macro port:req</span><br><span class="line">    mov dx, port</span><br><span class="line">    in al, dx</span><br><span class="line">endm</span><br><span class="line"></span><br><span class="line">wait_status macro</span><br><span class="line">    inb 3f4h</span><br><span class="line">@@:</span><br><span class="line">    test al, 80h</span><br><span class="line">    jz @B</span><br><span class="line">endm</span><br><span class="line"></span><br><span class="line">; ISA DMA 初始化部分， 由于ISA DMA不是这篇文章的重点</span><br><span class="line">; 所以这里只说明大概的用途。</span><br><span class="line">outb 0dh, 0ffh      ; 重置DMA控制器</span><br><span class="line">outb 0ah, 6h        ; 选择设置2号DMA通道</span><br><span class="line">outb 0ch, 0ffh      ; 重置Flipflop寄存器</span><br><span class="line">outb 4h, 0h         ; 设置DMA的物理地址，需要设置两次</span><br><span class="line">outb 4h, 0f0h       ; 我这里设置的是0xf000</span><br><span class="line">outb 81h, 0h        ; 设置地址24bit的高8bit为0，也就是0x00f000</span><br><span class="line">outb 0ch, 0ffh      ; 重置Flipflop寄存器</span><br><span class="line">outb 5h, 0ffh       ; 设置物理内存大小，其大小为Length-1</span><br><span class="line">outb 5h, 0fh        ; 我这里的内存大小是0x1000，所以设置为0xfff</span><br><span class="line">outb 0ah, 2h        ; 选择清除2号DMA通道</span><br><span class="line"></span><br><span class="line">; FDC的初始化过程</span><br><span class="line">outb 3f2h, 0h       ; 1.重置数字输出寄存器</span><br><span class="line">outb 3f2h, 0ch</span><br><span class="line">call WaitIrq</span><br><span class="line"></span><br><span class="line">mov ecx, 4</span><br><span class="line">check_int:</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 8h       ; 发送8号命令，该命令清除控制器触发的中断</span><br><span class="line">wait_status         ; 并且返回结果，这里重复4次，是为了清除4个软驱的状态</span><br><span class="line">inb 3f5h</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">wait_status</span><br><span class="line">loop check_int</span><br><span class="line"></span><br><span class="line">outb 3f7h, 0h       ; 2.设置传输速度为500kb&#x2F;s</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 3h       ; 3.设置FDC里面三个时钟以及DMA。</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0dfh</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 2h</span><br><span class="line"></span><br><span class="line">outb 3f2h, 1ch      ; 开启软驱电动机</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 7h       ; 发送校验命令</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h       ; 选择0号软驱</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 8h       ; 发送清楚中断命令，获得结果</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">outb 3f2h, 4h       ; 关闭电动机</span><br><span class="line"></span><br><span class="line">; 接下来是软盘的读取操作</span><br><span class="line">outb 3f2h, 1ch      ; 开启电动机</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0fh      ; 4.发送0f寻道命令</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 8h       ; 发送清楚中断命令，获得结果</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line"></span><br><span class="line">; 设置ISA DMA为读取</span><br><span class="line">outb 0ah, 6h</span><br><span class="line">outb 0bh, 46h</span><br><span class="line">outb 0ah, 2h</span><br><span class="line"></span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0e6h     ; 5.发送读取扇区命令</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h       ; 设置磁头和驱动器号</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h       ; 设置磁道</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0h       ; 设置磁头</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 1h       ; 设置扇区号</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 2h       ; 设置扇区大小</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 8h       ; 设置读取扇区数量</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 1bh      ; 设置磁盘为3.5英寸</span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 0ffh     ; 设置读取长度，总是0xff</span><br><span class="line"></span><br><span class="line">call WaitIrq</span><br><span class="line"></span><br><span class="line">mov ecx, 7</span><br><span class="line">loop_ret:</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">loop loop_ret</span><br><span class="line"></span><br><span class="line">wait_status</span><br><span class="line">outb 3f5h, 8h       ; 发送清楚中断命令，获得结果</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">wait_status</span><br><span class="line">inb 3f5h</span><br><span class="line">outb 3f2h, 4h       ; 关闭电动机</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>1.重置数字输出寄存器<br>这是一个只写寄存器，可以用来控制FDC，例如控制软驱电动机，重置控制器，选择目标软驱，设置数据模式，以下是他的详细参数<br>Bits 0-1<br>00 - 软驱 0<br>01 - 软驱 1<br>10 - 软驱 2<br>11 - 软驱 3<br>Bit 2 重置<br>0 - 重置控制器<br>1 - 开启控制器<br>Bit 3 模式<br>0 - IRQ 模式<br>1 - DMA 模式<br>Bits 4 - 7 电动机控制器 (软驱 0 - 3)<br>0 - 停止电动机<br>1 - 开启电动机  </p>
-<p>我这里设置的是0Ch也就是说，选择了0号软驱，开启了控制器和DMA模式。</p>
-<p>2.设置传输速度为500kb/s<br>这个寄存器只有前两位有效，下面两位不同的组合表达了不同的速度，如下表：<br>00 500 Kbps<br>10 250 Kbps<br>01 300 Kbps<br>11 1 Mbps  </p>
-<p>3.设置FDC里面三个时钟以及DMA<br>三个时钟分别是步进速率时钟、磁头卸载时钟和磁头装入时钟。数据格式如下：<br>S S S S H H H H - S=步进速率时钟 H=磁头卸载时钟<br>H H H H H H H NDMA - H=磁头装入时钟 NDMA=0 (DMA模式) 或者 1 (非DMA模式)<br>实际上这个大家可以随意设置，我设置的是步进速率时钟=3ms, 磁头卸载时钟=240ms, 磁头装入时钟=16ms  </p>
-<p>4.发送寻道命令进行寻道<br>寻道命令的参数是两个自己，分别代表磁头、柱面和驱动器号，格式如下<br>x x x x x HD DR1 DR0 - HD=磁头 DR1/DR0 = 驱动器<br>C C C C C C C C - C=柱面  </p>
-<p>5.发送读取扇区命令<br>读取和写入命令一样，有8个参数和7个返回值！<br>第1个参数字节 = (磁头号 &lt;&lt; 2) | 驱动器号 (驱动器号必须是当前选择的驱动器)<br>第2个参数字节 = 柱面号<br>第3个参数字节 = 磁头号 (没错，重复了 = =)<br>第4个参数字节 = 开始的扇区号<br>第5个参数字节 = 2 (总是2，代表软盘扇区大小总是512字节)<br>第6个参数字节 = 操作扇区数<br>第7个参数字节 = 0x1b (软盘大小是3.5in)<br>第8个参数字节 = 0xff (总是0xff)<br>这里不关心返回值，如果有兴趣可以自己查找资料。  </p>
-<p>读取就是这样，如果要写入安排，只需要更改命令即可，这里就不再赘述了。最后按照国际惯例，提供一些深入学习的链接：<br><a target="_blank" rel="noopener" href="http://wiki.osdev.org/Floppy">http://wiki.osdev.org/Floppy</a><br><a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Floppy">http://en.wikipedia.org/wiki/Floppy</a><br><a target="_blank" rel="noopener" href="http://www.isdaman.com/alsos/hardware/fdc/floppy.htm">http://www.isdaman.com/alsos/hardware/fdc/floppy.htm</a><br><a target="_blank" rel="noopener" href="http://www.osdever.net/documents/82077AA_FloppyControllerDatasheet.pdf?the_id=41">http://www.osdever.net/documents/82077AA_FloppyControllerDatasheet.pdf</a>  </p>
-
-      
-    </div>
-
-    
-      
-
-    
-
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2013/09/21/floppy-disk-controllere7bc96e7a88b/" data-id="ckk4wflyq003eh4uphzmsezgt" class="article-share-link">
-        <i class="fa fa-share"></i> Share
-      </a>
-      
-      
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-e4bdbfe794a8windbg-logextse79b91e68ea7e7a88be5ba8fapie8b083e794a8" class="article article-type-post" itemscope itemprop="blogPost">
-
-  <header class="article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2013/09/14/e4bdbfe794a8windbg-logextse79b91e68ea7e7a88be5ba8fapie8b083e794a8/">使用Windbg Logexts监控程序API调用</a>
-    </h1>
-  
-
-
-  </header>
-
-  <div class="article-meta">
-    <div class="article-datetime">
-  <a href="/2013/09/14/e4bdbfe794a8windbg-logextse79b91e68ea7e7a88be5ba8fapie8b083e794a8/" class="article-date"><time datetime="2013-09-14T09:13:22.000Z" itemprop="datePublished">2013-09-14</time></a>
-</div>
-
-    <div class="article-author">admin</div>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Debugging/">Debugging</a> / <a class="article-category-link" href="/categories/Debugging/Tips/">Tips</a>
-  </div>
-
-
-  </div>
-  <div class="article-inner">
-
-    <div class="article-entry" itemprop="articleBody">
-      
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>在我们调试BUG和逆向程序的时候，往往需要监控一些API的调用。这个时候我们可以借助调试器和第三方工具完成这样的任务。例如调试器可以下断点查看栈状态得到相关信息，或者使用第三方工具如API Monitor可以方便的监控API的调用。不过，这篇文章中想说的是另一个工具，Windbg的扩展程序Logexts.dll。闲话少说，我们先看一看监控的效果如何吧。</p>
-<p><a href="/uploads/2013/09/20130914230701.png"><img src="/uploads/2013/09/20130914230701.png" alt="20130914230701"></a></p>
-<p>上图是Windbg输出的信息，再看看使用logviewer.exe查看的效果。</p>
-<p><a href="/uploads/2013/09/20130914234812.png"><img src="/uploads/2013/09/20130914234812.png" alt="20130914234812"></a></p>
-<p>怎么样，是不是相当的不错！那么下面我就来简单介绍一下，这个扩展的用法。</p>
-<p>!logexts.logi<br>将Logger注入目标程序，初始化监控，但是并不开启它。</p>
-<p>!logexts.loge<br>开启监控，如果之前没有调用logexts.logi，这个扩展命令会先初始化监控，然后启动。</p>
-<p>!logexts.logd<br>停止监控。这个命令会摘掉所有的Hook，从而让程序自由运行。不过COM的Hook并不会被摘除。</p>
-<p>!logexts.logo<br>显示或者修改输出选项，这里有三种输出方式：1.在调试器中显示，2.输出到一个文本文件，3.输出到lgv文件。其中lgv文件会包含更多的信息，我们可以使用LogViewer进行查看。</p>
-<p>!logexts.logc<br>显示或者控制监控的API分类。</p>
-<p>!logexts.logb<br>显示或者刷新输出缓存。由于如果在监控过程中发生异常，那么扩展可能无法将记录的日志写入文件中，这个时候我们就需要这个命令，手动的将缓存中的数据写入文件。</p>
-<p>!logexts.logm<br>显示和创建模块的包含/排除列表。这可以帮助我们指定记录那些特定模块中的API调用。</p>
-<p>上面图中我所使用的命令是这样的：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;!logexts.loge D:\  </span><br><span class="line">!logexts.logc d *  </span><br><span class="line">!logexts.logc e 15 16 19  </span><br><span class="line">!logexts.logo e *  </span><br><span class="line">!logexts.logm i notepad.exe</span><br></pre></td></tr></table></figure>
-
-<p>其输出结果是：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">!logexts.loge D:\  </span><br><span class="line">Windows API Logging Extensions v3.01  </span><br><span class="line">Parsing the manifest files...  </span><br><span class="line">Location: C:\Program Files (x86)\Windows Kits\8.0\Debuggers\x64\winext\manifest\main.h  </span><br><span class="line">Parsing file &quot;main.h&quot; ...  </span><br><span class="line">Parsing file &quot;winerror.h&quot; ...  </span><br><span class="line">Parsing file &quot;kernel32.h&quot; ...  </span><br><span class="line">Parsing file &quot;debugging.h&quot; ...  </span><br><span class="line">Parsing file &quot;processes.h&quot; ...  </span><br><span class="line">Parsing file &quot;memory.h&quot; ...  </span><br><span class="line">Parsing file &quot;registry.h&quot; ...  </span><br><span class="line">Parsing file &quot;fileio.h&quot; ...  </span><br><span class="line">Parsing file &quot;strings.h&quot; ...  </span><br><span class="line">Parsing file &quot;user32.h&quot; ...  </span><br><span class="line">Parsing file &quot;clipboard.h&quot; ...  </span><br><span class="line">Parsing file &quot;hook.h&quot; ...  </span><br><span class="line">Parsing file &quot;gdi32.h&quot; ...  </span><br><span class="line">Parsing file &quot;winspool.h&quot; ...  </span><br><span class="line">Parsing file &quot;version.h&quot; ...  </span><br><span class="line">Parsing file &quot;winsock2.h&quot; ...  </span><br><span class="line">Parsing file &quot;advapi32.h&quot; ...  </span><br><span class="line">Parsing file &quot;uuids.h&quot; ...  </span><br><span class="line">Parsing file &quot;com.h&quot; ...  </span><br><span class="line">Parsing file &quot;shell.h&quot; ...  </span><br><span class="line">Parsing file &quot;ole32.h&quot; ...  </span><br><span class="line">Parsing file &quot;ddraw.h&quot; ...  </span><br><span class="line">Parsing file &quot;winmm.h&quot; ...  </span><br><span class="line">Parsing file &quot;avifile.h&quot; ...  </span><br><span class="line">Parsing file &quot;dplay.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3d.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3dtypes.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3dcaps.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3d8.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3d8types.h&quot; ...  </span><br><span class="line">Parsing file &quot;d3d8caps.h&quot; ...  </span><br><span class="line">Parsing file &quot;dsound.h&quot; ...  </span><br><span class="line">Parsing completed.  </span><br><span class="line">Logexts injected. Output: &quot;D:\\LogExts\&quot;  </span><br><span class="line">Logging enabled.  </span><br><span class="line">0:000&gt; !logexts.logc d *  </span><br><span class="line">All categories disabled.  </span><br><span class="line">0:000&gt; !logexts.logc e 15 16 19  </span><br><span class="line">15 IOFunctions Enabled  </span><br><span class="line">16 MemoryManagementFunctions Enabled  </span><br><span class="line">19 ProcessesAndThreads Enabled  </span><br><span class="line">0:000&gt; !logexts.logo e *  </span><br><span class="line">Debugger Enabled  </span><br><span class="line">Text file Enabled  </span><br><span class="line">Verbose log Enabled  </span><br><span class="line">0:000&gt; !logexts.logm i notepad.exe  </span><br><span class="line">Included modules:  </span><br><span class="line">notepad.exe</span><br></pre></td></tr></table></figure>
-
-<p>简单说明一下这些命令：<br>!logexts.loge D:\<br>设置log的保持路径，并且开启监控  </p>
-<p>!logexts.logc d *<br>先关闭所有API分类的监控  </p>
-<p>!logexts.logc e 15 16 19<br>然后设置我们想监控分类，这里是IOFunctions，MemoryManagementFunctions和ProcessesAndThreads。至于如何查询分类对于的id，可以直接输入!logexts.logc进行查看。</p>
-<p>!logexts.logo e *<br>这里我开启了所有输出方式，注意：如果想要被监控的程序响应的更快，可以去掉Debugger的输出，因为显示花费的时间比较的多。</p>
-<p>!logexts.logm i notepad.exe<br>最后当然是设置inclusion list了。</p>
-<p>按下F5，让程序跑起来看看效果吧。先别着急惊叹，Logexts还有更惊艳的地方。那就是他的高度可配置性。如果你想监控他描述以外的API，那么你可以自己写这个API的“头文件”。这里用引号是因为，它并不是真正的头文件，只不过他的语法和C的头文件非常的相似。我们可以看一个例子：</p>
-<p>创建%windbg_dir%\winext\manifest\Context.h<br>并且写入这些内容</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">category ActivationContext:</span><br><span class="line"><span class="keyword">module</span> KERNEL32.DLL:</span><br><span class="line"></span><br><span class="line"><span class="function">FailOnFalse <span class="title">ActivateActCtx</span><span class="params">(HANDLE hActCtx, [out] PULONG_PTR lpCookie)</span></span>;</span><br><span class="line"><span class="function">FailOnFalse <span class="title">DeactivateActCtx</span><span class="params">(DWORD dwFlags, ULONG_PTR upCookie)</span></span>;</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>在%windbg_dir%\winext\manifest\main.h文件的最后加入一行 #include “Context.h”</p>
-<p>保存后，重启调试程序，输入!logexts.logc，可以看了多出了ActivationContext这一项。现在就可以选择这一项分类来监控ActivateActCtx和DeactivateActCtx了。</p>
-<p>最后，大家应该发现了这样一个问题，开启这个API监控还是比较麻烦的，需要输入好几条命令。为了更方便的使用这个功能，我写了一个脚本来解决这个问题，这样就可以用一行命令来开启监控。使用方法是：<br>Usage $$&gt;a&lt;logger.wds output_dir categories include_modules<br>e.g. $$&gt;a&lt;logger.wds “d:&quot; “15 16 19” “notepad.exe”  </p>
-<p>下载<a href="/uploads/2013/09/logger.zip">logger</a></p>
-<p>关于Logexts的更多详细信息请参考msdn：<a target="_blank" rel="noopener" href="http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/hardware/ff560170(v=vs.85).aspx</a></p>
-
-      
-    </div>
-
-    
-      
-
-    
-
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2013/09/14/e4bdbfe794a8windbg-logextse79b91e68ea7e7a88be5ba8fapie8b083e794a8/" data-id="ckk4wflyq003ch4up6orbdwq1" class="article-share-link">
-        <i class="fa fa-share"></i> Share
-      </a>
-      
-      
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
 
 
   <div id="page-nav">
@@ -752,7 +732,7 @@
   
   <div class="sidebar-module">
     <h4>Categories</h4>
-    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/CPP/">CPP</a><span class="sidebar-module-list-count">11</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Debugging/">Debugging</a><span class="sidebar-module-list-count">29</span><ul class="sidebar-module-list-child"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><span class="sidebar-module-list-count">5</span><ul class="sidebar-module-list-child"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a><span class="sidebar-module-list-count">1</span></li></ul></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Debugging/Tips/">Tips</a><span class="sidebar-module-list-count">7</span></li></ul></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/DeepLearner/">DeepLearner</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/MiniKernel/">MiniKernel</a><span class="sidebar-module-list-count">7</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/NTInternals/">NTInternals</a><span class="sidebar-module-list-count">22</span><ul class="sidebar-module-list-child"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/NTInternals/Tips/">Tips</a><span class="sidebar-module-list-count">4</span></li></ul></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Tips/">Tips</a><span class="sidebar-module-list-count">67</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/debugging/">debugging</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/machinelearning/">machinelearning</a><span class="sidebar-module-list-count">2</span></li></ul>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/CPP/">CPP</a><span class="sidebar-module-list-count">13</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Debugging/">Debugging</a><span class="sidebar-module-list-count">29</span><ul class="sidebar-module-list-child"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><span class="sidebar-module-list-count">5</span><ul class="sidebar-module-list-child"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a><span class="sidebar-module-list-count">1</span></li></ul></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Debugging/Tips/">Tips</a><span class="sidebar-module-list-count">7</span></li></ul></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/DeepLearner/">DeepLearner</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/MiniKernel/">MiniKernel</a><span class="sidebar-module-list-count">7</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/NTInternals/">NTInternals</a><span class="sidebar-module-list-count">22</span><ul class="sidebar-module-list-child"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/NTInternals/Tips/">Tips</a><span class="sidebar-module-list-count">4</span></li></ul></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Tips/">Tips</a><span class="sidebar-module-list-count">67</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/debugging/">debugging</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/machinelearning/">machinelearning</a><span class="sidebar-module-list-count">2</span></li></ul>
   </div>
 
 
@@ -777,7 +757,7 @@
   
   <div class="sidebar-module">
     <h4>Archives</h4>
-    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/08/">August 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/07/">July 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/06/">June 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/05/">May 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/04/">April 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/03/">March 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/02/">February 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/01/">January 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/12/">December 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/11/">November 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/10/">October 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/09/">September 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/08/">August 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/07/">July 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/06/">June 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/05/">May 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/04/">April 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/03/">March 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/02/">February 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/01/">January 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/12/">December 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/11/">November 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/10/">October 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/09/">September 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/08/">August 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/07/">July 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/06/">June 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/03/">March 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/02/">February 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/01/">January 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/12/">December 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/11/">November 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/10/">October 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/09/">September 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/08/">August 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/07/">July 2017</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/06/">June 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/05/">May 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/04/">April 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/03/">March 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/02/">February 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/01/">January 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/12/">December 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">November 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">October 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/09/">September 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/08/">August 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/07/">July 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/06/">June 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/05/">May 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/04/">April 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/03/">March 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/02/">February 2016</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/01/">January 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/12/">December 2015</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/11/">November 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/10/">October 2015</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/09/">September 2015</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/08/">August 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/07/">July 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/06/">June 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/05/">May 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/04/">April 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/03/">March 2015</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/02/">February 2015</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/01/">January 2015</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/12/">December 2014</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/11/">November 2014</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/10/">October 2014</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/09/">September 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/08/">August 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/07/">July 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/06/">June 2014</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/05/">May 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/04/">April 2014</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/03/">March 2014</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/02/">February 2014</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/01/">January 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/12/">December 2013</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/11/">November 2013</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/10/">October 2013</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/09/">September 2013</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/08/">August 2013</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/07/">July 2013</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/06/">June 2013</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/05/">May 2013</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/04/">April 2013</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/03/">March 2013</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/02/">February 2013</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/01/">January 2013</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2012/12/">December 2012</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2012/11/">November 2012</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2012/08/">August 2012</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2012/02/">February 2012</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/12/">December 2011</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/10/">October 2011</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/09/">September 2011</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/08/">August 2011</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/06/">June 2011</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/05/">May 2011</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/04/">April 2011</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/02/">February 2011</a><span class="sidebar-module-list-count">1</span></li></ul>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/10/">October 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/09/">September 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/08/">August 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/07/">July 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/06/">June 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/05/">May 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/04/">April 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/03/">March 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/02/">February 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/01/">January 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/12/">December 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/11/">November 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/10/">October 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/09/">September 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/08/">August 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/07/">July 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/06/">June 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/05/">May 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/04/">April 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/03/">March 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/02/">February 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/01/">January 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/12/">December 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/11/">November 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/10/">October 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/09/">September 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/08/">August 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/07/">July 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/06/">June 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/03/">March 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/02/">February 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/01/">January 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/12/">December 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/11/">November 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/10/">October 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/09/">September 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/08/">August 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/07/">July 2017</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/06/">June 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/05/">May 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/04/">April 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/03/">March 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/02/">February 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/01/">January 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/12/">December 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">November 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">October 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/09/">September 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/08/">August 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/07/">July 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/06/">June 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/05/">May 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/04/">April 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/03/">March 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/02/">February 2016</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/01/">January 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/12/">December 2015</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/11/">November 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/10/">October 2015</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/09/">September 2015</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/08/">August 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/07/">July 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/06/">June 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/05/">May 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/04/">April 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/03/">March 2015</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/02/">February 2015</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/01/">January 2015</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/12/">December 2014</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/11/">November 2014</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/10/">October 2014</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/09/">September 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/08/">August 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/07/">July 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/06/">June 2014</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/05/">May 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/04/">April 2014</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/03/">March 2014</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/02/">February 2014</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/01/">January 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/12/">December 2013</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/11/">November 2013</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/10/">October 2013</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/09/">September 2013</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/08/">August 2013</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/07/">July 2013</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/06/">June 2013</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/05/">May 2013</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/04/">April 2013</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/03/">March 2013</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/02/">February 2013</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/01/">January 2013</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2012/12/">December 2012</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2012/11/">November 2012</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2012/08/">August 2012</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2012/02/">February 2012</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/12/">December 2011</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/10/">October 2011</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/09/">September 2011</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/08/">August 2011</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/06/">June 2011</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/05/">May 2011</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/04/">April 2011</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/02/">February 2011</a><span class="sidebar-module-list-count">1</span></li></ul>
   </div>
 
 
@@ -786,6 +766,14 @@
   <div class="sidebar-module">
     <h4>Recents</h4>
     <ul class="sidebar-module-list">
+      
+        <li>
+          <a href="/2020/10/02/use-span-instead-of-array-pointer-to-pass-parameters/">使用std::span代替数组指针传参</a>
+        </li>
+      
+        <li>
+          <a href="/2020/09/25/use-string_view-to-improve-string-processing-performance/">使用std::string_view提升字符串处理性能</a>
+        </li>
       
         <li>
           <a href="/2020/08/05/something-about-enable_shared_from_this/">std::enable_shared_from_this原理浅析</a>
@@ -797,14 +785,6 @@
       
         <li>
           <a href="/2020/06/15/yampl-seq-and-iterator-part3/">序列和迭代器(3)</a>
-        </li>
-      
-        <li>
-          <a href="/2020/05/20/yampl-seq-and-iterator-part2/">序列和迭代器(2)</a>
-        </li>
-      
-        <li>
-          <a href="/2020/04/01/yampl-seq-and-iterator-part1/">序列和迭代器(1)</a>
         </li>
       
     </ul>
