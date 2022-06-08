@@ -489,7 +489,7 @@
 /* Globals */
 
 body {
-  font-family: Georgia, "Times New Roman", Times, serif;
+  font-family: Georgia, Microsoft YaHei UI, "Times New Roman", Times, serif;
   color: #555;
 }
 
@@ -501,7 +501,7 @@ h5, .h5,
 h6, .h6 {
   margin-top: 1em;
   margin-bottom: 15px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", Microsoft YaHei UI, Helvetica, Arial, sans-serif;
   font-weight: normal;
   color: #333;
 }
@@ -532,7 +532,7 @@ code {
 /* Override Bootstrap's default container width */
 @media (min-width: 1200px) {
   .container {
-    width: 970px;
+    width: 1230px;
   }
 }
 
@@ -630,7 +630,7 @@ code {
  */
 
 .blog-main {
-  font-size: 18px;
+  font-size: 17px;
   line-height: 1.5;
 }
 .blog-main > article:last-of-type {
