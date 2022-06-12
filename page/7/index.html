@@ -80,6 +80,184 @@
         <div class="col-sm-8 blog-main">
           
   
+    <article id="post-0cchext-dttoc-command" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/05/02/0cchext-dttoc-command/">0cchext插件实用命令dttoc</a>
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2017/05/02/0cchext-dttoc-command/" class="article-date"><time datetime="2017-05-02T03:33:24.000Z" itemprop="datePublished">2017-05-02</time></a>
+</div>
+
+    <div class="article-author">admin</div>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近给<a target="_blank" rel="noopener" href="https://github.com/0cch/0cchext/releases/tag/1.0.16.3.55">0cchext</a>添加了一个实用的逆向命令，dttoc，这个命令可以把dt命令输出的结构体转化为C的结构，方便我们做逆向还原工作。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0:000&gt; !0cchext.dttoc nt!_peb</span><br><span class="line">struct _PEB &#123;</span><br><span class="line">    BYTE InheritedAddressSpace;</span><br><span class="line">    BYTE ReadImageFileExecOptions;</span><br><span class="line">    BYTE BeingDebugged;</span><br><span class="line">    union &#123;</span><br><span class="line">        BYTE BitField;</span><br><span class="line">        struct &#123;</span><br><span class="line">            BYTE ImageUsesLargePages:1;</span><br><span class="line">            BYTE IsProtectedProcess:1;</span><br><span class="line">            BYTE IsImageDynamicallyRelocated:1;</span><br><span class="line">            BYTE SkipPatchingUser32Forwarders:1;</span><br><span class="line">            BYTE IsPackagedProcess:1;</span><br><span class="line">            BYTE IsAppContainer:1;</span><br><span class="line">            BYTE IsProtectedProcessLight:1;</span><br><span class="line">            BYTE IsLongPathAwareProcess:1;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;;</span><br><span class="line">    VOID* Mutant;</span><br><span class="line">    VOID* ImageBaseAddress;</span><br><span class="line">    _PEB_LDR_DATA* Ldr;</span><br><span class="line">    _RTL_USER_PROCESS_PARAMETERS* ProcessParameters;</span><br><span class="line">    VOID* SubSystemData;</span><br><span class="line">    VOID* ProcessHeap;</span><br><span class="line">    _RTL_CRITICAL_SECTION* FastPebLock;</span><br><span class="line">    _SLIST_HEADER* AtlThunkSListPtr;</span><br><span class="line">    VOID* IFEOKey;</span><br><span class="line">    union &#123;</span><br><span class="line">        DWORD CrossProcessFlags;</span><br><span class="line">        struct &#123;</span><br><span class="line">            DWORD ProcessInJob:1;</span><br><span class="line">            DWORD ProcessInitializing:1;</span><br><span class="line">            DWORD ProcessUsingVEH:1;</span><br><span class="line">            DWORD ProcessUsingVCH:1;</span><br><span class="line">            DWORD ProcessUsingFTH:1;</span><br><span class="line">            DWORD ReservedBits0:27;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;;</span><br><span class="line">    union &#123;</span><br><span class="line">        VOID* KernelCallbackTable;</span><br><span class="line">        VOID* UserSharedInfoPtr;</span><br><span class="line">    &#125;;</span><br><span class="line">    DWORD SystemReserved[1];</span><br><span class="line">    _SLIST_HEADER* AtlThunkSListPtr32;</span><br><span class="line">    VOID* ApiSetMap;</span><br><span class="line">    DWORD TlsExpansionCounter;</span><br><span class="line">    VOID* TlsBitmap;</span><br><span class="line">    DWORD TlsBitmapBits[2];</span><br><span class="line">    VOID* ReadOnlySharedMemoryBase;</span><br><span class="line">    VOID* SparePvoid0;</span><br><span class="line">    VOID** ReadOnlyStaticServerData;</span><br><span class="line">    VOID* AnsiCodePageData;</span><br><span class="line">    VOID* OemCodePageData;</span><br><span class="line">    VOID* UnicodeCaseTableData;</span><br><span class="line">    DWORD NumberOfProcessors;</span><br><span class="line">    DWORD NtGlobalFlag;</span><br><span class="line">    _LARGE_INTEGER CriticalSectionTimeout;</span><br><span class="line">    DWORD HeapSegmentReserve;</span><br><span class="line">    DWORD HeapSegmentCommit;</span><br><span class="line">    DWORD HeapDeCommitTotalFreeThreshold;</span><br><span class="line">    DWORD HeapDeCommitFreeBlockThreshold;</span><br><span class="line">    DWORD NumberOfHeaps;</span><br><span class="line">    DWORD MaximumNumberOfHeaps;</span><br><span class="line">    VOID** ProcessHeaps;</span><br><span class="line">    VOID* GdiSharedHandleTable;</span><br><span class="line">    VOID* ProcessStarterHelper;</span><br><span class="line">    DWORD GdiDCAttributeList;</span><br><span class="line">    _RTL_CRITICAL_SECTION* LoaderLock;</span><br><span class="line">    DWORD OSMajorVersion;</span><br><span class="line">    DWORD OSMinorVersion;</span><br><span class="line">    WORD OSBuildNumber;</span><br><span class="line">    WORD OSCSDVersion;</span><br><span class="line">    DWORD OSPlatformId;</span><br><span class="line">    DWORD ImageSubsystem;</span><br><span class="line">    DWORD ImageSubsystemMajorVersion;</span><br><span class="line">    DWORD ImageSubsystemMinorVersion;</span><br><span class="line">    DWORD ActiveProcessAffinityMask;</span><br><span class="line">    DWORD GdiHandleBuffer[34];</span><br><span class="line">    void* PostProcessInitRoutine;</span><br><span class="line">    VOID* TlsExpansionBitmap;</span><br><span class="line">    DWORD TlsExpansionBitmapBits[32];</span><br><span class="line">    DWORD SessionId;</span><br><span class="line">    _ULARGE_INTEGER AppCompatFlags;</span><br><span class="line">    _ULARGE_INTEGER AppCompatFlagsUser;</span><br><span class="line">    VOID* pShimData;</span><br><span class="line">    VOID* AppCompatInfo;</span><br><span class="line">    _UNICODE_STRING CSDVersion;</span><br><span class="line">    _ACTIVATION_CONTEXT_DATA* ActivationContextData;</span><br><span class="line">    _ASSEMBLY_STORAGE_MAP* ProcessAssemblyStorageMap;</span><br><span class="line">    _ACTIVATION_CONTEXT_DATA* SystemDefaultActivationContextData;</span><br><span class="line">    _ASSEMBLY_STORAGE_MAP* SystemAssemblyStorageMap;</span><br><span class="line">    DWORD MinimumStackCommit;</span><br><span class="line">    _FLS_CALLBACK_INFO* FlsCallback;</span><br><span class="line">    _LIST_ENTRY FlsListHead;</span><br><span class="line">    VOID* FlsBitmap;</span><br><span class="line">    DWORD FlsBitmapBits[4];</span><br><span class="line">    DWORD FlsHighIndex;</span><br><span class="line">    VOID* WerRegistrationData;</span><br><span class="line">    VOID* WerShipAssertPtr;</span><br><span class="line">    VOID* pUnused;</span><br><span class="line">    VOID* pImageHeaderHash;</span><br><span class="line">    union &#123;</span><br><span class="line">        DWORD TracingFlags;</span><br><span class="line">        struct &#123;</span><br><span class="line">            QWORD HeapTracingEnabled:1;</span><br><span class="line">            QWORD CritSecTracingEnabled:1;</span><br><span class="line">            QWORD LibLoaderTracingEnabled:1;</span><br><span class="line">            QWORD SpareTracingBits:29;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;;</span><br><span class="line">    QWORD CsrServerReadOnlySharedMemoryBase;</span><br><span class="line">    DWORD TppWorkerpListLock;</span><br><span class="line">    _LIST_ENTRY TppWorkerpList;</span><br><span class="line">    VOID* WaitOnAddressHashTable[128];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2017/05/02/0cchext-dttoc-command/" data-id="cl4babrah007km8uefr2felw3" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-delphi-exception" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/04/04/delphi-exception/">Delphi异常0EEDFADE</a>
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2017/04/04/delphi-exception/" class="article-date"><time datetime="2017-04-04T02:03:16.000Z" itemprop="datePublished">2017-04-04</time></a>
+</div>
+
+    <div class="article-author">admin</div>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Debugging/">Debugging</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>0EEDFADE是Delphi内部异常代码，该异常通常有7个参数，我们用的上的是第二个参数，这个参数指向的是Exception的对象，通过这个对象，我们就可以查出异常的一些信息。</p>
+<p>以Delphi XE2为例,Class name的偏移为（不同的版本偏移有所不同）：  </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">x86_vmtClassName = -56(0x38);</span><br><span class="line">x64_vmtClassName = -112(0x70);</span><br></pre></td></tr></table></figure>
+
+<p>我们可以用如下命令获取相关信息：  </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">x86: da poi(poi(exception_object)-38)+1;du /c 100 poi(exception_object+4)  </span><br><span class="line">x64: da poi(poi(exception_object)-70)+1;du /c 100 poi(exception_object+8)  </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>以上命令就能获取异常的类名，而exception_object+sizeof(pointer)则是Exception Message的所在偏移，这是一个unicode string。实际效果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0:002&gt; da poi(poi(003a2800)-38)+1;du /c 100 poi(003a2800 +4)</span><br><span class="line">00b9ec47  &quot;TTransportExceptionUnknown&quot;</span><br><span class="line">00375b8c  &quot;ServerTransport.Accept() may not return NULL&quot;</span><br></pre></td></tr></table></figure>
+
+<p>当然，我们也可以设置event filter去截获异常：  </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">x86: sxe -c &quot;da poi(poi(poi(@ebp+1c))-38)+1;du /c 100 poi(poi(@ebp+1c)+4)&quot; 0EEDFADE</span><br><span class="line">x64: sxe -c &quot;da poi(poi(poi(@rbp+48))-70)+1;du /c 100 poi(poi(@rbp+48)+8)&quot; 0EEDFADE</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2017/04/04/delphi-exception/" data-id="cl4babrag007im8ueex58b17g" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-set-dpi" class="article article-type-post" itemscope itemprop="blogPost">
+
+  <header class="article-header">
+    
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/03/08/set-dpi/">Windows 10设置系统DPI</a>
+    </h1>
+  
+
+
+  </header>
+
+  <div class="article-meta">
+    <div class="article-datetime">
+  <a href="/2017/03/08/set-dpi/" class="article-date"><time datetime="2017-03-08T06:47:37.000Z" itemprop="datePublished">2017-03-08</time></a>
+</div>
+
+    <div class="article-author">admin</div>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tips/">Tips</a>
+  </div>
+
+
+  </div>
+  <div class="article-inner">
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>现在的显示器分辨率越来越高2K，4K甚至5K，而很多程序并不支持这一的高分辨率，所以这些程序在桌面上会显示的很小，好在Windows 8以后的系统中，我们可以设置DPI来放大程序的窗口，如下图所示：  </p>
+<p><a href="/uploads/2017/03/20170309145111.png"><img src="/uploads/2017/03/20170309145111.png" alt="20170309145111"></a></p>
+<p>但是，微软并没有把设置DPI的接口文档化。所以我把这个功能逆了一下，还原的代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">    BOOL ApplyDpiSetting(int val);</span></span><br><span class="line"><span class="comment">    val 为DPI要设置的数字，例如0是100%，1是125%，以此类推，注意250%以后是300%。</span></span><br><span class="line"><span class="comment">    另外上面的对应关系只是通常情况下的，还有可能有其他对应关系，例如0是300%，-1是250%等等。</span></span><br><span class="line"><span class="comment">    具体怎么对应可以通过GetDpiForMonitor函数来获取</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">_SET_DPI</span> &#123;</span><br><span class="line">    DISPLAYCONFIG_DEVICE_INFO_HEADER header;</span><br><span class="line">    ULONG val;</span><br><span class="line">&#125; SET_DPI;</span><br><span class="line"></span><br><span class="line"><span class="function">BOOL <span class="title">ApplyDpiSetting</span><span class="params">(ULONG val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    UINT32 num_of_paths = <span class="number">0</span>;</span><br><span class="line">    UINT32 num_of_modes = <span class="number">0</span>;</span><br><span class="line">    DISPLAYCONFIG_PATH_INFO* display_paths = <span class="literal">NULL</span>; </span><br><span class="line">    DISPLAYCONFIG_MODE_INFO* display_modes = <span class="literal">NULL</span>;</span><br><span class="line">    BOOL retval = FALSE;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">do</span> </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">GetDisplayConfigBufferSizes</span>(QDC_ONLY_ACTIVE_PATHS, </span><br><span class="line">            &amp;num_of_paths, </span><br><span class="line">            &amp;num_of_modes) != ERROR_SUCCESS) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        display_paths = (DISPLAYCONFIG_PATH_INFO*)<span class="built_in">calloc</span>((<span class="type">int</span>)num_of_paths, <span class="built_in">sizeof</span>(DISPLAYCONFIG_PATH_INFO));</span><br><span class="line">        display_modes = (DISPLAYCONFIG_MODE_INFO*)<span class="built_in">calloc</span>((<span class="type">int</span>)num_of_modes, <span class="built_in">sizeof</span>(DISPLAYCONFIG_MODE_INFO));</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">QueryDisplayConfig</span>(QDC_ONLY_ACTIVE_PATHS, </span><br><span class="line">            &amp;num_of_paths, </span><br><span class="line">            display_paths, </span><br><span class="line">            &amp;num_of_modes, </span><br><span class="line">            display_modes, </span><br><span class="line">            <span class="literal">NULL</span>) != ERROR_SUCCESS) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        SET_DPI dpi;</span><br><span class="line">        dpi.header.type = (DISPLAYCONFIG_DEVICE_INFO_TYPE)<span class="number">0xFFFFFFFC</span>;</span><br><span class="line">        dpi.header.size = <span class="built_in">sizeof</span>(dpi);</span><br><span class="line">        dpi.header.adapterId = display_paths[<span class="number">0</span>].sourceInfo.adapterId;</span><br><span class="line">        dpi.header.id = display_paths[<span class="number">0</span>].sourceInfo.id;</span><br><span class="line">        dpi.val = val;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">DisplayConfigSetDeviceInfo</span>((DISPLAYCONFIG_DEVICE_INFO_HEADER*)&amp;dpi) == ERROR_SUCCESS) &#123;</span><br><span class="line">            retval = TRUE;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">while</span> (<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (display_paths) &#123;</span><br><span class="line">        <span class="built_in">free</span>(display_paths);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (display_modes) &#123;</span><br><span class="line">        <span class="built_in">free</span>(display_modes);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> retval;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+      
+
+    
+
+    <footer class="article-footer">
+      <a data-url="http://0cch.com/2017/03/08/set-dpi/" data-id="cl4babraf007gm8ueemuu4bcl" class="article-share-link">
+        <i class="fa fa-share"></i> Share
+      </a>
+      
+      
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-deprecate-a-function" class="article article-type-post" itemscope itemprop="blogPost">
 
   <header class="article-header">
@@ -136,7 +314,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2017/02/12/deprecate-a-function/" data-id="cl44tvm7r007cdoue1vmybu5p" class="article-share-link">
+      <a data-url="http://0cch.com/2017/02/12/deprecate-a-function/" data-id="cl4babrad007em8ue5nu84hve" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -193,7 +371,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2017/01/02/pdbdownloader/" data-id="cl44tvm7r007adoue4bz22fjd" class="article-share-link">
+      <a data-url="http://0cch.com/2017/01/02/pdbdownloader/" data-id="cl4babrac007cm8uecyc5busq" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -253,7 +431,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/12/13/int29h/" data-id="cl44tvm7r0078doued95070sn" class="article-share-link">
+      <a data-url="http://0cch.com/2016/12/13/int29h/" data-id="cl4babrab007am8ue11ed3ccw" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -311,7 +489,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/11/15/luadbg-windbg-ext/" data-id="cl44tvm7q0076douefmw381w7" class="article-share-link">
+      <a data-url="http://0cch.com/2016/11/15/luadbg-windbg-ext/" data-id="cl4babra70078m8ue42lx3pkp" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -368,7 +546,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/10/18/auto-increase-build-number/" data-id="cl44tvm7q0074doue2agsgqbs" class="article-share-link">
+      <a data-url="http://0cch.com/2016/10/18/auto-increase-build-number/" data-id="cl4babra60076m8ueewqs0jgd" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -423,7 +601,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/09/21/verify-cert/" data-id="cl44tvm7q0072doue42ft8r0l" class="article-share-link">
+      <a data-url="http://0cch.com/2016/09/21/verify-cert/" data-id="cl4babra50074m8ueempwa12m" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -486,189 +664,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/08/23/create-file-in-metadata/" data-id="cl44tvm7p0070doue61t06wup" class="article-share-link">
-        <i class="fa fa-share"></i> Share
-      </a>
-      
-      
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-something-about-windows-timer-resolution" class="article article-type-post" itemscope itemprop="blogPost">
-
-  <header class="article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/24/something-about-windows-timer-resolution/">关于Windows Timer精确度</a>
-    </h1>
-  
-
-
-  </header>
-
-  <div class="article-meta">
-    <div class="article-datetime">
-  <a href="/2016/07/24/something-about-windows-timer-resolution/" class="article-date"><time datetime="2016-07-24T03:27:25.000Z" itemprop="datePublished">2016-07-24</time></a>
-</div>
-
-    <div class="article-author">admin</div>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Tips/">Tips</a>
-  </div>
-
-
-  </div>
-  <div class="article-inner">
-
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Windows Timer相比大家都用过，WM_TIMER, WM_SYSTIMER, Waitable Timer, Multimedia Timer, Timer Queue Timer，这么多种Timer，给我们变成提供了很大的方便，有窗口无窗口都能自如选择。所以尽量也不要自己再造轮子，用什么Sleep来写Timer。这种“自定义”的Timer肯定是没有由系统内核DPC触发的Timer效率高的。</p>
-<p>OK，回到正题，关于Timer的精确度。首先看看SysInternal工具集的clockres的显示：</p>
-<p><a href="/uploads/2016/07/20160725102628.png"><img src="/uploads/2016/07/20160725102628.png" alt="20160725102628"></a></p>
-<p>从图中可以看出，我这个系统的最大精确度15.6毫秒，最小是0.5毫秒，当前是15.6毫秒。默认情况下，Windows会用最大精确度，因为这样可以减少CPU的消耗，而且高精度的定时器，绝大多数程序都不会用到。基于15.6毫秒这个精度，那么我们设置Timer间隔为15.6毫秒以下都是没有意义的，这里再提一下，Sleep函数在内核也是用的定时器，也就是说这个精确度下，Sleep(10)也是没有意义的，间隔会达到15-16毫秒。</p>
-<p>当然，我们有的时候也是需要高精度的定时器的，这个时候我们需要设置时间精度。timeBeginPeriod这个函数就可以完成这个任务，这个函数调用了ntdll的NtSetTimerResolution函数，我们也可以直接调用这个ntdll函数，只不过我们需要动态获得这个函数的地址罢了。值得注意的是，并不是你想设置什么精确度都可以，Windows内部实际上维护了一份可以设置的精度列表，他会选择一个和你设置相近的的精度设置上去，这个列表保存在Hal里面。</p>
-<p>好了，再说下Windows时钟，Windows时钟更新时间总是用的最大精度，在我个系统上也就是每次更新时间都是间隔15.6毫秒。也就是说如果用GetTickCount来统计性能问题，最大精度也就是15-16毫秒。举个例子，一段代码运行时间不足15.6毫秒，要么统计结果是0，要么是15-16毫秒，时间精度不会影响Windows时钟更新。</p>
-<p>最后说下Windows高精度时钟查询的实现，在2000和XP时代，系统用TSC来演算时间，但是那个时候，多核并不支持TSC同步，这回带来一些问题。Vista系统采用了High Precision Event Timer (HPET)或者ACPI Power Management Timer (PM timer)，但是这种Timer的延时比较高，当然，这个延时是百纳秒级别的，可以说基本上不会对普通程序有什么影响。之后的系统就使用了固定频率的TSC，这样在多核状态下也能保证同步，而且延时很低。更详细的资料可以参考：<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx">https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx</a></p>
-
-      
-    </div>
-
-    
-      
-
-    
-
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/07/24/something-about-windows-timer-resolution/" data-id="cl44tvm7p006ydoue0y3jfinw" class="article-share-link">
-        <i class="fa fa-share"></i> Share
-      </a>
-      
-      
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-win10-taskmgr-killproc" class="article article-type-post" itemscope itemprop="blogPost">
-
-  <header class="article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/06/26/win10-taskmgr-killproc/">Windows 10 任务管理器结束任务流程</a>
-    </h1>
-  
-
-
-  </header>
-
-  <div class="article-meta">
-    <div class="article-datetime">
-  <a href="/2016/06/26/win10-taskmgr-killproc/" class="article-date"><time datetime="2016-06-26T03:09:30.000Z" itemprop="datePublished">2016-06-26</time></a>
-</div>
-
-    <div class="article-author">admin</div>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Tips/">Tips</a>
-  </div>
-
-
-  </div>
-  <div class="article-inner">
-
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>从Win8开始，任务管理已经悄然发生变化了，这篇文章要说的就是结束任务这一个功能。以Win10的任务管理器为主来说明，没有了从窗口关闭进程的标签。取而代之的是一个区分前台和后台程序的进程树。通过这个界面结束进程也不再像以前一样调用User32的EndTask(<a target="_blank" rel="noopener" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms633492(v=vs.85).aspx)%EF%BC%8C%E8%80%8C%E6%98%AF%E9%87%8D%E6%96%B0%E8%A7%84%E5%88%92%E4%BA%86%E4%B8%80%E5%A5%97%E9%80%BB%E8%BE%91%E3%80%82">https://msdn.microsoft.com/en-us/library/windows/desktop/ms633492(v=vs.85).aspx)，而是重新规划了一套逻辑。</a></p>
-<p>具体逻辑如下：  </p>
-<blockquote>
-<p>1.区分程序类型  </p>
-<p>2.如果是窗口程序，则给窗口发送WM_SYSCOMMAND+SC_CLOSE结束窗口来结束进程  </p>
-<p>3.如果是服务程序，则调用ControlService+SERVICE_CONTROL_STOP结束服务来结束进程  </p>
-<p>4.如果既没有窗口也不是服务的程序，或者说在第2，3步没有结束成功的进程，会调用TerminateProcess来强行结束进程。  </p>
-<p> 5.第五步是和之前结束任务最大的一个区别，以前的任务管理器，如果没能结束进程，例如一些僵尸进程，他就不会做其他动作了，而新的任务管理器为了释放这种进程所占用的内核资源，他还会做另外一些事情，那就是关闭目标进程的所有句柄。使用的方式就是DuplicateHandle+DUPLICATE_CLOSE_SOURCE。这样做的另外一个好处就是，如果顽固进程还在运行，句柄关闭会造成其崩溃而结束。</p>
-</blockquote>
-
-      
-    </div>
-
-    
-      
-
-    
-
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/06/26/win10-taskmgr-killproc/" data-id="cl44tvm7p006wdoue8fee3ae3" class="article-share-link">
-        <i class="fa fa-share"></i> Share
-      </a>
-      
-      
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-win8-shell-long-filename" class="article article-type-post" itemscope itemprop="blogPost">
-
-  <header class="article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/05/17/win8-shell-long-filename/">Windows 8 Shell API对于长路径文件名的支持</a>
-    </h1>
-  
-
-
-  </header>
-
-  <div class="article-meta">
-    <div class="article-datetime">
-  <a href="/2016/05/17/win8-shell-long-filename/" class="article-date"><time datetime="2016-05-17T08:16:56.000Z" itemprop="datePublished">2016-05-17</time></a>
-</div>
-
-    <div class="article-author">admin</div>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Tips/">Tips</a>
-  </div>
-
-
-  </div>
-  <div class="article-inner">
-
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在Windows 8之前，Shell API对于长路径的文件名的支持并不理想。比如PathAppend这个函数，函数规定pszPath，也就是第一个参数，它的buffer大小必须要能够容纳MAX_PATH个字符。第二个参数pszMore也不能超过MAX_PATH的长度。这样的API不仅不能满足我们对长文件路径需求，同时也可能让我们的软件由于字符串检查不严格出现严重BUG和漏洞。</p>
-<p>还好，这个问题在Windows 8以及以后的系统上得到了解决。还是以路径拼接为例。微软向我们介绍了PathCchAppend和PathCchAppendEx函数。其中PathCchAppend函数，增加了cchPath参数，用来指定输出buffer的大小。用这样的方式来加强参数的检查，增加了函数的安全性。而PathCchAppendEx这个函数在PathCchAppend基础上，又加入了dwFlags，现在这个标志只有PATHCCH_ALLOW_LONG_PATHS，意思就是让我们的路径名超过MAX_PATH。</p>
-<p>不知道微软设计PathCchAppend和PathCchAppendEx这两个API的时候是怎么样的一个想法，我觉得完全没必要设计成两个函数，一个PathCchAppendEx就足够了。大家是不是也有这个疑问呢？</p>
-<p>最后，由于Windows 7现在的使用量还是非常大的，我们也不能因为要使用这些新的API而放弃兼容老版本的Windows。比较合适的做法还是动态导入这些函数，如果成功了就可以使用新的函数，失败就用老的函数。另外值得注意的是，PathCchAppend这类新的函数并不是放在shlwapi.dll里面，而是在kernelbase.dll，动态获取函数的时候需要注意这一点。</p>
-
-      
-    </div>
-
-    
-      
-
-    
-
-    <footer class="article-footer">
-      <a data-url="http://0cch.com/2016/05/17/win8-shell-long-filename/" data-id="cl44tvm7o006udoue9hbs8nes" class="article-share-link">
+      <a data-url="http://0cch.com/2016/08/23/create-file-in-metadata/" data-id="cl4babra40072m8ueehc042yw" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -703,7 +699,7 @@
   
   <div class="sidebar-module">
     <h4>Categories</h4>
-    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/CPP/">CPP</a><span class="sidebar-module-list-count">27</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Debugging/">Debugging</a><span class="sidebar-module-list-count">29</span><ul class="sidebar-module-list-child"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><span class="sidebar-module-list-count">5</span><ul class="sidebar-module-list-child"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a><span class="sidebar-module-list-count">1</span></li></ul></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Debugging/Tips/">Tips</a><span class="sidebar-module-list-count">7</span></li></ul></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/DeepLearner/">DeepLearner</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/MiniKernel/">MiniKernel</a><span class="sidebar-module-list-count">7</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/NTInternals/">NTInternals</a><span class="sidebar-module-list-count">22</span><ul class="sidebar-module-list-child"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/NTInternals/Tips/">Tips</a><span class="sidebar-module-list-count">4</span></li></ul></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Tips/">Tips</a><span class="sidebar-module-list-count">70</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/debugging/">debugging</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/machinelearning/">machinelearning</a><span class="sidebar-module-list-count">2</span></li></ul>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/CPP/">CPP</a><span class="sidebar-module-list-count">30</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Debugging/">Debugging</a><span class="sidebar-module-list-count">29</span><ul class="sidebar-module-list-child"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Debugging/NTInternals/">NTInternals</a><span class="sidebar-module-list-count">5</span><ul class="sidebar-module-list-child"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Debugging/NTInternals/Tips/">Tips</a><span class="sidebar-module-list-count">1</span></li></ul></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Debugging/Tips/">Tips</a><span class="sidebar-module-list-count">7</span></li></ul></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/DeepLearner/">DeepLearner</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/MiniKernel/">MiniKernel</a><span class="sidebar-module-list-count">7</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/NTInternals/">NTInternals</a><span class="sidebar-module-list-count">22</span><ul class="sidebar-module-list-child"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/NTInternals/Tips/">Tips</a><span class="sidebar-module-list-count">4</span></li></ul></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/Tips/">Tips</a><span class="sidebar-module-list-count">70</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/debugging/">debugging</a><span class="sidebar-module-list-count">6</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/categories/machinelearning/">machinelearning</a><span class="sidebar-module-list-count">2</span></li></ul>
   </div>
 
 
@@ -728,7 +724,7 @@
   
   <div class="sidebar-module">
     <h4>Archives</h4>
-    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2022/03/">March 2022</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2022/02/">February 2022</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2022/01/">January 2022</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/12/">December 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/11/">November 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/10/">October 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/09/">September 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/08/">August 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/07/">July 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/06/">June 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/05/">May 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/04/">April 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/03/">March 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/02/">February 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/01/">January 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/12/">December 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/11/">November 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/10/">October 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/09/">September 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/08/">August 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/07/">July 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/06/">June 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/05/">May 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/04/">April 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/03/">March 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/02/">February 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/01/">January 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/12/">December 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/11/">November 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/10/">October 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/09/">September 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/08/">August 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/07/">July 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/06/">June 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/05/">May 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/04/">April 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/03/">March 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/02/">February 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/01/">January 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/12/">December 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/11/">November 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/10/">October 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/09/">September 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/08/">August 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/07/">July 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/06/">June 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/03/">March 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/02/">February 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/01/">January 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/12/">December 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/11/">November 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/10/">October 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/09/">September 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/08/">August 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/07/">July 2017</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/06/">June 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/05/">May 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/04/">April 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/03/">March 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/02/">February 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/01/">January 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/12/">December 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">November 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">October 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/09/">September 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/08/">August 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/07/">July 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/06/">June 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/05/">May 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/04/">April 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/03/">March 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/02/">February 2016</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/01/">January 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/12/">December 2015</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/11/">November 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/10/">October 2015</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/09/">September 2015</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/08/">August 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/07/">July 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/06/">June 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/05/">May 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/04/">April 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/03/">March 2015</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/02/">February 2015</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/01/">January 2015</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/12/">December 2014</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/11/">November 2014</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/10/">October 2014</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/09/">September 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/08/">August 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/07/">July 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/06/">June 2014</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/05/">May 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/04/">April 2014</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/03/">March 2014</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/02/">February 2014</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/01/">January 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/12/">December 2013</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/11/">November 2013</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/10/">October 2013</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/09/">September 2013</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/08/">August 2013</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/07/">July 2013</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/06/">June 2013</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/05/">May 2013</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/04/">April 2013</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/03/">March 2013</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/02/">February 2013</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/01/">January 2013</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2012/12/">December 2012</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2012/11/">November 2012</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2012/08/">August 2012</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2012/02/">February 2012</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/12/">December 2011</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/10/">October 2011</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/09/">September 2011</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/08/">August 2011</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/06/">June 2011</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/05/">May 2011</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/04/">April 2011</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/02/">February 2011</a><span class="sidebar-module-list-count">1</span></li></ul>
+    <ul class="sidebar-module-list"><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2022/06/">June 2022</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2022/05/">May 2022</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2022/04/">April 2022</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2022/03/">March 2022</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2022/02/">February 2022</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2022/01/">January 2022</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/12/">December 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/11/">November 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/10/">October 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/09/">September 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/08/">August 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/07/">July 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/06/">June 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/05/">May 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/04/">April 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/03/">March 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/02/">February 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2021/01/">January 2021</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/12/">December 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/11/">November 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/10/">October 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/09/">September 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/08/">August 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/07/">July 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/06/">June 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/05/">May 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/04/">April 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/03/">March 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/02/">February 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2020/01/">January 2020</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/12/">December 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/11/">November 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/10/">October 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/09/">September 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/08/">August 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/07/">July 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/06/">June 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/05/">May 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/04/">April 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/03/">March 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/02/">February 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2019/01/">January 2019</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/12/">December 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/11/">November 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/10/">October 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/09/">September 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/08/">August 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/07/">July 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/06/">June 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/03/">March 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/02/">February 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2018/01/">January 2018</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/12/">December 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/11/">November 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/10/">October 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/09/">September 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/08/">August 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/07/">July 2017</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/06/">June 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/05/">May 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/04/">April 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/03/">March 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/02/">February 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2017/01/">January 2017</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/12/">December 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/11/">November 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/10/">October 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/09/">September 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/08/">August 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/07/">July 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/06/">June 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/05/">May 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/04/">April 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/03/">March 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/02/">February 2016</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2016/01/">January 2016</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/12/">December 2015</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/11/">November 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/10/">October 2015</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/09/">September 2015</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/08/">August 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/07/">July 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/06/">June 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/05/">May 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/04/">April 2015</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/03/">March 2015</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/02/">February 2015</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2015/01/">January 2015</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/12/">December 2014</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/11/">November 2014</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/10/">October 2014</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/09/">September 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/08/">August 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/07/">July 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/06/">June 2014</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/05/">May 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/04/">April 2014</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/03/">March 2014</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/02/">February 2014</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2014/01/">January 2014</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/12/">December 2013</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/11/">November 2013</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/10/">October 2013</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/09/">September 2013</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/08/">August 2013</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/07/">July 2013</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/06/">June 2013</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/05/">May 2013</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/04/">April 2013</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/03/">March 2013</a><span class="sidebar-module-list-count">3</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/02/">February 2013</a><span class="sidebar-module-list-count">4</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2013/01/">January 2013</a><span class="sidebar-module-list-count">5</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2012/12/">December 2012</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2012/11/">November 2012</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2012/08/">August 2012</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2012/02/">February 2012</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/12/">December 2011</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/10/">October 2011</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/09/">September 2011</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/08/">August 2011</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/06/">June 2011</a><span class="sidebar-module-list-count">2</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/05/">May 2011</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/04/">April 2011</a><span class="sidebar-module-list-count">1</span></li><li class="sidebar-module-list-item"><a class="sidebar-module-list-link" href="/archives/2011/02/">February 2011</a><span class="sidebar-module-list-count">1</span></li></ul>
   </div>
 
 
@@ -739,23 +735,23 @@
     <ul class="sidebar-module-list">
       
         <li>
+          <a href="/2022/06/01/addition-to-rvo-and-copy-elimination/">返回值优化和拷贝消除的一点补充</a>
+        </li>
+      
+        <li>
+          <a href="/2022/05/02/use-async-with-caution/">谨慎使用std::async</a>
+        </li>
+      
+        <li>
+          <a href="/2022/04/12/pass-params/">值传参</a>
+        </li>
+      
+        <li>
           <a href="/2022/03/08/oneapi-summary/">oneAPI 组件简介</a>
         </li>
       
         <li>
           <a href="/2022/02/12/k+2021/">2021K+软件峰会PPT</a>
-        </li>
-      
-        <li>
-          <a href="/2022/01/01/2021-summary/">2021小结</a>
-        </li>
-      
-        <li>
-          <a href="/2021/12/01/dpcpp/">DPC++中的现代C++语言特性</a>
-        </li>
-      
-        <li>
-          <a href="/2021/11/02/module-ext/">补编-模块(C++20)</a>
         </li>
       
     </ul>
