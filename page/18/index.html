@@ -124,7 +124,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2011/10/30/volume-snapshot/" data-id="cl4babr67000cm8uect9r5mzo" class="article-share-link">
+      <a data-url="http://0cch.com/2011/10/30/volume-snapshot/" data-id="cl81eycze000efkuvbkx2eiye" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -185,7 +185,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2011/09/17/ntstatus-lookup/" data-id="cl4babr68000dm8uecaf4afy7" class="article-share-link">
+      <a data-url="http://0cch.com/2011/09/17/ntstatus-lookup/" data-id="cl81eyczd000afkuveie09j3h" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -245,7 +245,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2011/08/28/e4b880e4bbbde7ae80e9998be79a84ntfs-parsee4bba3e7a081/" data-id="cl4babr65000am8uecb17fv2x" class="article-share-link">
+      <a data-url="http://0cch.com/2011/08/28/e4b880e4bbbde7ae80e9998be79a84ntfs-parsee4bba3e7a081/" data-id="cl81eycze000cfkuv9tkwdh6n" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -409,10 +409,9 @@
 </li>
 <li><p><strong>}</strong></p>
 </li>
-<li><p>**</p>
+<li><p>**<br>**</p>
 </li>
 </ol>
-<p>**</p>
 <p>函数中的DeviceId是设备的句柄。</p>
 <p>生成FAT_VOLUME_INFO结构。这个结构里面存储了FAT分区的基本信息。包括扇区大小，每个簇的扇区数等等。</p>
 <ol>
@@ -446,10 +445,9 @@
 </li>
 <li><p><strong>}</strong> FAT_VOLUME_INFO**;**</p>
 </li>
-<li><p>**</p>
+<li><p>**<br>**</p>
 </li>
 </ol>
-<p>**</p>
 <p>  读取第一个山区，判断是否有fat标志。如果没有直接返回，挂载失败。之后使用ArcGetFileInformation获得分区大小。ArcGetFileInformation里面调用了FileData.FuncTable.GetFileInformation。因为当前DeviceId是设备句柄，所以他实际调用的是DiskGetFileInformation(freeldr\freeldr\arch\i386\hardware.c)。这个函数很简单，通过FileInformation返回分区开始和结束的地址，这里就不列出了。     </p>
 <p>这里的代码用FileInformation**.**EndingAddress &#x2F; SECTOR_SIZE计算出了该分区的扇区数SectorCount。这里应该BUG。因为EndingAddress是分区结束地址，真的扇区数应该是 (分区开始地址 - EndingAddress ) &#x2F; SECTOR_SIZE。好在SectorCount只是判断fat分区的一个依据，而且一般C盘计算出的SectorCount误差不会很大，影响不大。</p>
 <p>最后执行FatOpenVolume真正执行分区的挂载、初始化。初始化结束后将生成的Volume放到fat.c维护的全局数组FatVolumes里，之后对fat分区进行操作（读写）时，通过设备的DeviceId就可以找到对应的FAT_VOLUME_INFO结构。</p>
@@ -547,7 +545,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2011/06/10/reactos-freeldre7a381e79b98e58f8ae69687e4bbb6e7aea1e790862/" data-id="cl4babr630008m8ue1u673109" class="article-share-link">
+      <a data-url="http://0cch.com/2011/06/10/reactos-freeldre7a381e79b98e58f8ae69687e4bbb6e7aea1e790862/" data-id="cl81eyczc0007fkuv73ngdkv3" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -638,7 +636,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2011/06/02/reactos-freeldre7a381e79b98e58f8ae69687e4bbb6e7aea1e79086/" data-id="cl4babr5x0005m8uehmj48fd8" class="article-share-link">
+      <a data-url="http://0cch.com/2011/06/02/reactos-freeldre7a381e79b98e58f8ae69687e4bbb6e7aea1e79086/" data-id="cl81eyczd0009fkuvcdq32z55" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -716,7 +714,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2011/05/22/e585b3e4ba8ee69687e4bbb6shareaccess/" data-id="cl4babr610007m8ue21qshanv" class="article-share-link">
+      <a data-url="http://0cch.com/2011/05/22/e585b3e4ba8ee69687e4bbb6shareaccess/" data-id="cl81eycza0005fkuv0e3e39gs" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -780,7 +778,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2011/04/01/e8aea9e7a88be5ba8fe7ad89e5be85e8b083e8af95e599a8e99984e58aa0/" data-id="cl4babr5t0003m8uee59t460z" class="article-share-link">
+      <a data-url="http://0cch.com/2011/04/01/e8aea9e7a88be5ba8fe7ad89e5be85e8b083e8af95e599a8e99984e58aa0/" data-id="cl81eycz80003fkuv724h29st" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -831,7 +829,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2011/02/28/hello-world/" data-id="cl4babr5m0001m8uehsqahh4l" class="article-share-link">
+      <a data-url="http://0cch.com/2011/02/28/hello-world/" data-id="cl81eycz60001fkuvg046hg11" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -933,6 +931,7 @@
   <div class="container">
     <div id="footer-info" class="inner">
       &copy; 2022 0CCh<br>
+      <a href="https://beian.miit.gov.cn/" target="_blank">鄂ICP备2022015101号</a><br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>

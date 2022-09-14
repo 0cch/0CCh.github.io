@@ -13,7 +13,7 @@
 <meta property="og:description" content="ArcOpen的大体流程我们看过了。大致分为这几步  函数会尝试找到文件所在分区的设备句柄，如果还没有对应的句柄。那么使用DEVICE.FuncTable中的Open函数打开设备，并为这个设备分配句柄。  打开设备后条用XxxMount识别分区格式，识别成功返回另外的FuncTable，存储到设备的FileData.FileFuncTable域。  为文件分配一个句柄，在对应的FileData.D">
 <meta property="og:locale">
 <meta property="article:published_time" content="2011-06-09T18:17:00.000Z">
-<meta property="article:modified_time" content="2022-06-12T11:56:21.017Z">
+<meta property="article:modified_time" content="2022-08-31T06:33:02.549Z">
 <meta property="article:author" content="0CCh">
 <meta name="twitter:card" content="summary">
   
@@ -230,10 +230,9 @@
 </li>
 <li><p><strong>}</strong></p>
 </li>
-<li><p>**</p>
+<li><p>**<br>**</p>
 </li>
 </ol>
-<p>**</p>
 <p>函数中的DeviceId是设备的句柄。</p>
 <p>生成FAT_VOLUME_INFO结构。这个结构里面存储了FAT分区的基本信息。包括扇区大小，每个簇的扇区数等等。</p>
 <ol>
@@ -267,10 +266,9 @@
 </li>
 <li><p><strong>}</strong> FAT_VOLUME_INFO**;**</p>
 </li>
-<li><p>**</p>
+<li><p>**<br>**</p>
 </li>
 </ol>
-<p>**</p>
 <p>  读取第一个山区，判断是否有fat标志。如果没有直接返回，挂载失败。之后使用ArcGetFileInformation获得分区大小。ArcGetFileInformation里面调用了FileData.FuncTable.GetFileInformation。因为当前DeviceId是设备句柄，所以他实际调用的是DiskGetFileInformation(freeldr\freeldr\arch\i386\hardware.c)。这个函数很简单，通过FileInformation返回分区开始和结束的地址，这里就不列出了。     </p>
 <p>这里的代码用FileInformation**.**EndingAddress &#x2F; SECTOR_SIZE计算出了该分区的扇区数SectorCount。这里应该BUG。因为EndingAddress是分区结束地址，真的扇区数应该是 (分区开始地址 - EndingAddress ) &#x2F; SECTOR_SIZE。好在SectorCount只是判断fat分区的一个依据，而且一般C盘计算出的SectorCount误差不会很大，影响不大。</p>
 <p>最后执行FatOpenVolume真正执行分区的挂载、初始化。初始化结束后将生成的Volume放到fat.c维护的全局数组FatVolumes里，之后对fat分区进行操作（读写）时，通过设备的DeviceId就可以找到对应的FAT_VOLUME_INFO结构。</p>
@@ -368,7 +366,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2011/06/10/reactos-freeldre7a381e79b98e58f8ae69687e4bbb6e7aea1e790862/" data-id="cl4babr630008m8ue1u673109" class="article-share-link">
+      <a data-url="http://0cch.com/2011/06/10/reactos-freeldre7a381e79b98e58f8ae69687e4bbb6e7aea1e790862/" data-id="cl81eyczc0007fkuv73ngdkv3" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -484,6 +482,7 @@
   <div class="container">
     <div id="footer-info" class="inner">
       &copy; 2022 0CCh<br>
+      <a href="https://beian.miit.gov.cn/" target="_blank">鄂ICP备2022015101号</a><br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>

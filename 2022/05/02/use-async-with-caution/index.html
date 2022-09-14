@@ -13,7 +13,7 @@
 <meta property="og:description" content="std::async是C++11标准引入的函数模板，它用于异步执行某些任务，通常在单独的线程或者线程池中运行，它会返回一个std::future用于等待和获取异步执行的结果。为什么这里说需要谨慎使用呢？其实原因上面一句话也提到了，就是它可能是在单独的线程中运行的。那么躲过我们想并发执行多个异步任务，会导致系统产生多个线程，执行完任务后退出。熟悉操作系统的朋友应该知道，创建线程的操作是非常耗时的，它">
 <meta property="og:locale">
 <meta property="article:published_time" content="2022-05-02T12:09:08.000Z">
-<meta property="article:modified_time" content="2022-06-12T12:12:47.594Z">
+<meta property="article:modified_time" content="2022-08-31T06:33:02.598Z">
 <meta property="article:author" content="0CCh">
 <meta name="twitter:card" content="summary">
   
@@ -129,7 +129,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2022/05/02/use-async-with-caution/" data-id="cl4babrce00b3m8ue5zv51o9u" class="article-share-link">
+      <a data-url="http://0cch.com/2022/05/02/use-async-with-caution/" data-id="cl81eyd1s00befkuv1iolcae8" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       
@@ -245,6 +245,7 @@
   <div class="container">
     <div id="footer-info" class="inner">
       &copy; 2022 0CCh<br>
+      <a href="https://beian.miit.gov.cn/" target="_blank">鄂ICP备2022015101号</a><br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
