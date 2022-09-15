@@ -13,7 +13,7 @@
 <meta property="og:description" content="最近把windbg插件0cchext升级到1.0.19.1，完善了autocmd命令，并且增加了accessmask，oledata和cppexcr命令。 autocmd更新： 现在支持全局自动运行命令，区分应用层调试和内核调试，并且区分了普通调试和DUMP分析，配置文件依然是插件同目录下的autocmd.ini。  [all]? 88 * 66[kernel]!process 0 0 explo">
 <meta property="og:locale">
 <meta property="article:published_time" content="2018-11-26T14:05:21.000Z">
-<meta property="article:modified_time" content="2022-08-31T06:33:02.582Z">
+<meta property="article:modified_time" content="2022-09-15T01:38:04.759Z">
 <meta property="article:author" content="0CCh">
 <meta name="twitter:card" content="summary">
   
@@ -128,12 +128,12 @@
 <p>这个命令是方便我们当前线程查询com和ole相关结构的命令，不需要参数。</p>
 </blockquote>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0:000&gt; !oledata</span><br><span class="line">dt combase!tagSOleTlsData 0x0000019370ad0360</span><br><span class="line">dx (combase!tagSOleTlsData *)0x0000019370ad0360</span><br><span class="line">0:000&gt; dt combase!tagSOleTlsData 0x0000019370ad0360</span><br><span class="line">   +0x000 pvThreadBase     : (null)</span><br><span class="line">   +0x008 pSmAllocator     : (null)</span><br><span class="line">   +0x010 dwApartmentID    : 0x1e3d4</span><br><span class="line">   +0x014 dwFlags          : 0x81</span><br><span class="line">   +0x018 TlsMapIndex      : 0n0</span><br><span class="line">   +0x020 ppTlsSlot        : 0x00000018`66fc9758  -&gt; 0x00000193`70ad0360 Void</span><br><span class="line">   +0x028 cComInits        : 3</span><br><span class="line">   +0x02c cOleInits        : 0</span><br><span class="line">   +0x030 cCalls           : 0</span><br><span class="line">   ...</span><br></pre></td></tr></table></figure>
-<p>另外可以看<a href="https://0cch.com/2017/07/09/tip-about-com/">调试COM的一个tip</a>来简单了解以下这个命令的用途</p>
+<p>另外可以看<a href="/2017/07/09/tip-about-com/">调试COM的一个tip</a>来简单了解以下这个命令的用途</p>
 <h3 id="cppexcrname命令："><a href="#cppexcrname命令：" class="headerlink" title="cppexcrname命令："></a>cppexcrname命令：</h3><blockquote>
 <p>这个命令用于查询C++ 异常名</p>
 </blockquote>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0:000&gt; .exr -1</span><br><span class="line">ExceptionAddress: 74e61812 (KERNELBASE!RaiseException+0x00000062)</span><br><span class="line">   ExceptionCode: e06d7363 (C++ EH exception)</span><br><span class="line">  ExceptionFlags: 00000001</span><br><span class="line">NumberParameters: 3</span><br><span class="line">   Parameter[0]: 19930520</span><br><span class="line">   Parameter[1]: 006ff46c</span><br><span class="line">   Parameter[2]: 00372294</span><br><span class="line">0:000&gt; !cppexcrname</span><br><span class="line">Exception name: .?AVexception@std@@</span><br></pre></td></tr></table></figure>
-<p>这个的详情可以参考<a href="https://0cch.com/2015/12/06/cpp-exception-params/">C++异常的参数分析(0xE06D7363)</a></p>
+<p>这个的详情可以参考<a href="/2015/12/06/cpp-exception-params/">C++异常的参数分析(0xE06D7363)</a></p>
 
       
     </div>
