@@ -8,7 +8,7 @@
   <meta name="description" content="std::async是C++11标准引入的函数模板，它用于异步执行某些任务，通常在单独的线程或者线程池中运行，它会返回一个std::future用于等待和获取异步执行的结果。为什么这里说需要谨慎使用呢？其实原因上面一句话也提到了，就是它可能是在单独的线程中运行的。那么躲过我们想并发执行多个异步任务，会导致系统产生多个线程，执行完任务后退出。熟悉操作系统的朋友应该知道，创建线程的操作是非常耗时的，它">
 <meta property="og:type" content="article">
 <meta property="og:title" content="谨慎使用std::async">
-<meta property="og:url" content="http://0cch.com/2022/05/02/use-async-with-caution/index.html">
+<meta property="og:url" content="https://0cch.com/2022/05/02/use-async-with-caution/index.html">
 <meta property="og:site_name" content="0CCh Blog">
 <meta property="og:description" content="std::async是C++11标准引入的函数模板，它用于异步执行某些任务，通常在单独的线程或者线程池中运行，它会返回一个std::future用于等待和获取异步执行的结果。为什么这里说需要谨慎使用呢？其实原因上面一句话也提到了，就是它可能是在单独的线程中运行的。那么躲过我们想并发执行多个异步任务，会导致系统产生多个线程，执行完任务后退出。熟悉操作系统的朋友应该知道，创建线程的操作是非常耗时的，它">
 <meta property="og:locale">
@@ -129,7 +129,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2022/05/02/use-async-with-caution/" data-id="cl81eyd1s00befkuv1iolcae8" class="article-share-link">
+      <a data-url="https://0cch.com/2022/05/02/use-async-with-caution/" data-id="cl81eyd1s00befkuv1iolcae8" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       

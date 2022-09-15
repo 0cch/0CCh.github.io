@@ -8,7 +8,7 @@
   <meta name="description" content="我们知道std::string_view可以创建std::string的一个视图，视图本身并不拥有实例，它只是保持视图映射的状态。在不修改实例的情况下，使用std::string_view会让字符串处理的性能大幅提升。实际上，对于那些连续的序列对象我们都可以创建这样一份视图，对于std::vector这样的对象可以提高某些操作中的性能，另外对原生数组可以提高其访问的安全性。 过去如果一个函数想接受">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用std::span代替数组指针传参">
-<meta property="og:url" content="http://0cch.com/2020/10/02/use-span-instead-of-array-pointer-to-pass-parameters/index.html">
+<meta property="og:url" content="https://0cch.com/2020/10/02/use-span-instead-of-array-pointer-to-pass-parameters/index.html">
 <meta property="og:site_name" content="0CCh Blog">
 <meta property="og:description" content="我们知道std::string_view可以创建std::string的一个视图，视图本身并不拥有实例，它只是保持视图映射的状态。在不修改实例的情况下，使用std::string_view会让字符串处理的性能大幅提升。实际上，对于那些连续的序列对象我们都可以创建这样一份视图，对于std::vector这样的对象可以提高某些操作中的性能，另外对原生数组可以提高其访问的安全性。 过去如果一个函数想接受">
 <meta property="og:locale">
@@ -136,7 +136,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2020/10/02/use-span-instead-of-array-pointer-to-pass-parameters/" data-id="cl81eyd1m00aafkuvcn8pcjlz" class="article-share-link">
+      <a data-url="https://0cch.com/2020/10/02/use-span-instead-of-array-pointer-to-pass-parameters/" data-id="cl81eyd1m00aafkuvcn8pcjlz" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       

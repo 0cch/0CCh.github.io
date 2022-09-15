@@ -8,7 +8,7 @@
   <meta name="description" content="最近遇到朋友的一个程序崩溃，原因是接口没有释放的时候调用了CoUninitialize，接着才释放接口。这个应该是个很明显的问题，但是朋友告诉我以前代码就是这个样子的，没有崩溃过，最近修改了部分代码但并不是这一块的。为了看看究竟什么回事，我把没有崩溃的程序抓了dump，看了COM的初始化引用计数： 0:000&gt; dt _teb @$teb ReservedForOlentdll!_TEB">
 <meta property="og:type" content="article">
 <meta property="og:title" content="调试COM的一个tip">
-<meta property="og:url" content="http://0cch.com/2017/07/09/tip-about-com/index.html">
+<meta property="og:url" content="https://0cch.com/2017/07/09/tip-about-com/index.html">
 <meta property="og:site_name" content="0CCh Blog">
 <meta property="og:description" content="最近遇到朋友的一个程序崩溃，原因是接口没有释放的时候调用了CoUninitialize，接着才释放接口。这个应该是个很明显的问题，但是朋友告诉我以前代码就是这个样子的，没有崩溃过，最近修改了部分代码但并不是这一块的。为了看看究竟什么回事，我把没有崩溃的程序抓了dump，看了COM的初始化引用计数： 0:000&gt; dt _teb @$teb ReservedForOlentdll!_TEB">
 <meta property="og:locale">
@@ -126,7 +126,7 @@
     
 
     <footer class="article-footer">
-      <a data-url="http://0cch.com/2017/07/09/tip-about-com/" data-id="cl81eyd0x007rfkuvd13181ji" class="article-share-link">
+      <a data-url="https://0cch.com/2017/07/09/tip-about-com/" data-id="cl81eyd0x007rfkuvd13181ji" class="article-share-link">
         <i class="fa fa-share"></i> Share
       </a>
       

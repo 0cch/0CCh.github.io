@@ -3,11 +3,11 @@
   <title>0CCh Blog</title>
   
   
-  <link href="http://0cch.com/atom.xml" rel="self"/>
+  <link href="https://0cch.com/atom.xml" rel="self"/>
   
-  <link href="http://0cch.com/"/>
+  <link href="https://0cch.com/"/>
   <updated>2022-09-15T01:28:33.537Z</updated>
-  <id>http://0cch.com/</id>
+  <id>https://0cch.com/</id>
   
   <author>
     <name>0CCh</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>K+ 技术峰会之旅&amp;C++新标准细节简析</title>
-    <link href="http://0cch.com/2022/08/21/k+&amp;c++new-standard-details/"/>
-    <id>http://0cch.com/2022/08/21/k+&amp;c++new-standard-details/</id>
+    <link href="https://0cch.com/2022/08/21/k+&amp;c++new-standard-details/"/>
+    <id>https://0cch.com/2022/08/21/k+&amp;c++new-standard-details/</id>
     <published>2022-08-21T06:15:46.000Z</published>
     <updated>2022-09-15T01:28:33.537Z</updated>
     
@@ -34,15 +34,15 @@
     
     
     
-    <category term="TIPS" scheme="http://0cch.com/categories/TIPS/"/>
+    <category term="TIPS" scheme="https://0cch.com/categories/TIPS/"/>
     
     
   </entry>
   
   <entry>
     <title>关于构造函数中调用虚函数</title>
-    <link href="http://0cch.com/2022/07/03/virtual-function-calls-in-constructors/"/>
-    <id>http://0cch.com/2022/07/03/virtual-function-calls-in-constructors/</id>
+    <link href="https://0cch.com/2022/07/03/virtual-function-calls-in-constructors/"/>
+    <id>https://0cch.com/2022/07/03/virtual-function-calls-in-constructors/</id>
     <published>2022-07-03T02:38:00.000Z</published>
     <updated>2022-08-31T06:33:02.598Z</updated>
     
@@ -57,15 +57,15 @@
     
     
     
-    <category term="CPP" scheme="http://0cch.com/categories/CPP/"/>
+    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
     
     
   </entry>
   
   <entry>
     <title>返回值优化和拷贝消除的一点补充</title>
-    <link href="http://0cch.com/2022/06/01/addition-to-rvo-and-copy-elimination/"/>
-    <id>http://0cch.com/2022/06/01/addition-to-rvo-and-copy-elimination/</id>
+    <link href="https://0cch.com/2022/06/01/addition-to-rvo-and-copy-elimination/"/>
+    <id>https://0cch.com/2022/06/01/addition-to-rvo-and-copy-elimination/</id>
     <published>2022-06-01T13:17:10.000Z</published>
     <updated>2022-08-31T06:33:02.598Z</updated>
     
@@ -80,15 +80,15 @@
     
     
     
-    <category term="CPP" scheme="http://0cch.com/categories/CPP/"/>
+    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
     
     
   </entry>
   
   <entry>
     <title>谨慎使用std::async</title>
-    <link href="http://0cch.com/2022/05/02/use-async-with-caution/"/>
-    <id>http://0cch.com/2022/05/02/use-async-with-caution/</id>
+    <link href="https://0cch.com/2022/05/02/use-async-with-caution/"/>
+    <id>https://0cch.com/2022/05/02/use-async-with-caution/</id>
     <published>2022-05-02T12:09:08.000Z</published>
     <updated>2022-08-31T06:33:02.598Z</updated>
     
@@ -102,15 +102,15 @@
     
     
     
-    <category term="CPP" scheme="http://0cch.com/categories/CPP/"/>
+    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
     
     
   </entry>
   
   <entry>
     <title>值传参</title>
-    <link href="http://0cch.com/2022/04/12/pass-params/"/>
-    <id>http://0cch.com/2022/04/12/pass-params/</id>
+    <link href="https://0cch.com/2022/04/12/pass-params/"/>
+    <id>https://0cch.com/2022/04/12/pass-params/</id>
     <published>2022-04-12T12:03:43.000Z</published>
     <updated>2022-08-31T06:33:02.598Z</updated>
     
@@ -124,15 +124,15 @@
     
     
     
-    <category term="CPP" scheme="http://0cch.com/categories/CPP/"/>
+    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
     
     
   </entry>
   
   <entry>
     <title>oneAPI 组件简介</title>
-    <link href="http://0cch.com/2022/03/08/oneapi-summary/"/>
-    <id>http://0cch.com/2022/03/08/oneapi-summary/</id>
+    <link href="https://0cch.com/2022/03/08/oneapi-summary/"/>
+    <id>https://0cch.com/2022/03/08/oneapi-summary/</id>
     <published>2022-03-08T00:00:31.000Z</published>
     <updated>2022-09-15T01:39:01.200Z</updated>
     
@@ -147,15 +147,15 @@
     
     
     
-    <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    <category term="Tips" scheme="https://0cch.com/categories/Tips/"/>
     
     
   </entry>
   
   <entry>
     <title>2021K+软件峰会PPT</title>
-    <link href="http://0cch.com/2022/02/12/k+2021/"/>
-    <id>http://0cch.com/2022/02/12/k+2021/</id>
+    <link href="https://0cch.com/2022/02/12/k+2021/"/>
+    <id>https://0cch.com/2022/02/12/k+2021/</id>
     <published>2022-02-12T03:15:07.000Z</published>
     <updated>2022-09-15T01:38:28.305Z</updated>
     
@@ -173,15 +173,15 @@
     
     
     
-    <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    <category term="Tips" scheme="https://0cch.com/categories/Tips/"/>
     
     
   </entry>
   
   <entry>
     <title>2021小结</title>
-    <link href="http://0cch.com/2022/01/01/2021-summary/"/>
-    <id>http://0cch.com/2022/01/01/2021-summary/</id>
+    <link href="https://0cch.com/2022/01/01/2021-summary/"/>
+    <id>https://0cch.com/2022/01/01/2021-summary/</id>
     <published>2021-12-31T23:15:55.000Z</published>
     <updated>2022-08-31T06:33:02.598Z</updated>
     
@@ -197,15 +197,15 @@
     
     
     
-    <category term="Tips" scheme="http://0cch.com/categories/Tips/"/>
+    <category term="Tips" scheme="https://0cch.com/categories/Tips/"/>
     
     
   </entry>
   
   <entry>
     <title>DPC++中的现代C++语言特性</title>
-    <link href="http://0cch.com/2021/12/01/dpcpp/"/>
-    <id>http://0cch.com/2021/12/01/dpcpp/</id>
+    <link href="https://0cch.com/2021/12/01/dpcpp/"/>
+    <id>https://0cch.com/2021/12/01/dpcpp/</id>
     <published>2021-12-01T00:24:18.000Z</published>
     <updated>2022-08-31T06:33:02.598Z</updated>
     
@@ -219,15 +219,15 @@
     
     
     
-    <category term="CPP" scheme="http://0cch.com/categories/CPP/"/>
+    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
     
     
   </entry>
   
   <entry>
     <title>补编-模块(C++20)</title>
-    <link href="http://0cch.com/2021/11/02/module-ext/"/>
-    <id>http://0cch.com/2021/11/02/module-ext/</id>
+    <link href="https://0cch.com/2021/11/02/module-ext/"/>
+    <id>https://0cch.com/2021/11/02/module-ext/</id>
     <published>2021-11-02T05:24:45.000Z</published>
     <updated>2022-08-31T06:33:02.598Z</updated>
     
@@ -244,15 +244,15 @@
     
     
     
-    <category term="CPP" scheme="http://0cch.com/categories/CPP/"/>
+    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
     
     
   </entry>
   
   <entry>
     <title>《现代C++语言核心特性解析》上架感言</title>
-    <link href="http://0cch.com/2021/10/07/moderncpp42/"/>
-    <id>http://0cch.com/2021/10/07/moderncpp42/</id>
+    <link href="https://0cch.com/2021/10/07/moderncpp42/"/>
+    <id>https://0cch.com/2021/10/07/moderncpp42/</id>
     <published>2021-10-07T01:44:05.000Z</published>
     <updated>2022-08-31T06:33:02.598Z</updated>
     
@@ -266,15 +266,15 @@
     
     
     
-    <category term="CPP" scheme="http://0cch.com/categories/CPP/"/>
+    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
     
     
   </entry>
   
   <entry>
     <title>QMutex中的优化小细节</title>
-    <link href="http://0cch.com/2021/09/12/optimization-details-in-qmutex/"/>
-    <id>http://0cch.com/2021/09/12/optimization-details-in-qmutex/</id>
+    <link href="https://0cch.com/2021/09/12/optimization-details-in-qmutex/"/>
+    <id>https://0cch.com/2021/09/12/optimization-details-in-qmutex/</id>
     <published>2021-09-12T11:46:53.000Z</published>
     <updated>2022-08-31T06:33:02.598Z</updated>
     
@@ -289,15 +289,15 @@
     
     
     
-    <category term="CPP" scheme="http://0cch.com/categories/CPP/"/>
+    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
     
     
   </entry>
   
   <entry>
     <title>指向实现的指针Pointer to implementation</title>
-    <link href="http://0cch.com/2021/08/05/pointer-to-implementation/"/>
-    <id>http://0cch.com/2021/08/05/pointer-to-implementation/</id>
+    <link href="https://0cch.com/2021/08/05/pointer-to-implementation/"/>
+    <id>https://0cch.com/2021/08/05/pointer-to-implementation/</id>
     <published>2021-08-05T13:25:52.000Z</published>
     <updated>2022-08-31T06:33:02.598Z</updated>
     
@@ -313,15 +313,15 @@
     
     
     
-    <category term="CPP" scheme="http://0cch.com/categories/CPP/"/>
+    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
     
     
   </entry>
   
   <entry>
     <title>Qt的隐式共享和写时拷贝</title>
-    <link href="http://0cch.com/2021/07/11/qt-implicit-sharing-copy-on-write/"/>
-    <id>http://0cch.com/2021/07/11/qt-implicit-sharing-copy-on-write/</id>
+    <link href="https://0cch.com/2021/07/11/qt-implicit-sharing-copy-on-write/"/>
+    <id>https://0cch.com/2021/07/11/qt-implicit-sharing-copy-on-write/</id>
     <published>2021-07-11T10:18:12.000Z</published>
     <updated>2022-08-31T06:33:02.598Z</updated>
     
@@ -336,15 +336,15 @@
     
     
     
-    <category term="CPP" scheme="http://0cch.com/categories/CPP/"/>
+    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
     
     
   </entry>
   
   <entry>
     <title>使用Q_DECLARE_TYPEINFO让Qt优化容器算法</title>
-    <link href="http://0cch.com/2021/06/15/use-Q_DECLARE_TYPEINFO-to-optimize-the-container/"/>
-    <id>http://0cch.com/2021/06/15/use-Q_DECLARE_TYPEINFO-to-optimize-the-container/</id>
+    <link href="https://0cch.com/2021/06/15/use-Q_DECLARE_TYPEINFO-to-optimize-the-container/"/>
+    <id>https://0cch.com/2021/06/15/use-Q_DECLARE_TYPEINFO-to-optimize-the-container/</id>
     <published>2021-06-15T03:39:02.000Z</published>
     <updated>2022-08-31T06:33:02.598Z</updated>
     
@@ -358,15 +358,15 @@
     
     
     
-    <category term="CPP" scheme="http://0cch.com/categories/CPP/"/>
+    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
     
     
   </entry>
   
   <entry>
     <title>QList 的工作原理和运行效率浅析</title>
-    <link href="http://0cch.com/2021/05/29/the-working-principle-of-qlist/"/>
-    <id>http://0cch.com/2021/05/29/the-working-principle-of-qlist/</id>
+    <link href="https://0cch.com/2021/05/29/the-working-principle-of-qlist/"/>
+    <id>https://0cch.com/2021/05/29/the-working-principle-of-qlist/</id>
     <published>2021-05-29T09:34:16.000Z</published>
     <updated>2022-08-31T06:33:02.590Z</updated>
     
@@ -380,15 +380,15 @@
     
     
     
-    <category term="CPP" scheme="http://0cch.com/categories/CPP/"/>
+    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
     
     
   </entry>
   
   <entry>
     <title>STL中并行算法</title>
-    <link href="http://0cch.com/2021/04/05/parallel-algorithm-in-stl/"/>
-    <id>http://0cch.com/2021/04/05/parallel-algorithm-in-stl/</id>
+    <link href="https://0cch.com/2021/04/05/parallel-algorithm-in-stl/"/>
+    <id>https://0cch.com/2021/04/05/parallel-algorithm-in-stl/</id>
     <published>2021-04-05T03:04:49.000Z</published>
     <updated>2022-08-31T06:33:02.590Z</updated>
     
@@ -402,15 +402,15 @@
     
     
     
-    <category term="CPP" scheme="http://0cch.com/categories/CPP/"/>
+    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
     
     
   </entry>
   
   <entry>
     <title>C++在线工具</title>
-    <link href="http://0cch.com/2021/03/20/intro-3-cpp-online-tools/"/>
-    <id>http://0cch.com/2021/03/20/intro-3-cpp-online-tools/</id>
+    <link href="https://0cch.com/2021/03/20/intro-3-cpp-online-tools/"/>
+    <id>https://0cch.com/2021/03/20/intro-3-cpp-online-tools/</id>
     <published>2021-03-20T08:15:53.000Z</published>
     <updated>2022-08-31T06:33:02.590Z</updated>
     
@@ -427,15 +427,15 @@
     
     
     
-    <category term="CPP" scheme="http://0cch.com/categories/CPP/"/>
+    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
     
     
   </entry>
   
   <entry>
     <title>解决vs2019编译qt5.15.2的错误</title>
-    <link href="http://0cch.com/2021/02/03/msvc-build-qt5.15.2-error/"/>
-    <id>http://0cch.com/2021/02/03/msvc-build-qt5.15.2-error/</id>
+    <link href="https://0cch.com/2021/02/03/msvc-build-qt5.15.2-error/"/>
+    <id>https://0cch.com/2021/02/03/msvc-build-qt5.15.2-error/</id>
     <published>2021-02-03T03:37:28.000Z</published>
     <updated>2022-08-31T06:33:02.590Z</updated>
     
@@ -451,15 +451,15 @@
     
     
     
-    <category term="CPP" scheme="http://0cch.com/categories/CPP/"/>
+    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
     
     
   </entry>
   
   <entry>
     <title>使用std::any代替std::shared_ptr&lt;void&gt;和void *</title>
-    <link href="http://0cch.com/2021/01/03/use-any-instead-of-shared_ptr-and-void/"/>
-    <id>http://0cch.com/2021/01/03/use-any-instead-of-shared_ptr-and-void/</id>
+    <link href="https://0cch.com/2021/01/03/use-any-instead-of-shared_ptr-and-void/"/>
+    <id>https://0cch.com/2021/01/03/use-any-instead-of-shared_ptr-and-void/</id>
     <published>2021-01-03T04:30:07.000Z</published>
     <updated>2022-08-31T06:33:02.590Z</updated>
     
@@ -474,7 +474,7 @@
     
     
     
-    <category term="CPP" scheme="http://0cch.com/categories/CPP/"/>
+    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
     
     
   </entry>
