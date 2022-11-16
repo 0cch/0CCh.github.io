@@ -6,7 +6,7 @@
   <link href="https://0cch.com/atom.xml" rel="self"/>
   
   <link href="https://0cch.com/"/>
-  <updated>2022-11-03T02:13:35.820Z</updated>
+  <updated>2022-11-16T02:53:37.437Z</updated>
   <id>https://0cch.com/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>SYCL编码实践与编译设计浅析</title>
+    <link href="https://0cch.com/2022/11/12/sycl-coding-practice-and-compilation-design-analysis/"/>
+    <id>https://0cch.com/2022/11/12/sycl-coding-practice-and-compilation-design-analysis/</id>
+    <published>2022-11-12T02:46:42.000Z</published>
+    <updated>2022-11-16T02:53:37.437Z</updated>
+    
+    <content type="html"><![CDATA[<p>在9月份的博客文章中我提到要把C++大会分享的主题写成总结文字发出来。拖拖拉拉的磨蹭了快两个月，终于能把这篇文章发出来了。</p><div class="row">    <embed src="/uploads/2022/11/sycl_coding_practice_and_compilation_design_analysis.pdf" width="100%" height="550px" type="application/pdf"></div>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;在9月份的博客文章中我提到要把C++大会分享的主题写成总结文字发出来。拖拖拉拉的磨蹭了快两个月，终于能把这篇文章发出来了。&lt;/p&gt;
+
+
+	&lt;div class=&quot;row&quot;&gt;
+    &lt;embed src=&quot;/uploads/2022/11/sycl_coding_pract</summary>
+      
+    
+    
+    
+    <category term="TIPS" scheme="https://0cch.com/categories/TIPS/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>关于std::weak_ptr使用的理解</title>
@@ -443,31 +469,6 @@
       
       
     <summary type="html">&lt;p&gt;C++17标准的一个重大突破是让标准库中的部分算法支持了并行计算，这对于无处不在的多线程环境来说无疑是一个非常不错的消息。具体支持并行计算的算法可以参考提案文档&lt;a href=&quot;http://www.open-std.org/jtc1/sc22/wg21/docs/pape</summary>
-      
-    
-    
-    
-    <category term="CPP" scheme="https://0cch.com/categories/CPP/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>C++在线工具</title>
-    <link href="https://0cch.com/2021/03/20/intro-3-cpp-online-tools/"/>
-    <id>https://0cch.com/2021/03/20/intro-3-cpp-online-tools/</id>
-    <published>2021-03-20T08:15:53.000Z</published>
-    <updated>2022-08-31T06:33:02.590Z</updated>
-    
-    <content type="html"><![CDATA[<p>这篇博客打算介绍4个C++在线工具，当手头没有设备或者没有开发环境的时候可以用它们做一些研究性质的工作。</p><ol><li><p><a href="https://wandbox.org/">https://wandbox.org/</a></p><p>该网站可以在线编辑以及编译C++源代码并且运行编译后的程序。在C++类别它支持GCC和CLANG，另外除了C++，C、C#、Java、GO等等都有支持。</p></li><li><p><a href="https://quick-bench.com/">https://quick-bench.com/</a></p><p>这也是一个可以在线编辑以及编译C++源代码并且运行编译后的程序的网站，但是与上面网站不同的是它运行程序并非用来输出结果，而是对函数做基准检测，采用的是Google Benchmark。同样它支持GCC和CLANG。</p></li><li><p><a href="https://godbolt.org/">https://godbolt.org/</a></p><p>这是我很喜欢的一个网站，它可以在线编辑和编译C++源代码，但是不可以运行程序。但是这并不能掩盖其优秀的地方，它支持C++各种编译器的各种版本，跨度非常大也非常全面。同时还可以自由设置编译器的编译参数并且查看输出的中间文件，对于研究C++编译过程十分有用。</p></li><li><p><a href="https://cppinsights.io/">https://cppinsights.io/</a></p><p>这是一个非常有趣的网站，它能够将源代码展开，使用一种容易理解的方式展示编译器做了哪些自动化工作。用它自己的话来说，就是从编译器的视角看到的源代码。例如：</p><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> arr[<span class="number">10</span>]&#123;<span class="number">2</span>,<span class="number">4</span>,<span class="number">6</span>,<span class="number">8</span>&#125;;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">const</span> <span class="type">char</span>&amp; c : arr)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;c=%c\n&quot;</span>, c);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>会被网站展开为：</p><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="type">const</span> <span class="type">char</span> arr[<span class="number">10</span>] = &#123;<span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>, <span class="number">8</span>, <span class="string">&#x27;\0&#x27;</span>, <span class="string">&#x27;\0&#x27;</span>, <span class="string">&#x27;\0&#x27;</span>, <span class="string">&#x27;\0&#x27;</span>, <span class="string">&#x27;\0&#x27;</span>, <span class="string">&#x27;\0&#x27;</span>&#125;;</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="function"><span class="type">char</span> <span class="title">const</span> <span class="params">(&amp;__range1)</span>[10] </span>= arr;</span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> * __begin1 = __range1;</span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> * __end1 = __range1 + <span class="number">10L</span>;</span><br><span class="line">    <span class="keyword">for</span>(; __begin1 != __end1; ++__begin1) </span><br><span class="line">    &#123;</span><br><span class="line">      <span class="type">const</span> <span class="type">char</span> &amp; c = *__begin1;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">&quot;c=%c\n&quot;</span>, <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(c));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li></ol>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;p&gt;这篇博客打算介绍4个C++在线工具，当手头没有设备或者没有开发环境的时候可以用它们做一些研究性质的工作。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;&lt;a href=&quot;https://wandbox.org/&quot;&gt;https://wandbox.org/&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;该网站可以</summary>
       
     
     
